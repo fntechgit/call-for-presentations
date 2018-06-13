@@ -1,0 +1,13 @@
+{
+  "landing": {
+    "sign_out"            : "Sign out",
+    "log_in"              : "Log in",
+    "not_logged_in"       : "You are not logged in. Please log in to continue:"
+  },
+  "errors": {
+    "user_not_authz"            : "Hold on. Your user is not authorized!.",
+    "user_not_set"              : "Hold on. Can not get any valid user.",
+    "session_expired"           : "Hold on. Your session expired!.",
+    "server_error"              : "There was a problem with our server, please contact admin."
+  }
+}
