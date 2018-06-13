@@ -79,7 +79,7 @@ export const doLogout = () => (dispatch) => {
   });
 }
 
-const AllowedGroupsCodes = [ 'administrators'];
+const AllowedGroupsCodes = [];
 
 
 export const getUserInfo = (history, backUrl) => (dispatch, getState) => {
@@ -109,18 +109,20 @@ export const getUserInfo = (history, backUrl) => (dispatch, getState) => {
           payload: {}
         });
       }
+      if(AllowedGroupsCodes.length > 0) {
+          let allowedGroups = member.groups.filter((group, idx) => {
+              return AllowedGroupsCodes.includes(group.code)
+          })
 
-      let allowedGroups = member.groups.filter((group, idx) => {
-        return AllowedGroupsCodes.includes(group.code)
-      })
-
-      if(allowedGroups.length == 0){
-        swal("ERROR", T.translate("errors.user_not_authz") , "error");
-        dispatch({
-          type: LOGOUT_USER,
-          payload: {}
-        });
+          if (allowedGroups.length == 0) {
+              swal("ERROR", T.translate("errors.user_not_authz"), "error");
+              dispatch({
+                  type: LOGOUT_USER,
+                  payload: {}
+              });
+          }
       }
+
       console.log(`redirecting to ${backUrl}`)
       history.push(backUrl);
     }
