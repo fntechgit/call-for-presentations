@@ -1,95 +1,51 @@
 @import 'app-variables';
-//
-// Burger menu custom styles
-//
-.bm-burger-button {
-  position: absolute;
-  width: 30px;
-  height: 25px;
-  left: 36px;
-  top: 12px;
-}
-
-.bm-menu-wrap {
-  top: 0;
-  z-index: 100000000000 !important;
-}
-
-.right .bm-burger-button {
-  left: initial;
-  right: 36px;
-}
-
-.bm-burger-bars {
-  background: #373a47;
-}
-
-.bm-morph-shape {
-  fill: #373a47;
-}
-
-/* Position and sizing of clickable cross button */
-.bm-cross-button {
-  height: 24px;
-  width: 24px;
-}
-
-/* Color/shape of close button cross */
-.bm-cross {
-  background: #bdc3c7;
-}
-
-.bm-menu {
-  background: #373a47;
-
-  a {
-    color: #b8b7ad;
-    font-size: 1.2em;
-
-    &:hover,
-    &:focus {
-      color: #c94e50;
-      text-decoration: none;
-    }
-  }
-}
-
-.bm-item-list {
-  padding-top: 5px;
-}
-
-.bm-item-list a {
-  padding: 0.5em;
-
-  span {
-    margin-left: 10px;
-    font-weight: 700;
-  }
-}
 
 #app_menu {
-  .menu-item {
-    display: block;
-    cursor: pointer;
-    color: #d0cece;
-    .fa {
-      margin-right: 10px;
-    }
+  background-color: white;
+  border: 1px solid #b3b3b3;
+  .user-img {
+    border: 4px solid #edf2f7;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    width: 130px;
+    height: 130px;
+    margin: 10px auto;
+    background-size: 100%;
   }
-  .submenu {
-    padding-left: 1.5em;
+  .user-name {
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 20px;
+  }
+  .items {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+
     .menu-item {
-      padding-top: 0.3em;
-      padding-bottom: 0.3em;
+      display: block;
+      padding: 10px 20px;
+      text-decoration: none;
+      cursor: pointer;
+      &:hover {
+        text-decoration: none;
+      }
+      .fa {
+        float: right;
+        padding-top: 1.5%;
+      }
+    }
+
+    .menu-item.active {
+      background-color: #EDF2F5;
+      border-left: 3px solid #259ADA;
     }
   }
-  .separator {
-    border-bottom: 1px solid #b8b7ad;
-    color: #b8b7ad;
-    margin: 10px 0 10px 0;
-    padding: 5px 0 5px 10px;
-    font-size: 1.5em;
-  }
+
+
 }
 
 

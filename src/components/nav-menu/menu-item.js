@@ -18,15 +18,19 @@ export default class MenuItem extends React.Component {
 
 
     render() {
-        let {name, iconClass, show, onClick} = this.props;
+        let {name, iconClass, show, onClick, active} = this.props;
 
         if(!show) return null;
 
+        let active_class = (active) ? ' active' : '';
+
         return (
-            <a id={name + '-menu'} className="menu-item" onClick={onClick} >
-                <i className={iconClass + ' fa'} />
-                {T.translate('menu.' + name)}
-            </a>
+            <li>
+                <a id={name + '-menu'} className={"menu-item" + active_class} onClick={onClick} >
+                    {T.translate('menu.' + name)}
+                    <i className={iconClass + ' fa'} />
+                </a>
+            </li>
         );
 
     }

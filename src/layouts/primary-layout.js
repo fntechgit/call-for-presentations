@@ -14,13 +14,12 @@
 import React from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import { Breadcrumbs, Breadcrumb } from 'react-breadcrumbs'
 import NavMenu from '../components/nav-menu/index'
 
 class PrimaryLayout extends React.Component {
 
   render(){
-    let { match, location } = this.props;
+    let { match, location, member } = this.props;
     let extraClass = 'container';
 
     // full width pages
@@ -30,28 +29,30 @@ class PrimaryLayout extends React.Component {
     }
     */
 
-    let useMenu = false;
-    
     return(
-      <div className="primary-layout">
-        { useMenu && <NavMenu /> }
-        <main id="page-wrap">
-          <Breadcrumbs className={"breadcrumbs-wrapper " + extraClass} separator="/" />
-          <Breadcrumb data={{ title: <i className="fa fa-home"></i>, pathname: match.url }} ></Breadcrumb>
-          <Switch>
-            {/* add here your main routes
-              ex: <Route exact path="/app/directory" component={SummitDirectoryPage}/>
-             */}
-          </Switch>
-        </main>
+      <div className="primary-layout container-fluid">
+        <div className="row">
+          <div className="col-md-3">
+            <NavMenu user={member} />
+          </div>
+          <div className="col-md-9">
+            <main id="page-wrap">
+              <Switch>
+                {/* add here your main routes
+                  ex: <Route exact path="/app/directory" component={SummitDirectoryPage}/>
+                 */}
+              </Switch>
+            </main>
+          </div>
+        </div>
       </div>
     );
   }
 
 }
 
-const mapStateToProps = ({  }) => ({
-
+const mapStateToProps = ({ loggedUserState }) => ({
+  member: loggedUserState.member
 })
 
 export default connect(mapStateToProps, {})(PrimaryLayout)
