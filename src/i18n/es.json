@@ -1,8 +1,9 @@
 {
   "landing": {
-    "sign_out"            : "Sign out",
-    "log_in"              : "Log in",
-    "not_logged_in"       : "You are not logged in. Please log in to continue:"
+    "call_for_presentations"  : "Call for Presentations",
+    "sign_out"                : "Sign out",
+    "log_in"                  : "Log in",
+    "not_logged_in"           : "You are not logged in. Please log in to continue:"
   },
   "errors": {
     "user_not_authz"            : "Hold on. Your user is not authorized!.",
@@ -12,9 +13,19 @@
   },
   "menu": {
     "presentations": "Presentations",
-    "bio": "My Speaker Bio",
+    "profile": "My Speaker Profile",
     "tracks": "Summit Categories & Tracks",
     "selection_process": "Speaker Selection Process",
     "logout": "Logout"
+  },
+  "presentations": {
+    "presentations": "Your Presentations",
+    "add_presentation": "Add New Presentation",
+    "you_submitted": "Presentations you submitted",
+    "no_presentations_created": "There are no presentations submitted by you.",
+    "other_submitted_speaker": "Presentations others submitted with you as a speaker.",
+    "no_presentations_speaker": "There are no presentations submitted by others with you as a speaker.",
+    "other_submitted_moderator": "Presentations others submitted with you as a moderator.",
+    "no_presentations_moderator": "There are no presentations submitted by others with you as a moderator."
   }
 }

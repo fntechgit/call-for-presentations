@@ -22,16 +22,16 @@ import './styles/general.less';
 import 'sweetalert2/dist/sweetalert2.css';
 
 const onBeforeLift = () => {
-  console.log("reading state ...")
+    console.log("reading state ...")
 }
 
 ReactDOM.render(
-<Provider store={store}>
-  <PersistGate
-onBeforeLift={onBeforeLift}
-persistor={persistor}>
-  <App />
-  </PersistGate>
-  </Provider>,
-document.querySelector('#root')
+    <Provider store={store}>
+        <PersistGate
+            onBeforeLift={onBeforeLift}
+            persistor={persistor}>
+            <App />
+        </PersistGate>
+    </Provider>,
+    document.querySelector('#root')
 );

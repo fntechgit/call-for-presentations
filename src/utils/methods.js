@@ -15,51 +15,51 @@ import moment from 'moment-timezone';
 import URI from "urijs";
 
 export const findElementPos = (obj) => {
-  var curtop = -70;
-  if (obj.offsetParent) {
-    do {
-      curtop += obj.offsetTop;
-    } while (obj = obj.offsetParent);
-    return [curtop];
-  }
+    var curtop = -70;
+    if (obj.offsetParent) {
+        do {
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+        return [curtop];
+    }
 }
 
 export const epochToMoment = (atime) => {
-  if(!atime) return atime;
-  atime = atime * 1000;
-  return moment(atime);
+    if(!atime) return atime;
+    atime = atime * 1000;
+    return moment(atime);
 }
 
 export const epochToMomentTimeZone = (atime, time_zone) => {
-  if(!atime) return atime;
-  atime = atime * 1000;
-  return moment(atime).tz(time_zone);
+    if(!atime) return atime;
+    atime = atime * 1000;
+    return moment(atime).tz(time_zone);
 }
 
 export const formatEpoch = (atime, format = 'M/D/YYYY h:mm a') => {
-  if(!atime) return atime;
-  return epochToMoment(atime).format(format);
+    if(!atime) return atime;
+    return epochToMoment(atime).format(format);
 }
 
 export const objectToQueryString = (obj) => {
-  var str = "";
-  for (var key in obj) {
-    if (str != "") {
-      str += "&";
+    var str = "";
+    for (var key in obj) {
+        if (str != "") {
+            str += "&";
+        }
+        str += key + "=" + encodeURIComponent(obj[key]);
     }
-    str += key + "=" + encodeURIComponent(obj[key]);
-  }
 
-  return str;
+    return str;
 }
 
 export const getBackURL = () => {
-  let url      = URI(window.location.href);
-  let query    = url.search(true);
-  let fragment = url.fragment();
-  let backUrl  = query.hasOwnProperty('BackUrl') ? query['BackUrl'] : null;
-  if(fragment != null && fragment != ''){
-    backUrl += `#${fragment}`;
-  }
-  return backUrl;
+    let url      = URI(window.location.href);
+    let query    = url.search(true);
+    let fragment = url.fragment();
+    let backUrl  = query.hasOwnProperty('BackUrl') ? query['BackUrl'] : null;
+    if(fragment != null && fragment != ''){
+        backUrl += `#${fragment}`;
+    }
+    return backUrl;
 }

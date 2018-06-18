@@ -14,19 +14,25 @@
 import { createStore, applyMiddleware, compose} from 'redux';
 import loggedUserReducer from './reducers/auth-reducer'
 import baseReducer from './reducers/base-reducer'
+import selectionPlanReducer from './reducers/selection-plan-reducer'
+import presentationsReducer from './reducers/presentations-reducer'
+import speakerReducer from './reducers/speaker-reducer'
 
 import thunk from 'redux-thunk';
 import { persistStore, persistCombineReducers } from 'redux-persist'
 import storage from 'redux-persist/es/storage' // default: localStorage if web, AsyncStorage if react-native
 
 const config = {
-  key: 'root_call for presentations',
-  storage,
+    key: 'root_call_for_presentations',
+    storage,
 }
 
 const reducers = persistCombineReducers(config, {
-  loggedUserState: loggedUserReducer,
-  baseState: baseReducer
+    loggedUserState: loggedUserReducer,
+    baseState: baseReducer,
+    selectionPlanState: selectionPlanReducer,
+    presentationsState: presentationsReducer,
+    speakerState: speakerReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -34,8 +40,8 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 
 const onRehydrateComplete = () => {
-  // repopulate access token on global access variable
-  window.accessToken = store.getState().loggedUserState.accessToken;
+    // repopulate access token on global access variable
+    window.accessToken = store.getState().loggedUserState.accessToken;
 }
 
 export const persistor = persistStore(store, null, onRehydrateComplete);

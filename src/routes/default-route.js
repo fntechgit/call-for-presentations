@@ -16,22 +16,22 @@ import { Route, Redirect } from 'react-router-dom'
 
 class DefaultRoute extends React.Component {
 
-  render() {
-    const { isLoggedUser, ...rest } = this.props;
-    return (
-      <Route {...rest} render={props => {
-        if(isLoggedUser)
-          return (<Redirect
-            exact
-            to={{
-              pathname: '/app/index',
-              state: { from: props.location }
-            }}
-          />)
-        return null;
-      }} />
-    )
-  }
+    render() {
+        const { isLoggedUser, ...rest } = this.props;
+        return (
+            <Route {...rest} render={props => {
+                if(isLoggedUser)
+                    return (<Redirect
+                        exact
+                        to={{
+                            pathname: '/app/presentations',
+                            state: { from: props.location }
+                        }}
+                    />)
+                return null;
+            }} />
+        )
+    }
 }
 
 

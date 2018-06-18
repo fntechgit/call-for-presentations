@@ -23,7 +23,7 @@ import { onUserAuth, doLogin, doLogout, getUserInfo } from './actions/auth-actio
 import { BrowserRouter } from 'react-router-dom'
 import { AjaxLoader } from "openstack-uicore-foundation";
 import T from 'i18n-react';
-import {getBackURL} from "./utils/methods";
+import {getBackURL, formatEpoch} from "./utils/methods";
 
 // here is set by default user lang as en
 
@@ -34,8 +34,8 @@ let language = (navigator.languages && navigator.languages[0]) || navigator.lang
 // therefore retrieve only the first 2 digits
 
 if (language.length > 2) {
-  language = language.split("-")[0];
-  language = language.split("_")[0];
+    language = language.split("-")[0];
+    language = language.split("_")[0];
 }
 
 console.log(`user language is ${language}`);
@@ -44,43 +44,53 @@ T.setTexts(require(`./i18n/${language}.json`));
 
 class App extends React.PureComponent {
 
-  onClickLogin(){
-    doLogin(getBackURL());
-  }
+    onClickLogin(){
+        doLogin(getBackURL());
+    }
 
-  render() {
-    let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member} = this.props;
-    let profile_pic = member ? member.pic : '';
-    return (
-      <BrowserRouter>
-        <div>
-          <AjaxLoader show={ this.props.loading } size={ 120 }/>
-          <div className="header">
-            <div className={"header-title " + (isLoggedUser ? '' : 'center')}>
-              {T.translate("call for presentations")}
-              <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} doLogin={this.onClickLogin.bind(this)} doLogout={doLogout}/>
-            </div>
-          </div>
-          <Switch>
-            <AuthorizedRoute isLoggedUser={isLoggedUser} path="/app" component={PrimaryLayout} />
-            <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getUserInfo={getUserInfo} />
-            <Route path="/404" render={props => (<p>404 - Not Found</p>)}/>
-            <DefaultRoute isLoggedUser={isLoggedUser} />
-          </Switch>
-        </div>
-      </BrowserRouter>
-    );
-  }
+    render() {
+        let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member, selectionPlan} = this.props;
+        let profile_pic = member ? member.pic : '';
+
+        let header_title = '';
+        if (selectionPlan) {
+            let end_date = formatEpoch(selectionPlan.submission_end_date);
+            header_title = `${selectionPlan.name} - Open til ${end_date}`;
+        } else {
+            header_title = 'CLOSED';
+        }
+
+        return (
+            <BrowserRouter>
+                <div>
+                    <AjaxLoader show={ this.props.loading } size={ 120 }/>
+                    <div className="header">
+                        <div className={"header-title " + (isLoggedUser ? '' : 'center')}>
+                            {T.translate("landing.call_for_presentations")} : {header_title}
+                            <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} doLogin={this.onClickLogin.bind(this)} doLogout={doLogout}/>
+                        </div>
+                    </div>
+                    <Switch>
+                        <AuthorizedRoute isLoggedUser={isLoggedUser} path="/app" component={PrimaryLayout} />
+                        <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getUserInfo={getUserInfo} />
+                        <Route path="/404" render={props => (<p>404 - Not Found</p>)}/>
+                        <DefaultRoute isLoggedUser={isLoggedUser} />
+                    </Switch>
+                </div>
+            </BrowserRouter>
+        );
+    }
 }
 
-const mapStateToProps = ({ loggedUserState, baseState }) => ({
-  isLoggedUser: loggedUserState.isLoggedUser,
-  member: loggedUserState.member,
-  loading : baseState.loading,
+const mapStateToProps = ({ loggedUserState, baseState, selectionPlanState }) => ({
+    isLoggedUser: loggedUserState.isLoggedUser,
+    member: loggedUserState.member,
+    loading : baseState.loading,
+    selectionPlan: selectionPlanState
 })
 
 export default connect(mapStateToProps, {
-  onUserAuth,
-  doLogout,
-  getUserInfo,
+    onUserAuth,
+    doLogout,
+    getUserInfo,
 })(App)

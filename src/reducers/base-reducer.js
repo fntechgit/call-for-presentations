@@ -16,30 +16,30 @@ import { RECEIVE_COUNTRIES } from '../actions/base-actions';
 import { LOGOUT_USER } from '../actions/auth-actions';
 
 const DEFAULT_STATE = {
-  loading: false,
-  countries: []
+    loading: false,
+    countries: []
 }
 
 const baseReducer = (state = DEFAULT_STATE, action) => {
-  const { type, payload } = action
+    const { type, payload } = action
 
-  switch(type){
-    case LOGOUT_USER:
-      return DEFAULT_STATE;
-    case START_LOADING:
-      console.log('START_LOADING')
-      return {...state, loading: true};
-      break;
-    case STOP_LOADING:
-      console.log('STOP_LOADING')
-      return {...state, loading: false};
-      break;
-    case RECEIVE_COUNTRIES:
-      return {...state, countries: payload};
-    default:
-      return state;
-      break;
-  }
+    switch(type){
+        case LOGOUT_USER:
+            return DEFAULT_STATE;
+        case START_LOADING:
+            console.log('START_LOADING')
+            return {...state, loading: true};
+            break;
+        case STOP_LOADING:
+            console.log('STOP_LOADING')
+            return {...state, loading: false};
+            break;
+        case RECEIVE_COUNTRIES:
+            return {...state, countries: payload};
+        default:
+            return state;
+            break;
+    }
 }
 
 export default baseReducer

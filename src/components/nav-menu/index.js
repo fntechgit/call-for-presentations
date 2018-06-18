@@ -24,7 +24,7 @@ class NavMenu extends React.Component {
         super(props);
 
         this.state = {
-            activeItem: 'presentations'
+            activeItem: props.active
         }
     }
 
@@ -50,14 +50,14 @@ class NavMenu extends React.Component {
                 <p className="user-img" style={{backgroundImage: 'url(' + user.pic + ')'}} ></p>
                 <h3 className="user-name">{user.first_name} {user.last_name}</h3>
                 <ul className="items">
-                { MenuItemsDefinitions.map(it => (
-                    <MenuItem
-                        key={it.name}
-                        {...it}
-                        onClick={(e) => this.onMenuItemClick(e, it)}
-                        active={activeItem == it.name}
-                    />
-                ))}
+                    { MenuItemsDefinitions.map(it => (
+                        <MenuItem
+                            key={it.name}
+                            {...it}
+                            onClick={(e) => this.onMenuItemClick(e, it)}
+                            active={activeItem == it.name}
+                        />
+                    ))}
                 </ul>
             </div>
         );

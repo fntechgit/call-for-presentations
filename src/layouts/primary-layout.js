@@ -15,46 +15,69 @@ import React from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import NavMenu from '../components/nav-menu/index'
+import { loadCurrentSelectionPlan } from '../actions/selection-plan-actions'
+import PresentationsPage from '../pages/presentations-page'
+import ProfilePage from '../pages/profile-page'
 
 class PrimaryLayout extends React.Component {
 
-  render(){
-    let { match, location, member } = this.props;
-    let extraClass = 'container';
-
-    // full width pages
-    /*
-    if (location.pathname.includes('')) {
-      extraClass = '';
+    componentWillMount () {
+        this.props.loadCurrentSelectionPlan();
     }
-    */
 
-    return(
-      <div className="primary-layout container-fluid">
-        <div className="row">
-          <div className="col-md-3">
-            <NavMenu user={member} />
-          </div>
-          <div className="col-md-9">
-            <main id="page-wrap">
-              <Switch>
-                {/* add here your main routes
-                  ex: <Route exact path="/app/directory" component={SummitDirectoryPage}/>
-                 */}
-              </Switch>
-            </main>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    getActiveMenu() {
+        let {location} = this.props;
+        switch(location.pathname) {
+            case '/app/presentations':
+                return 'presentations';
+                break;
+            case '/app/profile':
+                return 'profile';
+                break
+        }
+    }
+
+    render(){
+        let { match, location, member } = this.props;
+
+        if(!member.speaker && location.pathname != '/app/profile') {
+            return (
+                <Redirect exact to={{ pathname: '/app/profile' }}  />
+            );
+        }
+
+        return(
+            <div className="primary-layout container-fluid">
+                <div className="row">
+                    <div className="col-md-3">
+                        <NavMenu user={member} active={this.getActiveMenu()}/>
+                    </div>
+                    <div className="col-md-9">
+                        <main id="page-wrap">
+                            <Switch>
+                                <Route exact path="/app/presentations" component={PresentationsPage}/>
+                                <Route exact path="/app/profile" component={ProfilePage}/>
+                                <Route render={props => (<Redirect to="/app/presentations"/>)}/>
+                            </Switch>
+                        </main>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
 }
 
-const mapStateToProps = ({ loggedUserState }) => ({
-  member: loggedUserState.member
+const mapStateToProps = ({ loggedUserState, selectionPlanState }) => ({
+    member: loggedUserState.member,
+    selectionPlan: selectionPlanState
 })
 
-export default connect(mapStateToProps, {})(PrimaryLayout)
+export default connect(
+    mapStateToProps,
+    {
+        loadCurrentSelectionPlan
+    }
+)(PrimaryLayout)
 
 
