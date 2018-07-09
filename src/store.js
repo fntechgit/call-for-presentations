@@ -17,6 +17,7 @@ import baseReducer from './reducers/base-reducer'
 import selectionPlanReducer from './reducers/selection-plan-reducer'
 import presentationsReducer from './reducers/presentations-reducer'
 import speakerReducer from './reducers/speaker-reducer'
+import presentationReducer from './reducers/presentation-reducer'
 
 import thunk from 'redux-thunk';
 import { persistStore, persistCombineReducers } from 'redux-persist'
@@ -32,7 +33,8 @@ const reducers = persistCombineReducers(config, {
     baseState: baseReducer,
     selectionPlanState: selectionPlanReducer,
     presentationsState: presentationsReducer,
-    speakerState: speakerReducer
+    speakerState: speakerReducer,
+    presentationState: presentationReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

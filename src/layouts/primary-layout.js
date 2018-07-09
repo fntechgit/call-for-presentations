@@ -18,11 +18,12 @@ import NavMenu from '../components/nav-menu/index'
 import { loadCurrentSelectionPlan } from '../actions/selection-plan-actions'
 import PresentationsPage from '../pages/presentations-page'
 import ProfilePage from '../pages/profile-page'
+import EditPresentationPage from '../pages/edit-presentation-page'
 
 class PrimaryLayout extends React.Component {
 
     componentWillMount () {
-        this.props.loadCurrentSelectionPlan();
+        //this.props.loadCurrentSelectionPlan();
     }
 
     getActiveMenu() {
@@ -38,9 +39,9 @@ class PrimaryLayout extends React.Component {
     }
 
     render(){
-        let { match, location, member } = this.props;
+        let { match, location, speaker, member } = this.props;
 
-        if(!member.speaker && location.pathname != '/app/profile') {
+        if(!speaker && location.pathname != '/app/profile') {
             return (
                 <Redirect exact to={{ pathname: '/app/profile' }}  />
             );
@@ -50,12 +51,14 @@ class PrimaryLayout extends React.Component {
             <div className="primary-layout container-fluid">
                 <div className="row">
                     <div className="col-md-3">
-                        <NavMenu user={member} active={this.getActiveMenu()}/>
+                        <NavMenu user={speaker} active={this.getActiveMenu()}/>
                     </div>
                     <div className="col-md-9">
                         <main id="page-wrap">
                             <Switch>
                                 <Route exact path="/app/presentations" component={PresentationsPage}/>
+                                <Route exact path="/app/presentations/new" component={EditPresentationPage}/>
+                                <Route path="/app/presentations/:presentation_id" component={EditPresentationPage}/>
                                 <Route exact path="/app/profile" component={ProfilePage}/>
                                 <Route render={props => (<Redirect to="/app/presentations"/>)}/>
                             </Switch>
@@ -70,6 +73,7 @@ class PrimaryLayout extends React.Component {
 
 const mapStateToProps = ({ loggedUserState, selectionPlanState }) => ({
     member: loggedUserState.member,
+    speaker: loggedUserState.speaker,
     selectionPlan: selectionPlanState
 })
 

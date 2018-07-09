@@ -19,7 +19,7 @@ import AuthorizationCallbackRoute from "./routes/authorization-callback-route"
 import AuthButton from './components/auth-button'
 import DefaultRoute from './routes/default-route'
 import { connect } from 'react-redux'
-import { onUserAuth, doLogin, doLogout, getUserInfo } from './actions/auth-actions'
+import { onUserAuth, doLogin, doLogout, getSpeakerInfo } from './actions/auth-actions'
 import { BrowserRouter } from 'react-router-dom'
 import { AjaxLoader } from "openstack-uicore-foundation";
 import T from 'i18n-react';
@@ -49,7 +49,7 @@ class App extends React.PureComponent {
     }
 
     render() {
-        let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member, selectionPlan} = this.props;
+        let { isLoggedUser, onUserAuth, doLogout, getSpeakerInfo, member, selectionPlan} = this.props;
         let profile_pic = member ? member.pic : '';
 
         let header_title = '';
@@ -72,7 +72,7 @@ class App extends React.PureComponent {
                     </div>
                     <Switch>
                         <AuthorizedRoute isLoggedUser={isLoggedUser} path="/app" component={PrimaryLayout} />
-                        <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getUserInfo={getUserInfo} />
+                        <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getSpeakerInfo={getSpeakerInfo} />
                         <Route path="/404" render={props => (<p>404 - Not Found</p>)}/>
                         <DefaultRoute isLoggedUser={isLoggedUser} />
                     </Switch>
@@ -92,5 +92,5 @@ const mapStateToProps = ({ loggedUserState, baseState, selectionPlanState }) => 
 export default connect(mapStateToProps, {
     onUserAuth,
     doLogout,
-    getUserInfo,
+    getSpeakerInfo,
 })(App)

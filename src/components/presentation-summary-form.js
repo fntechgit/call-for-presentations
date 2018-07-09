@@ -18,7 +18,7 @@ import { Input, TextEditor, UploadInput } from 'openstack-uicore-foundation'
 import {findElementPos} from '../utils/methods'
 
 
-class SpeakerForm extends React.Component {
+class PresentationSummaryForm extends React.Component {
     constructor(props) {
         super(props);
 
@@ -28,8 +28,6 @@ class SpeakerForm extends React.Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleUploadFile = this.handleUploadFile.bind(this);
-        this.handleRemoveFile = this.handleRemoveFile.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -62,20 +60,6 @@ class SpeakerForm extends React.Component {
         this.setState({entity: entity, errors: errors});
     }
 
-    handleUploadFile(file) {
-        console.log('file uploaded');
-        let formData = new FormData();
-        formData.append('file', file);
-        this.props.onAttach(this.state.entity, formData)
-    }
-
-    handleRemoveFile(ev) {
-        let entity = {...this.state.entity};
-
-        entity.attachment = '';
-        this.setState({entity:entity});
-    }
-
     handleSubmit(publish, ev) {
         let entity = {...this.state.entity};
         ev.preventDefault();
@@ -101,8 +85,8 @@ class SpeakerForm extends React.Component {
                 <input type="hidden" id="id" value={entity.id} />
                 <div className="row form-group">
                     <div className="col-md-4">
-                        <label> {T.translate("general.email")} </label>
-                        <Input className="form-control" id="email" value={entity.email} onChange={this.handleChange} />
+                        <label> {T.translate("edit_presentation.title")} </label>
+                        <Input className="form-control" id="title" value={entity.title} onChange={this.handleChange} />
                     </div>
                 </div>
                 <div className="row form-group">
@@ -135,19 +119,7 @@ class SpeakerForm extends React.Component {
                         <TextEditor id="bio" value={entity.bio} onChange={this.handleChange} />
                     </div>
                 </div>
-                <div className="row form-group">
-                    <div className="col-md-12">
-                        <label> {T.translate("edit_speaker.profile_pic")} </label>
-                        <UploadInput
-                            value={entity.pic}
-                            handleUpload={this.handleUploadFile}
-                            handleRemove={this.handleRemoveFile}
-                            className="dropzone col-md-6"
-                            multiple={false}
-                            accept="image/*"
-                        />
-                    </div>
-                </div>
+
 
                 <div className="row">
                     <div className="col-md-12 submit-buttons">
@@ -160,4 +132,4 @@ class SpeakerForm extends React.Component {
     }
 }
 
-export default SpeakerForm;
+export default PresentationSummaryForm;

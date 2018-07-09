@@ -3,7 +3,6 @@ const MenuItemsDefinitions = [
     {name: 'profile', iconClass: 'fa-chevron-right', show: true},
     {name: 'tracks', iconClass: 'fa-chevron-right', show: true},
     {name: 'selection_process', iconClass: 'fa-chevron-right', show: true},
-    {name: 'logout', iconClass: 'fa-chevron-right', show: true},
 ];
 
 export default MenuItemsDefinitions;

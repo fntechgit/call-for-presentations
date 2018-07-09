@@ -17,11 +17,12 @@ import swal from "sweetalert2";
 import {authErrorHandler, apiBaseUrl} from "./base-actions";
 import URI from "urijs";
 
-export const SET_LOGGED_USER    = 'SET_LOGGED_USER';
-export const LOGOUT_USER        = 'LOGOUT_USER';
-export const REQUEST_USER_INFO  = 'REQUEST_USER_INFO';
-export const RECEIVE_USER_INFO  = 'RECEIVE_USER_INFO';
-const NONCE_LEN                 = 16;
+export const SET_LOGGED_USER        = 'SET_LOGGED_USER';
+export const LOGOUT_USER            = 'LOGOUT_USER';
+export const REQUEST_USER_INFO      = 'REQUEST_USER_INFO';
+export const RECEIVE_USER_INFO      = 'RECEIVE_USER_INFO';
+export const RECEIVE_SPEAKER_INFO   = 'RECEIVE_SPEAKER_INFO';
+const NONCE_LEN                     = 16;
 
 const getAuthUrl = (backUrl = null) => {
 
@@ -93,12 +94,17 @@ export const getUserInfo = (history, backUrl) => (dispatch, getState) => {
 
     dispatch(startLoading());
 
+    let params = {
+        access_token : accessToken,
+        expand: 'groups'
+    };
+
     return getRequest(
         createAction(REQUEST_USER_INFO),
         createAction(RECEIVE_USER_INFO),
-        `${apiBaseUrl}/api/v1/members/me?expand=groups&access_token=${accessToken}`,
+        `${apiBaseUrl}/api/v1/members/me`,
         authErrorHandler
-    )({})(dispatch, getState).then(() => {
+    )(params)(dispatch, getState).then(() => {
             dispatch(stopLoading());
 
             let { member } = getState().loggedUserState;
@@ -121,6 +127,46 @@ export const getUserInfo = (history, backUrl) => (dispatch, getState) => {
                         payload: {}
                     });
                 }
+            }
+
+            console.log(`redirecting to ${backUrl}`)
+            history.push(backUrl);
+        }
+    );
+}
+
+
+export const getSpeakerInfo = (history, backUrl) => (dispatch, getState) => {
+
+    let { loggedUserState }     = getState();
+    let { accessToken, speaker } = loggedUserState;
+    if(speaker != null){
+        console.log(`redirecting to ${backUrl}`)
+        history.push(backUrl);
+    }
+
+    dispatch(startLoading());
+
+    let params = {
+        access_token : accessToken,
+        expand: 'member'
+    };
+
+    return getRequest(
+        null,
+        createAction(RECEIVE_SPEAKER_INFO),
+        `${apiBaseUrl}/api/v1/speakers/me`,
+        authErrorHandler
+    )(params)(dispatch, getState).then(() => {
+            dispatch(stopLoading());
+
+            let { speaker } = getState().loggedUserState;
+            if( speaker == null || speaker == undefined){
+                swal("ERROR", T.translate("errors.user_not_set"), "error");
+                dispatch({
+                    type: LOGOUT_USER,
+                    payload: {}
+                });
             }
 
             console.log(`redirecting to ${backUrl}`)

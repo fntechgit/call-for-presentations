@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 OpenStack Foundation
+ * Copyright 2018 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -10,40 +10,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
 import
 {
-    RECEIVE_SPEAKER,
-    RESET_SPEAKER_FORM,
-    UPDATE_SPEAKER,
-    SPEAKER_UPDATED,
-    PIC_ATTACHED
-} from '../actions/speaker-actions';
+    RECEIVE_PRESENTATION,
+    RESET_PRESENTATION,
+    UPDATE_PRESENTATION,
+    PRESENTATION_UPDATED
+} from '../actions/presentation-actions';
 
 import { LOGOUT_USER } from '../actions/auth-actions';
 import { VALIDATE } from '../actions/base-actions';
 
+
 export const DEFAULT_ENTITY = {
     id: 0,
-    title: '',
-    first_name: '',
-    last_name: '',
-    email: '',
-    twitter: '',
-    irc: '',
-    bio: '',
-    pic: '',
-    all_presentations: [],
-    registration_codes: [],
-    summit_assistances: []
+    title: ''
 }
 
 const DEFAULT_STATE = {
+    step: 0,
     entity: DEFAULT_ENTITY,
     errors: {}
-};
+}
 
-const speakerReducer = (state = DEFAULT_STATE, action) => {
+const presentationReducer = (state = DEFAULT_STATE, action) => {
     const { type, payload } = action
     switch (type) {
         case LOGOUT_USER: {
@@ -54,16 +44,16 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
                 return {...state,  entity: {...DEFAULT_ENTITY}, errors: {} };
             }
         }
-        break;
-        case RESET_SPEAKER_FORM: {
+            break;
+        case RESET_PRESENTATION: {
             return DEFAULT_STATE;
         }
-        break;
-        case UPDATE_SPEAKER: {
+            break;
+        case UPDATE_PRESENTATION: {
             return {...state,  entity: {...payload}, errors: {} };
         }
-        break;
-        case RECEIVE_SPEAKER: {
+            break;
+        case RECEIVE_PRESENTATION: {
             let entity = {...payload.response};
             let registration_code = '', on_site_phone = '', registered = false, checked_in = false, confirmed = false;
 
@@ -87,22 +77,16 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
 
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
-        break;
-        case PIC_ATTACHED: {
-            let pic = state.entity.pic + '?' + new Date().getTime();
-            return {...state, entity: {...state.entity, pic: pic} };;
-        }
-        case SPEAKER_UPDATED: {
+        case PRESENTATION_UPDATED: {
             return state;
         }
-        break;
         case VALIDATE: {
             return {...state,  errors: payload.errors };
         }
-        break;
         default:
             return state;
     }
-};
 
-export default speakerReducer;
+}
+
+export default presentationReducer

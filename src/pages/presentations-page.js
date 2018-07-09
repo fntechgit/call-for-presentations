@@ -24,10 +24,17 @@ class PresentationsPage extends React.Component {
 
     constructor(props){
         super(props);
+
+        this.handleNewPresentation = this.handleNewPresentation.bind(this);
     }
 
     componentWillMount () {
-        this.props.getAllPresentations();
+        //this.props.getAllPresentations();
+    }
+
+    handleNewPresentation(ev) {
+        let {history} = this.props;
+        history.push(`/app/presentations/new`);
     }
 
     render() {
@@ -40,7 +47,7 @@ class PresentationsPage extends React.Component {
                         <h2> {T.translate("presentations.presentations")}</h2>
                     </div>
                     <div className="col-md-6 text-right">
-                        <button className="btn btn-success">
+                        <button className="btn btn-success" onClick={this.handleNewPresentation}>
                             {T.translate("presentations.add_presentation")}
                         </button>
                     </div>

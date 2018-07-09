@@ -15,15 +15,14 @@ import { getRequest, putRequest, postRequest, deleteRequest, createAction, stopL
 import { authErrorHandler, apiBaseUrl, showMessage, showSuccessMessage} from './base-actions';
 import T from "i18n-react/dist/i18n-react";
 
-export const RECEIVE_SPEAKER        = 'RECEIVE_SPEAKER';
-export const REQUEST_SPEAKER        = 'REQUEST_SPEAKER';
-export const RESET_SPEAKER_FORM     = 'RESET_SPEAKER_FORM';
-export const UPDATE_SPEAKER         = 'UPDATE_SPEAKER';
-export const SPEAKER_UPDATED        = 'SPEAKER_UPDATED';
-export const PIC_ATTACHED           = 'PIC_ATTACHED';
+export const RECEIVE_PRESENTATION        = 'RECEIVE_PRESENTATION';
+export const REQUEST_PRESENTATION        = 'REQUEST_PRESENTATION';
+export const RESET_PRESENTATION          = 'RESET_PRESENTATION';
+export const UPDATE_PRESENTATION         = 'UPDATE_PRESENTATION';
+export const PRESENTATION_UPDATED        = 'PRESENTATION_UPDATED';
 
 
-export const getSpeaker = (speakerId) => (dispatch, getState) => {
+export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let { loggedUserState } = getState();
     let { accessToken }     = loggedUserState;
@@ -32,13 +31,13 @@ export const getSpeaker = (speakerId) => (dispatch, getState) => {
 
     let params = {
         access_token : accessToken,
-        expand: 'member,presentations'
+        expand: 'track_groups'
     };
 
     return getRequest(
         null,
-        createAction(RECEIVE_SPEAKER),
-        `${apiBaseUrl}/api/v1/speakers/${speakerId}`,
+        createAction(RECEIVE_PRESENTATION),
+        `${apiBaseUrl}/api/v1/presentations/${presentationId}`,
         authErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());
@@ -46,47 +45,47 @@ export const getSpeaker = (speakerId) => (dispatch, getState) => {
     );
 };
 
-export const resetSpeakerForm = () => (dispatch, getState) => {
-    dispatch(createAction(RESET_SPEAKER_FORM)({}));
+export const resetPresentation = () => (dispatch, getState) => {
+    dispatch(createAction(RESET_PRESENTATION)({}));
 };
 
-export const saveSpeaker = (entity, history) => (dispatch, getState) => {
+export const savePresentation = (entity, history) => (dispatch, getState) => {
     let { loggedUserState } = getState();
     let { accessToken }     = loggedUserState;
 
     dispatch(startLoading());
 
-    let params = {
-        access_token : accessToken,
-    };
-
     let normalizedEntity = normalizeEntity(entity);
+
+    let params = {
+        access_token : accessToken
+    };
 
     if (entity.id) {
 
         putRequest(
-            createAction(UPDATE_SPEAKER),
-            createAction(SPEAKER_UPDATED),
-            `${apiBaseUrl}/api/v1/speakers/${entity.id}`,
+            createAction(UPDATE_PRESENTATION),
+            createAction(PRESENTATION_UPDATED),
+            `${apiBaseUrl}/api/v1/presentations/${entity.id}`,
             normalizedEntity,
             authErrorHandler,
             entity
         )(params)(dispatch)
             .then((payload) => {
-                dispatch(showSuccessMessage(T.translate("edit_speaker.speaker_saved")));
+                dispatch(showSuccessMessage(T.translate("edit_presentation.presentation_saved")));
             });
 
     } else {
         let success_message = {
             title: T.translate("general.done"),
-            html: T.translate("edit_speaker.speaker_created"),
+            html: T.translate("edit_presentation.presentation_created"),
             type: 'success'
         };
 
         postRequest(
-            createAction(UPDATE_SPEAKER),
-            createAction(SPEAKER_ADDED),
-            `${apiBaseUrl}/api/v1/speakers`,
+            createAction(UPDATE_PRESENTATION),
+            createAction(PRESENTATION_ADDED),
+            `${apiBaseUrl}/api/v1/presentations`,
             normalizedEntity,
             authErrorHandler,
             entity
@@ -94,60 +93,12 @@ export const saveSpeaker = (entity, history) => (dispatch, getState) => {
             .then((payload) => {
                 dispatch(showMessage(
                     success_message,
-                    () => { history.push(`/app/summits/${currentSummit.id}/speakers/${payload.response.id}`) }
+                    () => { history.push(`/app/summits/${currentSummit.id}/presentations/${payload.response.id}`) }
                 ));
             });
     }
 }
 
-export const attachPicture = (entity, file) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
-
-    //dispatch(startLoading());
-
-    let params = {
-        access_token : accessToken,
-    };
-
-    if (entity.id) {
-        return dispatch(uploadFile(entity, file));
-    } else {
-        return postRequest(
-            null,
-            createAction(SPEAKER_UPDATED),
-            `${apiBaseUrl}/api/v1/speakers/${entity.id}`,
-            entity,
-            authErrorHandler
-        )(params)(dispatch)
-            .then(() => {
-                dispatch(uploadFile(entity, file));
-            })
-            .then(() => {
-                dispatch(stopLoading());
-            }
-        );
-    }
-}
-
-const uploadFile = (entity, file) => (dispatch, getState) => {
-    let { loggedUserState, currentSummitState } = getState();
-    let { accessToken }     = loggedUserState;
-    let { currentSummit }   = currentSummitState;
-
-    let params = {
-        access_token : accessToken,
-    };
-
-    postRequest(
-        null,
-        createAction(PIC_ATTACHED),
-        `${apiBaseUrl}/api/v1/speakers/${entity.id}/photo`,
-        file,
-        authErrorHandler,
-        {pic: entity.pic}
-    )(params)(dispatch)
-}
 
 const normalizeEntity = (entity) => {
     let normalizedEntity = {...entity};
