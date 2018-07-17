@@ -37,7 +37,7 @@ class NavMenu extends React.Component {
             activeItem: item.name
         });
 
-        history.push(`/app/${item.url}`);
+        history.push(`/app/${item.name}`);
     }
 
     render() {

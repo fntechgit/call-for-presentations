@@ -56,7 +56,7 @@
   "menu": {
     "presentations": "Presentations",
     "profile": "My Speaker Profile",
-    "tracks": "Summit Categories & Tracks",
+    "tracks_guide": "Summit Categories & Tracks",
     "selection_process": "Speaker Selection Process",
     "logout": "Logout"
   },

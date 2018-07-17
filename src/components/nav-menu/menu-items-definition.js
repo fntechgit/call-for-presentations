@@ -1,7 +1,7 @@
 const MenuItemsDefinitions = [
     {name: 'presentations', iconClass: 'fa-chevron-right', show: true},
     {name: 'profile', iconClass: 'fa-chevron-right', show: true},
-    {name: 'tracks', iconClass: 'fa-chevron-right', show: true},
+    {name: 'tracks_guide', iconClass: 'fa-chevron-right', show: true},
     {name: 'selection_process', iconClass: 'fa-chevron-right', show: true},
 ];
 

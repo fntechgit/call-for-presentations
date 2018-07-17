@@ -19,6 +19,8 @@ import { loadCurrentSelectionPlan } from '../actions/selection-plan-actions'
 import PresentationsPage from '../pages/presentations-page'
 import ProfilePage from '../pages/profile-page'
 import EditPresentationPage from '../pages/edit-presentation-page'
+import SelectionProcessPage from '../pages/selection-process-page'
+import TracksGuidePage from '../pages/tracks-guide-page'
 
 class PrimaryLayout extends React.Component {
 
@@ -60,6 +62,8 @@ class PrimaryLayout extends React.Component {
                                 <Route exact path="/app/presentations/new" component={EditPresentationPage}/>
                                 <Route path="/app/presentations/:presentation_id" component={EditPresentationPage}/>
                                 <Route exact path="/app/profile" component={ProfilePage}/>
+                                <Route exact path="/app/selection_process" component={SelectionProcessPage}/>
+                                <Route exact path="/app/tracks_guide" component={TracksGuidePage}/>
                                 <Route render={props => (<Redirect to="/app/presentations"/>)}/>
                             </Switch>
                         </main>
