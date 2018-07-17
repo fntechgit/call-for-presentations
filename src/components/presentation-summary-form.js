@@ -14,8 +14,9 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import { Input, TextEditor, UploadInput } from 'openstack-uicore-foundation'
-import {findElementPos} from '../utils/methods'
+import { Input, TextEditor, UploadInput, Dropdown } from 'openstack-uicore-foundation/lib/components'
+import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
+import RadioList from './radio-list'
 
 
 class PresentationSummaryForm extends React.Component {
@@ -60,7 +61,7 @@ class PresentationSummaryForm extends React.Component {
         this.setState({entity: entity, errors: errors});
     }
 
-    handleSubmit(publish, ev) {
+    handleSubmit(ev) {
         let entity = {...this.state.entity};
         ev.preventDefault();
 
@@ -79,54 +80,144 @@ class PresentationSummaryForm extends React.Component {
 
     render() {
         let {entity} = this.state;
+        let {selectionPlan} = this.props;
+
+
+        // TODO get submission event type options
+        let event_types_ddl = [
+            {label: 'Presentation', value: 1, type: 'Presentation'},
+            {label: 'Panel', value: 2, type: 'Panel'}
+        ];
+
+        // TODO get event level options
+        let level_ddl = [
+            {label: 'Beginner', value: 'Beginner'},
+            {label: 'Intermediate', value: 'Intermediate'},
+            {label: 'Advanced', value: 'Advanced'},
+            {label: 'N/A', value: 'N/A'}
+        ];
+
+        // TODO get categories from selectionPlan
+        // let categories = selectionPlan.categoryGroups.map(t => ({label: t.name, value: t.id}));
+        let categories = [
+            {label: 'Container Infra', value: 1, description: 'Topics include: Running containers at scale, container ecosystem, container networking, container storage, container security, hybrid VM & container architectures, containers & bare metal'},
+            {label: 'Edge Computing', value: 2, description: 'Topics include: 5G, cloudlet, distributed computing, Mesh, security, networking, architecture, ease of deployment, edge ecosystem, hardware performance accelerators (e.g. GPUs, ASICs, etc.), hardware profile, IoT, low end-to-end latency, management tools, scaling, edge-enabled applications, physical hardening, QoS, remote/extreme environments, remote troubleshooting, standalone cloudlets, tamper evidence, tamper resistance, VM and container handoff across WAN connections, zero-touch provisioning'}
+        ];
+
+        let attending_media_opts = [
+            {label: T.translate("general.yes"), value: 1},
+            {label: T.translate("general.no"), value: 0}
+        ];
+
 
         return (
-            <form className="summit-speaker-form">
+            <form className="presentation-summary-form">
                 <input type="hidden" id="id" value={entity.id} />
                 <div className="row form-group">
-                    <div className="col-md-4">
+                    <div className="col-md-12">
                         <label> {T.translate("edit_presentation.title")} </label>
                         <Input className="form-control" id="title" value={entity.title} onChange={this.handleChange} />
                     </div>
                 </div>
                 <div className="row form-group">
-                    <div className="col-md-4">
-                        <label> {T.translate("edit_speaker.title")} </label>
-                        <Input className="form-control" id="title" value={entity.title} onChange={this.handleChange} />
-                    </div>
-                    <div className="col-md-4">
-                        <label> {T.translate("general.first_name")} </label>
-                        <Input className="form-control" id="first_name" value={entity.first_name} onChange={this.handleChange} />
-                    </div>
-                    <div className="col-md-4">
-                        <label> {T.translate("general.last_name")} </label>
-                        <Input className="form-control" id="last_name" value={entity.last_name} onChange={this.handleChange} />
-                    </div>
-                </div>
-                <div className="row form-group">
-                    <div className="col-md-4">
-                        <label> {T.translate("edit_speaker.twitter")} </label>
-                        <Input className="form-control" id="twitter" value={entity.twitter} onChange={this.handleChange} />
-                    </div>
-                    <div className="col-md-4">
-                        <label> {T.translate("edit_speaker.irc")} </label>
-                        <Input className="form-control" id="irc" value={entity.irc} onChange={this.handleChange} />
+                    <div className="col-md-12">
+                        <label> {T.translate("edit_presentation.format")} </label>
+                        <Dropdown
+                            id="type_id"
+                            value={entity.type_id}
+                            onChange={this.handleChange}
+                            placeholder={T.translate("general.placeholders.select_one")}
+                            options={event_types_ddl}
+                            error={this.hasErrors('type_id')}
+                        />
                     </div>
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
-                        <label> {T.translate("edit_speaker.bio")} </label>
-                        <TextEditor id="bio" value={entity.bio} onChange={this.handleChange} />
+                        <label> {T.translate("edit_presentation.general_topic")} </label>
+                        <RadioList
+                            id="track_id"
+                            value={entity.track_id}
+                            onChange={this.handleChange}
+                            options={categories}
+                            error={this.hasErrors('track_id')}
+                        />
                     </div>
                 </div>
-
-
-                <div className="row">
-                    <div className="col-md-12 submit-buttons">
-                        <input type="button" onClick={this.handleSubmit.bind(this, false)}
-                               className="btn btn-primary pull-right" value={T.translate("general.save")}/>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label> {T.translate("edit_presentation.level")} </label>
+                        <Dropdown
+                            id="level"
+                            value={entity.level}
+                            onChange={this.handleChange}
+                            placeholder={T.translate("general.placeholders.select_one")}
+                            options={level_ddl}
+                            error={this.hasErrors('level')}
+                        />
                     </div>
                 </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label> {T.translate("edit_presentation.abstract")} (1000 chars) </label>
+                        <TextEditor id="abstract" className="editor" value={entity.abstract} onChange={this.handleChange} />
+                    </div>
+                </div>
+                <hr/>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <p>{T.translate("edit_presentation.social_summary_desc")}</p>
+                        <label> {T.translate("edit_presentation.social_summary")} (100 chars) </label>
+                        <textarea id="social_summary" value={entity.social_summary} onChange={this.handleChange} />
+                    </div>
+                </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label> {T.translate("edit_presentation.expected_learn")} (1000 chars) </label>
+                        <TextEditor id="expected_learn" className="editor" value={entity.expected_learn} onChange={this.handleChange} />
+                    </div>
+                </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label> {T.translate("edit_presentation.attending_media")} </label>
+                        <RadioList
+                            id="attending_media"
+                            value={entity.attending_media}
+                            onChange={this.handleChange}
+                            options={attending_media_opts}
+                            inline
+                            error={this.hasErrors('attending_media')}
+                        />
+                    </div>
+                </div>
+                <hr/>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <p>{T.translate("edit_presentation.links")} </p>
+                    </div>
+                    <div className="col-md-12">
+                        <label> #1 </label>
+                        <Input className="form-control" id="link_1" value={entity.link_1} onChange={this.handleChange} />
+                    </div>
+                    <div className="col-md-12">
+                        <label> #2 </label>
+                        <Input className="form-control" id="link_2" value={entity.link_2} onChange={this.handleChange} />
+                    </div>
+                    <div className="col-md-12">
+                        <label> #3 </label>
+                        <Input className="form-control" id="link_3" value={entity.link_3} onChange={this.handleChange} />
+                    </div>
+                    <div className="col-md-12">
+                        <label> #4 </label>
+                        <Input className="form-control" id="link_4" value={entity.link_4} onChange={this.handleChange} />
+                    </div>
+                    <div className="col-md-12">
+                        <label> #5 </label>
+                        <Input className="form-control" id="link_5" value={entity.link_5} onChange={this.handleChange} />
+                    </div>
+                </div>
+                <hr/>
+                <SubmitButtons step={1} onSubmit={this.handleSubmit.bind(this)} onBack={this.handleBack.bind(this)} />
             </form>
         );
     }

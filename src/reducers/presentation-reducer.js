@@ -15,7 +15,9 @@ import
     RECEIVE_PRESENTATION,
     RESET_PRESENTATION,
     UPDATE_PRESENTATION,
-    PRESENTATION_UPDATED
+    PRESENTATION_UPDATED,
+    PRESENTATION_ADDED,
+    STEP_BACK_PRESENTATION
 } from '../actions/presentation-actions';
 
 import { LOGOUT_USER } from '../actions/auth-actions';
@@ -23,12 +25,19 @@ import { VALIDATE } from '../actions/base-actions';
 
 
 export const DEFAULT_ENTITY = {
+    current_step: 1,
     id: 0,
-    title: ''
+    title: '',
+    type_id: 0,
+    track_id: 1,
+    abstract: '',
+    social_summary: '',
+    expected_learn: '',
+    tags: [1,4,7]
 }
 
 const DEFAULT_STATE = {
-    step: 0,
+    step: 2,
     entity: DEFAULT_ENTITY,
     errors: {}
 }
@@ -77,8 +86,12 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
 
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
+        case PRESENTATION_ADDED:
         case PRESENTATION_UPDATED: {
-            return state;
+            return {...state, step: 2 };
+        }
+        case STEP_BACK_PRESENTATION: {
+            return {...state, step: (state.step -1) };
         }
         case VALIDATE: {
             return {...state,  errors: payload.errors };

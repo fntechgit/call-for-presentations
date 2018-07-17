@@ -14,8 +14,8 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import { Input, TextEditor, UploadInput } from 'openstack-uicore-foundation'
-import {findElementPos} from '../utils/methods'
+import { Input, TextEditor, UploadInput } from 'openstack-uicore-foundation/lib/components'
+import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 
 
 class SpeakerForm extends React.Component {

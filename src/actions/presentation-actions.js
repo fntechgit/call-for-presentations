@@ -11,15 +11,27 @@
  * limitations under the License.
  **/
 
-import { getRequest, putRequest, postRequest, deleteRequest, createAction, stopLoading, startLoading } from "openstack-uicore-foundation";
-import { authErrorHandler, apiBaseUrl, showMessage, showSuccessMessage} from './base-actions';
+import {
+    getRequest,
+    putRequest,
+    postRequest,
+    deleteRequest,
+    createAction,
+    stopLoading,
+    startLoading,
+    showMessage,
+    showSuccessMessage
+} from "openstack-uicore-foundation/lib/methods";
+import { authErrorHandler, apiBaseUrl} from './base-actions';
 import T from "i18n-react/dist/i18n-react";
 
-export const RECEIVE_PRESENTATION        = 'RECEIVE_PRESENTATION';
-export const REQUEST_PRESENTATION        = 'REQUEST_PRESENTATION';
-export const RESET_PRESENTATION          = 'RESET_PRESENTATION';
-export const UPDATE_PRESENTATION         = 'UPDATE_PRESENTATION';
-export const PRESENTATION_UPDATED        = 'PRESENTATION_UPDATED';
+export const RECEIVE_PRESENTATION           = 'RECEIVE_PRESENTATION';
+export const REQUEST_PRESENTATION           = 'REQUEST_PRESENTATION';
+export const RESET_PRESENTATION             = 'RESET_PRESENTATION';
+export const UPDATE_PRESENTATION            = 'UPDATE_PRESENTATION';
+export const PRESENTATION_UPDATED           = 'PRESENTATION_UPDATED';
+export const PRESENTATION_ADDED             = 'PRESENTATION_ADDED';
+export const STEP_BACK_PRESENTATION         = 'STEP_BACK_PRESENTATION';
 
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
@@ -99,6 +111,10 @@ export const savePresentation = (entity, history) => (dispatch, getState) => {
     }
 }
 
+
+export const stepBack = () => (dispatch) => {
+    dispatch(createAction(STEP_BACK_PRESENTATION)({}));
+};
 
 const normalizeEntity = (entity) => {
     let normalizedEntity = {...entity};

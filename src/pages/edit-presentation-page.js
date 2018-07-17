@@ -15,12 +15,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import swal from "sweetalert2";
-import { formatEpoch } from '../utils/methods';
-//import PresentationSummaryForm from '../components/presentation-summary-form'
-import { getPresentation, resetPresentation, savePresentation } from "../actions/presentation-actions";
+import { getPresentation, resetPresentation, savePresentation, stepBack } from "../actions/presentation-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
+import PresentationNav from "../components/presentation-nav/index";
+import PresentationTagsForm from "../components/presentation-tags-form"
 
-//import '../styles/edit-presentation-page.less';
+import '../styles/edit-presentation-page.less';
 
 class EditPresentationPage extends React.Component {
 
@@ -40,18 +40,39 @@ class EditPresentationPage extends React.Component {
     }
 
     render() {
-        let { entity, errors, history, savePresentation } = this.props;
+        let { entity, selectionPlan, step, errors, history, savePresentation } = this.props;
+        let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
 
         return (
-            <div className="page-wrap" id="profile-page">
-                <h3>{T.translate("general.edit")} {T.translate("edit_presentation.presentation")}</h3>
-                <hr/>
-                <PresentationSummaryForm
-                    history={history}
-                    entity={entity}
-                    errors={errors}
-                    onSubmit={savePresentation}
-                />
+            <div className="page-wrap" id="edit-presentation-page">
+                <div className="presentation-header-wrapper">
+                    <h3>{title} {T.translate("edit_presentation.presentation")}</h3>
+                </div>
+                <PresentationNav active={step} progress={entity.current_step} />
+
+                {step == 1 &&
+                <div className="presentation-form-wrapper">
+                    <PresentationSummaryForm
+                        history={history}
+                        entity={entity}
+                        selectionPlan={selectionPlan}
+                        errors={errors}
+                        onSubmit={savePresentation}
+                    />
+                </div>
+                }
+
+                {step == 2 &&
+                <div className="tag-form-wrapper">
+                    <PresentationTagsForm
+                        history={history}
+                        entity={entity}
+                        selectionPlan={selectionPlan}
+                        onSubmit={savePresentation}
+                        onBack={stepBack}
+                    />
+                </div>
+                }
             </div>
         );
     }
@@ -67,6 +88,7 @@ export default connect (
     {
         getPresentation,
         resetPresentation,
-        savePresentation
+        savePresentation,
+        stepBack
     }
 )(EditPresentationPage);

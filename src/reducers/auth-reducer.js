@@ -11,8 +11,7 @@
  * limitations under the License.
  **/
 import { LOGOUT_USER , SET_LOGGED_USER, RECEIVE_USER_INFO, RECEIVE_SPEAKER_INFO} from '../actions/auth-actions';
-import {RECEIVE_COUNTRIES} from "../actions/base-actions";
-import {START_LOADING, STOP_LOADING} from "openstack-uicore-foundation";
+import {START_LOADING, STOP_LOADING, RECEIVE_COUNTRIES} from "openstack-uicore-foundation/lib/actions";
 
 const DEFAULT_STATE = {
     isLoggedUser: false,

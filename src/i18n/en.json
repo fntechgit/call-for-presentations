@@ -11,9 +11,49 @@
     "session_expired"           : "Hold on. Your session expired!.",
     "server_error"              : "There was a problem with our server, please contact admin."
   },
+  "general": {
+    "summit"              : "Summit",
+    "speakers"            : "Speakers",
+    "speaker"             : "Speaker",
+    "attendees"           : "Attendees",
+    "attendee"            : "Attendee",
+    "summit_event"        : "Summit Event",
+    "presentation"        : "Presentation",
+    "presentations"       : "Presentations",
+    "email"               : "Email",
+    "name"                : "Name",
+    "description"         : "Description",
+    "file"                : "File",
+    "first_name"          : "First Name",
+    "last_name"           : "Last Name",
+    "member"              : "Member",
+    "members"             : "Members",
+    "event"               : "Event",
+    "group"               : "Group",
+    "yes"                 : "Yes",
+    "no"                  : "No",
+    "edit"                : "Edit",
+    "add"                 : "Add",
+    "clear"               : "Clear",
+    "remove"              : "Remove",
+    "delete"              : "Delete",
+    "new"                 : "New",
+    "search"              : "Search",
+    "save"                : "Save",
+    "save_and_continue"   : "Save and Continue",
+    "export"              : "Export",
+    "are_you_sure"        : "Are you sure?",
+    "yes_delete"          : "Yes, delete.",
+    "id"                  : "Id",
+    "attention"           : "Attention!",
+    "done"                : "Done!",
+    "placeholders": {
+      "select_one": "-- Select one --"
+    }
+  },
   "menu": {
     "presentations": "Presentations",
-    "bio": "My Speaker Bio",
+    "profile": "My Speaker Profile",
     "tracks": "Summit Categories & Tracks",
     "selection_process": "Speaker Selection Process",
     "logout": "Logout"
@@ -27,5 +67,30 @@
     "no_presentations_speaker": "There are no presentations submitted by others with you as a speaker.",
     "other_submitted_moderator": "Presentations others submitted with you as a moderator.",
     "no_presentations_moderator": "There are no presentations submitted by others with you as a moderator."
+  },
+  "presentation_nav": {
+    "summary": "Summary",
+    "tags": "Tags",
+    "speakers": "Speakers",
+    "review": "Review"
+  },
+  "edit_presentation": {
+    "presentation": "Presentation",
+    "step": "Step",
+    "of": "of",
+    "title": "Proposed Presentation Title",
+    "format": "Select the format",
+    "format_description": "(Presentation Max 3 speakers; Panel Max 3 speakers 1 moderator;)",
+    "general_topic": "What is the general topic of the presentation?",
+    "level": "Select the technical level of your presentation content",
+    "abstract": "Abstract",
+    "social_summary": "Social Summary",
+    "social_summary_desc": "Used for social sharing and YouTube description.",
+    "expected_learn": "What should attendees expect to learn?",
+    "attending_media": "Are you available to discuss the topic of this presentation with attending media?",
+    "links": "PLEASE PROVIDE ANY RELEVANT LINKS TO ADDITIONAL INFORMATION, SUCH AS CODE REPOSITORIES, CASE STUDIES, PAPERS, BLOG POSTS ETC. (UP TO 5 LINKS)",
+    "placeholders": {
+    }
   }
+
 }
