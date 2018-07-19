@@ -14,9 +14,8 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import { Input, TextEditor, UploadInput, Dropdown } from 'openstack-uicore-foundation/lib/components'
+import { Input, TextEditor, UploadInput, Dropdown, RadioList } from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
-import RadioList from './radio-list'
 import SubmitButtons from './presentation-submit-buttons'
 
 
