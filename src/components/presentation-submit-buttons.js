@@ -16,19 +16,28 @@ import T from "i18n-react/dist/i18n-react";
 
 export default class SubmitButtons extends React.Component {
 
+    handleBack(ev) {
+        let {history, backStep} = this.props;
+        ev.preventDefault();
+
+        history.push(backStep);
+    }
+
     render() {
-        let {step, onSubmit, onBack} = this.props;
+        let {onSubmit} = this.props;
+        let showBack = this.props.hasOwnProperty('backStep');
 
         return (
             <div className="row submit-buttons">
-                {step > 1 &&
+
                 <div className="col-md-6">
-                    <button onClick={onBack} className="btn btn-default btn-back pull-left" >
+                    {showBack &&
+                    <button onClick={this.handleBack.bind(this)} className="btn btn-default btn-back pull-left">
                         <i className="fa fa-chevron-left" aria-hidden="true"></i> &nbsp;
                         {T.translate("general.go_back")}
                     </button>
+                    }
                 </div>
-                }
 
                 <div className="col-md-6">
                     <button onClick={onSubmit} className="btn btn-primary btn-save pull-right" >

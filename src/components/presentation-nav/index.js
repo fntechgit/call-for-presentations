@@ -22,28 +22,22 @@ class PresentationNav extends React.Component {
     constructor (props) {
         super(props);
 
-        this.state = {
-            activeStep: props.active
-        }
-
     }
 
     onStepClick(event, step){
-        let { history } = this.props;
+        let { history, progress } = this.props;
+        let disabled = (progress == 1 && step.step > 1);
 
         event.preventDefault();
 
-        this.setState({
-            activeStep: step.step
-        });
-
-        history.push(`/app/${step}`);
+        if (!disabled) {
+            history.push(step.name);
+        }
     }
 
     render() {
 
-        let {progress} = this.props;
-        let {activeStep} = this.state;
+        let {progress, activeStep} = this.props;
 
         return (
             <div className="presentation-nav-wrapper">

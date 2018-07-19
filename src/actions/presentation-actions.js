@@ -22,8 +22,11 @@ import {
     showMessage,
     showSuccessMessage
 } from "openstack-uicore-foundation/lib/methods";
-import { authErrorHandler, apiBaseUrl} from './base-actions';
+import {authErrorHandler, apiBaseUrl, VALIDATE} from './base-actions';
 import T from "i18n-react/dist/i18n-react";
+import {doLogin} from "./auth-actions";
+import swal from "sweetalert2";
+
 
 export const RECEIVE_PRESENTATION           = 'RECEIVE_PRESENTATION';
 export const REQUEST_PRESENTATION           = 'REQUEST_PRESENTATION';
@@ -31,7 +34,6 @@ export const RESET_PRESENTATION             = 'RESET_PRESENTATION';
 export const UPDATE_PRESENTATION            = 'UPDATE_PRESENTATION';
 export const PRESENTATION_UPDATED           = 'PRESENTATION_UPDATED';
 export const PRESENTATION_ADDED             = 'PRESENTATION_ADDED';
-export const STEP_BACK_PRESENTATION         = 'STEP_BACK_PRESENTATION';
 
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
@@ -43,14 +45,14 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let params = {
         access_token : accessToken,
-        expand: 'track_groups'
+        expand: 'track_groups, speakers'
     };
 
     return getRequest(
         null,
         createAction(RECEIVE_PRESENTATION),
-        `${apiBaseUrl}/api/v1/presentations/${presentationId}`,
-        authErrorHandler
+        `${apiBaseUrl}/api/v1/summits/23/events/${presentationId}`,
+        presentationErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());
         }
@@ -112,10 +114,6 @@ export const savePresentation = (entity, history) => (dispatch, getState) => {
 }
 
 
-export const stepBack = () => (dispatch) => {
-    dispatch(createAction(STEP_BACK_PRESENTATION)({}));
-};
-
 const normalizeEntity = (entity) => {
     let normalizedEntity = {...entity};
 
@@ -133,4 +131,33 @@ const normalizeEntity = (entity) => {
     delete normalizedEntity['code_redeemed'];
 
     return normalizedEntity;
+}
+
+const presentationErrorHandler = (err, res) => (dispatch) => {
+    let code = err.status;
+    dispatch(stopLoading());
+
+    let msg = '';
+
+    switch (code) {
+        case 403:
+            swal("ERROR", T.translate("errors.user_not_authz"), "warning");
+            break;
+        case 401:
+            doLogin(window.location.pathname);
+            break;
+        case 404:
+            let error_message = {
+                title: T.translate("errors.not_found"),
+                html: (err.response.body.message) ? err.response.body.message : err.message,
+                type: 'warning'
+            };
+            dispatch(showMessage(
+                error_message,
+                () => { window.location = `${ window.location.origin}/presentations` }
+            ));
+            break;
+        default:
+            swal("ERROR", T.translate("errors.server_error"), "error");
+    }
 }

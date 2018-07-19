@@ -33,14 +33,19 @@ ul.presentation-nav-steps li {
   width: 25%;
   text-align: center;
   border-right: 1px solid #D3DEEA;
-  height: 48px;
+  height: 47px;
+  &:hover {
+    background-color: whitesmoke;
+    font-weight: bold;
+  }
 }
 
 ul.presentation-nav-steps li.current {
   border-top: 2px solid #248EC7;
   overflow-y: visible;
   height: 48px;
-  background-color: white;
+  background-color: white !important;
+  font-weight: bold;
 }
 
 ul.presentation-nav-steps li a {
@@ -48,10 +53,12 @@ ul.presentation-nav-steps li a {
   text-transform: uppercase;
   font-family: 'Open Sans Semibold', sans-serif;
   font-size: 13px;
-  padding-top: 15px;
-  padding-bottom: 11px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   padding-left: 12px;
   padding-right: 12px;
+  text-decoration: none;
+  background-color: transparent;
 }
 
 ul.presentation-nav-steps li a.disabled {
@@ -68,17 +75,16 @@ ul.presentation-nav-steps li a.disabled {
 }
 
 ul.presentation-nav-steps li a.current {
-  background-color: white;
   color: #2B4D68;
+  padding-top: 15px;
+  cursor: default !important;
 }
 
 ul.presentation-nav-steps li a.future {
-  background-color: #ffffff;
   color: #698296;
 }
 
 ul.presentation-nav-steps li a.completed {
-  background-color: #ffffff;
   color: #698296;
 }
 

@@ -4,7 +4,7 @@
   background-color: #D3DEEA;
 }
 
-.presentation-form-wrapper, .tag-form-wrapper {
+.presentation-form-wrapper, .tag-form-wrapper, .speakers-form-wrapper, .review-form-wrapper {
   background-color: white;
   padding: 40px 20px 1px 20px;
   border-top: 1px solid #D3DEEA;
@@ -60,6 +60,29 @@ textarea {
   }
 }
 
+// SPEAKERS
 
+.speakers-form-wrapper {
+  h3 {
+    font-size: 100%;
+    text-transform: uppercase;
+  }
+  .speakers {
+    margin-bottom: 15px;
+    .speaker {
+      margin-bottom: 10px;
+      .fa-user {
+        margin-right: 10px;
+      }
+      .fa-times {
+        color: black;
+        &:hover {
+          color: red;
+        }
+      }
+    }
+  }
+
+}
 
 

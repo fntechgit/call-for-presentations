@@ -15,10 +15,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import swal from "sweetalert2";
-import { getPresentation, resetPresentation, savePresentation, stepBack } from "../actions/presentation-actions";
+import { getPresentation, resetPresentation, savePresentation } from "../actions/presentation-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
 import PresentationNav from "../components/presentation-nav/index";
+import NavStepsDefinitions from "../components/presentation-nav/nav-steps-definition";
 import PresentationTagsForm from "../components/presentation-tags-form"
+import PresentationSpeakersForm from "../components/presentation-speakers-form";
+import PresentationReviewForm from "../components/presentation-review-form";
 
 import '../styles/edit-presentation-page.less';
 
@@ -28,29 +31,28 @@ class EditPresentationPage extends React.Component {
         super(props);
     }
 
-    componentWillMount () {
-        let presentationId = this.props.match.params.presentation_id;
-        let {entity}   = this.props;
+    componentWillReceiveProps(newProps) {
+        let {history} = newProps;
+        let step = newProps.match.params.step;
 
-        if (!presentationId) {
-            this.props.resetPresentation();
-        } else if (presentationId != entity.id){
-            this.props.getPresentation(presentationId);
+        if (!NavStepsDefinitions.map(s => s.name).includes(step)) {
+            history.push('summary');
         }
     }
 
     render() {
-        let { entity, selectionPlan, step, errors, history, savePresentation } = this.props;
+        let { entity, selectionPlan, errors, history, savePresentation } = this.props;
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
+        let step = this.props.match.params.step;
 
         return (
             <div className="page-wrap" id="edit-presentation-page">
                 <div className="presentation-header-wrapper">
                     <h3>{title} {T.translate("edit_presentation.presentation")}</h3>
                 </div>
-                <PresentationNav active={step} progress={entity.current_step} />
+                <PresentationNav activeStep={step} progress={entity.progress} />
 
-                {step == 1 &&
+                {step == 'summary' &&
                 <div className="presentation-form-wrapper">
                     <PresentationSummaryForm
                         history={history}
@@ -62,14 +64,35 @@ class EditPresentationPage extends React.Component {
                 </div>
                 }
 
-                {step == 2 &&
+                {step == 'tags' &&
                 <div className="tag-form-wrapper">
                     <PresentationTagsForm
                         history={history}
                         entity={entity}
                         selectionPlan={selectionPlan}
                         onSubmit={savePresentation}
-                        onBack={stepBack}
+                    />
+                </div>
+                }
+
+                {step == 'speakers' &&
+                <div className="speakers-form-wrapper">
+                    <PresentationSpeakersForm
+                        history={history}
+                        entity={entity}
+                        selectionPlan={selectionPlan}
+                        onSubmit={savePresentation}
+                    />
+                </div>
+                }
+
+                {step == 'review' &&
+                <div className="review-form-wrapper">
+                    <PresentationReviewForm
+                        history={history}
+                        entity={entity}
+                        selectionPlan={selectionPlan}
+                        onSubmit={savePresentation}
                     />
                 </div>
                 }
@@ -88,7 +111,6 @@ export default connect (
     {
         getPresentation,
         resetPresentation,
-        savePresentation,
-        stepBack
+        savePresentation
     }
 )(EditPresentationPage);

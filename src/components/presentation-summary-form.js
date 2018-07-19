@@ -17,6 +17,7 @@ import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import { Input, TextEditor, UploadInput, Dropdown } from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 import RadioList from './radio-list'
+import SubmitButtons from './presentation-submit-buttons'
 
 
 class PresentationSummaryForm extends React.Component {
@@ -217,7 +218,7 @@ class PresentationSummaryForm extends React.Component {
                     </div>
                 </div>
                 <hr/>
-                <SubmitButtons step={1} onSubmit={this.handleSubmit.bind(this)} onBack={this.handleBack.bind(this)} />
+                <SubmitButtons onSubmit={this.handleSubmit.bind(this)} />
             </form>
         );
     }

@@ -21,6 +21,7 @@ import ProfilePage from '../pages/profile-page'
 import EditPresentationPage from '../pages/edit-presentation-page'
 import SelectionProcessPage from '../pages/selection-process-page'
 import TracksGuidePage from '../pages/tracks-guide-page'
+import PresentationLayout from './presentation-layout'
 
 class PrimaryLayout extends React.Component {
 
@@ -59,8 +60,7 @@ class PrimaryLayout extends React.Component {
                         <main id="page-wrap">
                             <Switch>
                                 <Route exact path="/app/presentations" component={PresentationsPage}/>
-                                <Route exact path="/app/presentations/new" component={EditPresentationPage}/>
-                                <Route path="/app/presentations/:presentation_id" component={EditPresentationPage}/>
+                                <Route path="/app/presentations/:presentation_id" component={PresentationLayout}/>
                                 <Route exact path="/app/profile" component={ProfilePage}/>
                                 <Route exact path="/app/selection_process" component={SelectionProcessPage}/>
                                 <Route exact path="/app/tracks_guide" component={TracksGuidePage}/>

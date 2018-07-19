@@ -19,9 +19,9 @@ export default class NavStep extends React.Component {
 
     render() {
         let {step, onClick, activeStep, progress } = this.props;
-        let active = (activeStep == step.step);
+        let active = (activeStep == step.name);
         let disabled = (progress == 1 && step.step > 1);
-        let future = (!active && progress < step.step);
+        let future = (!active && progress <= step.step);
         let completed = (!active &&  progress > step.step);
 
         let step_class = '';

@@ -27,7 +27,6 @@ class PresentationTagsForm extends React.Component {
 
         this.handleTagClick = this.handleTagClick.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleBack = this.handleBack.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -51,16 +50,9 @@ class PresentationTagsForm extends React.Component {
         this.props.onSubmit(this.state.entity, this.props.history);
     }
 
-    handleBack(ev) {
-        let entity = {...this.state.entity};
-        ev.preventDefault();
-
-        this.props.onBack();
-    }
-
     render() {
         let {entity} = this.state;
-        let {selectionPlan} = this.props;
+        let {selectionPlan, history} = this.props;
 
 
         // TODO get allowed tags grouped by tag group
@@ -76,7 +68,7 @@ class PresentationTagsForm extends React.Component {
                 <input type="hidden" id="id" value={entity.id} />
                 <TagManager maxTags={8} allowedTags={allowedTags} value={entity.tags} onTagClick={this.handleTagClick} />
                 <hr/>
-                <SubmitButtons step={2} onSubmit={this.handleSubmit.bind(this)} onBack={this.handleBack.bind(this)} />
+                <SubmitButtons onSubmit={this.handleSubmit.bind(this)} history={history} backStep="summary" />
             </form>
         );
     }
