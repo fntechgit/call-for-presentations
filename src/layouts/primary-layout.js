@@ -26,7 +26,7 @@ import PresentationLayout from './presentation-layout'
 class PrimaryLayout extends React.Component {
 
     componentWillMount () {
-        //this.props.loadCurrentSelectionPlan();
+        this.props.loadCurrentSelectionPlan();
     }
 
     getActiveMenu() {

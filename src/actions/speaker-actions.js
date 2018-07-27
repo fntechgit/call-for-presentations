@@ -24,6 +24,7 @@ import {
     showMessage,
     showSuccessMessage
 } from "openstack-uicore-foundation/lib/methods";
+import {fetchErrorHandler, fetchResponseHandler} from "openstack-uicore-foundation/src/utils/actions";
 
 
 export const RECEIVE_SPEAKER        = 'RECEIVE_SPEAKER';
@@ -178,3 +179,30 @@ const normalizeEntity = (entity) => {
 
     return normalizedEntity;
 }
+
+export const querySpeakers = (summitId, input) => {
+
+    let accessToken = window.accessToken;
+    let filters = `first_name=@${input},last_name=@${input},email=@${input}`;
+    let apiUrl = `${window.apiBaseUrl}/api/v1`;
+
+    if (summitId) {
+        apiUrl += `/summits/${summitId}`;
+    }
+
+    apiUrl += `/speakers?filter=${filters}&access_token=${accessToken}`;
+
+    return fetch(apiUrl)
+        .then(fetchResponseHandler)
+        .then((json) => {
+            let options = json.data.map((s) => {
+                let name = s.first_name + ' ' + s.last_name;
+                return ({id: s.id, name: name, email: s.email, pic: s.pic});
+            });
+
+            return {
+                options: options
+            };
+        })
+        .catch(fetchErrorHandler);
+};

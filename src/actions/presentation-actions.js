@@ -38,8 +38,9 @@ export const PRESENTATION_ADDED             = 'PRESENTATION_ADDED';
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
 
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+    let { loggedUserState, selectionPlanState } = getState();
+    let { accessToken } = loggedUserState;
+    let { summit }      = selectionPlanState;
 
     dispatch(startLoading());
 
@@ -51,7 +52,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(RECEIVE_PRESENTATION),
-        `${apiBaseUrl}/api/v1/summits/23/events/${presentationId}`,
+        `${apiBaseUrl}/api/v1/summits/${summit.id}/events/${presentationId}`,
         presentationErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());

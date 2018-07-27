@@ -35,7 +35,7 @@ export const loadCurrentSelectionPlan = () => (dispatch, getState) => {
 
     let params = {
         access_token : accessToken,
-        expand: 'track_groups'
+        expand: 'summit,track_groups'
     };
 
     return getRequest(

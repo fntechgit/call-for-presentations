@@ -15,7 +15,7 @@ import React from 'react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import SubmitButtons from "./presentation-submit-buttons";
 import T from "i18n-react/dist/i18n-react";
-import {SpeakerInput} from 'openstack-uicore-foundation/lib/components'
+import CPFSpeakerInput from './inputs/speaker-input'
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {
@@ -28,6 +28,7 @@ class PresentationSpeakersForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleBack = this.handleBack.bind(this);
         this.handleChangeSpeaker = this.handleChangeSpeaker.bind(this);
+        this.handleAddSpeaker = this.handleAddSpeaker.bind(this);
     }
 
     handleSubmit(ev) {
@@ -52,6 +53,18 @@ class PresentationSpeakersForm extends React.Component {
         ev.preventDefault();
 
         history.push(`/app/presentations/${entity.id}/speakers/${speakerId}`);
+    }
+
+    handleAddSpeaker(ev) {
+        let {speaker} = this.state;
+        ev.preventDefault();
+
+        if (Number.isInteger(speaker.id)) {
+            console.log(speaker.name);
+        } else {
+            console.log(speaker.id);
+        }
+
     }
 
     render() {
@@ -89,13 +102,10 @@ class PresentationSpeakersForm extends React.Component {
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.speaker")} </label>
-                            <SpeakerInput
+                            <CPFSpeakerInput
                                 id="speaker"
-                                value={this.state.speaker}
+                                speakers={entity.speakers}
                                 onChange={this.handleChangeSpeaker}
-                                summitId={25}
-                                multi={false}
-                                history={history}
                             />
                         </div>
                     </div>
@@ -104,7 +114,9 @@ class PresentationSpeakersForm extends React.Component {
                         <label>{T.translate("edit_presentation.speaker_declaimer")}</label>
                     </div>
 
-                    <button className="btn btn-primary">{T.translate("edit_presentation.add_speaker")} </button>
+                    <button className="btn btn-primary" onClick={this.handleAddSpeaker}>
+                        {T.translate("edit_presentation.add_speaker")}
+                    </button>
 
                     <hr/>
                     <SubmitButtons onSubmit={this.handleSubmit.bind(this)} history={history} backStep="tags" />

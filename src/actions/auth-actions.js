@@ -52,6 +52,20 @@ const getAuthUrl = (backUrl = null) => {
 
 }
 
+const getLogoutUrl = (accessToken) => {
+    let baseUrl     = process.env['IDP_BASE_URL'];
+    let url         = URI(`${baseUrl}/oauth2/end-session`);
+    let nonce       = createNonce(NONCE_LEN);
+    let redirectUri = window.location.origin + '/app';
+
+    return url.query({
+        "id_token_hint"             : encodeURI(accessToken),
+        "post_logout_redirect_uri"  : encodeURI(redirectUri),
+        "state"                     : nonce,
+        "redirect_uri"              : encodeURI(redirectUri)
+    });
+}
+
 const createNonce = (len) => {
     let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let nonce = '';
@@ -73,12 +87,29 @@ export const onUserAuth = (accessToken, idToken) => (dispatch) => {
     });
 }
 
-export const doLogout = () => (dispatch) => {
-    dispatch({
-        type: LOGOUT_USER,
-        payload: {}
+export const doLogout = () => (dispatch, getState) => {
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+    let url                 = getLogoutUrl(accessToken);
+
+    dispatch({ type: LOGOUT_USER, payload: {} });
+
+    // window.location = url.toString();
+
+    /*let logout = new Promise(function(resolve, reject){
+        var img = new Image()
+        img.onload = () => { resolve() }
+        img.onerror = () => { reject() }
+        img.src = url
     });
+
+    logout
+        .catch(function(){})
+        .finally(function(data){
+            dispatch({ type: LOGOUT_USER, payload: {} });
+        });*/
 }
+
 
 const AllowedGroupsCodes = [];
 

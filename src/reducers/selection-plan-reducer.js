@@ -24,7 +24,8 @@ const DEFAULT_STATE = {
     submission_end_date: 0,
     voting_begin_date: 0,
     voting_end_date: 0,
-    track_groups: []
+    track_groups: [],
+    summit: {}
 }
 
 const selectionPlanReducer = (state = DEFAULT_STATE, action) => {
