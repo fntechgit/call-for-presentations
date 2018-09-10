@@ -35,6 +35,7 @@ class TagManager extends React.Component {
         if (selected.includes(tagId)) {
             selected = selected.filter(t => t != tagId);
         } else {
+            if (selected.length >= maxTags) return;
             selected.push(tagId);
         }
 
