@@ -32,6 +32,7 @@ export const REQUEST_SPEAKER        = 'REQUEST_SPEAKER';
 export const RESET_SPEAKER_FORM     = 'RESET_SPEAKER_FORM';
 export const UPDATE_SPEAKER         = 'UPDATE_SPEAKER';
 export const SPEAKER_UPDATED        = 'SPEAKER_UPDATED';
+export const SPEAKER_ADDED          = 'SPEAKER_ADDED';
 export const PIC_ATTACHED           = 'PIC_ATTACHED';
 
 
@@ -62,7 +63,7 @@ export const resetSpeakerForm = () => (dispatch, getState) => {
     dispatch(createAction(RESET_SPEAKER_FORM)({}));
 };
 
-export const saveSpeaker = (entity, history) => (dispatch, getState) => {
+export const saveProfile = (entity) => (dispatch, getState) => {
     let { loggedUserState } = getState();
     let { accessToken }     = loggedUserState;
 
@@ -74,7 +75,42 @@ export const saveSpeaker = (entity, history) => (dispatch, getState) => {
 
     let normalizedEntity = normalizeEntity(entity);
 
+    putRequest(
+        createAction(UPDATE_SPEAKER),
+        createAction(SPEAKER_UPDATED),
+        `${apiBaseUrl}/api/v1/speakers/${entity.id}`,
+        normalizedEntity,
+        authErrorHandler,
+        entity
+    )(params)(dispatch)
+        .then((payload) => {
+            dispatch(showSuccessMessage(T.translate("edit_speaker.profile_saved")));
+        });
+}
+
+
+export const saveSpeaker = (entity, history) => (dispatch, getState) => {
+    let { loggedUserState, presentationState } = getState();
+    let { accessToken }     = loggedUserState;
+    let presentationId      = presentationState.entity.id;
+
+    dispatch(startLoading());
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    let normalizedEntity = normalizeEntity(entity);
+
+    let success_message = {
+        title: T.translate("general.done"),
+        html: '',
+        type: 'success'
+    };
+
     if (entity.id) {
+
+        success_message.html = T.translate("edit_speaker.speaker_saved");
 
         putRequest(
             createAction(UPDATE_SPEAKER),
@@ -85,15 +121,14 @@ export const saveSpeaker = (entity, history) => (dispatch, getState) => {
             entity
         )(params)(dispatch)
             .then((payload) => {
-                dispatch(showSuccessMessage(T.translate("edit_speaker.speaker_saved")));
+                dispatch(showMessage(
+                    success_message,
+                    () => { history.push(`/app/presentations/${presentationId}/speakers`) }
+                ));
             });
 
     } else {
-        let success_message = {
-            title: T.translate("general.done"),
-            html: T.translate("edit_speaker.speaker_created"),
-            type: 'success'
-        };
+        success_message.html = T.translate("edit_speaker.speaker_created");
 
         postRequest(
             createAction(UPDATE_SPEAKER),
@@ -106,7 +141,7 @@ export const saveSpeaker = (entity, history) => (dispatch, getState) => {
             .then((payload) => {
                 dispatch(showMessage(
                     success_message,
-                    () => { history.push(`/app/summits/${currentSummit.id}/speakers/${payload.response.id}`) }
+                    () => { history.push(`/app/presentations/${presentationId}/speakers`) }
                 ));
             });
     }

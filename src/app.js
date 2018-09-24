@@ -12,18 +12,21 @@
  **/
 
 import React from 'react'
-import { Switch, Route } from 'react-router-dom'
+import { Switch, Route, Router } from 'react-router-dom'
 import PrimaryLayout from "./layouts/primary-layout"
 import AuthorizedRoute from './routes/authorized-route'
 import AuthorizationCallbackRoute from "./routes/authorization-callback-route"
 import AuthButton from './components/auth-button'
 import DefaultRoute from './routes/default-route'
+import LogOutCallbackRoute from './routes/logout-callback-route'
 import { connect } from 'react-redux'
-import { onUserAuth, doLogin, doLogout, getSpeakerInfo } from './actions/auth-actions'
-import { BrowserRouter } from 'react-router-dom'
+import { onUserAuth, doLogin, doLogout, initLogOut, getSpeakerInfo } from './actions/auth-actions'
 import { AjaxLoader } from "openstack-uicore-foundation/lib/components";
 import {getBackURL, formatEpoch} from "openstack-uicore-foundation/lib/methods";
 import T from 'i18n-react';
+import history from './history'
+import OPSessionChecker from "./components/op-session-checker";
+import CustomErrorPage from "./pages/custom-error-page";
 
 // here is set by default user lang as en
 
@@ -49,7 +52,7 @@ class App extends React.PureComponent {
     }
 
     render() {
-        let { isLoggedUser, onUserAuth, doLogout, getSpeakerInfo, member, selectionPlan} = this.props;
+        let { isLoggedUser, onUserAuth, doLogout, getSpeakerInfo, member, selectionPlan, backUrl} = this.props;
         let profile_pic = member ? member.pic : '';
 
         let header_title = '';
@@ -61,23 +64,29 @@ class App extends React.PureComponent {
         }
 
         return (
-            <BrowserRouter>
+            <Router history={history}>
                 <div>
                     <AjaxLoader show={ this.props.loading } size={ 120 }/>
+                    <OPSessionChecker
+                        clientId={window.clientId}
+                        idpBaseUrl={window.idpBaseUrl}
+                    />
                     <div className="header">
                         <div className={"header-title " + (isLoggedUser ? '' : 'center')}>
                             {T.translate("landing.call_for_presentations")} : {header_title}
-                            <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} doLogin={this.onClickLogin.bind(this)} doLogout={doLogout}/>
+                            <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} doLogin={this.onClickLogin.bind(this)} initLogOut={initLogOut}/>
                         </div>
                     </div>
                     <Switch>
-                        <AuthorizedRoute isLoggedUser={isLoggedUser} path="/app" component={PrimaryLayout} />
+                        <AuthorizedRoute isLoggedUser={isLoggedUser} backUrl={backUrl} path="/app" component={PrimaryLayout} />
                         <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getSpeakerInfo={getSpeakerInfo} />
+                        <LogOutCallbackRoute doLogout={doLogout}  path='/auth/logout'/>
                         <Route path="/404" render={props => (<p>404 - Not Found</p>)}/>
+                        <Route path="/error" component={CustomErrorPage}/>
                         <DefaultRoute isLoggedUser={isLoggedUser} />
                     </Switch>
                 </div>
-            </BrowserRouter>
+            </Router>
         );
     }
 }

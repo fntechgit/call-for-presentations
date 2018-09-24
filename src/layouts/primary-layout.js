@@ -42,13 +42,15 @@ class PrimaryLayout extends React.Component {
     }
 
     render(){
-        let { match, location, speaker, member } = this.props;
+        let { match, location, speaker, member, selectionPlan } = this.props;
 
         if(!speaker && location.pathname != '/app/profile') {
             return (
                 <Redirect exact to={{ pathname: '/app/profile' }}  />
             );
         }
+
+        if (!selectionPlan.id) return (<div></div>);
 
         return(
             <div className="primary-layout container-fluid">

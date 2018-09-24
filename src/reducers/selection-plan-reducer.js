@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 import{ LOGOUT_USER } from '../actions/auth-actions';
-import { SELECTION_PLAN_RECEIVED } from '../actions/selection-plan-actions';
+import {RECEIVE_SUMMIT, SELECTION_PLAN_RECEIVED} from '../actions/selection-plan-actions';
 
 const DEFAULT_STATE = {
     id: 0,
@@ -37,14 +37,12 @@ const selectionPlanReducer = (state = DEFAULT_STATE, action) => {
         break;
         case SELECTION_PLAN_RECEIVED: {
             let entity = {...payload.response};
-
-            for(var key in entity) {
-                if(entity.hasOwnProperty(key)) {
-                    entity[key] = (entity[key] == null) ? '' : entity[key] ;
-                }
-            }
-
             return {...entity};
+        }
+        break;
+        case RECEIVE_SUMMIT: {
+            let entity = {...payload.response};
+            return {...state, summit: entity};
         }
         break;
         default:

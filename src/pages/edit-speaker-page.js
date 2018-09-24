@@ -25,14 +25,19 @@ class EditSpeakerPage extends React.Component {
 
     constructor(props){
         super(props);
+
+        this.state = {
+            entity: {...props.entity},
+        };
     }
 
     componentWillMount () {
         let speakerId = this.props.match.params.speaker_id;
-        let {entity}   = this.props;
+        let {entity, location}   = this.props;
 
-        if (!speakerId) {
+        if (!speakerId || !Number.isInteger(speakerId)) {
             this.props.resetSpeakerForm();
+            this.setState({entity: {...entity, email: location.state.email}})
         } else if (speakerId != entity.id){
             this.props.getSpeaker(speakerId);
         }
@@ -43,7 +48,7 @@ class EditSpeakerPage extends React.Component {
 
         return (
             <div className="page-wrap" id="edit-speaker-page">
-                <h3>{T.translate("general.edit")} {T.translate("speaker.profile")}</h3>
+                <h3>{T.translate("general.edit")} {T.translate("edit_speaker.profile")}</h3>
                 <hr/>
                 <SpeakerForm
                     history={history}

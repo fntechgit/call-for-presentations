@@ -56,6 +56,12 @@ class PresentationSummaryForm extends React.Component {
             value = ev.target.checked;
         }
 
+        if (id.startsWith('link_')) {
+            id = 'links';
+            value = [...entity.links];
+            value[ev.target.dataset.key] = ev.target.value;
+        }
+
         errors[id] = '';
         entity[id] = value;
         this.setState({entity: entity, errors: errors});
@@ -82,12 +88,11 @@ class PresentationSummaryForm extends React.Component {
         let {entity} = this.state;
         let {selectionPlan} = this.props;
 
-
-        // TODO get submission event type options
-        let event_types_ddl = [
-            {label: 'Presentation', value: 1, type: 'Presentation'},
-            {label: 'Panel', value: 2, type: 'Panel'}
-        ];
+        let event_types_ddl = selectionPlan.summit.event_types
+            .filter(et => et.should_be_available_on_cfp)
+            .map(et => {
+                return ({value: et.id, label: et.name, type: et.class_name});
+        });
 
         // TODO get event level options
         let level_ddl = [
@@ -97,18 +102,18 @@ class PresentationSummaryForm extends React.Component {
             {label: 'N/A', value: 'N/A'}
         ];
 
-        // TODO get categories from selectionPlan
-        // let categories = selectionPlan.categoryGroups.map(t => ({label: t.name, value: t.id}));
-        let categories = [
-            {label: 'Container Infra', value: 1, description: 'Topics include: Running containers at scale, container ecosystem, container networking, container storage, container security, hybrid VM & container architectures, containers & bare metal'},
-            {label: 'Edge Computing', value: 2, description: 'Topics include: 5G, cloudlet, distributed computing, Mesh, security, networking, architecture, ease of deployment, edge ecosystem, hardware performance accelerators (e.g. GPUs, ASICs, etc.), hardware profile, IoT, low end-to-end latency, management tools, scaling, edge-enabled applications, physical hardening, QoS, remote/extreme environments, remote troubleshooting, standalone cloudlets, tamper evidence, tamper resistance, VM and container handoff across WAN connections, zero-touch provisioning'}
-        ];
+        let allowedTrackIds = selectionPlan.track_groups.map(tg => [...tg.tracks]);
+        allowedTrackIds = [].concat(...allowedTrackIds);
+
+        let categories = selectionPlan.summit.tracks
+            .filter(t => allowedTrackIds.includes(t.id))
+            .map(t => ({value: t.id, label: t.name, description: t.description}));
+
 
         let attending_media_opts = [
             {label: T.translate("general.yes"), value: 1},
             {label: T.translate("general.no"), value: 0}
         ];
-
 
         return (
             <form className="presentation-summary-form">
@@ -160,7 +165,7 @@ class PresentationSummaryForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_presentation.abstract")} (1000 chars) </label>
-                        <TextEditor id="abstract" className="editor" value={entity.abstract} onChange={this.handleChange} />
+                        <TextEditor id="description" className="editor" value={entity.description} onChange={this.handleChange} />
                     </div>
                 </div>
                 <hr/>
@@ -168,13 +173,13 @@ class PresentationSummaryForm extends React.Component {
                     <div className="col-md-12">
                         <p>{T.translate("edit_presentation.social_summary_desc")}</p>
                         <label> {T.translate("edit_presentation.social_summary")} (100 chars) </label>
-                        <textarea id="social_summary" value={entity.social_summary} onChange={this.handleChange} />
+                        <textarea id="social_description" value={entity.social_description} onChange={this.handleChange} />
                     </div>
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_presentation.expected_learn")} (1000 chars) </label>
-                        <TextEditor id="expected_learn" className="editor" value={entity.expected_learn} onChange={this.handleChange} />
+                        <TextEditor id="attendees_expected_learnt" className="editor" value={entity.attendees_expected_learnt} onChange={this.handleChange} />
                     </div>
                 </div>
                 <div className="row form-group">
@@ -197,23 +202,23 @@ class PresentationSummaryForm extends React.Component {
                     </div>
                     <div className="col-md-12">
                         <label> #1 </label>
-                        <Input className="form-control" id="link_1" value={entity.link_1} onChange={this.handleChange} />
+                        <Input className="form-control" id="link_0" data-key="0" value={entity.links[0]} onChange={this.handleChange} />
                     </div>
                     <div className="col-md-12">
                         <label> #2 </label>
-                        <Input className="form-control" id="link_2" value={entity.link_2} onChange={this.handleChange} />
+                        <Input className="form-control" id="link_1" data-key="1" value={entity.links[1]} onChange={this.handleChange} />
                     </div>
                     <div className="col-md-12">
                         <label> #3 </label>
-                        <Input className="form-control" id="link_3" value={entity.link_3} onChange={this.handleChange} />
+                        <Input className="form-control" id="link_2" data-key="2" value={entity.links[2]} onChange={this.handleChange} />
                     </div>
                     <div className="col-md-12">
                         <label> #4 </label>
-                        <Input className="form-control" id="link_4" value={entity.link_4} onChange={this.handleChange} />
+                        <Input className="form-control" id="link_3" data-key="3" value={entity.links[3]} onChange={this.handleChange} />
                     </div>
                     <div className="col-md-12">
                         <label> #5 </label>
-                        <Input className="form-control" id="link_5" value={entity.link_5} onChange={this.handleChange} />
+                        <Input className="form-control" id="link_4" data-key="4" value={entity.links[4]} onChange={this.handleChange} />
                     </div>
                 </div>
                 <hr/>

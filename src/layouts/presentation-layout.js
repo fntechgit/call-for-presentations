@@ -35,8 +35,8 @@ class PresentationLayout extends React.Component {
 
         return(
             <Switch>
-                <Route exact path={`${match.url}/:step`} component={EditPresentationPage}/>
                 <Route exact path={`${match.url}/speakers/:speaker_id`} component={EditSpeakerPage}/>
+                <Route exact path={`${match.url}/:step`} component={EditPresentationPage}/>
                 <Route render={props => (<Redirect to={`${match.url}/summary`} />)}/>
             </Switch>
         );

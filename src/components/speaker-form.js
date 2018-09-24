@@ -31,6 +31,7 @@ class SpeakerForm extends React.Component {
         this.handleUploadFile = this.handleUploadFile.bind(this);
         this.handleRemoveFile = this.handleRemoveFile.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -76,11 +77,18 @@ class SpeakerForm extends React.Component {
         this.setState({entity:entity});
     }
 
-    handleSubmit(publish, ev) {
+    handleSubmit(ev) {
         let entity = {...this.state.entity};
         ev.preventDefault();
 
         this.props.onSubmit(this.state.entity, this.props.history);
+    }
+
+    handleCancel(ev) {
+        let {history} = this.props;
+        ev.preventDefault();
+
+        history.goBack();
     }
 
     hasErrors(field) {
@@ -99,12 +107,6 @@ class SpeakerForm extends React.Component {
         return (
             <form className="summit-speaker-form">
                 <input type="hidden" id="id" value={entity.id} />
-                <div className="row form-group">
-                    <div className="col-md-4">
-                        <label> {T.translate("general.email")} </label>
-                        <Input className="form-control" id="email" value={entity.email} onChange={this.handleChange} />
-                    </div>
-                </div>
                 <div className="row form-group">
                     <div className="col-md-4">
                         <label> {T.translate("edit_speaker.title")} </label>
@@ -151,7 +153,10 @@ class SpeakerForm extends React.Component {
 
                 <div className="row">
                     <div className="col-md-12 submit-buttons">
-                        <input type="button" onClick={this.handleSubmit.bind(this, false)}
+                        <input type="button" onClick={this.handleCancel.bind(this)}
+                               className="btn btn-default pull-left" value={T.translate("general.cancel")}/>
+
+                        <input type="button" onClick={this.handleSubmit.bind(this)}
                                className="btn btn-primary pull-right" value={T.translate("general.save")}/>
                     </div>
                 </div>

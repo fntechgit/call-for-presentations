@@ -22,7 +22,8 @@ class PresentationSpeakersForm extends React.Component {
         super(props);
 
         this.state = {
-            speaker: {}
+            speaker: {},
+            entity: {...props.entity},
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -57,12 +58,14 @@ class PresentationSpeakersForm extends React.Component {
 
     handleAddSpeaker(ev) {
         let {speaker} = this.state;
+        let {history, entity} = this.props;
+
         ev.preventDefault();
 
         if (Number.isInteger(speaker.id)) {
-            console.log(speaker.name);
+            history.push(`/app/presentations/${entity.id}/speakers/${speaker.id}`);
         } else {
-            console.log(speaker.id);
+            history.push(`/app/presentations/${entity.id}/speakers/new`, { email: speaker.id });
         }
 
     }

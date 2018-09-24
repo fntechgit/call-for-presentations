@@ -45,6 +45,8 @@ class EditPresentationPage extends React.Component {
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
 
+        if (!selectionPlan.summit.event_types || !selectionPlan.summit.tracks) return (<div></div>);
+
         return (
             <div className="page-wrap" id="edit-presentation-page">
                 <div className="presentation-header-wrapper">

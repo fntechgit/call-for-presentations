@@ -65,8 +65,9 @@ export const resetPresentation = () => (dispatch, getState) => {
 };
 
 export const savePresentation = (entity, history) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
+    let { loggedUserState, selectionPlanState } = getState();
     let { accessToken }     = loggedUserState;
+    let { summit }          = selectionPlanState;
 
     dispatch(startLoading());
 
@@ -81,7 +82,7 @@ export const savePresentation = (entity, history) => (dispatch, getState) => {
         putRequest(
             createAction(UPDATE_PRESENTATION),
             createAction(PRESENTATION_UPDATED),
-            `${apiBaseUrl}/api/v1/presentations/${entity.id}`,
+            `${apiBaseUrl}/api/v1/summits/${summit.id}/presentations/${entity.id}`,
             normalizedEntity,
             authErrorHandler,
             entity
@@ -100,7 +101,7 @@ export const savePresentation = (entity, history) => (dispatch, getState) => {
         postRequest(
             createAction(UPDATE_PRESENTATION),
             createAction(PRESENTATION_ADDED),
-            `${apiBaseUrl}/api/v1/presentations`,
+            `${apiBaseUrl}/api/v1/summits/${summit.id}/presentations`,
             normalizedEntity,
             authErrorHandler,
             entity
@@ -118,18 +119,10 @@ export const savePresentation = (entity, history) => (dispatch, getState) => {
 const normalizeEntity = (entity) => {
     let normalizedEntity = {...entity};
 
-    normalizedEntity.member_id = (normalizedEntity.member != null) ? normalizedEntity.member.id : 0;
+    let links = normalizedEntity.links.filter(l => l.trim() != '');
 
-    delete normalizedEntity['presentations'];
-    delete normalizedEntity['all_presentations'];
-    delete normalizedEntity['moderated_presentations'];
-    delete normalizedEntity['all_moderated_presentations'];
-    delete normalizedEntity['affiliations'];
-    delete normalizedEntity['gender'];
-    delete normalizedEntity['pic'];
-    delete normalizedEntity['member'];
-    delete normalizedEntity['summit_assistance'];
-    delete normalizedEntity['code_redeemed'];
+    normalizedEntity.links = links;
+
 
     return normalizedEntity;
 }

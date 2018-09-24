@@ -24,7 +24,7 @@ import { persistStore, persistCombineReducers } from 'redux-persist'
 import storage from 'redux-persist/es/storage' // default: localStorage if web, AsyncStorage if react-native
 
 const config = {
-    key: 'root_call_for_presentations',
+    key: 'root',
     storage,
 }
 
@@ -42,10 +42,14 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 
 window.apiBaseUrl = process.env['API_BASE_URL'];
+window.clientId = process.env['OAUTH2_CLIENT_ID'];
+window.idpBaseUrl= process.env['IDP_BASE_URL'];
 
 const onRehydrateComplete = () => {
     // repopulate access token on global access variable
     window.accessToken = store.getState().loggedUserState.accessToken;
+    window.idToken = store.getState().loggedUserState.idToken;
+    window.sessionState = store.getState().loggedUserState.sessionState;
 }
 
 export const persistor = persistStore(store, null, onRehydrateComplete);

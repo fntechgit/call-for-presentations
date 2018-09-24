@@ -50,6 +50,7 @@
     "attention"           : "Attention!",
     "done"                : "Done!",
     "of"                  : "of",
+    "cancel"              : "Cancel",
     "placeholders": {
       "select_one": "-- Select one --"
     }
@@ -105,6 +106,17 @@
     "add_speaker": "Add speaker",
     "placeholders": {
     }
+  },
+  "edit_speaker": {
+    "profile": "Speaker Profile",
+    "title": "Title",
+    "twitter": "Twitter",
+    "irc": "IRC",
+    "bio": "Bio",
+    "profile_pic": "Profile Pic",
+    "speaker_created": "Speaker created successfully!",
+    "speaker_saved": "Speaker saved successfully!",
+    "profile_saved": "Profile saved successfully!"
   }
 
 }

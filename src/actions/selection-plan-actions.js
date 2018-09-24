@@ -26,6 +26,7 @@ import {
 } from "openstack-uicore-foundation/lib/methods";
 
 export const SELECTION_PLAN_RECEIVED        = 'SELECTION_PLAN_RECEIVED';
+export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
 
 
 export const loadCurrentSelectionPlan = () => (dispatch, getState) => {
@@ -43,9 +44,28 @@ export const loadCurrentSelectionPlan = () => (dispatch, getState) => {
         createAction(SELECTION_PLAN_RECEIVED),
         `${apiBaseUrl}/api/v1/summits/all/selection-plans/current/submission`,
         authErrorHandler
-    )(params)(dispatch).then(() => {
+    )(params)(dispatch).then((payload) => {
             dispatch(stopLoading());
+            dispatch(getSummitById(payload.response.summit.id));
         }
     );
 };
+
+export const getSummitById = (summitId) => (dispatch, getState) => {
+
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    let params = {
+        access_token : accessToken,
+        expand: 'event_types,tracks'
+    };
+
+    return getRequest(
+        null,
+        createAction(RECEIVE_SUMMIT),
+        `${apiBaseUrl}/api/v2/summits/${summitId}`,
+        authErrorHandler
+    )(params)(dispatch);
+}
 

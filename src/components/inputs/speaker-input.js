@@ -105,6 +105,7 @@ export default class CPFSpeakerInput extends React.Component {
                 filterOptions={this.filterOptions}
                 optionRenderer={CustomOption}
                 isMulti={false}
+                placeholder="Find speakers or type email to create new"
                 promptTextCreator={(label) => `Add new speaker with email: "${label}" `}
                 {...rest}
             />

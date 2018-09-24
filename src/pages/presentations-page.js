@@ -29,7 +29,7 @@ class PresentationsPage extends React.Component {
     }
 
     componentWillMount () {
-        //this.props.getAllPresentations();
+        this.props.getAllPresentations();
     }
 
     handleNewPresentation(ev) {

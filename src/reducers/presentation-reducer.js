@@ -29,9 +29,12 @@ export const DEFAULT_ENTITY = {
     title: '',
     type_id: 0,
     track_id: 1,
-    abstract: '',
-    social_summary: '',
-    expected_learn: '',
+    description: '',
+    social_description: '',
+    attendees_expected_learnt: '',
+    attending_media: 0,
+    links: ['','','','',''],
+    extra_questions: [],
     tags: [],
     speakers:[]
 }

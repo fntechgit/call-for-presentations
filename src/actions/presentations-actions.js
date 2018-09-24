@@ -33,22 +33,19 @@ export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
 export const getAllPresentations = () => (dispatch, getState) => {
 
     let { loggedUserState, selectionPlanState } = getState();
-    let { accessToken }     = loggedUserState;
+    let { accessToken } = loggedUserState;
+    let selectionPlanId = selectionPlanState.id;
 
     let params = {
-        access_token : accessToken,
-        filter: `selection_plan_id==${selectionPlanState.id}`
+        access_token : accessToken
     };
 
     dispatch(startLoading())
 
-    // GET /api/v1/speakers/me/presentations/created?filter=selection_plan_id==123
-    // GET /api/v1/speakers/me/presentations/non-created?filter=selection_plan_id==123
-
     return getRequest(
         null,
         createAction(CREATED_RECEIVED),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/created`,
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/creator/selection-plans/${selectionPlanId}`,
         authErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());
