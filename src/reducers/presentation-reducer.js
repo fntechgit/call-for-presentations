@@ -20,7 +20,7 @@ import
 } from '../actions/presentation-actions';
 
 import { LOGOUT_USER } from '../actions/auth-actions';
-import { VALIDATE } from '../actions/base-actions';
+import { VALIDATE, RECEIVE_EVENT_CATEGORY } from '../actions/base-actions';
 
 
 export const DEFAULT_ENTITY = {
@@ -28,7 +28,7 @@ export const DEFAULT_ENTITY = {
     id: 0,
     title: '',
     type_id: 0,
-    track_id: 1,
+    track_id: 0,
     description: '',
     social_description: '',
     attendees_expected_learnt: '',
@@ -41,6 +41,7 @@ export const DEFAULT_ENTITY = {
 
 const DEFAULT_STATE = {
     entity: DEFAULT_ENTITY,
+    track: null,
     errors: {}
 }
 
@@ -66,7 +67,6 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
             break;
         case RECEIVE_PRESENTATION: {
             let entity = {...payload.response};
-            let registration_code = '', on_site_phone = '', registered = false, checked_in = false, confirmed = false;
 
             for(var key in entity) {
                 if(entity.hasOwnProperty(key)) {
@@ -74,24 +74,21 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
                 }
             }
 
-            if (entity.hasOwnProperty('registration_code')) {
-                entity.registration_code = entity.registration_code.code;
-                entity.code_redeemed = entity.registration_code.redeemed;
+            if (entity.hasOwnProperty('links')) {
+                entity.links = entity.links.map(l => l.link);
             }
 
-            if (entity.hasOwnProperty('summit_assistance')) {
-                entity.on_site_phone = entity.summit_assistance.on_site_phone;
-                entity.registered = entity.summit_assistance.registered;
-                entity.checked_in = entity.summit_assistance.checked_in;
-                entity.confirmed = entity.summit_assistance.confirmed;
-            }
-
-            return {...state, entity: {...state.entity, ...entity}, errors: {} };
+            return {...state, entity: {...entity}, errors: {} };
         }
         case PRESENTATION_ADDED:
         case PRESENTATION_UPDATED: {
             return {...state, step: 2 };
         }
+        case RECEIVE_EVENT_CATEGORY: {
+            let entity = {...payload.response};
+            return {track: {...entity}};
+        }
+        break;
         case VALIDATE: {
             return {...state,  errors: payload.errors };
         }

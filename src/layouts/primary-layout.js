@@ -15,7 +15,7 @@ import React from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import NavMenu from '../components/nav-menu/index'
-import { loadCurrentSelectionPlan } from '../actions/selection-plan-actions'
+import { loadCurrentSelectionPlan } from '../actions/base-actions'
 import PresentationsPage from '../pages/presentations-page'
 import ProfilePage from '../pages/profile-page'
 import EditPresentationPage from '../pages/edit-presentation-page'

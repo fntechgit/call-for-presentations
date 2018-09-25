@@ -52,21 +52,24 @@ class PresentationTagsForm extends React.Component {
 
     render() {
         let {entity} = this.state;
-        let {selectionPlan, history} = this.props;
+        let {history, track, selectionPlan} = this.props;
 
+        let groupedTags = [];
 
-        // TODO get allowed tags grouped by tag group
-        let allowedTags = {
-            'session type': [{id: 1, label: '101'}, {id: 2, label: 'Arch / Ops'}, {id: 3, label: 'Case Study'}],
-            'other open source projects': [{id: 5, label: 'Ansible'}, {id: 4, label: 'Calico'}],
-            'openstack projects mentioned': [{id: 7, label: 'Barbican'}, {id: 6, label: 'Cinder'}, {id: 8, label: 'Swift'}]
-        };
+        if (track && selectionPlan.tag_groups.length > 0) {
+            let allowedTags = track.allowed_tags.map(t => ({id: t.id, label: t.tag}));
+            groupedTags = selectionPlan.tag_groups.map(group => {
+               let tags = allowedTags.filter( tag => group.allowed_tags.map(t => t.tag_id).includes(tag.id) );
+               return ({name: group.name, tags: tags});
+            });
 
+            groupedTags = groupedTags.filter(gr => gr.tags.length > 0);
+        }
 
         return (
             <form className="presentation-tags-form">
                 <input type="hidden" id="id" value={entity.id} />
-                <TagManager maxTags={8} allowedTags={allowedTags} value={entity.tags} onTagClick={this.handleTagClick} />
+                <TagManager maxTags={8} allowedTags={groupedTags} value={entity.tags} onTagClick={this.handleTagClick} />
                 <hr/>
                 <SubmitButtons onSubmit={this.handleSubmit.bind(this)} history={history} backStep="summary" />
             </form>

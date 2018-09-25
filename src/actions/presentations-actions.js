@@ -40,14 +40,31 @@ export const getAllPresentations = () => (dispatch, getState) => {
         access_token : accessToken
     };
 
-    dispatch(startLoading())
+    dispatch(startLoading());
 
-    return getRequest(
+    let created = getRequest(
         null,
         createAction(CREATED_RECEIVED),
         `${apiBaseUrl}/api/v1/speakers/me/presentations/creator/selection-plans/${selectionPlanId}`,
         authErrorHandler
-    )(params)(dispatch).then(() => {
+    )(params)(dispatch);
+
+    let speaker = getRequest(
+        null,
+        createAction(SPEAKER_RECEIVED),
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/speaker/selection-plans/${selectionPlanId}`,
+        authErrorHandler
+    )(params)(dispatch);
+
+    let moderator = getRequest(
+        null,
+        createAction(MODERATOR_RECEIVED),
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/moderator/selection-plans/${selectionPlanId}`,
+        authErrorHandler
+    )(params)(dispatch);
+
+
+    Promise.all([created, speaker, moderator]).then(() => {
             dispatch(stopLoading());
         }
     );

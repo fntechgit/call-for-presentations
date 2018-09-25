@@ -66,8 +66,8 @@ class TagManager extends React.Component {
 
                 <div className="row">
                     <div className="col-lg-9">
-                        {Object.keys(allowedTags).map((group) => (
-                            <TagGroup key={"tag_group_" + group} selected={value} group={group} tags={allowedTags[group]} onClickTag={this.handleClick} />
+                        {allowedTags.map((group) => (
+                            <TagGroup key={"tag_group_" + group.name} selected={value} group={group.name} tags={group.tags} onClickTag={this.handleClick} />
                         ))}
                     </div>
                     <div className="col-lg-3">

@@ -16,6 +16,7 @@ import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import swal from "sweetalert2";
 import { getAllPresentations } from '../actions/presentations-actions';
+import { deletePresentation } from '../actions/presentation-actions';
 import { formatEpoch } from '../utils/methods';
 
 import '../styles/presentations-page.less';
@@ -34,7 +35,34 @@ class PresentationsPage extends React.Component {
 
     handleNewPresentation(ev) {
         let {history} = this.props;
+        ev.preventDefault();
         history.push(`/app/presentations/new`);
+    }
+
+    handleEditPresentation(presentationId, ev) {
+        let {history} = this.props;
+        ev.preventDefault();
+        history.push(`/app/presentations/${presentationId}`);
+    }
+
+    handleDeletePresentation(presentation, ev) {
+        let {deletePresentation} = this.props;
+
+        ev.preventDefault();
+
+        swal({
+            title: T.translate("general.are_you_sure"),
+            text: T.translate("presentations.remove_warning") + ' ' + presentation.title,
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: T.translate("general.yes_delete")
+        }).then(function(result){
+            if (result.value) {
+                deletePresentation(presentation.id);
+            }
+        }).catch(swal.noop);
+
     }
 
     render() {
@@ -57,7 +85,7 @@ class PresentationsPage extends React.Component {
                         <h3>{T.translate("presentations.you_submitted")}</h3>
                     </div>
                     { presentations_created.length > 0 && presentations_created.map(p => (
-                        <div>
+                        <div key={'presentation_' + p.id}>
                             <div className="col-md-6">
                                 <i className="fa fa-file-text-o"></i>
                                 {p.title}
@@ -66,7 +94,12 @@ class PresentationsPage extends React.Component {
                                 {p.status}
                             </div>
                             <div className="col-md-2">
-                                Delete
+                                <button className="btn btn-default" onClick={this.handleEditPresentation.bind(this, p.id)}>
+                                    {T.translate("general.edit")}
+                                </button>
+                                <button className="btn btn-danger" onClick={this.handleDeletePresentation.bind(this, p)}>
+                                    {T.translate("general.delete")}
+                                </button>
                             </div>
                         </div>
                     ))}
@@ -140,6 +173,7 @@ const mapStateToProps = ({ selectionPlanState, presentationsState }) => ({
 export default connect (
     mapStateToProps,
     {
-        getAllPresentations
+        getAllPresentations,
+        deletePresentation
     }
 )(PresentationsPage);

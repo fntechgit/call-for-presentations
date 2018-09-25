@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 import{ LOGOUT_USER } from '../actions/auth-actions';
-import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED } from '../actions/presentations-actions';
+import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED, PRESENTATION_DELETED } from '../actions/presentations-actions';
 
 const DEFAULT_STATE = {
     presentations_created: [],
@@ -27,21 +27,36 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
         }
         break;
         case CREATED_RECEIVED: {
-            let presentations = {...payload.response};
+            let presentations = [...payload.response.data];
 
             return {...state, presentations_created: presentations};
         }
         break;
         case SPEAKER_RECEIVED: {
-            let presentations = {...payload.response};
+            let presentations = [...payload.response.data];
 
             return {...state, presentations_speaker: presentations};
         }
         break;
         case MODERATOR_RECEIVED: {
-            let presentations = {...payload.response};
+            let presentations = [...payload.response.data];
 
             return {...state, presentations_moderator: presentations};
+        }
+        break;
+        case PRESENTATION_DELETED: {
+            let {presentationId} = payload;
+            let {presentations_created, presentations_speaker, presentations_moderator} = state;
+            let new_presentations_created = presentations_created.filter(p => p.id != presentationId);
+            let new_presentations_speaker = presentations_speaker.filter(p => p.id != presentationId);
+            let new_presentations_moderator = presentations_moderator.filter(p => p.id != presentationId);
+
+            return {
+                ...state,
+                presentations_created: new_presentations_created,
+                presentations_speaker: new_presentations_speaker,
+                presentations_moderator: new_presentations_moderator
+            };
         }
         break;
         default:

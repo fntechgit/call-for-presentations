@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 import{ LOGOUT_USER } from '../actions/auth-actions';
-import {RECEIVE_SUMMIT, SELECTION_PLAN_RECEIVED} from '../actions/selection-plan-actions';
+import {RECEIVE_SUMMIT, RECEIVE_TAG_GROUPS, SELECTION_PLAN_RECEIVED} from '../actions/base-actions';
 
 const DEFAULT_STATE = {
     id: 0,
@@ -25,6 +25,7 @@ const DEFAULT_STATE = {
     voting_begin_date: 0,
     voting_end_date: 0,
     track_groups: [],
+    tag_groups: [],
     summit: {}
 }
 
@@ -45,6 +46,11 @@ const selectionPlanReducer = (state = DEFAULT_STATE, action) => {
             return {...state, summit: entity};
         }
         break;
+        case RECEIVE_TAG_GROUPS: {
+            let groups = [...payload.response.data];
+            return {...state, tag_groups: groups};
+        }
+            break;
         default:
             return state;
     }

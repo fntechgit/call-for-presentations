@@ -34,6 +34,7 @@ export const RESET_PRESENTATION             = 'RESET_PRESENTATION';
 export const UPDATE_PRESENTATION            = 'UPDATE_PRESENTATION';
 export const PRESENTATION_UPDATED           = 'PRESENTATION_UPDATED';
 export const PRESENTATION_ADDED             = 'PRESENTATION_ADDED';
+export const PRESENTATION_DELETED           = 'PRESENTATION_DELETED';
 
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
@@ -114,6 +115,28 @@ export const savePresentation = (entity, history) => (dispatch, getState) => {
             });
     }
 }
+
+
+export const deletePresentation = (presentationId) => (dispatch, getState) => {
+
+    let { loggedUserState, selectionPlanState } = getState();
+    let { accessToken }     = loggedUserState;
+    let { summit }          = selectionPlanState;
+
+    let params = {
+        access_token : accessToken
+    };
+
+    return deleteRequest(
+        null,
+        createAction(PRESENTATION_DELETED)({presentationId}),
+        `${apiBaseUrl}/api/v1/summits/${summit.id}/presentations/${presentationId}`,
+        authErrorHandler
+    )(params)(dispatch).then(() => {
+            dispatch(stopLoading());
+        }
+    );
+};
 
 
 const normalizeEntity = (entity) => {

@@ -12,13 +12,116 @@
  **/
 
 import T from "i18n-react/dist/i18n-react";
-import {stopLoading, getBackURL, showMessage} from "openstack-uicore-foundation/lib/methods";
 import swal from "sweetalert2";
 import {doLogin, initLogOut} from "./auth-actions";
+import {
+    getRequest,
+    putRequest,
+    postRequest,
+    deleteRequest,
+    createAction,
+    stopLoading,
+    startLoading,
+    showMessage,
+    showSuccessMessage,
+    getBackURL
+} from "openstack-uicore-foundation/lib/methods";
 
-export const apiBaseUrl         = process.env['API_BASE_URL'];
-export const VALIDATE           = 'VALIDATE';
-const LOGOUT_USER               = 'LOGOUT_USER';
+export const apiBaseUrl                     = process.env['API_BASE_URL'];
+export const VALIDATE                       = 'VALIDATE';
+const LOGOUT_USER                           = 'LOGOUT_USER';
+export const SELECTION_PLAN_RECEIVED        = 'SELECTION_PLAN_RECEIVED';
+export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
+export const RECEIVE_TAG_GROUPS             = 'RECEIVE_TAG_GROUPS';
+export const RECEIVE_EVENT_CATEGORY         = 'RECEIVE_EVENT_CATEGORY';
+
+
+export const loadCurrentSelectionPlan = () => (dispatch, getState) => {
+
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    let params = {
+        access_token : accessToken,
+        expand: 'summit,track_groups'
+    };
+
+    return getRequest(
+        null,
+        createAction(SELECTION_PLAN_RECEIVED),
+        `${apiBaseUrl}/api/v1/summits/all/selection-plans/current/submission`,
+        authErrorHandler
+    )(params)(dispatch).then((payload) => {
+            dispatch(stopLoading());
+            dispatch(getSummitById(payload.response.summit.id));
+            dispatch(getTagGroups(payload.response.summit.id));
+        }
+    );
+};
+
+export const getSummitById = (summitId) => (dispatch, getState) => {
+
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    let params = {
+        access_token : accessToken,
+        expand: 'event_types,tracks'
+    };
+
+    return getRequest(
+        null,
+        createAction(RECEIVE_SUMMIT),
+        `${apiBaseUrl}/api/v2/summits/${summitId}`,
+        authErrorHandler
+    )(params)(dispatch);
+}
+
+export const getTagGroups = (summitId) => (dispatch, getState) => {
+
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    let params = {
+        access_token : accessToken,
+        expand       : "allowed_tags",
+        per_page     : 100,
+        page         : 1
+    };
+
+    return getRequest(
+        null,
+        createAction(RECEIVE_TAG_GROUPS),
+        `${apiBaseUrl}/api/v1/summits/${summitId}/track-tag-groups`,
+        authErrorHandler
+    )(params)(dispatch);
+};
+
+
+export const loadEventCategory = () => (dispatch, getState) => {
+
+    let { loggedUserState, selectionPlanState, presentationState } = getState();
+    let { accessToken }     = loggedUserState;
+    let summitId            = selectionPlanState.summit.id;
+    let categoryId          = presentationState.entity.track_id;
+
+    dispatch(startLoading());
+
+    let params = {
+        expand       : "allowed_tags,extra_questions",
+        access_token : accessToken,
+    };
+
+    return getRequest(
+        null,
+        createAction(RECEIVE_EVENT_CATEGORY),
+        `${apiBaseUrl}/api/v1/summits/${summitId}/tracks/${categoryId}`,
+        authErrorHandler
+    )(params)(dispatch).then(() => {
+            dispatch(stopLoading());
+        }
+    );
+};
 
 export const authErrorHandler = (err, res) => (dispatch) => {
     let code = err.status;
