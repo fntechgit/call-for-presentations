@@ -33,7 +33,7 @@ class PresentationReviewForm extends React.Component {
     handleSubmit(ev) {
         ev.preventDefault();
 
-        this.props.onSubmit(this.props.entity, this.props.history);
+        this.props.onSubmit(this.props.entity);
     }
 
     handleBack(ev) {
@@ -43,14 +43,14 @@ class PresentationReviewForm extends React.Component {
     }
 
     render() {
-        let {selectionPlan, entity, history} = this.props;
+        let {selectionPlan, entity} = this.props;
 
         return (
             <form className="presentation-review-form">
                 <input type="hidden" id="id" value={entity.id} />
                 REVIEW
                 <hr/>
-                <SubmitButtons onSubmit={this.handleSubmit.bind(this)} history={history} backStep="speakers" />
+                <SubmitButtons onSubmit={this.handleSubmit.bind(this)} backStep="speakers" />
             </form>
         );
     }

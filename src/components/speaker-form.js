@@ -13,6 +13,7 @@
 
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
+import history from '../history'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import { Input, TextEditor, UploadInput } from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
@@ -81,11 +82,10 @@ class SpeakerForm extends React.Component {
         let entity = {...this.state.entity};
         ev.preventDefault();
 
-        this.props.onSubmit(this.state.entity, this.props.history);
+        this.props.onSubmit(this.state.entity);
     }
 
     handleCancel(ev) {
-        let {history} = this.props;
         ev.preventDefault();
 
         history.goBack();

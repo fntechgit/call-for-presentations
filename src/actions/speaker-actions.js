@@ -25,6 +25,7 @@ import {
     showSuccessMessage
 } from "openstack-uicore-foundation/lib/methods";
 import {fetchErrorHandler, fetchResponseHandler} from "openstack-uicore-foundation/src/utils/actions";
+import history from '../history'
 
 
 export const RECEIVE_SPEAKER        = 'RECEIVE_SPEAKER';
@@ -89,7 +90,7 @@ export const saveProfile = (entity) => (dispatch, getState) => {
 }
 
 
-export const saveSpeaker = (entity, history) => (dispatch, getState) => {
+export const saveSpeaker = (entity) => (dispatch, getState) => {
     let { loggedUserState, presentationState } = getState();
     let { accessToken }     = loggedUserState;
     let presentationId      = presentationState.entity.id;

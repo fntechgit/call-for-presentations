@@ -14,6 +14,7 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import { withRouter } from 'react-router-dom'
+import history from '../../history'
 import MenuItem from './menu-item'
 import MenuItemsDefinitions from './menu-items-definition'
 import '../../styles/menu.less';
@@ -29,8 +30,6 @@ class NavMenu extends React.Component {
     }
 
     onMenuItemClick(event, item){
-        let { history } = this.props;
-
         event.preventDefault();
 
         this.setState({

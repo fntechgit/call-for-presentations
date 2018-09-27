@@ -13,11 +13,12 @@
 
 import React from 'react';
 import T from "i18n-react/dist/i18n-react";
+import history from '../history'
 
 export default class SubmitButtons extends React.Component {
 
     handleBack(ev) {
-        let {history, backStep} = this.props;
+        let {backStep} = this.props;
         ev.preventDefault();
 
         history.push(backStep);

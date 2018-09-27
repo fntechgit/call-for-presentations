@@ -31,6 +31,7 @@ export const apiBaseUrl                     = process.env['API_BASE_URL'];
 export const VALIDATE                       = 'VALIDATE';
 const LOGOUT_USER                           = 'LOGOUT_USER';
 export const SELECTION_PLAN_RECEIVED        = 'SELECTION_PLAN_RECEIVED';
+export const SELECTION_CLOSED               = 'SELECTION_CLOSED';
 export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
 export const RECEIVE_TAG_GROUPS             = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY         = 'RECEIVE_EVENT_CATEGORY';
@@ -46,15 +47,18 @@ export const loadCurrentSelectionPlan = () => (dispatch, getState) => {
         expand: 'summit,track_groups'
     };
 
+    dispatch(startLoading());
+
     return getRequest(
         null,
         createAction(SELECTION_PLAN_RECEIVED),
         `${apiBaseUrl}/api/v1/summits/all/selection-plans/current/submission`,
-        authErrorHandler
+        selectionPlanErrorHandler
     )(params)(dispatch).then((payload) => {
-            dispatch(stopLoading());
-            dispatch(getSummitById(payload.response.summit.id));
-            dispatch(getTagGroups(payload.response.summit.id));
+            let summit = dispatch(getSummitById(payload.response.summit.id));
+            let tagGroups = dispatch(getTagGroups(payload.response.summit.id));
+
+            Promise.all([summit, tagGroups]).then(() => { dispatch(stopLoading()); });
         }
     );
 };
@@ -161,3 +165,40 @@ export const authErrorHandler = (err, res) => (dispatch) => {
     }
 }
 
+
+export const selectionPlanErrorHandler = (err, res) => (dispatch) => {
+    let code = err.status;
+    dispatch(stopLoading());
+
+    let msg = '';
+
+    switch (code) {
+        case 403:
+            let error_message = {
+                title: 'ERROR',
+                html: T.translate("errors.user_not_authz"),
+                type: 'error'
+            };
+
+            dispatch(showMessage( error_message, initLogOut ));
+            break;
+        case 401:
+            doLogin(window.location.pathname);
+            break;
+        case 404:
+            dispatch({type: SELECTION_CLOSED});
+            break;
+        case 412:
+            for (var [key, value] of Object.entries(err.response.body.errors)) {
+                msg += '- ' + value + '<br>';
+            }
+            swal("Validation error", msg, "warning");
+            dispatch({
+                type: VALIDATE,
+                payload: {errors: err.response.body.errors}
+            });
+            break;
+        default:
+            swal("ERROR", T.translate("errors.server_error"), "error");
+    }
+}

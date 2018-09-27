@@ -39,14 +39,13 @@ class ProfilePage extends React.Component {
     }
 
     render() {
-        let {entity, errors, history, saveSpeaker, attachPicture} = this.props;
+        let {entity, errors, saveSpeaker, attachPicture} = this.props;
 
         return (
             <div className="page-wrap" id="profile-page">
                 <h3>{T.translate("general.edit")} {T.translate("speaker.profile")}</h3>
                 <hr/>
                 <SpeakerForm
-                    history={history}
                     entity={entity}
                     errors={errors}
                     onSubmit={saveSpeaker}

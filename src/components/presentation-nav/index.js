@@ -13,8 +13,9 @@
 
 import React from 'react'
 import { withRouter } from 'react-router-dom'
+import history from '../../history'
 import NavStep from './nav-step'
-import NavStepsDefinitions from './nav-steps-definition'
+import {NavStepsDefinitions} from './nav-steps-definition'
 import './presentation-nav.less';
 
 class PresentationNav extends React.Component {
@@ -25,8 +26,8 @@ class PresentationNav extends React.Component {
     }
 
     onStepClick(event, step){
-        let { history, progress } = this.props;
-        let disabled = (progress == 1 && step.step > 1);
+        let {progress} = this.props;
+        let disabled = (progress == 0 && step.step > 1);
 
         event.preventDefault();
 

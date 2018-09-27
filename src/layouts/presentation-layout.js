@@ -23,7 +23,7 @@ class PresentationLayout extends React.Component {
     componentWillMount() {
         let presentationId = this.props.match.params.presentation_id;
 
-        if (presentationId == 'new') {
+        if (!presentationId) {
             this.props.resetPresentation();
         } else {
             this.props.getPresentation(presentationId);
@@ -35,8 +35,8 @@ class PresentationLayout extends React.Component {
 
         return(
             <Switch>
-                <Route exact path={`${match.url}/speakers/:speaker_id`} component={EditSpeakerPage}/>
-                <Route exact path={`${match.url}/:step`} component={EditPresentationPage}/>
+                <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} component={EditSpeakerPage}/>
+                <Route strict exact path={`${match.url}/:step`} component={EditPresentationPage}/>
                 <Route render={props => (<Redirect to={`${match.url}/summary`} />)}/>
             </Switch>
         );

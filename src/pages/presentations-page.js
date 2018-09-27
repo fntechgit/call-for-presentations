@@ -36,13 +36,13 @@ class PresentationsPage extends React.Component {
     handleNewPresentation(ev) {
         let {history} = this.props;
         ev.preventDefault();
-        history.push(`/app/presentations/new`);
+        history.push(`/app/presentations/new/summary`);
     }
 
     handleEditPresentation(presentationId, ev) {
         let {history} = this.props;
         ev.preventDefault();
-        history.push(`/app/presentations/${presentationId}`);
+        history.push(`/app/presentations/${parseInt(presentationId)}`);
     }
 
     handleDeletePresentation(presentation, ev) {
@@ -70,92 +70,122 @@ class PresentationsPage extends React.Component {
 
         return (
             <div className="page-wrap" id="presentations-page">
-                <div className="row">
-                    <div className="col-md-6">
-                        <h2> {T.translate("presentations.presentations")}</h2>
-                    </div>
-                    <div className="col-md-6 text-right">
-                        <button className="btn btn-success" onClick={this.handleNewPresentation}>
-                            {T.translate("presentations.add_presentation")}
-                        </button>
+                <div className="header">
+                    <div className="row">
+                        <div className="col-md-6">
+                            <h2> {T.translate("presentations.presentations")}</h2>
+                        </div>
+                        <div className="col-md-6 text-right">
+                            <button className="btn btn-success add-presentation-btn" onClick={this.handleNewPresentation}>
+                                {T.translate("presentations.add_presentation")}
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-12 title">
-                        <h3>{T.translate("presentations.you_submitted")}</h3>
-                    </div>
-                    { presentations_created.length > 0 && presentations_created.map(p => (
-                        <div key={'presentation_' + p.id}>
-                            <div className="col-md-6">
-                                <i className="fa fa-file-text-o"></i>
-                                {p.title}
-                            </div>
-                            <div className="col-md-2">
-                                {p.status}
-                            </div>
-                            <div className="col-md-2">
-                                <button className="btn btn-default" onClick={this.handleEditPresentation.bind(this, p.id)}>
-                                    {T.translate("general.edit")}
-                                </button>
-                                <button className="btn btn-danger" onClick={this.handleDeletePresentation.bind(this, p)}>
-                                    {T.translate("general.delete")}
-                                </button>
-                            </div>
+                <div className="body">
+                    <div className="row">
+                        <div className="col-md-12 title">
+                            <h3>{T.translate("presentations.you_submitted")}</h3>
                         </div>
-                    ))}
-                    { presentations_created.length == 0 &&
-                    <div className="col-md-12">
-                        {T.translate("presentations.no_presentations_created")}
-                    </div>
-                    }
-                </div>
-                <div className="row">
-                    <div className="col-md-12 title">
-                        <h3>{T.translate("presentations.other_submitted_speaker")}</h3>
-                    </div>
-                    { presentations_speaker.length > 0 && presentations_speaker.map(p => (
-                        <div>
-                            <div className="col-md-6">
-                                <i className="fa fa-file-text-o"></i>
-                                {p.title}
-                            </div>
-                            <div className="col-md-2">
-                                {p.status}
-                            </div>
-                            <div className="col-md-2">
-                                Delete
-                            </div>
+                        {presentations_created.length > 0 &&
+                        <div className="col-md-12">
+                            <table className="table">
+                                <tbody>
+                                { presentations_created.map(p => (
+                                    <tr key={'presentation_' + p.id}>
+                                        <td>
+                                            <i className="fa fa-file-text-o"></i>
+                                            <a onClick={this.handleEditPresentation.bind(this, p.id)}>{p.title}</a>
+                                        </td>
+                                        <td>
+                                            {p.status ? p.status : 'Not submitted'}
+                                        </td>
+                                        <td className="text-right">
+                                            <button className="btn btn-danger btn-xs" onClick={this.handleDeletePresentation.bind(this, p)}>
+                                                {T.translate("general.delete")}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
                         </div>
-                    ))}
-                    { presentations_speaker.length == 0 &&
-                    <div className="col-md-12">
-                        {T.translate("presentations.no_presentations_speaker")}
-                    </div>
-                    }
-                </div>
-                <div className="row">
-                    <div className="col-md-12 title">
-                        <h3>{T.translate("presentations.other_submitted_moderator")}</h3>
-                    </div>
-                    { presentations_moderator.length > 0 && presentations_moderator.map(p => (
-                        <div>
-                            <div className="col-md-6">
-                                <i className="fa fa-file-text-o"></i>
-                                {p.title}
-                            </div>
-                            <div className="col-md-2">
-                                {p.status}
-                            </div>
-                            <div className="col-md-2">
-                                Delete
-                            </div>
+                        }
+
+                        { presentations_created.length == 0 &&
+                        <div className="col-md-12 no-presentations">
+                            {T.translate("presentations.no_presentations_created")}
                         </div>
-                    ))}
-                    { presentations_moderator.length == 0 &&
-                    <div className="col-md-12">
-                        {T.translate("presentations.no_presentations_moderator")}
+                        }
                     </div>
-                    }
+                    <div className="row">
+                        <div className="col-md-12 title">
+                            <h3>{T.translate("presentations.other_submitted_speaker")}</h3>
+                        </div>
+                        {presentations_speaker.length > 0 &&
+                        <div className="col-md-12">
+                            <table className="table">
+                                <tbody>
+                                { presentations_speaker.map(p => (
+                                    <tr key={'presentation_' + p.id}>
+                                        <td>
+                                            <i className="fa fa-file-text-o"></i>
+                                            <a onClick={this.handleEditPresentation.bind(this, p.id)}>{p.title}</a>
+                                        </td>
+                                        <td>
+                                            {p.status ? p.status : 'Not submitted'}
+                                        </td>
+                                        <td className="text-right">
+                                            <button className="btn btn-danger btn-xs" onClick={this.handleDeletePresentation.bind(this, p)}>
+                                                {T.translate("general.delete")}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        }
+                        { presentations_speaker.length == 0 &&
+                        <div className="col-md-12 no-presentations">
+                            {T.translate("presentations.no_presentations_speaker")}
+                        </div>
+                        }
+                    </div>
+                    <div className="row">
+                        <div className="col-md-12 title">
+                            <h3>{T.translate("presentations.other_submitted_moderator")}</h3>
+                        </div>
+                        {presentations_moderator.length > 0 &&
+                        <div className="col-md-12">
+                            <table className="table">
+                                <tbody>
+                                { presentations_moderator.map(p => (
+                                    <tr key={'presentation_' + p.id}>
+                                        <td>
+                                            <i className="fa fa-file-text-o"></i>
+                                            <a onClick={this.handleEditPresentation.bind(this, p.id)}>{p.title}</a>
+                                        </td>
+                                        <td>
+                                            {p.status ? p.status : 'Not submitted'}
+                                        </td>
+                                        <td className="text-right">
+                                            <button className="btn btn-danger btn-xs" onClick={this.handleDeletePresentation.bind(this, p)}>
+                                                {T.translate("general.delete")}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        }
+                        { presentations_moderator.length == 0 &&
+                        <div className="col-md-12 no-presentations">
+                            {T.translate("presentations.no_presentations_moderator")}
+                        </div>
+                        }
+                    </div>
                 </div>
 
             </div>

@@ -26,6 +26,7 @@ import {authErrorHandler, apiBaseUrl, VALIDATE} from './base-actions';
 import T from "i18n-react/dist/i18n-react";
 import {doLogin} from "./auth-actions";
 import swal from "sweetalert2";
+import history from '../history'
 
 
 export const RECEIVE_PRESENTATION           = 'RECEIVE_PRESENTATION';
@@ -65,7 +66,7 @@ export const resetPresentation = () => (dispatch, getState) => {
     dispatch(createAction(RESET_PRESENTATION)({}));
 };
 
-export const savePresentation = (entity, history) => (dispatch, getState) => {
+export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
     let { loggedUserState, selectionPlanState } = getState();
     let { accessToken }     = loggedUserState;
     let { summit }          = selectionPlanState;
@@ -89,15 +90,11 @@ export const savePresentation = (entity, history) => (dispatch, getState) => {
             entity
         )(params)(dispatch)
             .then((payload) => {
-                dispatch(showSuccessMessage(T.translate("edit_presentation.presentation_saved")));
+                dispatch(stopLoading());
+                history.push(`/app/presentations/${payload.response.id}/${nextStep}`);
             });
 
     } else {
-        let success_message = {
-            title: T.translate("general.done"),
-            html: T.translate("edit_presentation.presentation_created"),
-            type: 'success'
-        };
 
         postRequest(
             createAction(UPDATE_PRESENTATION),
@@ -108,10 +105,8 @@ export const savePresentation = (entity, history) => (dispatch, getState) => {
             entity
         )(params)(dispatch)
             .then((payload) => {
-                dispatch(showMessage(
-                    success_message,
-                    () => { history.push(`/app/summits/${currentSummit.id}/presentations/${payload.response.id}`) }
-                ));
+                dispatch(stopLoading());
+                history.push(`/app/presentations/${payload.response.id}/tags`);
             });
     }
 }
@@ -143,9 +138,10 @@ const normalizeEntity = (entity) => {
     let normalizedEntity = {...entity};
 
     let links = normalizedEntity.links.filter(l => l.trim() != '');
-
     normalizedEntity.links = links;
 
+    let tags = normalizedEntity.tags.map(t => t.tag);
+    normalizedEntity.tags = tags;
 
     return normalizedEntity;
 }

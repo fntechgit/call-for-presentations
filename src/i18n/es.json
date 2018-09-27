@@ -56,10 +56,10 @@
     }
   },
   "menu": {
-    "presentations": "Presentations",
-    "profile": "My Speaker Profile",
-    "tracks_guide": "Summit Categories & Tracks",
-    "selection_process": "Speaker Selection Process",
+    "presentations": "Submissions",
+    "profile": "My Bio",
+    "tracks_guide": "Categories & Tracks",
+    "selection_process": "Selection Process",
     "logout": "Logout"
   },
   "presentations": {

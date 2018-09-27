@@ -139,7 +139,7 @@ export const onFinishSessionStateCheck = () => (dispatch) => {
 }
 
 
-export const getUserInfo = (history, backUrl) => (dispatch, getState) => {
+export const getUserInfo = (backUrl) => (dispatch, getState) => {
 
     let { loggedUserState }     = getState();
     let { accessToken, member } = loggedUserState;

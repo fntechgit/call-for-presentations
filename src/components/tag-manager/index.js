@@ -26,17 +26,17 @@ class TagManager extends React.Component {
 
     }
 
-    handleClick(tagId, ev) {
+    handleClick(tag, ev) {
         let selected = [...this.props.value];
         let {maxTags} = this.props;
 
         ev.preventDefault();
 
-        if (selected.includes(tagId)) {
-            selected = selected.filter(t => t != tagId);
+        if (selected.some(t => t.id == tag.id)) {
+            selected = selected.filter(t => t.id != tag.id);
         } else {
             if (selected.length >= maxTags) return;
-            selected.push(tagId);
+            selected.push(tag);
         }
 
         this.props.onTagClick(selected);

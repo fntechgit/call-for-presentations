@@ -26,7 +26,9 @@ import PresentationLayout from './presentation-layout'
 class PrimaryLayout extends React.Component {
 
     componentWillMount () {
-        this.props.loadCurrentSelectionPlan();
+        if (!this.props.selectionPlan.id) {
+            this.props.loadCurrentSelectionPlan();
+        }
     }
 
     getActiveMenu() {
@@ -42,7 +44,7 @@ class PrimaryLayout extends React.Component {
     }
 
     render(){
-        let { match, location, speaker, member, selectionPlan } = this.props;
+        let { location, speaker, selectionPlan } = this.props;
 
         if(!speaker && location.pathname != '/app/profile') {
             return (
@@ -61,8 +63,9 @@ class PrimaryLayout extends React.Component {
                     <div className="col-md-9">
                         <main id="page-wrap">
                             <Switch>
-                                <Route exact path="/app/presentations" component={PresentationsPage}/>
-                                <Route path="/app/presentations/:presentation_id" component={PresentationLayout}/>
+                                <Route strict exact path="/app/presentations" component={PresentationsPage}/>
+                                <Route path="/app/presentations/:presentation_id(\d+)" component={PresentationLayout}/>
+                                <Route path="/app/presentations/new" component={PresentationLayout}/>
                                 <Route exact path="/app/profile" component={ProfilePage}/>
                                 <Route exact path="/app/selection_process" component={SelectionProcessPage}/>
                                 <Route exact path="/app/tracks_guide" component={TracksGuidePage}/>

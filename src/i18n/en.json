@@ -9,7 +9,8 @@
     "user_not_authz"            : "Hold on. Your user is not authorized!.",
     "user_not_set"              : "Hold on. Can not get any valid user.",
     "session_expired"           : "Hold on. Your session expired!.",
-    "server_error"              : "There was a problem with our server, please contact admin."
+    "server_error"              : "There was a problem with our server, please contact admin.",
+    "not_found"                 : "Not Found"
   },
   "general": {
     "summit"              : "Summit",
@@ -49,15 +50,16 @@
     "attention"           : "Attention!",
     "done"                : "Done!",
     "of"                  : "of",
+    "cancel"              : "Cancel",
     "placeholders": {
       "select_one": "-- Select one --"
     }
   },
   "menu": {
-    "presentations": "Presentations",
-    "profile": "My Speaker Profile",
-    "tracks_guide": "Summit Categories & Tracks",
-    "selection_process": "Speaker Selection Process",
+    "presentations": "Submissions",
+    "profile": "My Bio",
+    "tracks_guide": "Categories & Tracks",
+    "selection_process": "Selection Process",
     "logout": "Logout"
   },
   "presentations": {
@@ -95,8 +97,26 @@
     "tag_max_reached": "You have selected the maximum number of tags.",
     "selected_title": "Tags You have Selected",
     "tags": "tags",
+    "speaker_included": "Speakers included in this presentation",
+    "speaker_important": "IMPORTANT! We have added new questions to the speaker bio form. Please review the bios for all speakers before submitting.",
+    "speaker_note": "Please Note: We have added new questions to the speaker bio form. Please review the bios for all speakers before submitting.",
+    "more_speaker": "Any more speakers to add?",
+    "speaker": "Enter the first name, last name or email address of your Speaker (*)",
+    "speaker_declaimer": "Speakers agree that OpenStack Foundation may record and publish their talks presented during the Berlin OpenStack Summit. If you submit a proposal on behalf of a speaker, you represent to OpenStack Foundation that you have the authority to submit the proposal on the speaker’s behalf and agree to the recording and publication of their presentation.",
+    "add_speaker": "Add speaker",
     "placeholders": {
     }
+  },
+  "edit_speaker": {
+    "profile": "Speaker Profile",
+    "title": "Title",
+    "twitter": "Twitter",
+    "irc": "IRC",
+    "bio": "Bio",
+    "profile_pic": "Profile Pic",
+    "speaker_created": "Speaker created successfully!",
+    "speaker_saved": "Speaker saved successfully!",
+    "profile_saved": "Profile saved successfully!"
   }
 
 }

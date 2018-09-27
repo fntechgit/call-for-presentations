@@ -24,8 +24,9 @@ import { VALIDATE, RECEIVE_EVENT_CATEGORY } from '../actions/base-actions';
 
 
 export const DEFAULT_ENTITY = {
-    progress: 3,
     id: 0,
+    progress: 'NEW',
+    progressNum: 0,
     title: '',
     type_id: 0,
     track_id: 0,
@@ -42,6 +43,14 @@ export const DEFAULT_ENTITY = {
 const DEFAULT_STATE = {
     entity: DEFAULT_ENTITY,
     track: null,
+    steps:[
+        {name: 'NEW', step: 0},
+        {name: 'SUMMARY', step: 1},
+        {name: 'TAGS', step: 2},
+        {name: 'SPEAKERS', step: 3},
+        {name: 'REVIEW', step: 4},
+        {name: 'COMPLETE', step: 5}
+    ],
     errors: {}
 }
 
@@ -62,7 +71,7 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
         }
             break;
         case UPDATE_PRESENTATION: {
-            return {...state,  entity: {...payload}, errors: {} };
+            return {...state,  entity: {...state.entity, ...payload}, errors: {} };
         }
             break;
         case RECEIVE_PRESENTATION: {
@@ -76,17 +85,22 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
 
             if (entity.hasOwnProperty('links')) {
                 entity.links = entity.links.map(l => l.link);
+                let length = entity.links.length;
+                entity.links.length = 5;
+                entity.links.fill('', length, 5);
             }
 
-            return {...state, entity: {...entity}, errors: {} };
+            entity.progressNum = state.steps.find(s => s.name == entity.progress).step;
+
+            return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
         case PRESENTATION_ADDED:
         case PRESENTATION_UPDATED: {
-            return {...state, step: 2 };
+            return {...state };
         }
         case RECEIVE_EVENT_CATEGORY: {
             let entity = {...payload.response};
-            return {track: {...entity}};
+            return {...state, track: {...entity}};
         }
         break;
         case VALIDATE: {

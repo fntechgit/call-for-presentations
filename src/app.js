@@ -56,7 +56,7 @@ class App extends React.PureComponent {
         let profile_pic = member ? member.pic : '';
 
         let header_title = '';
-        if (selectionPlan) {
+        if (selectionPlan.id) {
             let end_date = formatEpoch(selectionPlan.submission_end_date);
             header_title = `${selectionPlan.name} - Open til ${end_date}`;
         } else {

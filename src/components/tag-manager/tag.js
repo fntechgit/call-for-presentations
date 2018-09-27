@@ -20,8 +20,8 @@ export default class Tag extends React.Component {
         let buttonClass = (active) ? ' btn-primary btn-tag-selected' : ' btn-default';
 
         return (
-            <a href="#" className={"btn btn-tag" + buttonClass} onClick={onClickTag.bind(this, tag.id)}>
-                <span className="pound">#</span>{tag.label}
+            <a href="#" className={"btn btn-tag" + buttonClass} onClick={onClickTag.bind(this, tag)}>
+                <span className="pound">#</span>{tag.tag}
             </a>
         );
 

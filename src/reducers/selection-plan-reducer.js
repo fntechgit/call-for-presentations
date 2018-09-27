@@ -11,7 +11,12 @@
  * limitations under the License.
  **/
 import{ LOGOUT_USER } from '../actions/auth-actions';
-import {RECEIVE_SUMMIT, RECEIVE_TAG_GROUPS, SELECTION_PLAN_RECEIVED} from '../actions/base-actions';
+import {
+    RECEIVE_SUMMIT,
+    RECEIVE_TAG_GROUPS,
+    SELECTION_PLAN_RECEIVED,
+    SELECTION_CLOSED
+} from '../actions/base-actions';
 
 const DEFAULT_STATE = {
     id: 0,
@@ -32,6 +37,7 @@ const DEFAULT_STATE = {
 const selectionPlanReducer = (state = DEFAULT_STATE, action) => {
     const { type, payload } = action
     switch (type) {
+        case SELECTION_CLOSED:
         case LOGOUT_USER: {
             return DEFAULT_STATE;
         }

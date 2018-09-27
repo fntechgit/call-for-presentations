@@ -37,21 +37,20 @@ class EditSpeakerPage extends React.Component {
 
         if (!speakerId || !Number.isInteger(speakerId)) {
             this.props.resetSpeakerForm();
-            this.setState({entity: {...entity, email: location.state.email}})
+            this.setState({entity: {...entity, email: location.state.email}});
         } else if (speakerId != entity.id){
             this.props.getSpeaker(speakerId);
         }
     }
 
     render() {
-        let {entity, errors, history, saveSpeaker, attachPicture} = this.props;
+        let {entity, errors, saveSpeaker, attachPicture} = this.props;
 
         return (
             <div className="page-wrap" id="edit-speaker-page">
                 <h3>{T.translate("general.edit")} {T.translate("edit_speaker.profile")}</h3>
                 <hr/>
                 <SpeakerForm
-                    history={history}
                     entity={entity}
                     errors={errors}
                     onSubmit={saveSpeaker}

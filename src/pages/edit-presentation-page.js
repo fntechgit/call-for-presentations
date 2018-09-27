@@ -19,7 +19,7 @@ import { getPresentation, resetPresentation, savePresentation } from "../actions
 import { loadEventCategory } from "../actions/base-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
 import PresentationNav from "../components/presentation-nav/index";
-import NavStepsDefinitions from "../components/presentation-nav/nav-steps-definition";
+import {NavStepsDefinitions} from "../components/presentation-nav/nav-steps-definition";
 import PresentationTagsForm from "../components/presentation-tags-form"
 import PresentationSpeakersForm from "../components/presentation-speakers-form";
 import PresentationReviewForm from "../components/presentation-review-form";
@@ -30,6 +30,7 @@ class EditPresentationPage extends React.Component {
 
     constructor(props){
         super(props);
+
     }
 
     componentWillReceiveProps(newProps) {
@@ -40,14 +41,14 @@ class EditPresentationPage extends React.Component {
             history.push('summary');
         }
 
-        if ((!newProps.track && newProps.entity.track_id) || (newProps.entity.track_id != this.props.track.id)) {
+        if (newProps.entity.track_id && (!newProps.track || newProps.entity.track_id != this.props.entity.track_id)) {
             this.props.loadEventCategory();
         }
 
     }
 
     render() {
-        let { entity, selectionPlan, errors, history, savePresentation, track } = this.props;
+        let { entity, selectionPlan, errors, savePresentation, track, history } = this.props;
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
 
@@ -56,14 +57,13 @@ class EditPresentationPage extends React.Component {
         return (
             <div className="page-wrap" id="edit-presentation-page">
                 <div className="presentation-header-wrapper">
-                    <h3>{title} {T.translate("edit_presentation.presentation")}</h3>
+                    <h2>{title} {T.translate("edit_presentation.presentation")}</h2>
                 </div>
-                <PresentationNav activeStep={step} progress={entity.progress} />
+                <PresentationNav activeStep={step} progress={entity.progressNum} />
 
                 {step == 'summary' &&
                 <div className="presentation-form-wrapper">
                     <PresentationSummaryForm
-                        history={history}
                         entity={entity}
                         selectionPlan={selectionPlan}
                         errors={errors}
@@ -75,7 +75,6 @@ class EditPresentationPage extends React.Component {
                 {step == 'tags' &&
                 <div className="tag-form-wrapper">
                     <PresentationTagsForm
-                        history={history}
                         entity={entity}
                         track={track}
                         selectionPlan={selectionPlan}
@@ -98,7 +97,6 @@ class EditPresentationPage extends React.Component {
                 {step == 'review' &&
                 <div className="review-form-wrapper">
                     <PresentationReviewForm
-                        history={history}
                         entity={entity}
                         selectionPlan={selectionPlan}
                         onSubmit={savePresentation}

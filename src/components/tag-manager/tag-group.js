@@ -23,7 +23,7 @@ export default class TagGroup extends React.Component {
             <div>
                 <h3>{group}</h3>
                 {tags.map(t => {
-                    let active = selected.includes(t.id);
+                    let active = selected.some(tag => tag.id == t.id);
                     return (<Tag key={"tag_"+t.id} tag={t} active={active} onClickTag={onClickTag} />);
                 })}
             </div>

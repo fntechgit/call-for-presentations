@@ -47,17 +47,17 @@ class PresentationTagsForm extends React.Component {
         let entity = {...this.state.entity};
         ev.preventDefault();
 
-        this.props.onSubmit(this.state.entity, this.props.history);
+        this.props.onSubmit(entity, 'speakers');
     }
 
     render() {
         let {entity} = this.state;
-        let {history, track, selectionPlan} = this.props;
+        let {track, selectionPlan} = this.props;
 
         let groupedTags = [];
 
         if (track && selectionPlan.tag_groups.length > 0) {
-            let allowedTags = track.allowed_tags.map(t => ({id: t.id, label: t.tag}));
+            let allowedTags = track.allowed_tags.map(t => ({id: t.id, tag: t.tag}));
             groupedTags = selectionPlan.tag_groups.map(group => {
                let tags = allowedTags.filter( tag => group.allowed_tags.map(t => t.tag_id).includes(tag.id) );
                return ({name: group.name, tags: tags});
@@ -66,12 +66,13 @@ class PresentationTagsForm extends React.Component {
             groupedTags = groupedTags.filter(gr => gr.tags.length > 0);
         }
 
+
         return (
             <form className="presentation-tags-form">
                 <input type="hidden" id="id" value={entity.id} />
                 <TagManager maxTags={8} allowedTags={groupedTags} value={entity.tags} onTagClick={this.handleTagClick} />
                 <hr/>
-                <SubmitButtons onSubmit={this.handleSubmit.bind(this)} history={history} backStep="summary" />
+                <SubmitButtons onSubmit={this.handleSubmit.bind(this)} backStep="summary" />
             </form>
         );
     }
