@@ -14,7 +14,7 @@
 import React from 'react';
 import 'react-select/dist/react-select.css';
 import AsyncCreatableSelect from 'react-select/lib/AsyncCreatable';
-import {querySpeakers} from '../../actions/speaker-actions';
+import {querySpeakers} from 'openstack-uicore-foundation/lib/methods';
 
 
 const optionStyle = {
@@ -31,12 +31,12 @@ const imageStyle = {
 
 
 const CustomOption = (option) => {
-    let {name, email, pic} = option;
+    let {first_name, last_name, email, pic} = option;
 
     return (
         <div style={optionStyle}>
             { pic && <img src={pic} style={imageStyle} /> }
-            { name } &nbsp;
+            { first_name }&nbsp;{ last_name }&nbsp;
             { email && <span>({email})</span> }
         </div>
     );
@@ -70,24 +70,27 @@ export default class CPFSpeakerInput extends React.Component {
 
     filterOptions(options, filterString, values) {
         let {speakers} = this.props;
+        let speakerOpts = options.map(s => (
+            {id: s.id, first_name: s.first_name, last_name: s.last_name, email: s.email, pic: s.pic})
+        );
 
         if (speakers.length) {
-            let filtered_options = options.filter( op => {
+            let filtered_options = speakerOpts.filter( op => {
                 return speakers.map(val => val.id).indexOf( op.id ) < 0;
             } );
 
             return filtered_options;
         } else {
-            return options;
+            return speakerOpts;
         }
     }
 
-    getSpeakers (input) {
+    getSpeakers (input, callback) {
         if (!input) {
             return Promise.resolve({ options: [] });
         }
 
-        return querySpeakers(null, input);
+        querySpeakers(null, input, callback);
     }
 
 
@@ -101,12 +104,12 @@ export default class CPFSpeakerInput extends React.Component {
                 loadOptions={this.getSpeakers}
                 backspaceRemoves={true}
                 valueKey="id"
-                labelKey="name"
+                labelKey="email"
                 filterOptions={this.filterOptions}
                 optionRenderer={CustomOption}
                 isMulti={false}
                 placeholder="Find speakers or type email to create new"
-                promptTextCreator={(label) => `Add new speaker with email: "${label}" `}
+                promptTextCreator={(email) => `Add new speaker with email: "${email}" `}
                 {...rest}
             />
         );

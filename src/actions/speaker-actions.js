@@ -26,6 +26,7 @@ import {
 } from "openstack-uicore-foundation/lib/methods";
 import {fetchErrorHandler, fetchResponseHandler} from "openstack-uicore-foundation/src/utils/actions";
 import history from '../history'
+import {PRESENTATION_DELETED} from "./presentation-actions";
 
 
 export const RECEIVE_SPEAKER        = 'RECEIVE_SPEAKER';
@@ -33,7 +34,11 @@ export const REQUEST_SPEAKER        = 'REQUEST_SPEAKER';
 export const RESET_SPEAKER_FORM     = 'RESET_SPEAKER_FORM';
 export const UPDATE_SPEAKER         = 'UPDATE_SPEAKER';
 export const SPEAKER_UPDATED        = 'SPEAKER_UPDATED';
-export const SPEAKER_ADDED          = 'SPEAKER_ADDED';
+export const SPEAKER_SAVED          = 'SPEAKER_SAVED';
+export const SPEAKER_ASSIGNED       = 'SPEAKER_ASSIGNED';
+export const SPEAKER_REMOVED        = 'SPEAKER_REMOVED';
+export const MODERATOR_ASSIGNED     = 'MODERATOR_ASSIGNED';
+export const MODERATOR_REMOVED      = 'MODERATOR_REMOVED';
 export const PIC_ATTACHED           = 'PIC_ATTACHED';
 
 
@@ -60,8 +65,8 @@ export const getSpeaker = (speakerId) => (dispatch, getState) => {
     );
 };
 
-export const resetSpeakerForm = () => (dispatch, getState) => {
-    dispatch(createAction(RESET_SPEAKER_FORM)({}));
+export const resetSpeakerForm = (email = '') => (dispatch, getState) => {
+    dispatch(createAction(RESET_SPEAKER_FORM)({email}));
 };
 
 export const saveProfile = (entity) => (dispatch, getState) => {
@@ -90,7 +95,7 @@ export const saveProfile = (entity) => (dispatch, getState) => {
 }
 
 
-export const saveSpeaker = (entity) => (dispatch, getState) => {
+export const saveSpeaker = (entity, type) => (dispatch, getState) => {
     let { loggedUserState, presentationState } = getState();
     let { accessToken }     = loggedUserState;
     let presentationId      = presentationState.entity.id;
@@ -111,39 +116,42 @@ export const saveSpeaker = (entity) => (dispatch, getState) => {
 
     if (entity.id) {
 
-        success_message.html = T.translate("edit_speaker.speaker_saved");
-
         putRequest(
             createAction(UPDATE_SPEAKER),
-            createAction(SPEAKER_UPDATED),
+            createAction(SPEAKER_SAVED),
             `${apiBaseUrl}/api/v1/speakers/${entity.id}`,
             normalizedEntity,
             authErrorHandler,
             entity
         )(params)(dispatch)
             .then((payload) => {
-                dispatch(showMessage(
-                    success_message,
-                    () => { history.push(`/app/presentations/${presentationId}/speakers`) }
-                ));
+                if (type == 'moderator') {
+                    success_message.html = T.translate("edit_speaker.moderator_saved");
+                    dispatch(assignModeratorToPresentation(payload.response, success_message));
+                } else {
+                    success_message.html = T.translate("edit_speaker.speaker_saved");
+                    dispatch(assignSpeakerToPresentation(payload.response, success_message));
+                }
             });
 
     } else {
-        success_message.html = T.translate("edit_speaker.speaker_created");
 
         postRequest(
             createAction(UPDATE_SPEAKER),
-            createAction(SPEAKER_ADDED),
+            createAction(SPEAKER_SAVED),
             `${apiBaseUrl}/api/v1/speakers`,
             normalizedEntity,
             authErrorHandler,
             entity
         )(params)(dispatch)
             .then((payload) => {
-                dispatch(showMessage(
-                    success_message,
-                    () => { history.push(`/app/presentations/${presentationId}/speakers`) }
-                ));
+                if (type == 'moderator') {
+                    success_message.html = T.translate("edit_speaker.moderator_created");
+                    dispatch(assignModeratorToPresentation(payload.response, success_message));
+                } else {
+                    success_message.html = T.translate("edit_speaker.speaker_created");
+                    dispatch(assignSpeakerToPresentation(payload.response, success_message));
+                }
             });
     }
 }
@@ -196,6 +204,100 @@ const uploadFile = (entity, file) => (dispatch, getState) => {
         {pic: entity.pic}
     )(params)(dispatch)
 }
+
+
+export const assignSpeakerToPresentation = (speaker, message) => (dispatch, getState) => {
+    let { loggedUserState, presentationState } = getState();
+    let { accessToken }     = loggedUserState;
+    let presentationId      = presentationState.entity.id;
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    putRequest(
+        null,
+        createAction(SPEAKER_ASSIGNED)({speaker}),
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/${presentationId}/speakers/${speaker.id}`,
+        null,
+        authErrorHandler
+    )(params)(dispatch)
+        .then((payload) => {
+            dispatch(showMessage(
+                message,
+                () => { history.push(`/app/presentations/${presentationId}/speakers`) }
+            ));
+        });
+}
+
+
+export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState) => {
+
+    let { loggedUserState, presentationState } = getState();
+    let { accessToken }     = loggedUserState;
+    let presentationId      = presentationState.entity.id;
+
+    let params = {
+        access_token : accessToken
+    };
+
+    return deleteRequest(
+        null,
+        createAction(SPEAKER_REMOVED)({speakerId}),
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/${presentationId}/speakers/${speakerId}`,
+        authErrorHandler
+    )(params)(dispatch).then(() => {
+            dispatch(stopLoading());
+        }
+    );
+};
+
+export const assignModeratorToPresentation = (moderator, message) => (dispatch, getState) => {
+    let { loggedUserState, presentationState } = getState();
+    let { accessToken }     = loggedUserState;
+    let presentationId      = presentationState.entity.id;
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    putRequest(
+        null,
+        createAction(MODERATOR_ASSIGNED)({moderator}),
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/${presentationId}/moderators/${moderator.id}`,
+        null,
+        authErrorHandler
+    )(params)(dispatch)
+        .then((payload) => {
+            dispatch(showMessage(
+                message,
+                () => { history.push(`/app/presentations/${presentationId}/speakers`) }
+            ));
+        });
+}
+
+
+export const removeModeratorFromPresentation = (moderatorId) => (dispatch, getState) => {
+
+    let { loggedUserState, presentationState } = getState();
+    let { accessToken }     = loggedUserState;
+    let presentationId      = presentationState.entity.id;
+
+    let params = {
+        access_token : accessToken
+    };
+
+    return deleteRequest(
+        null,
+        createAction(MODERATOR_REMOVED)({moderatorId}),
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/${presentationId}/moderators/${moderatorId}`,
+        authErrorHandler
+    )(params)(dispatch).then(() => {
+            dispatch(stopLoading());
+        }
+    );
+};
+
 
 const normalizeEntity = (entity) => {
     let normalizedEntity = {...entity};

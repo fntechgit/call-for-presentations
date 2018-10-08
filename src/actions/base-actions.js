@@ -76,7 +76,7 @@ export const getSummitById = (summitId) => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(RECEIVE_SUMMIT),
-        `${apiBaseUrl}/api/v2/summits/${summitId}`,
+        `${apiBaseUrl}/api/v1/summits/${summitId}`,
         authErrorHandler
     )(params)(dispatch);
 }

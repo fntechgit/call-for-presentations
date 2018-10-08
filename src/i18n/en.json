@@ -70,7 +70,8 @@
     "other_submitted_speaker": "Presentations others submitted with you as a speaker.",
     "no_presentations_speaker": "There are no presentations submitted by others with you as a speaker.",
     "other_submitted_moderator": "Presentations others submitted with you as a moderator.",
-    "no_presentations_moderator": "There are no presentations submitted by others with you as a moderator."
+    "no_presentations_moderator": "There are no presentations submitted by others with you as a moderator.",
+    "remove_warning": "You are deleting presentation "
   },
   "presentation_nav": {
     "summary": "Summary",
@@ -97,25 +98,33 @@
     "tag_max_reached": "You have selected the maximum number of tags.",
     "selected_title": "Tags You have Selected",
     "tags": "tags",
-    "speaker_included": "Speakers included in this presentation",
-    "speaker_important": "IMPORTANT! We have added new questions to the speaker bio form. Please review the bios for all speakers before submitting.",
+    "speaker": "Speaker",
+    "moderator": "Moderator",
+    "speaker_included": "Participants included in this presentation",
+    "speaker_important": "IMPORTANT! We have added new questions to the participant bio form. Please review the bios for all participants before submitting.",
     "speaker_note": "Please Note: We have added new questions to the speaker bio form. Please review the bios for all speakers before submitting.",
-    "more_speaker": "Any more speakers to add?",
-    "speaker": "Enter the first name, last name or email address of your Speaker (*)",
-    "speaker_declaimer": "Speakers agree that OpenStack Foundation may record and publish their talks presented during the Berlin OpenStack Summit. If you submit a proposal on behalf of a speaker, you represent to OpenStack Foundation that you have the authority to submit the proposal on the speaker’s behalf and agree to the recording and publication of their presentation.",
-    "add_speaker": "Add speaker",
+    "more_speaker": "Any more participants to add?",
+    "enter_speaker": "Enter the first name, last name or email address of the participant (*)",
+    "speaker_declaimer": "Participants agree that OpenStack Foundation may record and publish their talks presented during the Berlin OpenStack Summit. If you submit a proposal on behalf of a participant, you represent to OpenStack Foundation that you have the authority to submit the proposal on the participants’s behalf and agree to the recording and publication of their presentation.",
+    "add_speaker": "Add",
+    "max_speakers": "You have reached the maximum of participants.",
+    "review_title": "One Last Step - Confirm Your Submission",
+    "review_important": "Look over everything below to make sure it's to your liking. *IMPORTANT!* You MUST push 'CONFIRM MY SUBMISSION' to complete the process.",
     "placeholders": {
     }
   },
   "edit_speaker": {
     "profile": "Speaker Profile",
     "title": "Title",
+    "email": "Email",
     "twitter": "Twitter",
     "irc": "IRC",
     "bio": "Bio",
     "profile_pic": "Profile Pic",
     "speaker_created": "Speaker created successfully!",
     "speaker_saved": "Speaker saved successfully!",
+    "moderator_created": "Moderator created successfully!",
+    "moderator_saved": "Moderator saved successfully!",
     "profile_saved": "Profile saved successfully!"
   }
 

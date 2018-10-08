@@ -36,6 +36,7 @@ export const UPDATE_PRESENTATION            = 'UPDATE_PRESENTATION';
 export const PRESENTATION_UPDATED           = 'PRESENTATION_UPDATED';
 export const PRESENTATION_ADDED             = 'PRESENTATION_ADDED';
 export const PRESENTATION_DELETED           = 'PRESENTATION_DELETED';
+export const PRESENTATION_COMPLETED         = 'PRESENTATION_COMPLETED';
 
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
@@ -109,6 +110,30 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
                 history.push(`/app/presentations/${payload.response.id}/tags`);
             });
     }
+}
+
+export const completePresentation = (entity) => (dispatch, getState) => {
+    let { loggedUserState, selectionPlanState } = getState();
+    let { accessToken }     = loggedUserState;
+    let { summit }          = selectionPlanState;
+
+    dispatch(startLoading());
+
+    let params = {
+        access_token : accessToken
+    };
+
+    putRequest(
+        null,
+        createAction(PRESENTATION_COMPLETED),
+        `${apiBaseUrl}/api/v1/summits/${summit.id}/presentations/${entity.id}/completed`,
+        entity,
+        authErrorHandler
+    )(params)(dispatch)
+        .then((payload) => {
+            dispatch(stopLoading());
+            history.push(`/app/presentations`);
+        });
 }
 
 

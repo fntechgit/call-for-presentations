@@ -16,11 +16,13 @@ import
     RESET_PRESENTATION,
     UPDATE_PRESENTATION,
     PRESENTATION_UPDATED,
-    PRESENTATION_ADDED
+    PRESENTATION_ADDED,
+    PRESENTATION_COMPLETED
 } from '../actions/presentation-actions';
 
 import { LOGOUT_USER } from '../actions/auth-actions';
 import { VALIDATE, RECEIVE_EVENT_CATEGORY } from '../actions/base-actions';
+import {SPEAKER_ASSIGNED, SPEAKER_REMOVED, MODERATOR_ASSIGNED, MODERATOR_REMOVED} from '../actions/speaker-actions';
 
 
 export const DEFAULT_ENTITY = {
@@ -30,6 +32,7 @@ export const DEFAULT_ENTITY = {
     title: '',
     type_id: 0,
     track_id: 0,
+    level: '',
     description: '',
     social_description: '',
     attendees_expected_learnt: '',
@@ -37,7 +40,8 @@ export const DEFAULT_ENTITY = {
     links: ['','','','',''],
     extra_questions: [],
     tags: [],
-    speakers:[]
+    speakers: [],
+    moderator: null
 }
 
 const DEFAULT_STATE = {
@@ -95,12 +99,45 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
         case PRESENTATION_ADDED:
+        case PRESENTATION_COMPLETED:
         case PRESENTATION_UPDATED: {
-            return {...state };
+            let entity = {...payload.response};
+
+            entity.progressNum = state.steps.find(s => s.name == entity.progress).step;
+
+            // these come un expanded, we need to use what we had
+            delete entity.speakers;
+            delete entity.links;
+            delete entity.tags;
+            delete entity.extra_questions;
+
+            return {...state, entity: {...state.entity, ...entity} };
         }
         case RECEIVE_EVENT_CATEGORY: {
             let entity = {...payload.response};
             return {...state, track: {...entity}};
+        }
+        break;
+        case SPEAKER_ASSIGNED: {
+            let {speaker} = payload;
+            let speakers = state.entity.speakers.filter(s => s.id != speaker.id);
+            return {...state, entity: {...state.entity, speakers: [...speakers, speaker]}};
+        }
+        break;
+        case SPEAKER_REMOVED: {
+            let {speakerId} = payload;
+            let speakers = state.entity.speakers.filter(s => s.id != speakerId);
+            return {...state, entity: {...state.entity, speakers: speakers}};
+        }
+        break;
+        case MODERATOR_ASSIGNED: {
+            let {moderator} = payload;
+            return {...state, entity: {...state.entity, moderator: moderator}};
+        }
+        break;
+        case MODERATOR_REMOVED: {
+            let {moderatorId} = payload;
+            return {...state, entity: {...state.entity, moderator: null}};
         }
         break;
         case VALIDATE: {

@@ -15,7 +15,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import swal from "sweetalert2";
-import { getPresentation, resetPresentation, savePresentation } from "../actions/presentation-actions";
+import { getPresentation, resetPresentation, savePresentation, completePresentation } from "../actions/presentation-actions";
+import { removeSpeakerFromPresentation, removeModeratorFromPresentation } from "../actions/speaker-actions";
 import { loadEventCategory } from "../actions/base-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
 import PresentationNav from "../components/presentation-nav/index";
@@ -48,7 +49,7 @@ class EditPresentationPage extends React.Component {
     }
 
     render() {
-        let { entity, selectionPlan, errors, savePresentation, track, history } = this.props;
+        let { entity, selectionPlan, errors, track, history, savePresentation, completePresentation } = this.props;
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
 
@@ -89,6 +90,8 @@ class EditPresentationPage extends React.Component {
                         history={history}
                         entity={entity}
                         selectionPlan={selectionPlan}
+                        onRemoveSpeaker={this.props.removeSpeakerFromPresentation}
+                        onRemoveModerator={this.props.removeModeratorFromPresentation}
                         onSubmit={savePresentation}
                     />
                 </div>
@@ -98,8 +101,9 @@ class EditPresentationPage extends React.Component {
                 <div className="review-form-wrapper">
                     <PresentationReviewForm
                         entity={entity}
+                        track={track}
                         selectionPlan={selectionPlan}
-                        onSubmit={savePresentation}
+                        onSubmit={completePresentation}
                     />
                 </div>
                 }
@@ -119,6 +123,9 @@ export default connect (
         getPresentation,
         resetPresentation,
         savePresentation,
-        loadEventCategory
+        completePresentation,
+        loadEventCategory,
+        removeSpeakerFromPresentation,
+        removeModeratorFromPresentation
     }
 )(EditPresentationPage);

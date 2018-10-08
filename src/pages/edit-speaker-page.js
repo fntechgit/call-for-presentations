@@ -29,18 +29,28 @@ class EditSpeakerPage extends React.Component {
         this.state = {
             entity: {...props.entity},
         };
+
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentWillMount () {
         let speakerId = this.props.match.params.speaker_id;
-        let {entity, location}   = this.props;
+        let {entity, location, history, currentPresentation}   = this.props;
 
-        if (!speakerId || !Number.isInteger(speakerId)) {
-            this.props.resetSpeakerForm();
-            this.setState({entity: {...entity, email: location.state.email}});
+        if (!speakerId || isNaN(speakerId)) {
+            if (location.state != 'undefined' || !location.state.hasOwnProperty('email')) {
+                history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+            }
+
+            this.props.resetSpeakerForm(location.state.email);
         } else if (speakerId != entity.id){
             this.props.getSpeaker(speakerId);
         }
+    }
+
+    handleSubmit(speaker) {
+        let {location} = this.props;
+        this.props.saveSpeaker(speaker, location.state.type);
     }
 
     render() {
@@ -53,7 +63,7 @@ class EditSpeakerPage extends React.Component {
                 <SpeakerForm
                     entity={entity}
                     errors={errors}
-                    onSubmit={saveSpeaker}
+                    onSubmit={this.handleSubmit}
                     onAttach={attachPicture}
                 />
             </div>
@@ -61,8 +71,9 @@ class EditSpeakerPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ selectionPlanState, speakerState }) => ({
+const mapStateToProps = ({ selectionPlanState, speakerState, presentationState }) => ({
     selectionPlan : selectionPlanState,
+    currentPresentation: presentationState.entity,
     ...speakerState
 })
 

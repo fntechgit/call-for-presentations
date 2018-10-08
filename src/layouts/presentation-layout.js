@@ -30,12 +30,24 @@ class PresentationLayout extends React.Component {
         }
     }
 
+    componentWillReceiveProps(newProps) {
+        let oldId = this.props.match.params.presentation_id;
+        let newId = newProps.match.params.presentation_id;
+
+        if (!newId) {
+            this.props.resetPresentation();
+        } else if (oldId != newId) {
+            this.props.getPresentation(presentationId);
+        }
+    }
+
     render(){
         let { match, entity } = this.props;
 
         return(
             <Switch>
                 <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} component={EditSpeakerPage}/>
+                <Route strict exact path={`${match.url}/speakers/new`} component={EditSpeakerPage}/>
                 <Route strict exact path={`${match.url}/:step`} component={EditPresentationPage}/>
                 <Route render={props => (<Redirect to={`${match.url}/summary`} />)}/>
             </Switch>

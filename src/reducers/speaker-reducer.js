@@ -56,7 +56,8 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
         }
         break;
         case RESET_SPEAKER_FORM: {
-            return DEFAULT_STATE;
+            let {email} = payload;
+            return { errors:{}, entity: {...DEFAULT_ENTITY, email: email} };
         }
         break;
         case UPDATE_SPEAKER: {

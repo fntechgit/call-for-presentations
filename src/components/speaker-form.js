@@ -123,6 +123,10 @@ class SpeakerForm extends React.Component {
                 </div>
                 <div className="row form-group">
                     <div className="col-md-4">
+                        <label> {T.translate("edit_speaker.email")} </label>
+                        <Input disabled className="form-control" id="email" value={entity.email} onChange={this.handleChange}/>
+                    </div>
+                    <div className="col-md-4">
                         <label> {T.translate("edit_speaker.twitter")} </label>
                         <Input className="form-control" id="twitter" value={entity.twitter} onChange={this.handleChange} />
                     </div>
@@ -153,10 +157,10 @@ class SpeakerForm extends React.Component {
 
                 <div className="row">
                     <div className="col-md-12 submit-buttons">
-                        <input type="button" onClick={this.handleCancel.bind(this)}
+                        <input type="button" onClick={this.handleCancel}
                                className="btn btn-default pull-left" value={T.translate("general.cancel")}/>
 
-                        <input type="button" onClick={this.handleSubmit.bind(this)}
+                        <input type="button" onClick={this.handleSubmit}
                                className="btn btn-primary pull-right" value={T.translate("general.save")}/>
                     </div>
                 </div>
