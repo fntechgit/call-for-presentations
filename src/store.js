@@ -17,6 +17,7 @@ import baseReducer from './reducers/base-reducer'
 import selectionPlanReducer from './reducers/selection-plan-reducer'
 import presentationsReducer from './reducers/presentations-reducer'
 import speakerReducer from './reducers/speaker-reducer'
+import profileReducer from './reducers/profile-reducer'
 import presentationReducer from './reducers/presentation-reducer'
 
 import thunk from 'redux-thunk';
@@ -34,6 +35,7 @@ const reducers = persistCombineReducers(config, {
     selectionPlanState: selectionPlanReducer,
     presentationsState: presentationsReducer,
     speakerState: speakerReducer,
+    profileState: profileReducer,
     presentationState: presentationReducer
 });
 

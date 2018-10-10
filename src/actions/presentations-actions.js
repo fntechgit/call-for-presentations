@@ -36,33 +36,13 @@ export const getAllPresentations = () => (dispatch, getState) => {
     let { accessToken } = loggedUserState;
     let selectionPlanId = selectionPlanState.id;
 
-    let params = {
-        access_token : accessToken
-    };
-
     dispatch(startLoading());
 
-    let created = getRequest(
-        null,
-        createAction(CREATED_RECEIVED),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/creator/selection-plans/${selectionPlanId}`,
-        authErrorHandler
-    )(params)(dispatch);
+    let created = dispatch(getCreatorPresentations(selectionPlanId, accessToken));
 
-    let speaker = getRequest(
-        null,
-        createAction(SPEAKER_RECEIVED),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/speaker/selection-plans/${selectionPlanId}`,
-        authErrorHandler
-    )(params)(dispatch);
+    let speaker = dispatch(getSpeakerPresentations(selectionPlanId, accessToken));
 
-    let moderator = getRequest(
-        null,
-        createAction(MODERATOR_RECEIVED),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/moderator/selection-plans/${selectionPlanId}`,
-        authErrorHandler
-    )(params)(dispatch);
-
+    let moderator = dispatch(getModeratorPresentations(selectionPlanId, accessToken));
 
     Promise.all([created, speaker, moderator]).then(() => {
             dispatch(stopLoading());
@@ -70,3 +50,43 @@ export const getAllPresentations = () => (dispatch, getState) => {
     );
 };
 
+
+export const getCreatorPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
+    let params = {
+        access_token : accessToken
+    };
+
+    return getRequest(
+        null,
+        createAction(CREATED_RECEIVED),
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/creator/selection-plans/${selectionPlanId}`,
+        authErrorHandler
+    )(params)(dispatch);
+}
+
+export const getSpeakerPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
+    let params = {
+        access_token : accessToken
+    };
+
+    getRequest(
+        null,
+        createAction(SPEAKER_RECEIVED),
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/speaker/selection-plans/${selectionPlanId}`,
+        authErrorHandler
+    )(params)(dispatch);
+}
+
+
+export const getModeratorPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
+    let params = {
+        access_token : accessToken
+    };
+
+    getRequest(
+        null,
+        createAction(MODERATOR_RECEIVED),
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/moderator/selection-plans/${selectionPlanId}`,
+        authErrorHandler
+    )(params)(dispatch);
+}

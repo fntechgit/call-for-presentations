@@ -34,12 +34,18 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
         break;
         case SPEAKER_RECEIVED: {
             let presentations = [...payload.response.data];
+            let createdIds = state.presentations_created.map(p => p.id);
+
+            presentations = presentations.filter(p => !createdIds.includes(p.id));
 
             return {...state, presentations_speaker: presentations};
         }
         break;
         case MODERATOR_RECEIVED: {
             let presentations = [...payload.response.data];
+            let createdIds = state.presentations_created.map(p => p.id);
+
+            presentations = presentations.filter(p => !createdIds.includes(p.id));
 
             return {...state, presentations_moderator: presentations};
         }

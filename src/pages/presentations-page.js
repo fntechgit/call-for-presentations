@@ -18,6 +18,7 @@ import swal from "sweetalert2";
 import { getAllPresentations } from '../actions/presentations-actions';
 import { deletePresentation } from '../actions/presentation-actions';
 import { formatEpoch } from '../utils/methods';
+import Presentation from '../model/presentation'
 
 import '../styles/presentations-page.less';
 
@@ -39,10 +40,11 @@ class PresentationsPage extends React.Component {
         history.push(`/app/presentations/new/summary`);
     }
 
-    handleEditPresentation(presentationId, ev) {
+    handleEditPresentation(presentation, ev) {
         let {history} = this.props;
         ev.preventDefault();
-        history.push(`/app/presentations/${parseInt(presentationId)}`);
+
+        history.push(presentation.getProgressLink());
     }
 
     handleDeletePresentation(presentation, ev) {
@@ -66,7 +68,9 @@ class PresentationsPage extends React.Component {
     }
 
     render() {
-        let { presentations_created, presentations_speaker, presentations_moderator } = this.props;
+        let { presentations_created, presentations_speaker, presentations_moderator, selectionPlan, loggedSpeaker, loading } = this.props;
+
+        if (loading) return(<div></div>);
 
         return (
             <div className="page-wrap" id="presentations-page">
@@ -91,22 +95,28 @@ class PresentationsPage extends React.Component {
                         <div className="col-md-12">
                             <table className="table">
                                 <tbody>
-                                { presentations_created.map(p => (
-                                    <tr key={'presentation_' + p.id}>
-                                        <td>
-                                            <i className="fa fa-file-text-o"></i>
-                                            <a onClick={this.handleEditPresentation.bind(this, p.id)}>{p.title}</a>
-                                        </td>
-                                        <td>
-                                            {p.status ? p.status : 'Not submitted'}
-                                        </td>
-                                        <td className="text-right">
-                                            <button className="btn btn-danger btn-xs" onClick={this.handleDeletePresentation.bind(this, p)}>
-                                                {T.translate("general.delete")}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                { presentations_created.map(p => {
+                                    let presentation = new Presentation(p, selectionPlan, loggedSpeaker);
+
+                                    return (
+                                        <tr key={'presentation_' + p.id}>
+                                            <td>
+                                                <i className="fa fa-file-text-o"></i>
+                                                <a onClick={this.handleEditPresentation.bind(this, presentation)}>{p.title}</a>
+                                            </td>
+                                            <td>
+                                                {presentation.getStatus()}
+                                            </td>
+                                            <td className="text-right">
+                                                {presentation.canDelete() &&
+                                                <button className="btn btn-danger btn-xs" onClick={this.handleDeletePresentation.bind(this, p)}>
+                                                    {T.translate("general.delete")}
+                                                </button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
                                 </tbody>
                             </table>
                         </div>
@@ -126,22 +136,22 @@ class PresentationsPage extends React.Component {
                         <div className="col-md-12">
                             <table className="table">
                                 <tbody>
-                                { presentations_speaker.map(p => (
-                                    <tr key={'presentation_' + p.id}>
-                                        <td>
-                                            <i className="fa fa-file-text-o"></i>
-                                            <a onClick={this.handleEditPresentation.bind(this, p.id)}>{p.title}</a>
-                                        </td>
-                                        <td>
-                                            {p.status ? p.status : 'Not submitted'}
-                                        </td>
-                                        <td className="text-right">
-                                            <button className="btn btn-danger btn-xs" onClick={this.handleDeletePresentation.bind(this, p)}>
-                                                {T.translate("general.delete")}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                { presentations_speaker.map(p => {
+                                    let presentation = new Presentation(p, selectionPlan, loggedSpeaker);
+
+                                    return (
+                                        <tr key={'presentation_' + p.id}>
+                                            <td>
+                                                <i className="fa fa-file-text-o"></i>
+                                                <a onClick={this.handleEditPresentation.bind(this, presentation)}>{p.title}</a>
+                                            </td>
+                                            <td>
+                                                {presentation.getStatus()}
+                                            </td>
+                                            <td> &nbsp; </td>
+                                        </tr>
+                                    )
+                                })}
                                 </tbody>
                             </table>
                         </div>
@@ -160,22 +170,22 @@ class PresentationsPage extends React.Component {
                         <div className="col-md-12">
                             <table className="table">
                                 <tbody>
-                                { presentations_moderator.map(p => (
-                                    <tr key={'presentation_' + p.id}>
-                                        <td>
-                                            <i className="fa fa-file-text-o"></i>
-                                            <a onClick={this.handleEditPresentation.bind(this, p.id)}>{p.title}</a>
-                                        </td>
-                                        <td>
-                                            {p.status ? p.status : 'Not submitted'}
-                                        </td>
-                                        <td className="text-right">
-                                            <button className="btn btn-danger btn-xs" onClick={this.handleDeletePresentation.bind(this, p)}>
-                                                {T.translate("general.delete")}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                { presentations_moderator.map(p => {
+                                    let presentation = new Presentation(p, selectionPlan, loggedSpeaker);
+
+                                    return (
+                                        <tr key={'presentation_' + p.id}>
+                                            <td>
+                                                <i className="fa fa-file-text-o"></i>
+                                                <a onClick={this.handleEditPresentation.bind(this, presentation)}>{p.title}</a>
+                                            </td>
+                                            <td>
+                                                {presentation.getStatus()}
+                                            </td>
+                                            <td> &nbsp; </td>
+                                        </tr>
+                                    )
+                                })}
                                 </tbody>
                             </table>
                         </div>
@@ -193,11 +203,13 @@ class PresentationsPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ selectionPlanState, presentationsState }) => ({
+const mapStateToProps = ({ selectionPlanState, presentationsState, loggedUserState, baseState }) => ({
     selectionPlan : selectionPlanState,
     presentations_created : presentationsState.presentations_created,
     presentations_speaker : presentationsState.presentations_speaker,
-    presentations_moderator : presentationsState.presentations_moderator
+    presentations_moderator : presentationsState.presentations_moderator,
+    loggedSpeaker : loggedUserState.speaker,
+    loading: baseState.loading
 })
 
 export default connect (

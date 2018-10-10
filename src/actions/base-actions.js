@@ -35,7 +35,12 @@ export const SELECTION_CLOSED               = 'SELECTION_CLOSED';
 export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
 export const RECEIVE_TAG_GROUPS             = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY         = 'RECEIVE_EVENT_CATEGORY';
+export const RESET_LOADER                   = 'RESET_LOADER';
 
+
+export const resetLoading = () => (dispatch, getState) => {
+    dispatch(createAction(RESET_LOADER)({}));
+}
 
 export const loadCurrentSelectionPlan = () => (dispatch, getState) => {
 

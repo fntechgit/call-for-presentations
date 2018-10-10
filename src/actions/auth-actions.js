@@ -173,10 +173,9 @@ export const getUserInfo = (backUrl) => (dispatch, getState) => {
             };
 
             dispatch(showMessage(error_message, initLogOut));
+        } else {
+            history.push(`/app/profile`);
         }
-
-        console.log(`redirecting to ${backUrl}`)
-        history.push(backUrl);
     });
 }
 
@@ -203,21 +202,14 @@ export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
         `${apiBaseUrl}/api/v1/speakers/me`,
         authErrorHandler
     )(params)(dispatch, getState).then(() => {
-            dispatch(stopLoading());
-
             let { speaker } = getState().loggedUserState;
             if( speaker == null || speaker == undefined){
-                let error_message = {
-                    title: 'ERROR',
-                    html: T.translate("errors.user_not_set"),
-                    type: 'error'
-                };
+                dispatch(getUserInfo(backUrl));
+            } else {
+                dispatch(stopLoading());
 
-                dispatch(showMessage(error_message, initLogOut));
+                history.push(backUrl);
             }
-
-            console.log(`redirecting to ${backUrl}`)
-            history.push(backUrl);
         }
     );
 }

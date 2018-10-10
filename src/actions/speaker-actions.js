@@ -24,9 +24,8 @@ import {
     showMessage,
     showSuccessMessage
 } from "openstack-uicore-foundation/lib/methods";
-import {fetchErrorHandler, fetchResponseHandler} from "openstack-uicore-foundation/src/utils/actions";
+
 import history from '../history'
-import {PRESENTATION_DELETED} from "./presentation-actions";
 
 
 export const RECEIVE_SPEAKER        = 'RECEIVE_SPEAKER';
@@ -40,6 +39,14 @@ export const SPEAKER_REMOVED        = 'SPEAKER_REMOVED';
 export const MODERATOR_ASSIGNED     = 'MODERATOR_ASSIGNED';
 export const MODERATOR_REMOVED      = 'MODERATOR_REMOVED';
 export const PIC_ATTACHED           = 'PIC_ATTACHED';
+
+export const RECEIVE_SPEAKER_PROFILE        = 'RECEIVE_SPEAKER_PROFILE';
+export const REQUEST_SPEAKER_PROFILE        = 'REQUEST_SPEAKER_PROFILE';
+export const RESET_PROFILE_FORM             = 'RESET_PROFILE_FORM';
+export const UPDATE_SPEAKER_PROFILE         = 'UPDATE_SPEAKER_PROFILE';
+export const SPEAKER_PROFILE_UPDATED        = 'SPEAKER_PROFILE_UPDATED';
+export const SPEAKER_PROFILE_SAVED          = 'SPEAKER_PROFILE_SAVED';
+export const PROFILE_PIC_ATTACHED           = 'PROFILE_PIC_ATTACHED';
 
 
 export const getSpeaker = (speakerId) => (dispatch, getState) => {
@@ -90,7 +97,7 @@ export const saveProfile = (entity) => (dispatch, getState) => {
         entity
     )(params)(dispatch)
         .then((payload) => {
-            dispatch(showSuccessMessage(T.translate("edit_speaker.profile_saved")));
+            dispatch(showSuccessMessage(T.translate("edit_profile.profile_saved")));
         });
 }
 
@@ -241,6 +248,8 @@ export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState)
         access_token : accessToken
     };
 
+    dispatch(startLoading());
+
     return deleteRequest(
         null,
         createAction(SPEAKER_REMOVED)({speakerId}),
@@ -287,6 +296,8 @@ export const removeModeratorFromPresentation = (moderatorId) => (dispatch, getSt
         access_token : accessToken
     };
 
+    dispatch(startLoading());
+
     return deleteRequest(
         null,
         createAction(MODERATOR_REMOVED)({moderatorId}),
@@ -318,29 +329,3 @@ const normalizeEntity = (entity) => {
     return normalizedEntity;
 }
 
-export const querySpeakers = (summitId, input) => {
-
-    let accessToken = window.accessToken;
-    let filters = `first_name=@${input},last_name=@${input},email=@${input}`;
-    let apiUrl = `${window.apiBaseUrl}/api/v1`;
-
-    if (summitId) {
-        apiUrl += `/summits/${summitId}`;
-    }
-
-    apiUrl += `/speakers?filter=${filters}&access_token=${accessToken}`;
-
-    return fetch(apiUrl)
-        .then(fetchResponseHandler)
-        .then((json) => {
-            let options = json.data.map((s) => {
-                let name = s.first_name + ' ' + s.last_name;
-                return ({id: s.id, name: name, email: s.email, pic: s.pic});
-            });
-
-            return {
-                options: options
-            };
-        })
-        .catch(fetchErrorHandler);
-};

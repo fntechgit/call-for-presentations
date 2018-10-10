@@ -14,9 +14,13 @@
 import React from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
+import swal from "sweetalert2";
+import T from "i18n-react/dist/i18n-react";
 import { getPresentation, resetPresentation } from '../actions/presentation-actions'
 import EditPresentationPage from '../pages/edit-presentation-page'
+import PreviewPresentationPage from '../pages/preview-presentation-page'
 import EditSpeakerPage from '../pages/edit-speaker-page'
+import Presentation from '../model/presentation'
 
 class PresentationLayout extends React.Component {
 
@@ -42,12 +46,34 @@ class PresentationLayout extends React.Component {
     }
 
     render(){
-        let { match, entity } = this.props;
+        let { match, entity, selectionPlan, speaker, history, loading } = this.props;
+        let presentation = new Presentation(entity, selectionPlan, speaker);
+
+        if (loading) return(<div></div>);
+
+        if (match.params.presentation_id && !loading && !presentation.canEdit()) {
+            swal({
+                title: T.translate("edit_presentation.permission_denied"),
+                text: T.translate("edit_presentation.no_edit"),
+                type: "warning"
+            }).then(function(result){
+                if (result.value) {
+                    history.push('/app/presentations');
+                }
+            }).catch(swal.noop);
+
+            return(<div></div>);
+        }
+
+        if (!speaker) {
+            history.push(`/app/profile`);
+        }
 
         return(
             <Switch>
                 <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} component={EditSpeakerPage}/>
                 <Route strict exact path={`${match.url}/speakers/new`} component={EditSpeakerPage}/>
+                <Route strict exact path={`${match.url}/preview`} component={PreviewPresentationPage}/>
                 <Route strict exact path={`${match.url}/:step`} component={EditPresentationPage}/>
                 <Route render={props => (<Redirect to={`${match.url}/summary`} />)}/>
             </Switch>
@@ -56,9 +82,10 @@ class PresentationLayout extends React.Component {
 
 }
 
-const mapStateToProps = ({ loggedUserState, selectionPlanState, presentationState }) => ({
+const mapStateToProps = ({ loggedUserState, selectionPlanState, presentationState, baseState }) => ({
     speaker: loggedUserState.speaker,
     selectionPlan: selectionPlanState,
+    loading: baseState.loading,
     ...presentationState
 })
 

@@ -27,6 +27,7 @@ import T from 'i18n-react';
 import history from './history'
 import OPSessionChecker from "./components/op-session-checker";
 import CustomErrorPage from "./pages/custom-error-page";
+import { resetLoading } from './actions/base-actions';
 
 // here is set by default user lang as en
 
@@ -41,18 +42,22 @@ if (language.length > 2) {
     language = language.split("_")[0];
 }
 
-console.log(`user language is ${language}`);
-
 T.setTexts(require(`./i18n/${language}.json`));
 
+
+
 class App extends React.PureComponent {
+
+    componentWillMount() {
+        this.props.resetLoading();
+    }
 
     onClickLogin(){
         doLogin(getBackURL());
     }
 
     render() {
-        let { isLoggedUser, onUserAuth, doLogout, getSpeakerInfo, member, selectionPlan, backUrl} = this.props;
+        let { isLoggedUser, onUserAuth, doLogout, getSpeakerInfo, member, selectionPlan, backUrl, loading} = this.props;
         let profile_pic = member ? member.pic : '';
 
         let header_title = '';
@@ -66,7 +71,7 @@ class App extends React.PureComponent {
         return (
             <Router history={history}>
                 <div>
-                    <AjaxLoader show={ this.props.loading } size={ 120 }/>
+                    <AjaxLoader show={ loading } size={ 120 }/>
                     <OPSessionChecker
                         clientId={window.clientId}
                         idpBaseUrl={window.idpBaseUrl}
@@ -102,4 +107,5 @@ export default connect(mapStateToProps, {
     onUserAuth,
     doLogout,
     getSpeakerInfo,
+    resetLoading
 })(App)

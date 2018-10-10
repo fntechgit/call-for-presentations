@@ -15,9 +15,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import swal from "sweetalert2";
-import { formatEpoch } from '../utils/methods';
-import SpeakerForm from '../components/speaker-form'
-import { getSpeaker, resetSpeakerForm, saveSpeaker, attachPicture } from "../actions/speaker-actions";
+import ProfileForm from '../components/profile-form'
+import { saveSpeakerProfile, attachProfilePicture } from "../actions/speaker-actions";
 
 //import '../styles/presentations-page.less';
 
@@ -25,48 +24,56 @@ class ProfilePage extends React.Component {
 
     constructor(props){
         super(props);
+
+
     }
 
     componentWillMount () {
-        let speakerId = this.props.match.params.speaker_id;
-        let {entity}   = this.props;
 
-        if (!speakerId) {
-            this.props.resetSpeakerForm();
-        } else if (speakerId != entity.id){
-            this.props.getSpeaker(speakerId);
-        }
+
+    }
+
+    componentWillReceiveProps(newProps) {
+
     }
 
     render() {
-        let {entity, errors, saveSpeaker, attachPicture} = this.props;
+        let {entity, errors, saveSpeakerProfile, attachProfilePicture, loading} = this.props;
+
+        if (!entity.id && !loading) {
+            swal({
+                title: T.translate("edit_profile.important"),
+                text: T.translate("edit_profile.fill_speaker_details"),
+                type: "warning"
+            });
+        }
 
         return (
             <div className="page-wrap" id="profile-page">
-                <h3>{T.translate("general.edit")} {T.translate("speaker.profile")}</h3>
+                <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile")}</h3>
                 <hr/>
-                <SpeakerForm
+                <ProfileForm
                     entity={entity}
                     errors={errors}
-                    onSubmit={saveSpeaker}
-                    onAttach={attachPicture}
+                    onSubmit={saveSpeakerProfile}
+                    onAttach={attachProfilePicture}
                 />
             </div>
         );
     }
 }
 
-const mapStateToProps = ({ selectionPlanState, speakerState }) => ({
+const mapStateToProps = ({ selectionPlanState, profileState, loggedUserState, baseState }) => ({
     selectionPlan : selectionPlanState,
-    ...speakerState
+    loggedSpeaker: loggedUserState.speaker,
+    loading: baseState.loading,
+    ...profileState
 })
 
 export default connect (
     mapStateToProps,
     {
-        getSpeaker,
-        resetSpeakerForm,
-        saveSpeaker,
-        attachPicture
+        saveSpeakerProfile,
+        attachProfilePicture
     }
 )(ProfilePage);

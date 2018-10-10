@@ -14,8 +14,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
-import swal from "sweetalert2";
-import { getPresentation, resetPresentation, savePresentation, completePresentation } from "../actions/presentation-actions";
+import { savePresentation, completePresentation } from "../actions/presentation-actions";
 import { removeSpeakerFromPresentation, removeModeratorFromPresentation } from "../actions/speaker-actions";
 import { loadEventCategory } from "../actions/base-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
@@ -107,6 +106,7 @@ class EditPresentationPage extends React.Component {
                     />
                 </div>
                 }
+
             </div>
         );
     }
@@ -120,8 +120,6 @@ const mapStateToProps = ({ selectionPlanState, presentationState }) => ({
 export default connect (
     mapStateToProps,
     {
-        getPresentation,
-        resetPresentation,
         savePresentation,
         completePresentation,
         loadEventCategory,

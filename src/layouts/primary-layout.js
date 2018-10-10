@@ -42,7 +42,7 @@ class PrimaryLayout extends React.Component {
     }
 
     render(){
-        let { location, speaker, selectionPlan } = this.props;
+        let { location, speaker, selectionPlan, loading } = this.props;
 
         if(!speaker && location.pathname != '/app/profile') {
             return (
@@ -78,10 +78,11 @@ class PrimaryLayout extends React.Component {
 
 }
 
-const mapStateToProps = ({ loggedUserState, selectionPlanState }) => ({
+const mapStateToProps = ({ loggedUserState, selectionPlanState, baseState }) => ({
     member: loggedUserState.member,
     speaker: loggedUserState.speaker,
-    selectionPlan: selectionPlanState
+    selectionPlan: selectionPlanState,
+    loading: baseState.loading
 })
 
 export default connect(

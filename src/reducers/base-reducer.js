@@ -13,9 +13,10 @@
 
 import { START_LOADING, STOP_LOADING, RECEIVE_COUNTRIES } from "openstack-uicore-foundation/lib/actions";
 import { LOGOUT_USER } from '../actions/auth-actions';
+import { RESET_LOADER } from "../actions/base-actions";
 
 const DEFAULT_STATE = {
-    loading: false,
+    loading: 0,
     countries: []
 }
 
@@ -23,15 +24,16 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
     const { type, payload } = action
 
     switch(type){
+        case RESET_LOADER:
+            return {...state, loading: 0};
+            break;
         case LOGOUT_USER:
             return DEFAULT_STATE;
         case START_LOADING:
-            console.log('START_LOADING')
-            return {...state, loading: true};
+            return {...state, loading: (state.loading + 1)};
             break;
         case STOP_LOADING:
-            console.log('STOP_LOADING')
-            return {...state, loading: false};
+            return {...state, loading: (state.loading - 1)};
             break;
         case RECEIVE_COUNTRIES:
             return {...state, countries: payload};

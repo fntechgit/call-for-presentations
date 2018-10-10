@@ -13,14 +13,14 @@
 
 import
 {
-    RECEIVE_SPEAKER,
-    RESET_SPEAKER_FORM,
-    UPDATE_SPEAKER,
-    SPEAKER_UPDATED,
-    PIC_ATTACHED
+    RECEIVE_SPEAKER_PROFILE,
+    RESET_PROFILE_FORM,
+    UPDATE_SPEAKER_PROFILE,
+    SPEAKER_PROFILE_UPDATED,
+    PROFILE_PIC_ATTACHED
 } from '../actions/speaker-actions';
 
-import {LOGOUT_USER} from '../actions/auth-actions';
+import {LOGOUT_USER, RECEIVE_SPEAKER_INFO, RECEIVE_USER_INFO} from '../actions/auth-actions';
 import { VALIDATE } from '../actions/base-actions';
 
 export const DEFAULT_ENTITY = {
@@ -43,7 +43,7 @@ const DEFAULT_STATE = {
     errors: {}
 };
 
-const speakerReducer = (state = DEFAULT_STATE, action) => {
+const profileReducer = (state = DEFAULT_STATE, action) => {
     const { type, payload } = action
     switch (type) {
         case LOGOUT_USER: {
@@ -55,16 +55,16 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
             }
         }
         break;
-        case RESET_SPEAKER_FORM: {
-            let {email} = payload;
-            return { errors:{}, entity: {...DEFAULT_ENTITY, email: email} };
+        case RECEIVE_USER_INFO: {
+            let entity = {...payload.response};
+            return {...state,  entity: {...DEFAULT_ENTITY}, email: entity.email, errors: {} };
         }
         break;
-        case UPDATE_SPEAKER: {
+        case UPDATE_SPEAKER_PROFILE: {
             return {...state,  entity: {...payload}, errors: {} };
         }
         break;
-        case RECEIVE_SPEAKER: {
+        case RECEIVE_SPEAKER_INFO: {
             let entity = {...payload.response};
             let registration_code = '', on_site_phone = '', registered = false, checked_in = false, confirmed = false;
 
@@ -89,11 +89,11 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
         break;
-        case PIC_ATTACHED: {
+        case PROFILE_PIC_ATTACHED: {
             let pic = state.entity.pic + '?' + new Date().getTime();
             return {...state, entity: {...state.entity, pic: pic} };;
         }
-        case SPEAKER_UPDATED: {
+        case SPEAKER_PROFILE_UPDATED: {
             return state;
         }
         break;
@@ -106,4 +106,4 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
     }
 };
 
-export default speakerReducer;
+export default profileReducer;
