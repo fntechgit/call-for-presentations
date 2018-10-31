@@ -46,13 +46,13 @@ class PresentationLayout extends React.Component {
     }
 
     render(){
-        let { match, entity, selectionPlan, speaker, history, loading } = this.props;
+        let { match, entity, selectionPlan, speaker, history, loading, location } = this.props;
         let presentation = new Presentation(entity, selectionPlan, speaker);
 
         if (loading) return(<div></div>);
 
-        if (match.params.presentation_id && !loading && !presentation.canEdit()) {
-            return(<Redirect to={`${match.url}/summary`} />);
+        if (match.params.presentation_id && !loading && !presentation.canEdit() && !location.pathname.endsWith('preview') ) {
+            return(<Redirect to={`${match.url}/preview`} />);
         }
 
         if (!speaker) {

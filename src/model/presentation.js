@@ -46,9 +46,7 @@ class Presentation {
         let isModerator = (this._presentation.moderator && this._presentation.moderator.id == this._user.id);
         let belongsToSP = allowedTrackIds.includes(this._presentation.track_id);
 
-        //return (isCreator || isSpeaker || isModerator) && belongsToSP;
-
-        return (isSpeaker || isModerator) && belongsToSP;
+        return (isCreator || isSpeaker || isModerator) && belongsToSP;
     }
 
     canDelete() {

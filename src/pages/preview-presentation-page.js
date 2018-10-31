@@ -84,10 +84,14 @@ class PreviewPresentationPage extends React.Component {
                                     {entity.moderator.first_name} {entity.moderator.last_name}  <br/>
                                     {entity.moderator.title}
                                 </div>
-                                <label>Bio</label>
-                                <div className="confirm-item">
-                                    <RawHTML>{entity.moderator.bio}</RawHTML>
-                                </div>
+                                { entity.moderator.bio &&
+                                    <div>
+                                        <label>Bio</label>
+                                        <div className="confirm-item">
+                                            <RawHTML>{entity.moderator.bio}</RawHTML>
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -107,10 +111,14 @@ class PreviewPresentationPage extends React.Component {
                                         {s.first_name} {s.last_name}<br/>
                                         {s.title}
                                     </div>
-                                    <label>Bio</label>
-                                    <div className="confirm-item">
-                                        <RawHTML>{s.bio}</RawHTML>
+                                    { s.bio &&
+                                    <div>
+                                        <label>Bio</label>
+                                        <div className="confirm-item">
+                                            <RawHTML>{s.bio}</RawHTML>
+                                        </div>
                                     </div>
+                                    }
                                 </div>
                             </div>
                         ))}
