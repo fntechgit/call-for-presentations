@@ -13,10 +13,11 @@
 
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
-import history from '../history'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import { Input, TextEditor, UploadInput } from 'openstack-uicore-foundation/lib/components'
+import { Input, TextEditor, UploadInput, RadioList, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput } from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
+import AffiliationsTable from './affiliationstable'
+import PresentationLinks from "./inputs/presentation-links";
 
 
 class SpeakerForm extends React.Component {
@@ -32,7 +33,6 @@ class SpeakerForm extends React.Component {
         this.handleUploadFile = this.handleUploadFile.bind(this);
         this.handleRemoveFile = this.handleRemoveFile.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleCancel = this.handleCancel.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -85,12 +85,6 @@ class SpeakerForm extends React.Component {
         this.props.onSubmit(this.state.entity);
     }
 
-    handleCancel(ev) {
-        ev.preventDefault();
-
-        history.goBack();
-    }
-
     hasErrors(field) {
         let {errors} = this.state;
         if(field in errors) {
@@ -103,6 +97,10 @@ class SpeakerForm extends React.Component {
 
     render() {
         let {entity} = this.state;
+        let {member, orgRoles} = this.props;
+        let showAffiliation = this.props.hasOwnProperty('showAffiliation');
+
+        let roleOptions = orgRoles.map(r => ({value: r.id, label: r.role}));
 
         return (
             <form className="summit-speaker-form">
@@ -137,6 +135,12 @@ class SpeakerForm extends React.Component {
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
+                        <label> {T.translate("edit_speaker.country")} </label>
+                        <CountryInput id="country" multi={false} value={entity.country} onChange={this.handleChange} />
+                    </div>
+                </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
                         <label> {T.translate("edit_speaker.bio")} </label>
                         <TextEditor id="bio" value={entity.bio} onChange={this.handleChange} />
                     </div>
@@ -154,12 +158,123 @@ class SpeakerForm extends React.Component {
                         />
                     </div>
                 </div>
+                {showAffiliation &&
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label>{T.translate("edit_speaker.affiliations")}</label><br/>
+                        <AffiliationsTable
+                            ownerId={member.id}
+                            data={entity.affiliations}
+                        />
+
+                        {T.translate("edit_speaker.affiliations_disclaimer")}
+                    </div>
+                </div>
+                }
+                <hr/>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label>{T.translate("edit_speaker.disclaimer")}</label><br/>
+                        {T.translate("edit_speaker.disclaimer_text")}
+                    </div>
+                </div>
+                <div className="row form-group speaker-bureau-wrapper">
+                    <div className="col-md-12">
+                        <label>{T.translate("edit_speaker.want_bureau")}</label><br/>
+                        {T.translate("edit_speaker.want_bureau_text")}
+                        <div className="checkboxes-div">
+                            <div className="form-check abc-checkbox">
+                                <input type="checkbox" id="available_for_bureau" checked={entity.available_for_bureau}
+                                       onChange={this.handleChange} className="form-check-input" />
+                                <label className="form-check-label" htmlFor="available_for_bureau">
+                                    {T.translate("edit_speaker.speaker_bureau")}
+                                </label>
+                            </div>
+                            <div className="form-check abc-checkbox">
+                                <input type="checkbox" id="willing_to_present_video" checked={entity.willing_to_present_video}
+                                       onChange={this.handleChange} className="form-check-input" />
+                                <label className="form-check-label" htmlFor="willing_to_present_video">
+                                    {T.translate("edit_speaker.video_conference")}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label>{T.translate("edit_speaker.spoken_languages")}</label><br/>
+                        <LanguageInput id="languages" multi={true} value={entity.languages} onChange={this.handleChange} />
+                    </div>
+                </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label>{T.translate("edit_speaker.expertise")}</label><br/>
+                        <FreeMultiTextInput id="areas_of_expertise" limit={5} value={entity.areas_of_expertise} onChange={this.handleChange} />
+                    </div>
+                </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label>{T.translate("edit_speaker.previous_links")}</label>
+                    </div>
+                    <div className="col-md-8">
+                        <PresentationLinks links={entity.other_presentation_links} onChange={this.handleChange} />
+                    </div>
+                </div>
+                <hr/>
+                <h3>{T.translate("edit_speaker.travel")}</h3>
+                <div className="row form-group">
+                    <div className="col-md-12 checkboxes-div">
+                        <div className="form-check abc-checkbox">
+                            <input type="checkbox" id="willing_to_travel" checked={entity.willing_to_travel}
+                                   onChange={this.handleChange} className="form-check-input" />
+                            <label className="form-check-label" htmlFor="willing_to_travel">
+                                {T.translate("edit_speaker.travel_restrictions")}
+                            </label>
+                        </div>
+                    </div>
+                    <div className="col-md-12">
+                        <label>{T.translate("edit_speaker.select_countries")}</label>
+                        <CountryInput id="travel_preferences" multi={true} value={entity.travel_preferences} onChange={this.handleChange} />
+                    </div>
+                    <div className="col-md-12 checkboxes-div">
+                        <div className="form-check abc-checkbox">
+                            <input type="checkbox" id="funded_travel" checked={entity.funded_travel}
+                                   onChange={this.handleChange} className="form-check-input" />
+                            <label className="form-check-label" htmlFor="funded_travel">
+                                {T.translate("edit_speaker.company_willing")}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <hr/>
+                <h3>{T.translate("edit_speaker.role")}</h3>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label>{T.translate("edit_speaker.org_role")}</label>
+                        <CheckboxList
+                            id="organizational_roles"
+                            value={entity.organizational_roles}
+                            options={roleOptions}
+                            onChange={this.handleChange}
+                            allowOther
+                        />
+                    </div>
+                    <div className="col-md-12 org-has-cloud-wrapper">
+                        <label>{T.translate("edit_speaker.opertating_os")}</label>
+                        <RadioList
+                            id="org_has_cloud"
+                            inline
+                            value={entity.org_has_cloud}
+                            onChange={this.handleChange}
+                            options={[{value: 1, label: T.translate("general.yes")}, {value: 0, label: T.translate("general.no")}]}
+                            error={this.hasErrors('org_has_cloud')}
+                        />
+                    </div>
+                </div>
 
                 <div className="row">
                     <div className="col-md-12 submit-buttons">
-                        <input type="button" onClick={this.handleCancel}
-                               className="btn btn-default pull-left" value={T.translate("general.cancel")}/>
-
                         <input type="button" onClick={this.handleSubmit}
                                className="btn btn-primary pull-right" value={T.translate("general.save")}/>
                     </div>

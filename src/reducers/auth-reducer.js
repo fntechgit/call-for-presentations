@@ -19,6 +19,8 @@ import {
     END_SESSION_STATE_CHECK
 } from '../actions/auth-actions';
 
+import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
+
 
 const DEFAULT_STATE = {
     isLoggedUser: false,
@@ -54,7 +56,11 @@ const loggedUserReducer = (state = DEFAULT_STATE, action) => {
         }
         case RECEIVE_SPEAKER_INFO: {
             let {response} = action.payload;
-            return {...state, speaker: response, member: response.member};
+            return {...state, speaker: response};
+        }
+        case PROFILE_PIC_ATTACHED: {
+            let pic = state.speaker.pic + '?' + new Date().getTime();
+            return {...state, speaker: {...state.speaker, pic: pic} };;
         }
         case START_SESSION_STATE_CHECK:{
             return {...state, checkingSessionState: true };

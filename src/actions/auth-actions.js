@@ -142,11 +142,7 @@ export const onFinishSessionStateCheck = () => (dispatch) => {
 export const getUserInfo = (backUrl) => (dispatch, getState) => {
 
     let { loggedUserState }     = getState();
-    let { accessToken, member } = loggedUserState;
-    if(member != null){
-        console.log(`redirecting to ${backUrl}`)
-        history.push(backUrl);
-    }
+    let { accessToken } = loggedUserState;
 
     dispatch(startLoading());
 
@@ -161,11 +157,10 @@ export const getUserInfo = (backUrl) => (dispatch, getState) => {
         `${apiBaseUrl}/api/v1/members/me`,
         authErrorHandler
     )(params)(dispatch, getState).then(() => {
-
         dispatch(stopLoading());
-
         let { member } = getState().loggedUserState;
-        if( member == null || member == undefined){
+
+        if( !member ){
             let error_message = {
                 title: 'ERROR',
                 html: T.translate("errors.user_not_set"),
@@ -174,7 +169,7 @@ export const getUserInfo = (backUrl) => (dispatch, getState) => {
 
             dispatch(showMessage(error_message, initLogOut));
         } else {
-            history.push(`/app/profile`);
+            dispatch(getSpeakerInfo(backUrl));
         }
     });
 }
@@ -183,11 +178,7 @@ export const getUserInfo = (backUrl) => (dispatch, getState) => {
 export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
 
     let { loggedUserState }     = getState();
-    let { accessToken, speaker } = loggedUserState;
-    if(speaker != null){
-        console.log(`redirecting to ${backUrl}`)
-        history.push(backUrl);
-    }
+    let { accessToken } = loggedUserState;
 
     dispatch(startLoading());
 
@@ -202,14 +193,11 @@ export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
         `${apiBaseUrl}/api/v1/speakers/me`,
         authErrorHandler
     )(params)(dispatch, getState).then(() => {
-            let { speaker } = getState().loggedUserState;
-            if( speaker == null || speaker == undefined){
-                dispatch(getUserInfo(backUrl));
-            } else {
-                dispatch(stopLoading());
 
-                history.push(backUrl);
-            }
+        dispatch(stopLoading());
+
+        if (backUrl) {
+            history.push(backUrl);
         }
-    );
+    });
 }

@@ -33,7 +33,8 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
             return {...state, loading: (state.loading + 1)};
             break;
         case STOP_LOADING:
-            return {...state, loading: (state.loading - 1)};
+            let loadingCount = (state.loading == 0) ? 0 : state.loading -1;
+            return {...state, loading: loadingCount};
             break;
         case RECEIVE_COUNTRIES:
             return {...state, countries: payload};

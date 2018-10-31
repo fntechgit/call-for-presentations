@@ -49,10 +49,8 @@ class AuthorizationCallbackRoute extends React.Component {
     }
 
     render() {
-        let { getSpeakerInfo } = this.props;
 
         if(this.accessTokenParsed) return null;
-
 
         let { access_token , id_token, session_state, error, error_description} = this.extractHashParams();
 
@@ -96,7 +94,7 @@ class AuthorizationCallbackRoute extends React.Component {
             backUrl     += `#${URI.buildQuery(fragment)}`;
         }
 
-        getSpeakerInfo(backUrl);
+        this.props.getUserInfo(backUrl);
 
         return null;
     }

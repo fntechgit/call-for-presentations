@@ -42,9 +42,9 @@ class PrimaryLayout extends React.Component {
     }
 
     render(){
-        let { location, speaker, selectionPlan, loading } = this.props;
+        let { location, speaker, member, selectionPlan, loading } = this.props;
 
-        if(!speaker && location.pathname != '/app/profile') {
+        if((!speaker || !speaker.id) && location.pathname != '/app/profile') {
             return (
                 <Redirect exact to={{ pathname: '/app/profile' }}  />
             );
@@ -52,11 +52,13 @@ class PrimaryLayout extends React.Component {
 
         if (!selectionPlan.id) return (<div></div>);
 
+        let loggedUser = speaker.id ? speaker : member;
+
         return(
             <div className="primary-layout container-fluid">
                 <div className="row">
                     <div className="col-md-3">
-                        <NavMenu user={speaker} active={this.getActiveMenu()}/>
+                        <NavMenu user={loggedUser} active={this.getActiveMenu()}/>
                     </div>
                     <div className="col-md-9">
                         <main id="page-wrap">

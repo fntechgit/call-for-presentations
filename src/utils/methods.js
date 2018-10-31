@@ -14,6 +14,7 @@
 import moment from 'moment-timezone';
 import URI from "urijs";
 
+
 export const findElementPos = (obj) => {
     var curtop = -70;
     if (obj.offsetParent) {
@@ -63,3 +64,4 @@ export const getBackURL = () => {
     }
     return backUrl;
 }
+

@@ -17,11 +17,13 @@ import
     RESET_PROFILE_FORM,
     UPDATE_SPEAKER_PROFILE,
     SPEAKER_PROFILE_UPDATED,
-    PROFILE_PIC_ATTACHED
+    PROFILE_PIC_ATTACHED,
+    RECEIVE_ORG_ROLES
 } from '../actions/speaker-actions';
 
 import {LOGOUT_USER, RECEIVE_SPEAKER_INFO, RECEIVE_USER_INFO} from '../actions/auth-actions';
 import { VALIDATE } from '../actions/base-actions';
+import {AFFILIATION_ADDED, AFFILIATION_DELETED, AFFILIATION_SAVED} from '../actions/member-actions'
 
 export const DEFAULT_ENTITY = {
     id: 0,
@@ -33,13 +35,22 @@ export const DEFAULT_ENTITY = {
     irc: '',
     bio: '',
     pic: '',
-    all_presentations: [],
-    registration_codes: [],
-    summit_assistances: []
+    affiliations: [],
+    available_for_bureau: false,
+    willing_to_present_video: false,
+    languages: [],
+    areas_of_expertise: [],
+    other_presentation_links: [],
+    willing_to_travel: false,
+    funded_travel: false,
+    travel_preferences: [],
+    organizational_roles: [],
+    org_has_cloud: false
 }
 
 const DEFAULT_STATE = {
     entity: DEFAULT_ENTITY,
+    orgRoles: [],
     errors: {}
 };
 
@@ -57,7 +68,16 @@ const profileReducer = (state = DEFAULT_STATE, action) => {
         break;
         case RECEIVE_USER_INFO: {
             let entity = {...payload.response};
-            return {...state,  entity: {...DEFAULT_ENTITY}, email: entity.email, errors: {} };
+            return {
+                ...state,
+                entity: {
+                    ...DEFAULT_ENTITY,
+                    email: entity.email,
+                    last_name: entity.last_name,
+                    first_name: entity.first_name
+                },
+                errors: {}
+            };
         }
         break;
         case UPDATE_SPEAKER_PROFILE: {
@@ -66,7 +86,6 @@ const profileReducer = (state = DEFAULT_STATE, action) => {
         break;
         case RECEIVE_SPEAKER_INFO: {
             let entity = {...payload.response};
-            let registration_code = '', on_site_phone = '', registered = false, checked_in = false, confirmed = false;
 
             for(var key in entity) {
                 if(entity.hasOwnProperty(key)) {
@@ -74,17 +93,7 @@ const profileReducer = (state = DEFAULT_STATE, action) => {
                 }
             }
 
-            if (entity.hasOwnProperty('registration_code')) {
-                entity.registration_code = entity.registration_code.code;
-                entity.code_redeemed = entity.registration_code.redeemed;
-            }
-
-            if (entity.hasOwnProperty('summit_assistance')) {
-                entity.on_site_phone = entity.summit_assistance.on_site_phone;
-                entity.registered = entity.summit_assistance.registered;
-                entity.checked_in = entity.summit_assistance.checked_in;
-                entity.confirmed = entity.summit_assistance.confirmed;
-            }
+            entity.areas_of_expertise = entity.areas_of_expertise.map(a => ({value: a.id, label: a.expertise}));
 
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
@@ -95,6 +104,33 @@ const profileReducer = (state = DEFAULT_STATE, action) => {
         }
         case SPEAKER_PROFILE_UPDATED: {
             return state;
+        }
+        break;
+        case AFFILIATION_ADDED: {
+            let affiliation = {...payload.response};
+            let affiliations = [...state.entity.affiliations, affiliation];
+            return {...state, entity: {...state.entity, affiliations: affiliations}, errors: {} };
+        }
+        break;
+        case AFFILIATION_SAVED: {
+            let {affiliation} = payload;
+            let affiliations = state.entity.affiliations.map(a => {
+                    if (a.id == affiliation.id) return affiliation;
+                    return a;
+                }
+            );
+            return {...state, entity: {...state.entity, affiliations: affiliations}, errors: {} };
+        }
+        break;
+        case AFFILIATION_DELETED: {
+            let {affiliationId} = payload;
+            let affiliations = state.entity.affiliations.filter(a => a.id != affiliationId);
+            return {...state, entity: {...state.entity, affiliations: affiliations}, errors: {} };
+        }
+        break;
+        case RECEIVE_ORG_ROLES: {
+            let orgRoles = [...payload.response.data];
+            return {...state, orgRoles: orgRoles}
         }
         break;
         case VALIDATE: {

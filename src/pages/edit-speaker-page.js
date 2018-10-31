@@ -17,7 +17,7 @@ import T from 'i18n-react/dist/i18n-react';
 import swal from "sweetalert2";
 import { formatEpoch } from '../utils/methods';
 import SpeakerForm from '../components/speaker-form'
-import { getSpeaker, resetSpeakerForm, saveSpeaker, attachPicture } from "../actions/speaker-actions";
+import { getSpeaker, resetSpeakerForm, saveSpeaker, attachPicture, getOrganizationalRoles } from "../actions/speaker-actions";
 
 //import '../styles/presentations-page.less';
 
@@ -35,17 +35,22 @@ class EditSpeakerPage extends React.Component {
 
     componentWillMount () {
         let speakerId = this.props.match.params.speaker_id;
-        let {entity, location, history, currentPresentation}   = this.props;
+        let {entity, location, history, currentPresentation, orgRoles}   = this.props;
 
         if (!speakerId || isNaN(speakerId)) {
-            if (location.state != 'undefined' || !location.state.hasOwnProperty('email')) {
+            if (!location.state || !location.state.hasOwnProperty('email')) {
                 history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+            } else {
+                this.props.resetSpeakerForm(location.state.email);
             }
-
-            this.props.resetSpeakerForm(location.state.email);
         } else if (speakerId != entity.id){
             this.props.getSpeaker(speakerId);
         }
+
+        if (orgRoles.length == 0) {
+            this.props.getOrganizationalRoles();
+        }
+
     }
 
     handleSubmit(speaker) {
@@ -54,7 +59,7 @@ class EditSpeakerPage extends React.Component {
     }
 
     render() {
-        let {entity, errors, saveSpeaker, attachPicture} = this.props;
+        let {entity, orgRoles, loggedMember, errors, attachPicture} = this.props;
 
         return (
             <div className="page-wrap" id="edit-speaker-page">
@@ -63,6 +68,8 @@ class EditSpeakerPage extends React.Component {
                 <SpeakerForm
                     entity={entity}
                     errors={errors}
+                    member={loggedMember}
+                    orgRoles={orgRoles}
                     onSubmit={this.handleSubmit}
                     onAttach={attachPicture}
                 />
@@ -83,6 +90,7 @@ export default connect (
         getSpeaker,
         resetSpeakerForm,
         saveSpeaker,
-        attachPicture
+        attachPicture,
+        getOrganizationalRoles
     }
 )(EditSpeakerPage);

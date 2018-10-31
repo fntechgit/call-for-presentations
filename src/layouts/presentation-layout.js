@@ -52,17 +52,7 @@ class PresentationLayout extends React.Component {
         if (loading) return(<div></div>);
 
         if (match.params.presentation_id && !loading && !presentation.canEdit()) {
-            swal({
-                title: T.translate("edit_presentation.permission_denied"),
-                text: T.translate("edit_presentation.no_edit"),
-                type: "warning"
-            }).then(function(result){
-                if (result.value) {
-                    history.push('/app/presentations');
-                }
-            }).catch(swal.noop);
-
-            return(<div></div>);
+            return(<Redirect to={`${match.url}/summary`} />);
         }
 
         if (!speaker) {
@@ -71,8 +61,8 @@ class PresentationLayout extends React.Component {
 
         return(
             <Switch>
-                <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} component={EditSpeakerPage}/>
                 <Route strict exact path={`${match.url}/speakers/new`} component={EditSpeakerPage}/>
+                <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} component={EditSpeakerPage}/>
                 <Route strict exact path={`${match.url}/preview`} component={PreviewPresentationPage}/>
                 <Route strict exact path={`${match.url}/:step`} component={EditPresentationPage}/>
                 <Route render={props => (<Redirect to={`${match.url}/summary`} />)}/>

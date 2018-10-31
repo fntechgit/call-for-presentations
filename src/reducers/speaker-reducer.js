@@ -17,7 +17,8 @@ import
     RESET_SPEAKER_FORM,
     UPDATE_SPEAKER,
     SPEAKER_UPDATED,
-    PIC_ATTACHED
+    PIC_ATTACHED,
+    RECEIVE_ORG_ROLES
 } from '../actions/speaker-actions';
 
 import {LOGOUT_USER} from '../actions/auth-actions';
@@ -33,13 +34,22 @@ export const DEFAULT_ENTITY = {
     irc: '',
     bio: '',
     pic: '',
-    all_presentations: [],
-    registration_codes: [],
-    summit_assistances: []
+    affiliations: [],
+    available_for_bureau: false,
+    willing_to_present_video: false,
+    languages: [],
+    areas_of_expertise: [],
+    other_presentation_links: [],
+    willing_to_travel: false,
+    funded_travel: false,
+    travel_preferences: [],
+    organizational_roles: [],
+    org_has_cloud: false
 }
 
 const DEFAULT_STATE = {
     entity: DEFAULT_ENTITY,
+    orgRoles: [],
     errors: {}
 };
 
@@ -57,7 +67,7 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
         break;
         case RESET_SPEAKER_FORM: {
             let {email} = payload;
-            return { errors:{}, entity: {...DEFAULT_ENTITY, email: email} };
+            return { ...state, errors:{}, entity: {...DEFAULT_ENTITY, email: email} };
         }
         break;
         case UPDATE_SPEAKER: {
@@ -66,24 +76,11 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
         break;
         case RECEIVE_SPEAKER: {
             let entity = {...payload.response};
-            let registration_code = '', on_site_phone = '', registered = false, checked_in = false, confirmed = false;
 
             for(var key in entity) {
                 if(entity.hasOwnProperty(key)) {
                     entity[key] = (entity[key] == null) ? '' : entity[key] ;
                 }
-            }
-
-            if (entity.hasOwnProperty('registration_code')) {
-                entity.registration_code = entity.registration_code.code;
-                entity.code_redeemed = entity.registration_code.redeemed;
-            }
-
-            if (entity.hasOwnProperty('summit_assistance')) {
-                entity.on_site_phone = entity.summit_assistance.on_site_phone;
-                entity.registered = entity.summit_assistance.registered;
-                entity.checked_in = entity.summit_assistance.checked_in;
-                entity.confirmed = entity.summit_assistance.confirmed;
             }
 
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
@@ -95,6 +92,11 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
         }
         case SPEAKER_UPDATED: {
             return state;
+        }
+        break;
+        case RECEIVE_ORG_ROLES: {
+            let orgRoles = [...payload.response.data];
+            return {...state, orgRoles: orgRoles}
         }
         break;
         case VALIDATE: {

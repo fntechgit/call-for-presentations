@@ -47,6 +47,7 @@ export const UPDATE_SPEAKER_PROFILE         = 'UPDATE_SPEAKER_PROFILE';
 export const SPEAKER_PROFILE_UPDATED        = 'SPEAKER_PROFILE_UPDATED';
 export const SPEAKER_PROFILE_SAVED          = 'SPEAKER_PROFILE_SAVED';
 export const PROFILE_PIC_ATTACHED           = 'PROFILE_PIC_ATTACHED';
+export const RECEIVE_ORG_ROLES              = 'RECEIVE_ORG_ROLES';
 
 
 export const getSpeaker = (speakerId) => (dispatch, getState) => {
@@ -75,32 +76,6 @@ export const getSpeaker = (speakerId) => (dispatch, getState) => {
 export const resetSpeakerForm = (email = '') => (dispatch, getState) => {
     dispatch(createAction(RESET_SPEAKER_FORM)({email}));
 };
-
-export const saveProfile = (entity) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
-
-    dispatch(startLoading());
-
-    let params = {
-        access_token : accessToken,
-    };
-
-    let normalizedEntity = normalizeEntity(entity);
-
-    putRequest(
-        createAction(UPDATE_SPEAKER),
-        createAction(SPEAKER_UPDATED),
-        `${apiBaseUrl}/api/v1/speakers/${entity.id}`,
-        normalizedEntity,
-        authErrorHandler,
-        entity
-    )(params)(dispatch)
-        .then((payload) => {
-            dispatch(showSuccessMessage(T.translate("edit_profile.profile_saved")));
-        });
-}
-
 
 export const saveSpeaker = (entity, type) => (dispatch, getState) => {
     let { loggedUserState, presentationState } = getState();
@@ -179,12 +154,12 @@ export const attachPicture = (entity, file) => (dispatch, getState) => {
         return postRequest(
             null,
             createAction(SPEAKER_UPDATED),
-            `${apiBaseUrl}/api/v1/speakers/${entity.id}`,
+            `${apiBaseUrl}/api/v1/speakers`,
             entity,
             authErrorHandler
         )(params)(dispatch)
-            .then(() => {
-                dispatch(uploadFile(entity, file));
+            .then((payload) => {
+                dispatch(uploadFile(payload.response, file));
             })
             .then(() => {
                 dispatch(stopLoading());
@@ -194,9 +169,8 @@ export const attachPicture = (entity, file) => (dispatch, getState) => {
 }
 
 const uploadFile = (entity, file) => (dispatch, getState) => {
-    let { loggedUserState, currentSummitState } = getState();
+    let { loggedUserState } = getState();
     let { accessToken }     = loggedUserState;
-    let { currentSummit }   = currentSummitState;
 
     let params = {
         access_token : accessToken,
@@ -329,3 +303,150 @@ const normalizeEntity = (entity) => {
     return normalizedEntity;
 }
 
+
+
+
+/******************************************** PROFILE *****************************************/
+
+
+
+
+export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
+    let { loggedUserState, presentationState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    dispatch(startLoading());
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    let normalizedEntity = normalizeEntityProfile(entity);
+
+    let success_message = {
+        title: T.translate("general.done"),
+        html: '',
+        type: 'success'
+    };
+
+    if (entity.id) {
+
+        putRequest(
+            createAction(UPDATE_SPEAKER_PROFILE),
+            createAction(SPEAKER_PROFILE_SAVED),
+            `${apiBaseUrl}/api/v1/speakers/${entity.id}`,
+            normalizedEntity,
+            authErrorHandler,
+            entity
+        )(params)(dispatch)
+            .then((payload) => {
+                success_message.html = T.translate("edit_profile.profile_saved");
+                dispatch(showMessage(success_message));
+            });
+
+    } else {
+
+        postRequest(
+            createAction(UPDATE_SPEAKER_PROFILE),
+            createAction(SPEAKER_PROFILE_SAVED),
+            `${apiBaseUrl}/api/v1/speakers`,
+            normalizedEntity,
+            authErrorHandler,
+            entity
+        )(params)(dispatch)
+            .then((payload) => {
+                success_message.html = T.translate("edit_profile.profile_saved");
+                dispatch(showMessage(success_message));
+            });
+    }
+}
+
+
+export const attachProfilePicture = (entity, file) => (dispatch, getState) => {
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    //dispatch(startLoading());
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    if (entity.id) {
+        return dispatch(uploadFileProfile(entity, file));
+    } else {
+        return postRequest(
+            null,
+            createAction(SPEAKER_PROFILE_SAVED),
+            `${apiBaseUrl}/api/v1/speakers`,
+            entity,
+            authErrorHandler
+        )(params)(dispatch)
+            .then((payload) => {
+                dispatch(uploadFileProfile(payload.response, file));
+            })
+            .then(() => {
+                    dispatch(stopLoading());
+                }
+            );
+    }
+}
+
+const uploadFileProfile = (entity, file) => (dispatch, getState) => {
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    postRequest(
+        null,
+        createAction(PROFILE_PIC_ATTACHED),
+        `${apiBaseUrl}/api/v1/speakers/${entity.id}/photo`,
+        file,
+        authErrorHandler,
+        {pic: entity.pic}
+    )(params)(dispatch)
+}
+
+
+export const getOrganizationalRoles = () => (dispatch, getState) => {
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    dispatch(startLoading());
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    return getRequest(
+        null,
+        createAction(RECEIVE_ORG_ROLES),
+        `${apiBaseUrl}/api/v1/speakers/organizational-roles`,
+        authErrorHandler
+    )(params)(dispatch).then(() => {
+            dispatch(stopLoading());
+        }
+    );
+}
+
+
+const normalizeEntityProfile = (entity) => {
+    let normalizedEntity = {...entity};
+
+    normalizedEntity.organizational_roles = entity.organizational_roles.filter( r => Number.isInteger(r));
+    normalizedEntity.other_organizational_role = entity.organizational_roles.filter( r => typeof r === 'string');
+
+    normalizedEntity.languages = entity.languages.map(l => l.id);
+
+    normalizedEntity.areas_of_expertise = entity.areas_of_expertise.map(a => a.label);
+
+
+    delete normalizedEntity['affiliations'];
+    delete normalizedEntity['pic'];
+    delete normalizedEntity['member'];
+
+    return normalizedEntity;
+}

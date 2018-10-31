@@ -120,24 +120,6 @@
   "edit_speaker": {
     "profile": "Speaker Profile",
     "title": "Title",
-    "email": "Email",
-    "twitter": "Twitter",
-    "irc": "IRC",
-    "bio": "Bio",
-    "profile_pic": "Profile Pic",
-    "speaker_created": "Speaker created successfully!",
-    "speaker_saved": "Speaker saved successfully!",
-    "moderator_created": "Moderator created successfully!",
-    "moderator_saved": "Moderator saved successfully!"
-  },
-  "preview_presentation": {
-    "preview_presentation": "Preview Your Submission"
-  },
-  "edit_profile": {
-    "profile": "Speaker Profile",
-    "important": "Important!",
-    "fill_speaker_details": "You must complete your speaker profile in order to submit a presentation.",
-    "title": "Title",
     "country": "Country of Recidence",
     "email": "Email",
     "twitter": "Twitter",
@@ -165,7 +147,27 @@
     "org_role": "What is your current Organizational Role at your company? (check all that apply):",
     "org_role_other": "Please specify your role:",
     "opertating_os": "Is your organization Operating an OpenStack cloud?",
+    "speaker_created": "Speaker created successfully!",
+    "speaker_saved": "Speaker saved successfully!",
+    "moderator_created": "Moderator created successfully!",
+    "moderator_saved": "Moderator saved successfully!"
+  },
+  "preview_presentation": {
+    "preview_presentation": "Preview Your Submission"
+  },
+  "edit_profile": {
+    "profile": "Speaker Profile",
+    "important": "Important!",
+    "fill_speaker_details": "You must complete your speaker profile in order to submit a presentation.",
     "profile_saved": "Profile saved successfully!"
+  },
+  "affiliations": {
+    "title": "Title",
+    "organization": "Organization",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "is_current": "Is Current?",
+    "actions": "Actions"
   }
 
 }

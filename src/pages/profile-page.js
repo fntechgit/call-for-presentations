@@ -15,10 +15,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import swal from "sweetalert2";
-import ProfileForm from '../components/profile-form'
-import { saveSpeakerProfile, attachProfilePicture } from "../actions/speaker-actions";
+import SpeakerForm from '../components/speaker-form'
+import { saveSpeakerProfile, attachProfilePicture, getOrganizationalRoles } from "../actions/speaker-actions";
+import { getSpeakerInfo } from "../actions/auth-actions";
 
-//import '../styles/presentations-page.less';
+import '../styles/profile-page.less';
 
 class ProfilePage extends React.Component {
 
@@ -29,18 +30,17 @@ class ProfilePage extends React.Component {
     }
 
     componentWillMount () {
+        //this.props.getSpeakerInfo(null);
 
-
-    }
-
-    componentWillReceiveProps(newProps) {
-
+        if (this.props.orgRoles.length == 0) {
+            this.props.getOrganizationalRoles();
+        }
     }
 
     render() {
-        let {entity, errors, saveSpeakerProfile, attachProfilePicture, loading} = this.props;
+        let {entity, orgRoles, loggedMember, errors, saveSpeakerProfile, attachProfilePicture, loading} = this.props;
 
-        if (!entity.id && !loading) {
+        if (!entity.id && !loading && !errors) {
             swal({
                 title: T.translate("edit_profile.important"),
                 text: T.translate("edit_profile.fill_speaker_details"),
@@ -52,11 +52,14 @@ class ProfilePage extends React.Component {
             <div className="page-wrap" id="profile-page">
                 <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile")}</h3>
                 <hr/>
-                <ProfileForm
+                <SpeakerForm
                     entity={entity}
                     errors={errors}
+                    member={loggedMember}
+                    orgRoles={orgRoles}
                     onSubmit={saveSpeakerProfile}
                     onAttach={attachProfilePicture}
+                    showAffiliations
                 />
             </div>
         );
@@ -65,7 +68,7 @@ class ProfilePage extends React.Component {
 
 const mapStateToProps = ({ selectionPlanState, profileState, loggedUserState, baseState }) => ({
     selectionPlan : selectionPlanState,
-    loggedSpeaker: loggedUserState.speaker,
+    loggedMember: loggedUserState.member,
     loading: baseState.loading,
     ...profileState
 })
@@ -74,6 +77,8 @@ export default connect (
     mapStateToProps,
     {
         saveSpeakerProfile,
-        attachProfilePicture
+        attachProfilePicture,
+        getSpeakerInfo,
+        getOrganizationalRoles
     }
 )(ProfilePage);

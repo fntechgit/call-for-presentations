@@ -20,7 +20,7 @@ import AuthButton from './components/auth-button'
 import DefaultRoute from './routes/default-route'
 import LogOutCallbackRoute from './routes/logout-callback-route'
 import { connect } from 'react-redux'
-import { onUserAuth, doLogin, doLogout, initLogOut, getSpeakerInfo } from './actions/auth-actions'
+import { onUserAuth, doLogin, doLogout, initLogOut, getSpeakerInfo, getUserInfo } from './actions/auth-actions'
 import { AjaxLoader } from "openstack-uicore-foundation/lib/components";
 import {getBackURL, formatEpoch} from "openstack-uicore-foundation/lib/methods";
 import T from 'i18n-react';
@@ -57,7 +57,7 @@ class App extends React.PureComponent {
     }
 
     render() {
-        let { isLoggedUser, onUserAuth, doLogout, getSpeakerInfo, member, selectionPlan, backUrl, loading} = this.props;
+        let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member, selectionPlan, backUrl, loading} = this.props;
         let profile_pic = member ? member.pic : '';
 
         let header_title = '';
@@ -84,7 +84,7 @@ class App extends React.PureComponent {
                     </div>
                     <Switch>
                         <AuthorizedRoute isLoggedUser={isLoggedUser} backUrl={backUrl} path="/app" component={PrimaryLayout} />
-                        <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getSpeakerInfo={getSpeakerInfo} />
+                        <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getUserInfo={getUserInfo} />
                         <LogOutCallbackRoute doLogout={doLogout}  path='/auth/logout'/>
                         <Route path="/404" render={props => (<p>404 - Not Found</p>)}/>
                         <Route path="/error" component={CustomErrorPage}/>
@@ -107,5 +107,6 @@ export default connect(mapStateToProps, {
     onUserAuth,
     doLogout,
     getSpeakerInfo,
+    getUserInfo,
     resetLoading
 })(App)
