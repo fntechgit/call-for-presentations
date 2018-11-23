@@ -84,8 +84,8 @@ class PresentationSpeakersForm extends React.Component {
 
 
     render() {
-        let {selectionPlan, entity} = this.props;
-        let eventType = selectionPlan.summit.event_types.find(t => t.id == entity.type_id);
+        let {summit, entity} = this.props;
+        let eventType = summit.event_types.find(t => t.id == entity.type_id);
 
         let canAddSpeakers = (eventType.max_speakers > entity.speakers.length);
         let canAddModerator = (eventType.max_moderators && !entity.moderator);

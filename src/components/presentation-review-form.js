@@ -45,7 +45,7 @@ class PresentationReviewForm extends React.Component {
     }
 
     render() {
-        let {selectionPlan, entity, track} = this.props;
+        let {entity, track} = this.props;
 
         return (
             <form className="presentation-review-form">
@@ -60,7 +60,9 @@ class PresentationReviewForm extends React.Component {
                 </div>
                 <div className="item">
                     <label>{T.translate("edit_presentation.abstract")}</label><br/>
+                    {entity.description &&
                     <RawHTML>{entity.description}</RawHTML>
+                    }
                 </div>
                 <hr/>
                 <div className="item">
@@ -69,7 +71,9 @@ class PresentationReviewForm extends React.Component {
                 </div>
                 <div className="item">
                     <label>{T.translate("edit_presentation.general_topic")}</label><br/>
+                    {track.name &&
                     <RawHTML>{track.name}</RawHTML>
+                    }
                 </div>
                 <div className="item">
                     <label>{T.translate("edit_presentation.attending_media")}</label><br/>
@@ -92,7 +96,9 @@ class PresentationReviewForm extends React.Component {
                             </div>
                             <label>Bio</label>
                             <div className="confirm-item">
+                                {entity.moderator.bio &&
                                 <RawHTML>{entity.moderator.bio}</RawHTML>
+                                }
                             </div>
                         </div>
                     </div>
@@ -115,7 +121,9 @@ class PresentationReviewForm extends React.Component {
                                 </div>
                                 <label>Bio</label>
                                 <div className="confirm-item">
+                                    {s.bio &&
                                     <RawHTML>{s.bio}</RawHTML>
+                                    }
                                 </div>
                             </div>
                         </div>

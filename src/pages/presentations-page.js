@@ -68,7 +68,16 @@ class PresentationsPage extends React.Component {
     }
 
     render() {
-        let { presentations_created, presentations_speaker, presentations_moderator, selectionPlan, loggedSpeaker, loading } = this.props;
+        let {
+            presentations_created,
+            presentations_speaker,
+            presentations_moderator,
+            selectionPlan,
+            summit,
+            cfpOpen,
+            loggedSpeaker,
+            loading
+        } = this.props;
 
         if (loading) return(<div></div>);
 
@@ -79,11 +88,14 @@ class PresentationsPage extends React.Component {
                         <div className="col-md-6">
                             <h2> {T.translate("presentations.presentations")}</h2>
                         </div>
+                        {cfpOpen &&
                         <div className="col-md-6 text-right">
-                            <button className="btn btn-success add-presentation-btn" onClick={this.handleNewPresentation}>
+                            <button className="btn btn-success add-presentation-btn"
+                                    onClick={this.handleNewPresentation}>
                                 {T.translate("presentations.add_presentation")}
                             </button>
                         </div>
+                        }
                     </div>
                 </div>
                 <div className="body">
@@ -96,7 +108,7 @@ class PresentationsPage extends React.Component {
                             <table className="table">
                                 <tbody>
                                 { presentations_created.map(p => {
-                                    let presentation = new Presentation(p, selectionPlan, loggedSpeaker);
+                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, cfpOpen);
 
                                     return (
                                         <tr key={'presentation_' + p.id}>
@@ -107,8 +119,11 @@ class PresentationsPage extends React.Component {
                                             <td>
                                                 {presentation.getStatus()}
                                             </td>
+                                            <td>
+                                                {presentation.getSelectionPlanName()}
+                                            </td>
                                             <td className="text-right">
-                                                {presentation.canDelete() &&
+                                                {cfpOpen && presentation.canDelete() &&
                                                 <button className="btn btn-danger btn-xs" onClick={this.handleDeletePresentation.bind(this, p)}>
                                                     {T.translate("general.delete")}
                                                 </button>
@@ -137,7 +152,7 @@ class PresentationsPage extends React.Component {
                             <table className="table">
                                 <tbody>
                                 { presentations_speaker.map(p => {
-                                    let presentation = new Presentation(p, selectionPlan, loggedSpeaker);
+                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, cfpOpen);
 
                                     return (
                                         <tr key={'presentation_' + p.id}>
@@ -147,6 +162,9 @@ class PresentationsPage extends React.Component {
                                             </td>
                                             <td>
                                                 {presentation.getStatus()}
+                                            </td>
+                                            <td>
+                                                {presentation.getSelectionPlanName()}
                                             </td>
                                             <td> &nbsp; </td>
                                         </tr>
@@ -171,7 +189,7 @@ class PresentationsPage extends React.Component {
                             <table className="table">
                                 <tbody>
                                 { presentations_moderator.map(p => {
-                                    let presentation = new Presentation(p, selectionPlan, loggedSpeaker);
+                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, cfpOpen);
 
                                     return (
                                         <tr key={'presentation_' + p.id}>
@@ -181,6 +199,9 @@ class PresentationsPage extends React.Component {
                                             </td>
                                             <td>
                                                 {presentation.getStatus()}
+                                            </td>
+                                            <td>
+                                                {presentation.getSelectionPlanName()}
                                             </td>
                                             <td> &nbsp; </td>
                                         </tr>
@@ -203,8 +224,10 @@ class PresentationsPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ selectionPlanState, presentationsState, loggedUserState, baseState }) => ({
-    selectionPlan : selectionPlanState,
+const mapStateToProps = ({ presentationsState, loggedUserState, baseState }) => ({
+    selectionPlan : baseState.selectionPlan,
+    cfpOpen : baseState.cfpOpen,
+    summit : baseState.summit,
     presentations_created : presentationsState.presentations_created,
     presentations_speaker : presentationsState.presentations_speaker,
     presentations_moderator : presentationsState.presentations_moderator,

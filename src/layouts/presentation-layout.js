@@ -41,17 +41,17 @@ class PresentationLayout extends React.Component {
         if (!newId) {
             this.props.resetPresentation();
         } else if (oldId != newId) {
-            this.props.getPresentation(presentationId);
+            this.props.getPresentation(newId);
         }
     }
 
     render(){
-        let { match, entity, selectionPlan, speaker, history, loading, location } = this.props;
-        let presentation = new Presentation(entity, selectionPlan, speaker);
+        let { match, entity, summit, selectionPlan, speaker, history, loading, location, cfpOpen } = this.props;
+        let presentation = new Presentation(entity, summit, selectionPlan, speaker, cfpOpen);
 
         if (loading) return(<div></div>);
 
-        if (match.params.presentation_id && !loading && !presentation.canEdit() && !location.pathname.endsWith('preview') ) {
+        if (match.params.presentation_id && match.params.presentation_id == entity.id && !presentation.canEdit() && !location.pathname.endsWith('preview') ) {
             return(<Redirect to={`${match.url}/preview`} />);
         }
 
@@ -72,9 +72,11 @@ class PresentationLayout extends React.Component {
 
 }
 
-const mapStateToProps = ({ loggedUserState, selectionPlanState, presentationState, baseState }) => ({
+const mapStateToProps = ({ loggedUserState, baseState, presentationState }) => ({
     speaker: loggedUserState.speaker,
-    selectionPlan: selectionPlanState,
+    selectionPlan: baseState.selectionPlan,
+    summit: baseState.summit,
+    cfpOpen : baseState.cfpOpen,
     loading: baseState.loading,
     ...presentationState
 })

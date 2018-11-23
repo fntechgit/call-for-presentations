@@ -86,9 +86,9 @@ class PresentationSummaryForm extends React.Component {
 
     render() {
         let {entity} = this.state;
-        let {selectionPlan} = this.props;
+        let {selectionPlan, summit} = this.props;
 
-        let event_types_ddl = selectionPlan.summit.event_types
+        let event_types_ddl = summit.event_types
             .filter(et => et.should_be_available_on_cfp)
             .map(et => {
                 return ({value: et.id, label: et.name, type: et.class_name});
@@ -105,7 +105,7 @@ class PresentationSummaryForm extends React.Component {
         let allowedTrackIds = selectionPlan.track_groups.map(tg => [...tg.tracks]);
         allowedTrackIds = [].concat(...allowedTrackIds);
 
-        let categories = selectionPlan.summit.tracks
+        let categories = summit.tracks
             .filter(t => allowedTrackIds.includes(t.id))
             .map(t => ({value: t.id, label: t.name, description: t.description}));
 

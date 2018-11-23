@@ -28,6 +28,7 @@ class EditSpeakerPage extends React.Component {
 
         this.state = {
             entity: {...props.entity},
+            type: props.location.state.type
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -54,8 +55,7 @@ class EditSpeakerPage extends React.Component {
     }
 
     handleSubmit(speaker) {
-        let {location} = this.props;
-        this.props.saveSpeaker(speaker, location.state.type);
+        this.props.saveSpeaker(speaker, this.state.type);
     }
 
     render() {
@@ -78,8 +78,8 @@ class EditSpeakerPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ selectionPlanState, speakerState, presentationState }) => ({
-    selectionPlan : selectionPlanState,
+const mapStateToProps = ({ baseState, speakerState, presentationState }) => ({
+    selectionPlan : baseState.selectionPlan,
     currentPresentation: presentationState.entity,
     ...speakerState
 })

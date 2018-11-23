@@ -61,7 +61,7 @@ class App extends React.PureComponent {
         let profile_pic = member ? member.pic : '';
 
         let header_title = '';
-        if (selectionPlan.id) {
+        if (selectionPlan) {
             let end_date = formatEpoch(selectionPlan.submission_end_date);
             header_title = `${selectionPlan.name} - Open til ${end_date}`;
         } else {
@@ -96,11 +96,11 @@ class App extends React.PureComponent {
     }
 }
 
-const mapStateToProps = ({ loggedUserState, baseState, selectionPlanState }) => ({
+const mapStateToProps = ({ loggedUserState, baseState }) => ({
     isLoggedUser: loggedUserState.isLoggedUser,
     member: loggedUserState.member,
     loading : baseState.loading,
-    selectionPlan: selectionPlanState
+    selectionPlan: baseState.selectionPlan
 })
 
 export default connect(mapStateToProps, {

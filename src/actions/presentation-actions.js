@@ -41,9 +41,9 @@ export const PRESENTATION_COMPLETED         = 'PRESENTATION_COMPLETED';
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
 
-    let { loggedUserState, selectionPlanState } = getState();
+    let { loggedUserState, baseState } = getState();
     let { accessToken } = loggedUserState;
-    let { summit }      = selectionPlanState;
+    let { summit }      = baseState;
 
     dispatch(startLoading());
 
@@ -68,9 +68,9 @@ export const resetPresentation = () => (dispatch, getState) => {
 };
 
 export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
-    let { loggedUserState, selectionPlanState } = getState();
+    let { loggedUserState, baseState } = getState();
     let { accessToken }     = loggedUserState;
-    let { summit }          = selectionPlanState;
+    let { summit }          = baseState;
 
     dispatch(startLoading());
 
@@ -113,9 +113,9 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
 }
 
 export const completePresentation = (entity) => (dispatch, getState) => {
-    let { loggedUserState, selectionPlanState } = getState();
+    let { loggedUserState, baseState } = getState();
     let { accessToken }     = loggedUserState;
-    let { summit }          = selectionPlanState;
+    let { summit }          = baseState;
 
     dispatch(startLoading());
 
@@ -139,9 +139,9 @@ export const completePresentation = (entity) => (dispatch, getState) => {
 
 export const deletePresentation = (presentationId) => (dispatch, getState) => {
 
-    let { loggedUserState, selectionPlanState } = getState();
+    let { loggedUserState, baseState } = getState();
     let { accessToken }     = loggedUserState;
-    let { summit }          = selectionPlanState;
+    let { summit }          = baseState;
 
     let params = {
         access_token : accessToken

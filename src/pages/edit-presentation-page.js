@@ -48,11 +48,11 @@ class EditPresentationPage extends React.Component {
     }
 
     render() {
-        let { entity, selectionPlan, errors, track, history, savePresentation, completePresentation } = this.props;
+        let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, completePresentation } = this.props;
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
 
-        if (!selectionPlan.summit.event_types || !selectionPlan.summit.tracks) return (<div></div>);
+        if (!summit.event_types || !summit.tracks) return (<div></div>);
 
         return (
             <div className="page-wrap" id="edit-presentation-page">
@@ -65,6 +65,7 @@ class EditPresentationPage extends React.Component {
                 <div className="presentation-form-wrapper">
                     <PresentationSummaryForm
                         entity={entity}
+                        summit={summit}
                         selectionPlan={selectionPlan}
                         errors={errors}
                         onSubmit={savePresentation}
@@ -77,7 +78,7 @@ class EditPresentationPage extends React.Component {
                     <PresentationTagsForm
                         entity={entity}
                         track={track}
-                        selectionPlan={selectionPlan}
+                        tagGroups={tagGroups}
                         onSubmit={savePresentation}
                     />
                 </div>
@@ -88,7 +89,7 @@ class EditPresentationPage extends React.Component {
                     <PresentationSpeakersForm
                         history={history}
                         entity={entity}
-                        selectionPlan={selectionPlan}
+                        summit={summit}
                         onRemoveSpeaker={this.props.removeSpeakerFromPresentation}
                         onRemoveModerator={this.props.removeModeratorFromPresentation}
                         onSubmit={savePresentation}
@@ -101,7 +102,6 @@ class EditPresentationPage extends React.Component {
                     <PresentationReviewForm
                         entity={entity}
                         track={track}
-                        selectionPlan={selectionPlan}
                         onSubmit={completePresentation}
                     />
                 </div>
@@ -112,8 +112,10 @@ class EditPresentationPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ selectionPlanState, presentationState }) => ({
-    selectionPlan : selectionPlanState,
+const mapStateToProps = ({ baseState, presentationState }) => ({
+    selectionPlan : baseState.selectionPlan,
+    summit : baseState.summit,
+    tagGroups: baseState.tagGroups,
     ...presentationState
 })
 

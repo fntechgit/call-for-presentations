@@ -15,10 +15,9 @@ import React from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import NavMenu from '../components/nav-menu/index'
-import { loadCurrentSelectionPlan } from '../actions/base-actions'
+import { loadCurrentSelectionPlan, loadCurrentSummit } from '../actions/base-actions'
 import PresentationsPage from '../pages/presentations-page'
 import ProfilePage from '../pages/profile-page'
-import EditPresentationPage from '../pages/edit-presentation-page'
 import SelectionProcessPage from '../pages/selection-process-page'
 import TracksGuidePage from '../pages/tracks-guide-page'
 import PresentationLayout from './presentation-layout'
@@ -27,6 +26,7 @@ class PrimaryLayout extends React.Component {
 
     componentWillMount () {
         this.props.loadCurrentSelectionPlan();
+        this.props.loadCurrentSummit();
     }
 
     getActiveMenu() {
@@ -42,7 +42,7 @@ class PrimaryLayout extends React.Component {
     }
 
     render(){
-        let { location, speaker, member, selectionPlan, loading } = this.props;
+        let { location, speaker, member, summit } = this.props;
 
         if((!speaker || !speaker.id) && location.pathname != '/app/profile') {
             return (
@@ -50,7 +50,7 @@ class PrimaryLayout extends React.Component {
             );
         }
 
-        if (!selectionPlan.id) return (<div></div>);
+        if (!summit) return (<div></div>);
 
         let loggedUser = speaker.id ? speaker : member;
 
@@ -80,17 +80,19 @@ class PrimaryLayout extends React.Component {
 
 }
 
-const mapStateToProps = ({ loggedUserState, selectionPlanState, baseState }) => ({
+const mapStateToProps = ({ loggedUserState, baseState }) => ({
     member: loggedUserState.member,
     speaker: loggedUserState.speaker,
-    selectionPlan: selectionPlanState,
+    selectionPlan: baseState.selectionPlan,
+    summit: baseState.summit,
     loading: baseState.loading
 })
 
 export default connect(
     mapStateToProps,
     {
-        loadCurrentSelectionPlan
+        loadCurrentSelectionPlan,
+        loadCurrentSummit
     }
 )(PrimaryLayout)
 

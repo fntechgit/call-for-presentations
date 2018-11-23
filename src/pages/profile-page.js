@@ -66,8 +66,8 @@ class ProfilePage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ selectionPlanState, profileState, loggedUserState, baseState }) => ({
-    selectionPlan : selectionPlanState,
+const mapStateToProps = ({ profileState, loggedUserState, baseState }) => ({
+    selectionPlan : baseState.selectionPlan,
     loggedMember: loggedUserState.member,
     loading: baseState.loading,
     ...profileState

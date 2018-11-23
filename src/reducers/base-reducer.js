@@ -11,11 +11,15 @@
  * limitations under the License.
  **/
 
-import { START_LOADING, STOP_LOADING, RECEIVE_COUNTRIES } from "openstack-uicore-foundation/lib/actions";
+import { START_LOADING, STOP_LOADING } from "openstack-uicore-foundation/lib/actions";
 import { LOGOUT_USER } from '../actions/auth-actions';
-import { RESET_LOADER } from "../actions/base-actions";
+import {RESET_LOADER, SELECTION_CLOSED, SELECTION_PLAN_RECEIVED, RECEIVE_SUMMIT, RECEIVE_TAG_GROUPS} from "../actions/base-actions";
 
 const DEFAULT_STATE = {
+    selectionPlan: null,
+    summit: null,
+    cfpOpen: false,
+    tagGroups: [],
     loading: 0,
     countries: []
 }
@@ -26,21 +30,43 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
     switch(type){
         case RESET_LOADER:
             return {...state, loading: 0};
-            break;
+        break;
         case LOGOUT_USER:
             return DEFAULT_STATE;
+        break;
         case START_LOADING:
             return {...state, loading: (state.loading + 1)};
-            break;
+        break;
         case STOP_LOADING:
             let loadingCount = (state.loading == 0) ? 0 : state.loading -1;
             return {...state, loading: loadingCount};
-            break;
-        case RECEIVE_COUNTRIES:
-            return {...state, countries: payload};
+        break;
+        case SELECTION_PLAN_RECEIVED: {
+            let entity = {...payload.response};
+            let cfpOpen = (entity && state.summit && state.summit.id == entity.summit.id);
+
+            return {...state, selectionPlan: entity, cfpOpen: cfpOpen};
+        }
+        break;
+        case SELECTION_CLOSED: {
+            return {...state, selectionPlan: null, cfpOpen: false};
+        }
+        break;
+        case RECEIVE_SUMMIT: {
+            let entity = {...payload.response};
+            let cfpOpen = (state.selectionPlan && entity && entity.id == state.selectionPlan.summit.id);
+
+            return {...state, summit: entity, cfpOpen: cfpOpen};
+        }
+        break;
+        case RECEIVE_TAG_GROUPS: {
+            let groups = [...payload.response.data];
+            return {...state, tagGroups: groups};
+        }
+        break;
         default:
             return state;
-            break;
+        break;
     }
 }
 

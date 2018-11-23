@@ -16,10 +16,16 @@ import {NavStepsDefinitions} from "../components/presentation-nav/nav-steps-defi
 
 class Presentation {
 
-    constructor(presentation, selectionPlan, loggedUser){
+    constructor(presentation, summit, selectionPlan, loggedUser, cfpOpen){
         this._presentation  = presentation;
         this._selectionPlan = selectionPlan;
         this._user = loggedUser;
+        this._cfpOpen = cfpOpen;
+        this._summit = summit;
+
+        let presentationSelectionPlan = summit.selection_plans.find(sp => sp.id == presentation.selection_plan_id);
+
+        this._presentation.selectionPlan = presentationSelectionPlan;
     }
 
     getStatus() {
@@ -33,24 +39,27 @@ class Presentation {
     }
 
     canEdit() {
-        let allowedTrackIds = this._selectionPlan.track_groups.map(tg => [...tg.tracks]);
-        allowedTrackIds = [].concat(...allowedTrackIds);
+        if (!this._selectionPlan || !this._cfpOpen) return false;
 
         let speakers = this._presentation.speakers.map(s => {
             if (typeof s == 'object') return s.id;
             else return s;
         });
 
-        let isCreator = (this._presentation.creator_id == this._user.member.id);
+        let creatorId = this._presentation.creator ? this._presentation.creator.id : this._presentation.creator_id;
+        let moderatorId = this._presentation.moderator ? this._presentation.moderator.id : this._presentation.moderator_speaker_id;
+
+        let isCreator = (creatorId == this._user.member.id);
         let isSpeaker = speakers.includes(this._user.id);
-        let isModerator = (this._presentation.moderator && this._presentation.moderator.id == this._user.id);
-        let belongsToSP = allowedTrackIds.includes(this._presentation.track_id);
+        let isModerator = (moderatorId == this._user.id);
+        let belongsToSP = (this._presentation.selection_plan_id == this._selectionPlan.id);
 
         return (isCreator || isSpeaker || isModerator) && belongsToSP;
     }
 
     canDelete() {
-        return (!this._presentation.is_published && this._selectionPlan.id);
+        let belongsToSP = (this._presentation.selection_plan_id == this._selectionPlan.id);
+        return (!this._presentation.is_published && this._cfpOpen && belongsToSP);
     }
 
     getProgressLink() {
@@ -66,6 +75,11 @@ class Presentation {
         } else {
             return `/app/presentations/${this._presentation.id}/preview`;
         }
+    }
+
+    getSelectionPlanName() {
+        let selectionPlanName = (this._presentation.selectionPlan) ? this._presentation.selectionPlan.name : 'N/A';
+        return selectionPlanName;
     }
 
 }

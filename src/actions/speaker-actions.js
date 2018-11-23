@@ -288,6 +288,8 @@ const normalizeEntity = (entity) => {
     let normalizedEntity = {...entity};
 
     normalizedEntity.member_id = (normalizedEntity.member != null) ? normalizedEntity.member.id : 0;
+    normalizedEntity.areas_of_expertise = entity.areas_of_expertise.map(aoe => aoe.label);
+    normalizedEntity.languages = entity.languages.map(l => l.id);
 
     delete normalizedEntity['presentations'];
     delete normalizedEntity['all_presentations'];

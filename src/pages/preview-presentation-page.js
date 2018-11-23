@@ -138,8 +138,8 @@ class PreviewPresentationPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ selectionPlanState, presentationState }) => ({
-    selectionPlan : selectionPlanState,
+const mapStateToProps = ({ baseState, presentationState }) => ({
+    selectionPlan : baseState.selectionPlan,
     ...presentationState
 })
 

@@ -52,13 +52,13 @@ class PresentationTagsForm extends React.Component {
 
     render() {
         let {entity} = this.state;
-        let {track, selectionPlan} = this.props;
+        let {track, tagGroups} = this.props;
 
         let groupedTags = [];
 
-        if (track && selectionPlan.tag_groups.length > 0) {
+        if (track && tagGroups.length > 0) {
             let allowedTags = track.allowed_tags.map(t => ({id: t.id, tag: t.tag}));
-            groupedTags = selectionPlan.tag_groups.map(group => {
+            groupedTags = tagGroups.map(group => {
                let tags = allowedTags.filter( tag => group.allowed_tags.map(t => t.tag_id).includes(tag.id) );
                return ({name: group.name, tags: tags});
             });

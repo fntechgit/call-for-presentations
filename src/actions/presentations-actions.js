@@ -32,17 +32,17 @@ export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
 
 export const getAllPresentations = () => (dispatch, getState) => {
 
-    let { loggedUserState, selectionPlanState } = getState();
+    let { loggedUserState, baseState } = getState();
     let { accessToken } = loggedUserState;
-    let selectionPlanId = selectionPlanState.id;
+    let summitId = baseState.summit.id;
 
     dispatch(startLoading());
 
-    let created = dispatch(getCreatorPresentations(selectionPlanId, accessToken));
+    let created = dispatch(getCreatorPresentations(summitId, accessToken));
 
-    let speaker = dispatch(getSpeakerPresentations(selectionPlanId, accessToken));
+    let speaker = dispatch(getSpeakerPresentations(summitId, accessToken));
 
-    let moderator = dispatch(getModeratorPresentations(selectionPlanId, accessToken));
+    let moderator = dispatch(getModeratorPresentations(summitId, accessToken));
 
     Promise.all([created, speaker, moderator]).then(() => {
             dispatch(stopLoading());
@@ -51,7 +51,7 @@ export const getAllPresentations = () => (dispatch, getState) => {
 };
 
 
-export const getCreatorPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
+export const getCreatorPresentations = (summitId, accessToken) => (dispatch, getState) => {
     let params = {
         access_token : accessToken
     };
@@ -59,12 +59,12 @@ export const getCreatorPresentations = (selectionPlanId, accessToken) => (dispat
     return getRequest(
         null,
         createAction(CREATED_RECEIVED),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/creator/selection-plans/${selectionPlanId}`,
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/creator/summits/${summitId}`,
         authErrorHandler
     )(params)(dispatch);
 }
 
-export const getSpeakerPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
+export const getSpeakerPresentations = (summitId, accessToken) => (dispatch, getState) => {
     let params = {
         access_token : accessToken
     };
@@ -72,13 +72,13 @@ export const getSpeakerPresentations = (selectionPlanId, accessToken) => (dispat
     getRequest(
         null,
         createAction(SPEAKER_RECEIVED),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/speaker/selection-plans/${selectionPlanId}`,
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/speaker/summits/${summitId}`,
         authErrorHandler
     )(params)(dispatch);
 }
 
 
-export const getModeratorPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
+export const getModeratorPresentations = (summitId, accessToken) => (dispatch, getState) => {
     let params = {
         access_token : accessToken
     };
@@ -86,7 +86,7 @@ export const getModeratorPresentations = (selectionPlanId, accessToken) => (disp
     getRequest(
         null,
         createAction(MODERATOR_RECEIVED),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/moderator/selection-plans/${selectionPlanId}`,
+        `${apiBaseUrl}/api/v1/speakers/me/presentations/moderator/summits/${summitId}`,
         authErrorHandler
     )(params)(dispatch);
 }

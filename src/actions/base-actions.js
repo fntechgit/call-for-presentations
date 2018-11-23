@@ -60,13 +60,30 @@ export const loadCurrentSelectionPlan = () => (dispatch, getState) => {
         `${apiBaseUrl}/api/v1/summits/all/selection-plans/current/submission`,
         selectionPlanErrorHandler
     )(params)(dispatch).then((payload) => {
-            let summit = dispatch(getSummitById(payload.response.summit.id));
-            let tagGroups = dispatch(getTagGroups(payload.response.summit.id));
 
-            Promise.all([summit, tagGroups]).then(() => { dispatch(stopLoading()); });
+            dispatch(getTagGroups(payload.response.summit.id)).then(() => { dispatch(stopLoading()); });
+
         }
     );
 };
+
+export const loadCurrentSummit = () => (dispatch, getState) => {
+
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    let params = {
+        access_token : accessToken,
+        expand: 'event_types,tracks'
+    };
+
+    return getRequest(
+        null,
+        createAction(RECEIVE_SUMMIT),
+        `${apiBaseUrl}/api/v1/summits/current`,
+        authErrorHandler
+    )(params)(dispatch);
+}
 
 export const getSummitById = (summitId) => (dispatch, getState) => {
 
@@ -109,9 +126,9 @@ export const getTagGroups = (summitId) => (dispatch, getState) => {
 
 export const loadEventCategory = () => (dispatch, getState) => {
 
-    let { loggedUserState, selectionPlanState, presentationState } = getState();
+    let { loggedUserState, baseState, presentationState } = getState();
     let { accessToken }     = loggedUserState;
-    let summitId            = selectionPlanState.summit.id;
+    let summitId            = baseState.summit.id;
     let categoryId          = presentationState.entity.track_id;
 
     dispatch(startLoading());

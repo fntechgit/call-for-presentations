@@ -14,7 +14,6 @@
 import { createStore, applyMiddleware, compose} from 'redux';
 import loggedUserReducer from './reducers/auth-reducer'
 import baseReducer from './reducers/base-reducer'
-import selectionPlanReducer from './reducers/selection-plan-reducer'
 import presentationsReducer from './reducers/presentations-reducer'
 import speakerReducer from './reducers/speaker-reducer'
 import profileReducer from './reducers/profile-reducer'
@@ -32,7 +31,6 @@ const config = {
 const reducers = persistCombineReducers(config, {
     loggedUserState: loggedUserReducer,
     baseState: baseReducer,
-    selectionPlanState: selectionPlanReducer,
     presentationsState: presentationsReducer,
     speakerState: speakerReducer,
     profileState: profileReducer,
