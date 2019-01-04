@@ -11,7 +11,7 @@ import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 
 const createRow = (row, actions) => {
     var cells = [];
-    var org_value = (row.organization) ? {name: row.organization.name, value: row.organization.id} : null;
+    var org_value = (row.organization) ? row.organization : null;
     var job_title = row.job_title ? row.job_title : '';
 
     if (row.is_edit) {
@@ -24,7 +24,6 @@ const createRow = (row, actions) => {
                     id="organization"
                     value={org_value}
                     onChange={actions.handleChange.bind(this, row.id)}
-                    multi={false}
                     allowCreate
                     onCreate={actions.handleNewOrg.bind(this, row.id)}
                 />
@@ -79,7 +78,6 @@ const createNewRow = (row, actions) => {
                 id="organization"
                 value={row.organization}
                 onChange={actions.handleChange}
-                multi={false}
                 allowCreate
                 onCreate={actions.handleNewOrg.bind(this, 0)}
             />
@@ -125,7 +123,7 @@ class AffiliationsTable extends React.Component {
         this.new_row = {
             owner_id: props.ownerId,
             job_title: '',
-            organization: {name: '', value: 0},
+            organization: null,
             start_date: '',
             end_date: '',
             is_current: 0

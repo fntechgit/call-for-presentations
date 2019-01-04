@@ -136,7 +136,7 @@ class SpeakerForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_speaker.country")} </label>
-                        <CountryInput id="country" multi={false} value={entity.country} onChange={this.handleChange} />
+                        <CountryInput id="country" value={entity.country} onChange={this.handleChange} />
                     </div>
                 </div>
                 <div className="row form-group">
@@ -204,7 +204,7 @@ class SpeakerForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label>{T.translate("edit_speaker.spoken_languages")}</label><br/>
-                        <LanguageInput id="languages" multi={true} value={entity.languages} onChange={this.handleChange} />
+                        <LanguageInput id="languages" multi value={entity.languages} onChange={this.handleChange} />
                     </div>
                 </div>
                 <div className="row form-group">
@@ -235,7 +235,7 @@ class SpeakerForm extends React.Component {
                     </div>
                     <div className="col-md-12">
                         <label>{T.translate("edit_speaker.select_countries")}</label>
-                        <CountryInput id="travel_preferences" multi={true} value={entity.travel_preferences} onChange={this.handleChange} />
+                        <CountryInput id="travel_preferences" multi value={entity.travel_preferences} onChange={this.handleChange} />
                     </div>
                     <div className="col-md-12 checkboxes-div">
                         <div className="form-check abc-checkbox">
