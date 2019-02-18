@@ -12,7 +12,6 @@
  **/
 
 import React from 'react';
-import 'react-select/dist/react-select.css';
 import AsyncCreatableSelect from 'react-select/lib/AsyncCreatable';
 import {querySpeakers} from 'openstack-uicore-foundation/lib/methods';
 
