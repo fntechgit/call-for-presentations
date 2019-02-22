@@ -109,6 +109,8 @@
     "enter_speaker": "Enter the first name, last name or email address of the participant (*)",
     "speaker_declaimer": "Participants agree that OpenStack Foundation may record and publish their talks presented during the Berlin OpenStack Summit. If you submit a proposal on behalf of a participant, you represent to OpenStack Foundation that you have the authority to submit the proposal on the participants’s behalf and agree to the recording and publication of their presentation.",
     "add_speaker": "Add",
+    "first_role": "First select the role of the participant",
+    "select_role": "Select a role",
     "max_speakers": "You have reached the maximum of participants.",
     "review_title": "One Last Step - Confirm Your Submission",
     "review_important": "Look over everything below to make sure it's to your liking. *IMPORTANT!* You MUST push 'CONFIRM MY SUBMISSION' to complete the process.",

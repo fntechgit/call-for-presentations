@@ -63,10 +63,11 @@ export const getSpeaker = (speakerId) => (dispatch, getState) => {
     };
 
     return getRequest(
-        null,
+        createAction(REQUEST_SPEAKER),
         createAction(RECEIVE_SPEAKER),
         `${apiBaseUrl}/api/v1/speakers/${speakerId}`,
-        authErrorHandler
+        authErrorHandler,
+        {id: speakerId}
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());
         }

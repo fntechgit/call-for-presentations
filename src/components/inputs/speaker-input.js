@@ -30,15 +30,20 @@ const imageStyle = {
 
 
 const CustomOption = (option) => {
-    let {first_name, last_name, email, pic} = option;
+    if (option.__isNew__) {
+        return option.label;
+    } else {
+        let {first_name, last_name, email, pic} = option;
 
-    return (
-        <div style={optionStyle}>
-            { pic && <img src={pic} style={imageStyle} /> }
-            { first_name }&nbsp;{ last_name }&nbsp;
-            { email && <span>({email})</span> }
-        </div>
-    );
+        return (
+            <div style={optionStyle}>
+                { pic && <img src={pic} style={imageStyle} /> }
+                { first_name }&nbsp;{ last_name }&nbsp;
+                { email && <span>({email})</span> }
+            </div>
+        );
+    }
+
 };
 
 export default class CPFSpeakerInput extends React.Component {
@@ -67,21 +72,14 @@ export default class CPFSpeakerInput extends React.Component {
         this.setState({value: value});
     }
 
-    filterOptions(options, filterString, values) {
+    filterOptions(option, filterString) {
         let {speakers} = this.props;
-        let speakerOpts = options.map(s => (
-            {id: s.id, first_name: s.first_name, last_name: s.last_name, email: s.email, pic: s.pic})
-        );
 
         if (speakers.length) {
-            let filtered_options = speakerOpts.filter( op => {
-                return speakers.map(val => val.id).indexOf( op.id ) < 0;
-            } );
-
-            return filtered_options;
-        } else {
-            return speakerOpts;
+            return speakers.map(val => val.id).indexOf( option.value ) < 0
         }
+
+        return true;
     }
 
     getSpeakers (input, callback) {
@@ -90,6 +88,11 @@ export default class CPFSpeakerInput extends React.Component {
         }
 
         querySpeakers(null, input, callback);
+    }
+
+    isValidNewOption(inputValue, selectValue, selectOptions) {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(inputValue).toLowerCase());
     }
 
 
@@ -101,14 +104,13 @@ export default class CPFSpeakerInput extends React.Component {
                 value={this.state.value}
                 onChange={this.handleChange}
                 loadOptions={this.getSpeakers}
-                backspaceRemoves={true}
-                valueKey="id"
-                labelKey="email"
+                getOptionValue={op => op.id}
+                getOptionLabel={CustomOption}
                 filterOptions={this.filterOptions}
-                optionRenderer={CustomOption}
                 isMulti={false}
                 placeholder="Find speakers or type email to create new"
-                promptTextCreator={(email) => `Add new speaker with email: "${email}" `}
+                formatCreateLabel={(input) => `Add new speaker with email: "${input}" `}
+                isValidNewOption={this.isValidNewOption}
                 {...rest}
             />
         );

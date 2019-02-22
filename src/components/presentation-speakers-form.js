@@ -16,6 +16,7 @@ import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import SubmitButtons from "./presentation-submit-buttons";
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
+import { Dropdown } from 'openstack-uicore-foundation/lib/components'
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {
@@ -24,12 +25,14 @@ class PresentationSpeakersForm extends React.Component {
         this.state = {
             speaker: {},
             entity: {...props.entity},
+            role: ''
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleBack = this.handleBack.bind(this);
         this.handleChangeSpeaker = this.handleChangeSpeaker.bind(this);
         this.handleAddSpeaker = this.handleAddSpeaker.bind(this);
+        this.handleChangeRole = this.handleChangeRole.bind(this);
     }
 
     handleSubmit(ev) {
@@ -45,8 +48,13 @@ class PresentationSpeakersForm extends React.Component {
     }
 
     handleChangeSpeaker(ev) {
-        let {value, id} = ev.target;
+        let {value} = ev.target;
         this.setState({speaker: value});
+    }
+
+    handleChangeRole(ev) {
+        let {value} = ev.target;
+        this.setState({role: value});
     }
 
     handleSpeakerClick(speakerId, ev) {
@@ -68,16 +76,16 @@ class PresentationSpeakersForm extends React.Component {
         this.props.onRemoveModerator(moderatorId);
     }
 
-    handleAddSpeaker(speakerType, ev) {
-        let {speaker} = this.state;
+    handleAddSpeaker(ev) {
+        let {speaker, role} = this.state;
         let {history, entity} = this.props;
 
         ev.preventDefault();
 
         if (!isNaN(speaker.id)) {
-            history.push(`/app/presentations/${entity.id}/speakers/${speaker.id}`, {type: speakerType});
-        } else if (speaker.id) {
-            history.push(`/app/presentations/${entity.id}/speakers/new`, { email: speaker.id, type: speakerType });
+            history.push(`/app/presentations/${entity.id}/speakers/${speaker.id}`, {type: role});
+        } else if (speaker.value) {
+            history.push(`/app/presentations/${entity.id}/speakers/new`, { email: speaker.value, type: role });
         }
 
     }
@@ -85,12 +93,19 @@ class PresentationSpeakersForm extends React.Component {
 
     render() {
         let {summit, entity} = this.props;
+        let {role, speaker} = this.state;
         let eventType = summit.event_types.find(t => t.id == entity.type_id);
 
         let canAddSpeakers = (eventType.max_speakers > entity.speakers.length);
-        let canAddModerator = (eventType.max_moderators && !entity.moderator);
+        let canAddModerator = (eventType.max_moderators > entity.speakers.length && eventType.min_moderators <= entity.speakers.length);
         let canAddParticipant = canAddModerator || canAddSpeakers;
-        let speakerType = (canAddModerator) ? 'moderator' : 'speaker';
+        let enableAddButton = role && (speaker.value || speaker.id);
+
+        let speakerRoles = [
+            {value: 'speaker', label: 'Speaker'},
+            {value: 'moderator', label: 'Moderator'}
+        ];
+
 
         return (
             <div>
@@ -100,25 +115,25 @@ class PresentationSpeakersForm extends React.Component {
 
                 <hr/>
                 <div className="speakers">
-                    {entity.moderator &&
-                        <div className="row speaker" key={"speaker_" + entity.moderator.id}>
+                    {entity.moderators.map(m => (
+                        <div className="row speaker" key={"speaker_" + m.id}>
                             <div className="col-md-4">
                                 <i className="fa fa-user"></i>
                                 <a href="#"
-                                   onClick={this.handleSpeakerClick.bind(this, entity.moderator.id)}>
-                                    {entity.moderator.first_name} {entity.moderator.last_name}
+                                   onClick={this.handleSpeakerClick.bind(this, m.id)}>
+                                    {m.first_name} {m.last_name}
                                 </a>
                             </div>
                             <div className="col-md-2">
                                 {T.translate("edit_presentation.moderator")}
                             </div>
                             <div className="col-md-2">
-                                <button className="btn btn-danger btn-xs" onClick={this.handleModeratorRemove.bind(this, entity.moderator.id)}>
+                                <button className="btn btn-danger btn-xs" onClick={this.handleModeratorRemove.bind(this, m.id)}>
                                     {T.translate("general.remove")}
                                 </button>
                             </div>
                         </div>
-                    }
+                    ))}
 
                     {entity.speakers.map(s => (
                         <div className="row speaker" key={"speaker_" + s.id}>
@@ -145,8 +160,22 @@ class PresentationSpeakersForm extends React.Component {
                     <div>
                         <h3 className="more-speakers">{T.translate("edit_presentation.more_speaker")}</h3>
 
+
                         <div className="row form-group">
-                            <div className="col-md-8">
+                            <div className="col-md-4">
+                                <label> {T.translate("edit_presentation.first_role")} </label>
+                                <Dropdown
+                                    id="role"
+                                    value={this.state.role}
+                                    onChange={this.handleChangeRole}
+                                    placeholder={T.translate("edit_presentation.select_role")}
+                                    options={speakerRoles}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="row form-group">
+                            <div className="col-md-6">
                                 <label> {T.translate("edit_presentation.enter_speaker")} </label>
                                 <CPFSpeakerInput
                                     id="speaker"
@@ -155,7 +184,7 @@ class PresentationSpeakersForm extends React.Component {
                                 />
                             </div>
                             <div className="col-md-4 add-speaker-btn">
-                                <button className="btn btn-primary" onClick={this.handleAddSpeaker.bind(this, speakerType)}>
+                                <button className="btn btn-primary" disabled={!enableAddButton} onClick={this.handleAddSpeaker.bind(this)}>
                                     {T.translate("edit_presentation.add_speaker")}
                                 </button>
                             </div>

@@ -34,7 +34,7 @@ class EditSpeakerPage extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentWillMount () {
+    componentDidMount () {
         let speakerId = this.props.match.params.speaker_id;
         let {entity, location, history, currentPresentation, orgRoles}   = this.props;
 

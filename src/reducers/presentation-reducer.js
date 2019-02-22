@@ -41,7 +41,7 @@ export const DEFAULT_ENTITY = {
     extra_questions: [],
     tags: [],
     speakers: [],
-    moderator: null
+    moderators: []
 }
 
 const DEFAULT_STATE = {
@@ -96,6 +96,9 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
 
             entity.progressNum = state.steps.find(s => s.name == entity.progress).step;
 
+            entity.moderators = entity.speakers.filter(s => s.role == 'Moderator');
+            entity.speakers = entity.speakers.filter(s => s.role == 'Speaker');
+
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
         case PRESENTATION_ADDED:
@@ -132,12 +135,14 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
         break;
         case MODERATOR_ASSIGNED: {
             let {moderator} = payload;
-            return {...state, entity: {...state.entity, moderator: moderator}};
+            let moderators = state.entity.moderators.filter(m => m.id != moderator.id);
+            return {...state, entity: {...state.entity, moderators: [...moderators, moderator]}};
         }
         break;
         case MODERATOR_REMOVED: {
             let {moderatorId} = payload;
-            return {...state, entity: {...state.entity, moderator: null}};
+            let moderators = state.entity.moderators.filter(m => m.id != moderatorId);
+            return {...state, entity: {...state.entity, moderators: moderators}};
         }
         break;
         case VALIDATE: {

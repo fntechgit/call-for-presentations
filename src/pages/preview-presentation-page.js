@@ -71,29 +71,31 @@ class PreviewPresentationPage extends React.Component {
                     </div>
                     <hr/>
 
-                    {entity.moderator &&
+                    {entity.moderators.length > 0 &&
                     <div className="main-panel-section confirm-block">
                         <label>Moderators</label>
+                        { entity.speakers.map(m => (
                         <div className="row">
                             <div className="col-lg-2">
-                                <p className="user-img" style={{ backgroundImage: `url(${entity.moderator.pic})` }}></p>
+                                <p className="user-img" style={{ backgroundImage: `url(${m.pic})` }}></p>
                             </div>
                             <div className="col-lg-10">
                                 <label>Moderator</label>
                                 <div className="confirm-item">
-                                    {entity.moderator.first_name} {entity.moderator.last_name}  <br/>
-                                    {entity.moderator.title}
+                                    {m.first_name} {m.last_name}  <br/>
+                                    {m.title}
                                 </div>
-                                { entity.moderator.bio &&
+                                { m.bio &&
                                     <div>
                                         <label>Bio</label>
                                         <div className="confirm-item">
-                                            <RawHTML>{entity.moderator.bio}</RawHTML>
+                                            <RawHTML>{m.bio}</RawHTML>
                                         </div>
                                     </div>
                                 }
                             </div>
                         </div>
+                        ))}
                     </div>
                     }
 

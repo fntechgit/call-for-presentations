@@ -41,17 +41,19 @@ class Presentation {
     canEdit() {
         if (!this._selectionPlan || !this._cfpOpen) return false;
 
-        let speakers = this._presentation.speakers.map(s => {
-            if (typeof s == 'object') return s.id;
-            else return s;
+        let speakers = this._presentation.speakers.filter(s => s.role == 'Speaker').map(s => {
+            return s.id
+        });
+
+        let moderators = this._presentation.speakers.filter(s => s.role == 'Moderator').map(s => {
+            return s.id
         });
 
         let creatorId = this._presentation.creator ? this._presentation.creator.id : this._presentation.creator_id;
-        let moderatorId = this._presentation.moderator ? this._presentation.moderator.id : this._presentation.moderator_speaker_id;
 
         let isCreator = (creatorId == this._user.member.id);
         let isSpeaker = speakers.includes(this._user.id);
-        let isModerator = (moderatorId == this._user.id);
+        let isModerator = moderators.includes(this._user.id);
         let belongsToSP = (this._presentation.selection_plan_id == this._selectionPlan.id);
 
         return (isCreator || isSpeaker || isModerator) && belongsToSP;
