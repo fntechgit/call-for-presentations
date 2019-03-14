@@ -49,11 +49,11 @@ class PresentationSpeakersForm extends React.Component {
         this.setState({speaker: value});
     }
 
-    handleSpeakerClick(speakerId, ev) {
+    handleSpeakerClick(speakerId, speakerType, ev) {
         let {history, entity} = this.props;
         ev.preventDefault();
 
-        history.push(`/app/presentations/${entity.id}/speakers/${speakerId}`);
+        history.push(`/app/presentations/${entity.id}/speakers/${speakerId}`, {type: speakerType});
     }
 
     handleSpeakerRemove(speakerId, ev) {
@@ -105,7 +105,7 @@ class PresentationSpeakersForm extends React.Component {
                             <div className="col-md-4">
                                 <i className="fa fa-user"></i>
                                 <a href="#"
-                                   onClick={this.handleSpeakerClick.bind(this, entity.moderator.id)}>
+                                   onClick={this.handleSpeakerClick.bind(this, entity.moderator.id, 'moderator')}>
                                     {entity.moderator.first_name} {entity.moderator.last_name}
                                 </a>
                             </div>
@@ -124,7 +124,7 @@ class PresentationSpeakersForm extends React.Component {
                         <div className="row speaker" key={"speaker_" + s.id}>
                             <div className="col-md-4">
                                 <i className="fa fa-user"></i>
-                                <a href="#" onClick={this.handleSpeakerClick.bind(this, s.id)}>{s.first_name} {s.last_name}</a>
+                                <a href="#" onClick={this.handleSpeakerClick.bind(this, s.id, 'speaker')}>{s.first_name} {s.last_name}</a>
                             </div>
                             <div className="col-md-2">
                                 {T.translate("edit_presentation.speaker")}

@@ -86,6 +86,9 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
             let areasOfExpertise = entity.areas_of_expertise.map(aoe => ({label: aoe.expertise, value: aoe.id}));
             entity.areas_of_expertise = areasOfExpertise;
 
+            let orgRoles = entity.organizational_roles.map(or => or.id);
+            entity.organizational_roles = orgRoles;
+
 
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
