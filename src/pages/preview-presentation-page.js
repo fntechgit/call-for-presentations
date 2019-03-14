@@ -61,10 +61,12 @@ class PreviewPresentationPage extends React.Component {
                         <label>{T.translate("edit_presentation.level")}</label><br/>
                         {entity.level}
                     </div>
+                    {track &&
                     <div className="item">
                         <label>{T.translate("edit_presentation.general_topic")}</label><br/>
                         <RawHTML>{track.name}</RawHTML>
                     </div>
+                    }
                     <div className="item">
                         <label>{T.translate("edit_presentation.attending_media")}</label><br/>
                         {entity.attending_media ? 'Yes' : 'No'}
