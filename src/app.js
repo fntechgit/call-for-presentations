@@ -20,12 +20,11 @@ import AuthButton from './components/auth-button'
 import DefaultRoute from './routes/default-route'
 import LogOutCallbackRoute from './routes/logout-callback-route'
 import { connect } from 'react-redux'
-import { onUserAuth, doLogin, doLogout, initLogOut, getSpeakerInfo, getUserInfo } from './actions/auth-actions'
-import { AjaxLoader } from "openstack-uicore-foundation/lib/components";
-import {getBackURL, formatEpoch} from "openstack-uicore-foundation/lib/methods";
+import { onUserAuth } from './actions/auth-actions'
+import { AjaxLoader, OPSessionChecker } from "openstack-uicore-foundation/lib/components";
+import {getBackURL, formatEpoch, doLogin, doLogout, initLogOut, getUserInfo} from "openstack-uicore-foundation/lib/methods";
 import T from 'i18n-react';
 import history from './history'
-import OPSessionChecker from "./components/op-session-checker";
 import CustomErrorPage from "./pages/custom-error-page";
 import { resetLoading } from './actions/base-actions';
 
@@ -45,6 +44,13 @@ if (language.length > 2) {
 T.setTexts(require(`./i18n/${language}.json`));
 
 
+// move all env var to global scope so ui core has access to this
+
+window.IDP_BASE_URL        = process.env['IDP_BASE_URL'];
+window.API_BASE_URL        = process.env['API_BASE_URL'];
+window.OAUTH2_CLIENT_ID    = process.env['OAUTH2_CLIENT_ID'];
+window.SCOPES              = process.env['SCOPES'];
+window.ALLOWED_USER_GROUPS = "";
 
 class App extends React.PureComponent {
 
@@ -73,8 +79,8 @@ class App extends React.PureComponent {
                 <div>
                     <AjaxLoader show={ loading } size={ 120 }/>
                     <OPSessionChecker
-                        clientId={window.clientId}
-                        idpBaseUrl={window.idpBaseUrl}
+                        clientId={window.OAUTH2_CLIENT_ID}
+                        idpBaseUrl={window.IDP_BASE_URL}
                     />
                     <div className="header">
                         <div className={"header-title " + (isLoggedUser ? '' : 'center')}>
@@ -106,7 +112,6 @@ const mapStateToProps = ({ loggedUserState, baseState }) => ({
 export default connect(mapStateToProps, {
     onUserAuth,
     doLogout,
-    getSpeakerInfo,
     getUserInfo,
     resetLoading
 })(App)

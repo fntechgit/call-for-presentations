@@ -11,7 +11,6 @@
  * limitations under the License.
  **/
 
-import { authErrorHandler, apiBaseUrl } from './base-actions';
 import {
     getRequest,
     putRequest,
@@ -21,7 +20,8 @@ import {
     stopLoading,
     startLoading,
     showMessage,
-    showSuccessMessage
+    showSuccessMessage,
+    authErrorHandler
 } from "openstack-uicore-foundation/lib/methods";
 
 
@@ -45,7 +45,7 @@ export const addAffiliation = (affiliation) => (dispatch, getState) => {
     postRequest(
         null,
         createAction(AFFILIATION_ADDED),
-        `${apiBaseUrl}/api/v1/members/me/affiliations`,
+        `${window.API_BASE_URL}/api/v1/members/me/affiliations`,
         normalizedEntity,
         authErrorHandler,
         affiliation
@@ -71,7 +71,7 @@ export const saveAffiliation = (affiliation) => (dispatch, getState) => {
     putRequest(
         null,
         createAction(AFFILIATION_SAVED)({affiliation}),
-        `${apiBaseUrl}/api/v1/members/me/affiliations/${affiliation.id}`,
+        `${window.API_BASE_URL}/api/v1/members/me/affiliations/${affiliation.id}`,
         normalizedEntity,
         authErrorHandler
     )(params)(dispatch)
@@ -93,7 +93,7 @@ export const deleteAffiliation = (ownerId, affiliationId) => (dispatch, getState
     return deleteRequest(
         null,
         createAction(AFFILIATION_DELETED)({affiliationId}),
-        `${apiBaseUrl}/api/v1/members/me/affiliations/${affiliationId}`,
+        `${window.API_BASE_URL}/api/v1/members/me/affiliations/${affiliationId}`,
         authErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());

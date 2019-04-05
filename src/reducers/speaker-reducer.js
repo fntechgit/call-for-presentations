@@ -21,8 +21,7 @@ import
     RECEIVE_ORG_ROLES
 } from '../actions/speaker-actions';
 
-import {LOGOUT_USER} from '../actions/auth-actions';
-import { VALIDATE } from '../actions/base-actions';
+import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
 
 export const DEFAULT_ENTITY = {
     id: 0,

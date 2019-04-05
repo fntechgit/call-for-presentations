@@ -30,7 +30,9 @@ class ProfilePage extends React.Component {
     }
 
     componentWillMount () {
-        //this.props.getSpeakerInfo(null);
+        if (!this.props.speaker) {
+            this.props.getSpeakerInfo(null);
+        }
 
         if (this.props.orgRoles.length == 0) {
             this.props.getOrganizationalRoles();
@@ -69,6 +71,7 @@ class ProfilePage extends React.Component {
 const mapStateToProps = ({ profileState, loggedUserState, baseState }) => ({
     selectionPlan : baseState.selectionPlan,
     loggedMember: loggedUserState.member,
+    speaker: baseState.speaker,
     loading: baseState.loading,
     ...profileState
 })

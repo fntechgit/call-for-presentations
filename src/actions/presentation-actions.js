@@ -20,11 +20,11 @@ import {
     stopLoading,
     startLoading,
     showMessage,
-    showSuccessMessage
+    showSuccessMessage,
+    authErrorHandler,
+    doLogin
 } from "openstack-uicore-foundation/lib/methods";
-import {authErrorHandler, apiBaseUrl, VALIDATE} from './base-actions';
 import T from "i18n-react/dist/i18n-react";
-import {doLogin} from "./auth-actions";
 import swal from "sweetalert2";
 import history from '../history'
 
@@ -55,7 +55,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(RECEIVE_PRESENTATION),
-        `${apiBaseUrl}/api/v1/summits/${summit.id}/events/${presentationId}`,
+        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/events/${presentationId}`,
         presentationErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());
@@ -85,7 +85,7 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
         putRequest(
             createAction(UPDATE_PRESENTATION),
             createAction(PRESENTATION_UPDATED),
-            `${apiBaseUrl}/api/v1/summits/${summit.id}/presentations/${entity.id}`,
+            `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}`,
             normalizedEntity,
             authErrorHandler,
             entity
@@ -100,7 +100,7 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
         postRequest(
             createAction(UPDATE_PRESENTATION),
             createAction(PRESENTATION_ADDED),
-            `${apiBaseUrl}/api/v1/summits/${summit.id}/presentations`,
+            `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations`,
             normalizedEntity,
             authErrorHandler,
             entity
@@ -126,7 +126,7 @@ export const completePresentation = (entity) => (dispatch, getState) => {
     putRequest(
         null,
         createAction(PRESENTATION_COMPLETED),
-        `${apiBaseUrl}/api/v1/summits/${summit.id}/presentations/${entity.id}/completed`,
+        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/completed`,
         entity,
         authErrorHandler
     )(params)(dispatch)
@@ -150,7 +150,7 @@ export const deletePresentation = (presentationId) => (dispatch, getState) => {
     return deleteRequest(
         null,
         createAction(PRESENTATION_DELETED)({presentationId}),
-        `${apiBaseUrl}/api/v1/summits/${summit.id}/presentations/${presentationId}`,
+        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}`,
         authErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());

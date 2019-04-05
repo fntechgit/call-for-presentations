@@ -231,7 +231,7 @@ const mapStateToProps = ({ presentationsState, loggedUserState, baseState }) => 
     presentations_created : presentationsState.presentations_created,
     presentations_speaker : presentationsState.presentations_speaker,
     presentations_moderator : presentationsState.presentations_moderator,
-    loggedSpeaker : loggedUserState.speaker,
+    loggedSpeaker : baseState.speaker,
     loading: baseState.loading
 })
 

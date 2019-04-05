@@ -52,7 +52,7 @@ class PrimaryLayout extends React.Component {
 
         if (!summit) return (<div></div>);
 
-        let loggedUser = speaker.id ? speaker : member;
+        let loggedUser = (speaker && speaker.id) ? speaker : member;
 
         return(
             <div className="primary-layout container-fluid">
@@ -82,8 +82,7 @@ class PrimaryLayout extends React.Component {
 
 const mapStateToProps = ({ loggedUserState, baseState }) => ({
     member: loggedUserState.member,
-    speaker: loggedUserState.speaker,
-    selectionPlan: baseState.selectionPlan,
+    speaker: baseState.speaker,
     summit: baseState.summit,
     loading: baseState.loading
 })

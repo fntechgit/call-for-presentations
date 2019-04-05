@@ -13,7 +13,6 @@
 
 import T from "i18n-react/dist/i18n-react";
 import swal from "sweetalert2";
-import {doLogin, initLogOut} from "./auth-actions";
 import {
     getRequest,
     putRequest,
@@ -24,12 +23,14 @@ import {
     startLoading,
     showMessage,
     showSuccessMessage,
-    getBackURL
+    getBackURL,
+    authErrorHandler,
+    doLogin,
+    initLogOut
 } from "openstack-uicore-foundation/lib/methods";
 
-export const apiBaseUrl                     = process.env['API_BASE_URL'];
-export const VALIDATE                       = 'VALIDATE';
-const LOGOUT_USER                           = 'LOGOUT_USER';
+import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
+
 export const SELECTION_PLAN_RECEIVED        = 'SELECTION_PLAN_RECEIVED';
 export const SELECTION_CLOSED               = 'SELECTION_CLOSED';
 export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
@@ -57,7 +58,7 @@ export const loadCurrentSelectionPlan = () => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(SELECTION_PLAN_RECEIVED),
-        `${apiBaseUrl}/api/v1/summits/all/selection-plans/current/submission`,
+        `${window.API_BASE_URL}/api/v1/summits/all/selection-plans/current/submission`,
         selectionPlanErrorHandler
     )(params)(dispatch).then((payload) => {
 
@@ -80,7 +81,7 @@ export const loadCurrentSummit = () => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(RECEIVE_SUMMIT),
-        `${apiBaseUrl}/api/v1/summits/current`,
+        `${window.API_BASE_URL}/api/v1/summits/current`,
         authErrorHandler
     )(params)(dispatch);
 }
@@ -98,7 +99,7 @@ export const getSummitById = (summitId) => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(RECEIVE_SUMMIT),
-        `${apiBaseUrl}/api/v1/summits/${summitId}`,
+        `${window.API_BASE_URL}/api/v1/summits/${summitId}`,
         authErrorHandler
     )(params)(dispatch);
 }
@@ -118,7 +119,7 @@ export const getTagGroups = (summitId) => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(RECEIVE_TAG_GROUPS),
-        `${apiBaseUrl}/api/v1/summits/${summitId}/track-tag-groups`,
+        `${window.API_BASE_URL}/api/v1/summits/${summitId}/track-tag-groups`,
         authErrorHandler
     )(params)(dispatch);
 };
@@ -141,51 +142,13 @@ export const loadEventCategory = () => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(RECEIVE_EVENT_CATEGORY),
-        `${apiBaseUrl}/api/v1/summits/${summitId}/tracks/${categoryId}`,
+        `${window.API_BASE_URL}/api/v1/summits/${summitId}/tracks/${categoryId}`,
         authErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());
         }
     );
 };
-
-export const authErrorHandler = (err, res) => (dispatch) => {
-    let code = err.status;
-    dispatch(stopLoading());
-
-    let msg = '';
-
-    switch (code) {
-        case 403:
-            let error_message = {
-                title: 'ERROR',
-                html: T.translate("errors.user_not_authz"),
-                type: 'error'
-            };
-
-            dispatch(showMessage( error_message, initLogOut ));
-            break;
-        case 401:
-            doLogin(window.location.pathname);
-            break;
-        case 404:
-            msg = (err.response.body.message) ? err.response.body.message : err.message;
-            swal("Not Found", msg, "warning");
-            break;
-        case 412:
-            for (var [key, value] of Object.entries(err.response.body.errors)) {
-                msg += '- ' + value + '<br>';
-            }
-            swal("Validation error", msg, "warning");
-            dispatch({
-                type: VALIDATE,
-                payload: {errors: err.response.body.errors}
-            });
-            break;
-        default:
-            swal("ERROR", T.translate("errors.server_error"), "error");
-    }
-}
 
 
 export const selectionPlanErrorHandler = (err, res) => (dispatch) => {

@@ -11,9 +11,11 @@
  * limitations under the License.
  **/
 
-import { START_LOADING, STOP_LOADING } from "openstack-uicore-foundation/lib/actions";
-import { LOGOUT_USER } from '../actions/auth-actions';
+import { START_LOADING, STOP_LOADING, LOGOUT_USER } from "openstack-uicore-foundation/lib/actions";
 import {RESET_LOADER, SELECTION_CLOSED, SELECTION_PLAN_RECEIVED, RECEIVE_SUMMIT, RECEIVE_TAG_GROUPS} from "../actions/base-actions";
+import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
+import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
+
 
 const DEFAULT_STATE = {
     selectionPlan: null,
@@ -21,7 +23,8 @@ const DEFAULT_STATE = {
     cfpOpen: false,
     tagGroups: [],
     loading: 0,
-    countries: []
+    countries: [],
+    speaker: null
 }
 
 const baseReducer = (state = DEFAULT_STATE, action) => {
@@ -62,6 +65,16 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         case RECEIVE_TAG_GROUPS: {
             let groups = [...payload.response.data];
             return {...state, tagGroups: groups};
+        }
+        break;
+        case RECEIVE_SPEAKER_INFO: {
+            let {response} = action.payload;
+            return {...state, speaker: response};
+        }
+        break;
+        case PROFILE_PIC_ATTACHED: {
+            let pic = state.speaker.pic + '?' + new Date().getTime();
+            return {...state, speaker: {...state.speaker, pic: pic} };;
         }
         break;
         default:

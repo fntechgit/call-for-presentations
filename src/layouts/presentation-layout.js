@@ -73,7 +73,7 @@ class PresentationLayout extends React.Component {
 }
 
 const mapStateToProps = ({ loggedUserState, baseState, presentationState }) => ({
-    speaker: loggedUserState.speaker,
+    speaker: baseState.speaker,
     selectionPlan: baseState.selectionPlan,
     summit: baseState.summit,
     cfpOpen : baseState.cfpOpen,

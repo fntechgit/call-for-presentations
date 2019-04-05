@@ -10,7 +10,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import{ LOGOUT_USER } from '../actions/auth-actions';
+
+import { LOGOUT_USER } from 'openstack-uicore-foundation/lib/actions';
 import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED, PRESENTATION_DELETED } from '../actions/presentations-actions';
 
 const DEFAULT_STATE = {

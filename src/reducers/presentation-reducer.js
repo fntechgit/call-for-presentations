@@ -20,8 +20,8 @@ import
     PRESENTATION_COMPLETED
 } from '../actions/presentation-actions';
 
-import { LOGOUT_USER } from '../actions/auth-actions';
-import { VALIDATE, RECEIVE_EVENT_CATEGORY } from '../actions/base-actions';
+import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
+import { RECEIVE_EVENT_CATEGORY } from '../actions/base-actions';
 import {SPEAKER_ASSIGNED, SPEAKER_REMOVED, MODERATOR_ASSIGNED, MODERATOR_REMOVED} from '../actions/speaker-actions';
 
 

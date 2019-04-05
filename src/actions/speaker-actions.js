@@ -11,7 +11,6 @@
  * limitations under the License.
  **/
 
-import { authErrorHandler, apiBaseUrl} from './base-actions';
 import T from "i18n-react/dist/i18n-react";
 import {
     getRequest,
@@ -22,7 +21,8 @@ import {
     stopLoading,
     startLoading,
     showMessage,
-    showSuccessMessage
+    showSuccessMessage,
+    authErrorHandler
 } from "openstack-uicore-foundation/lib/methods";
 
 import history from '../history'
@@ -65,7 +65,7 @@ export const getSpeaker = (speakerId) => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(RECEIVE_SPEAKER),
-        `${apiBaseUrl}/api/v1/speakers/${speakerId}`,
+        `${window.API_BASE_URL}/api/v1/speakers/${speakerId}`,
         authErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());
@@ -101,7 +101,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
         putRequest(
             createAction(UPDATE_SPEAKER),
             createAction(SPEAKER_SAVED),
-            `${apiBaseUrl}/api/v1/speakers/${entity.id}`,
+            `${window.API_BASE_URL}/api/v1/speakers/${entity.id}`,
             normalizedEntity,
             authErrorHandler,
             entity
@@ -121,7 +121,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
         postRequest(
             createAction(UPDATE_SPEAKER),
             createAction(SPEAKER_SAVED),
-            `${apiBaseUrl}/api/v1/speakers`,
+            `${window.API_BASE_URL}/api/v1/speakers`,
             normalizedEntity,
             authErrorHandler,
             entity
@@ -154,7 +154,7 @@ export const attachPicture = (entity, file) => (dispatch, getState) => {
         return postRequest(
             null,
             createAction(SPEAKER_UPDATED),
-            `${apiBaseUrl}/api/v1/speakers`,
+            `${window.API_BASE_URL}/api/v1/speakers`,
             entity,
             authErrorHandler
         )(params)(dispatch)
@@ -179,7 +179,7 @@ const uploadFile = (entity, file) => (dispatch, getState) => {
     postRequest(
         null,
         createAction(PIC_ATTACHED),
-        `${apiBaseUrl}/api/v1/speakers/${entity.id}/photo`,
+        `${window.API_BASE_URL}/api/v1/speakers/${entity.id}/photo`,
         file,
         authErrorHandler,
         {pic: entity.pic}
@@ -199,7 +199,7 @@ export const assignSpeakerToPresentation = (speaker, message) => (dispatch, getS
     putRequest(
         null,
         createAction(SPEAKER_ASSIGNED)({speaker}),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/${presentationId}/speakers/${speaker.id}`,
+        `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${presentationId}/speakers/${speaker.id}`,
         null,
         authErrorHandler
     )(params)(dispatch)
@@ -227,7 +227,7 @@ export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState)
     return deleteRequest(
         null,
         createAction(SPEAKER_REMOVED)({speakerId}),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/${presentationId}/speakers/${speakerId}`,
+        `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${presentationId}/speakers/${speakerId}`,
         authErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());
@@ -247,7 +247,7 @@ export const assignModeratorToPresentation = (moderator, message) => (dispatch, 
     putRequest(
         null,
         createAction(MODERATOR_ASSIGNED)({moderator}),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/${presentationId}/moderators/${moderator.id}`,
+        `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${presentationId}/moderators/${moderator.id}`,
         null,
         authErrorHandler
     )(params)(dispatch)
@@ -275,7 +275,7 @@ export const removeModeratorFromPresentation = (moderatorId) => (dispatch, getSt
     return deleteRequest(
         null,
         createAction(MODERATOR_REMOVED)({moderatorId}),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/${presentationId}/moderators/${moderatorId}`,
+        `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${presentationId}/moderators/${moderatorId}`,
         authErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());
@@ -336,7 +336,7 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
         putRequest(
             createAction(UPDATE_SPEAKER_PROFILE),
             createAction(SPEAKER_PROFILE_SAVED),
-            `${apiBaseUrl}/api/v1/speakers/${entity.id}`,
+            `${window.API_BASE_URL}/api/v1/speakers/${entity.id}`,
             normalizedEntity,
             authErrorHandler,
             entity
@@ -351,7 +351,7 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
         postRequest(
             createAction(UPDATE_SPEAKER_PROFILE),
             createAction(SPEAKER_PROFILE_SAVED),
-            `${apiBaseUrl}/api/v1/speakers`,
+            `${window.API_BASE_URL}/api/v1/speakers`,
             normalizedEntity,
             authErrorHandler,
             entity
@@ -380,7 +380,7 @@ export const attachProfilePicture = (entity, file) => (dispatch, getState) => {
         return postRequest(
             null,
             createAction(SPEAKER_PROFILE_SAVED),
-            `${apiBaseUrl}/api/v1/speakers`,
+            `${window.API_BASE_URL}/api/v1/speakers`,
             entity,
             authErrorHandler
         )(params)(dispatch)
@@ -405,7 +405,7 @@ const uploadFileProfile = (entity, file) => (dispatch, getState) => {
     postRequest(
         null,
         createAction(PROFILE_PIC_ATTACHED),
-        `${apiBaseUrl}/api/v1/speakers/${entity.id}/photo`,
+        `${window.API_BASE_URL}/api/v1/speakers/${entity.id}/photo`,
         file,
         authErrorHandler,
         {pic: entity.pic}
@@ -426,7 +426,7 @@ export const getOrganizationalRoles = () => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(RECEIVE_ORG_ROLES),
-        `${apiBaseUrl}/api/v1/speakers/organizational-roles`,
+        `${window.API_BASE_URL}/api/v1/speakers/organizational-roles`,
         authErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());

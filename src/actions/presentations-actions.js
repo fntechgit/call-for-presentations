@@ -11,7 +11,6 @@
  * limitations under the License.
  **/
 
-import { authErrorHandler, apiBaseUrl} from './base-actions';
 import T from "i18n-react/dist/i18n-react";
 import {
     getRequest,
@@ -22,7 +21,8 @@ import {
     stopLoading,
     startLoading,
     showMessage,
-    showSuccessMessage
+    showSuccessMessage,
+    authErrorHandler
 } from "openstack-uicore-foundation/lib/methods";
 
 export const CREATED_RECEIVED       = 'CREATED_RECEIVED';
@@ -59,7 +59,7 @@ export const getCreatorPresentations = (summitId, accessToken) => (dispatch, get
     return getRequest(
         null,
         createAction(CREATED_RECEIVED),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/creator/summits/${summitId}`,
+        `${window.API_BASE_URL}/api/v1/speakers/me/presentations/creator/summits/${summitId}`,
         authErrorHandler
     )(params)(dispatch);
 }
@@ -72,7 +72,7 @@ export const getSpeakerPresentations = (summitId, accessToken) => (dispatch, get
     getRequest(
         null,
         createAction(SPEAKER_RECEIVED),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/speaker/summits/${summitId}`,
+        `${window.API_BASE_URL}/api/v1/speakers/me/presentations/speaker/summits/${summitId}`,
         authErrorHandler
     )(params)(dispatch);
 }
@@ -86,7 +86,7 @@ export const getModeratorPresentations = (summitId, accessToken) => (dispatch, g
     getRequest(
         null,
         createAction(MODERATOR_RECEIVED),
-        `${apiBaseUrl}/api/v1/speakers/me/presentations/moderator/summits/${summitId}`,
+        `${window.API_BASE_URL}/api/v1/speakers/me/presentations/moderator/summits/${summitId}`,
         authErrorHandler
     )(params)(dispatch);
 }
