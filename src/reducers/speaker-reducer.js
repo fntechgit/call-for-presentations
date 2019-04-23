@@ -88,6 +88,12 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
             let orgRoles = entity.organizational_roles.map(or => or.id);
             entity.organizational_roles = orgRoles;
 
+            let languages = entity.languages.map(l => l.id);
+            entity.languages = languages;
+
+            let travel_preferences = entity.travel_preferences.map(c => c.country_iso_code);
+            entity.travel_preferences = travel_preferences;
+
 
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }

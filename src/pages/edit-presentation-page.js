@@ -15,7 +15,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import { savePresentation, completePresentation } from "../actions/presentation-actions";
-import { removeSpeakerFromPresentation, removeModeratorFromPresentation } from "../actions/speaker-actions";
+import { removeSpeakerFromPresentation, removeModeratorFromPresentation, assignModeratorToPresentation, assignSpeakerToPresentation } from "../actions/speaker-actions";
 import { loadEventCategory } from "../actions/base-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
 import PresentationNav from "../components/presentation-nav/index";
@@ -90,6 +90,8 @@ class EditPresentationPage extends React.Component {
                         history={history}
                         entity={entity}
                         summit={summit}
+                        onAddSpeaker={this.props.assignSpeakerToPresentation}
+                        onAddModerator={this.props.assignModeratorToPresentation}
                         onRemoveSpeaker={this.props.removeSpeakerFromPresentation}
                         onRemoveModerator={this.props.removeModeratorFromPresentation}
                         onSubmit={savePresentation}
@@ -126,6 +128,8 @@ export default connect (
         completePresentation,
         loadEventCategory,
         removeSpeakerFromPresentation,
-        removeModeratorFromPresentation
+        removeModeratorFromPresentation,
+        assignModeratorToPresentation,
+        assignSpeakerToPresentation
     }
 )(EditPresentationPage);

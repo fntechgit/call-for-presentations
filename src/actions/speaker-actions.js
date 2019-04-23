@@ -109,11 +109,17 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
             .then((payload) => {
                 if (type == 'moderator') {
                     success_message.html = T.translate("edit_speaker.moderator_saved");
-                    dispatch(assignModeratorToPresentation(payload.response, success_message));
+                    dispatch(assignModeratorToPresentation(payload.response));
                 } else {
                     success_message.html = T.translate("edit_speaker.speaker_saved");
-                    dispatch(assignSpeakerToPresentation(payload.response, success_message));
+                    dispatch(assignSpeakerToPresentation(payload.response));
                 }
+            })
+            .then((payload) => {
+                dispatch(showMessage(
+                    success_message,
+                    () => { history.push(`/app/presentations/${presentationId}/speakers`) }
+                ));
             });
 
     } else {
@@ -129,11 +135,17 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
             .then((payload) => {
                 if (type == 'moderator') {
                     success_message.html = T.translate("edit_speaker.moderator_created");
-                    dispatch(assignModeratorToPresentation(payload.response, success_message));
+                    dispatch(assignModeratorToPresentation(payload.response));
                 } else {
                     success_message.html = T.translate("edit_speaker.speaker_created");
-                    dispatch(assignSpeakerToPresentation(payload.response, success_message));
+                    dispatch(assignSpeakerToPresentation(payload.response));
                 }
+            })
+            .then((payload) => {
+                dispatch(showMessage(
+                    success_message,
+                    () => { history.push(`/app/presentations/${presentationId}/speakers`) }
+                ));
             });
     }
 }
@@ -187,7 +199,7 @@ const uploadFile = (entity, file) => (dispatch, getState) => {
 }
 
 
-export const assignSpeakerToPresentation = (speaker, message) => (dispatch, getState) => {
+export const assignSpeakerToPresentation = (speaker) => (dispatch, getState) => {
     let { loggedUserState, presentationState } = getState();
     let { accessToken }     = loggedUserState;
     let presentationId      = presentationState.entity.id;
@@ -202,13 +214,7 @@ export const assignSpeakerToPresentation = (speaker, message) => (dispatch, getS
         `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${presentationId}/speakers/${speaker.id}`,
         null,
         authErrorHandler
-    )(params)(dispatch)
-        .then((payload) => {
-            dispatch(showMessage(
-                message,
-                () => { history.push(`/app/presentations/${presentationId}/speakers`) }
-            ));
-        });
+    )(params)(dispatch);
 }
 
 
@@ -235,7 +241,7 @@ export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState)
     );
 };
 
-export const assignModeratorToPresentation = (moderator, message) => (dispatch, getState) => {
+export const assignModeratorToPresentation = (moderator) => (dispatch, getState) => {
     let { loggedUserState, presentationState } = getState();
     let { accessToken }     = loggedUserState;
     let presentationId      = presentationState.entity.id;
@@ -250,13 +256,7 @@ export const assignModeratorToPresentation = (moderator, message) => (dispatch, 
         `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${presentationId}/moderators/${moderator.id}`,
         null,
         authErrorHandler
-    )(params)(dispatch)
-        .then((payload) => {
-            dispatch(showMessage(
-                message,
-                () => { history.push(`/app/presentations/${presentationId}/speakers`) }
-            ));
-        });
+    )(params)(dispatch);
 }
 
 
@@ -289,7 +289,6 @@ const normalizeEntity = (entity) => {
 
     normalizedEntity.member_id = (normalizedEntity.member != null) ? normalizedEntity.member.id : 0;
     normalizedEntity.areas_of_expertise = entity.areas_of_expertise.map(aoe => aoe.label);
-    normalizedEntity.languages = entity.languages.map(l => l.id);
 
     delete normalizedEntity['presentations'];
     delete normalizedEntity['all_presentations'];
@@ -440,8 +439,6 @@ const normalizeEntityProfile = (entity) => {
 
     normalizedEntity.organizational_roles = entity.organizational_roles.filter( r => Number.isInteger(r));
     normalizedEntity.other_organizational_role = entity.organizational_roles.filter( r => typeof r === 'string');
-
-    normalizedEntity.languages = entity.languages.map(l => l.id);
 
     normalizedEntity.areas_of_expertise = entity.areas_of_expertise.map(a => a.label);
 

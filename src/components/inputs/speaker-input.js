@@ -50,10 +50,6 @@ export default class CPFSpeakerInput extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            value: null
-        };
-
         this.handleChange = this.handleChange.bind(this);
         this.getSpeakers = this.getSpeakers.bind(this);
         this.filterOptions = this.filterOptions.bind(this);
@@ -68,7 +64,6 @@ export default class CPFSpeakerInput extends React.Component {
 
         this.props.onChange(ev);
 
-        this.setState({value: value});
     }
 
     filterOptions(option, filterString) {
@@ -96,11 +91,11 @@ export default class CPFSpeakerInput extends React.Component {
 
 
     render() {
-        let {onChange, id, speakers, ...rest} = this.props;
+        let {onChange, id, speakers, value, ...rest} = this.props;
 
         return (
             <AsyncCreatableSelect
-                value={this.state.value}
+                value={value}
                 onChange={this.handleChange}
                 loadOptions={this.getSpeakers}
                 getOptionValue={op => op.id}

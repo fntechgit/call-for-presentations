@@ -14,10 +14,10 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import { Input, TextEditor, UploadInput, RadioList, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput } from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 import AffiliationsTable from './affiliationstable'
 import PresentationLinks from "./inputs/presentation-links";
+import { Input, TextEditor, UploadInput, RadioList, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput } from 'openstack-uicore-foundation/lib/components'
 
 
 class SpeakerForm extends React.Component {
