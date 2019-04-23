@@ -164,7 +164,7 @@ class PresentationSummaryForm extends React.Component {
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
-                        <label> {T.translate("edit_presentation.abstract")} (1000 chars) </label>
+                        <label> {T.translate("edit_presentation.abstract")} </label>
                         <TextEditor id="description" className="editor" value={entity.description} onChange={this.handleChange} />
                     </div>
                 </div>
@@ -172,13 +172,13 @@ class PresentationSummaryForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <p>{T.translate("edit_presentation.social_summary_desc")}</p>
-                        <label> {T.translate("edit_presentation.social_summary")} (100 chars) </label>
+                        <label> {T.translate("edit_presentation.social_summary")} </label>
                         <textarea id="social_description" value={entity.social_description} onChange={this.handleChange} />
                     </div>
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
-                        <label> {T.translate("edit_presentation.expected_learn")} (1000 chars) </label>
+                        <label> {T.translate("edit_presentation.expected_learn")} </label>
                         <TextEditor id="attendees_expected_learnt" className="editor" value={entity.attendees_expected_learnt} onChange={this.handleChange} />
                     </div>
                 </div>

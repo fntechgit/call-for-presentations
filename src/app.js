@@ -41,7 +41,11 @@ if (language.length > 2) {
     language = language.split("_")[0];
 }
 
-T.setTexts(require(`./i18n/${language}.json`));
+try {
+    T.setTexts(require(`./i18n/${language}.json`));
+} catch (e) {
+    T.setTexts(require(`./i18n/en.json`));
+}
 
 
 // move all env var to global scope so ui core has access to this
