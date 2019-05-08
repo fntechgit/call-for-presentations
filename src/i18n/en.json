@@ -10,7 +10,8 @@
     "user_not_set"              : "Hold on. Can not get any valid user.",
     "session_expired"           : "Hold on. Your session expired!.",
     "server_error"              : "There was a problem with our server, please contact admin.",
-    "not_found"                 : "Not Found"
+    "not_found"                 : "Not Found",
+    "access_denied"             : "Access Denied"
   },
   "general": {
     "summit"              : "Summit",
@@ -154,7 +155,9 @@
     "auth_required": "Permission Required",
     "auth_required_text": "You don't have permission to edit this member profile info. Please request permission to edit.",
     "request_auth": "Request Permission",
-    "auth_requested_success": "Permission requested successfully."
+    "auth_requested_success": "Permission requested successfully.",
+    "auth_pending": "Permission Request Pending",
+    "auth_pending_text": "You already requested permission to edit, but the speaker has not granted it yet."
   },
   "preview_presentation": {
     "preview_presentation": "Preview Your Submission"

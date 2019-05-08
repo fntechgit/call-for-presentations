@@ -42,9 +42,9 @@ class PrimaryLayout extends React.Component {
     }
 
     render(){
-        let { location, speaker, member, summit } = this.props;
+        let { location, speaker, member, summit, loading } = this.props;
 
-        if((!speaker || !speaker.id) && location.pathname != '/app/profile') {
+        if((!speaker || !speaker.id) && location.pathname != '/app/profile' && !loading) {
             return (
                 <Redirect exact to={{ pathname: '/app/profile' }}  />
             );

@@ -10,7 +10,8 @@
     "user_not_set"              : "坚持，稍等。无法获得任何有效用户。",
     "session_expired"           : "坚持，稍等。你的会话已经过期了！",
     "server_error"              : "我们的服务器出现问题，请联系管理员。",
-    "not_found"                 : "未找到"
+    "not_found"                 : "未找到",
+    "access_denied"             : "Access Denied"
   },
   "general": {
     "summit"              : "首脑",
@@ -153,7 +154,9 @@
     "auth_required": "Permission Required",
     "auth_required_text": "You don't have permission to edit this member profile info. Please request permission to edit.",
     "request_auth": "Request Permission",
-    "auth_requested_success": "Permission requested successfully."
+    "auth_requested_success": "Permission requested successfully.",
+    "auth_pending": "Permission Request Pending",
+    "auth_pending_text": "You already requested permission to edit, but the speaker has not granted it yet."
   },
   "preview_presentation": {
     "preview_presentation": "预览已提交的演讲议题"

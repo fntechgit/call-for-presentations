@@ -18,6 +18,7 @@ import swal from "sweetalert2";
 import { formatEpoch } from '../utils/methods';
 import SpeakerForm from '../components/speaker-form'
 import { getSpeaker, resetSpeakerForm, saveSpeaker, attachPicture, getOrganizationalRoles } from "../actions/speaker-actions";
+import history from "../history";
 
 //import '../styles/presentations-page.less';
 
@@ -26,9 +27,11 @@ class EditSpeakerPage extends React.Component {
     constructor(props){
         super(props);
 
+        let speakerType = props.location.state ? props.location.state.type : null;
+
         this.state = {
             entity: {...props.entity},
-            type: props.location.state.type
+            type: speakerType
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -59,11 +62,20 @@ class EditSpeakerPage extends React.Component {
     }
 
     render() {
-        let {entity, orgRoles, loggedMember, errors, attachPicture, speakerPermission, match} = this.props;
+        let {entity, orgRoles, loggedMember, errors, attachPicture, speakerPermission, match, currentPresentation, loggedInSpeaker} = this.props;
         let speakerId = match.params.speaker_id;
 
-        if (!speakerPermission && speakerId) {
-            return (<div>You do not have permission to edit this speaker</div>);
+        if (speakerId && speakerId != loggedInSpeaker.id && speakerPermission && (!speakerPermission.approved || speakerId != speakerPermission.speaker_id) ) {
+
+            swal({
+                title: T.translate("errors.access_denied"),
+                text: T.translate("edit_speaker.auth_required_text"),
+                type: "warning",
+            }).then(function(result){
+                history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+            }).catch(swal.noop);
+
+            return (<div></div>);
         }
 
         return (
@@ -83,9 +95,10 @@ class EditSpeakerPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ baseState, speakerState, presentationState }) => ({
+const mapStateToProps = ({ baseState, speakerState, presentationState, profileState }) => ({
     selectionPlan : baseState.selectionPlan,
     currentPresentation: presentationState.entity,
+    loggedInSpeaker: profileState.entity,
     ...speakerState
 })
 

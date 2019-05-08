@@ -105,7 +105,17 @@ export const getSpeakerPermission = (presentationId, speakerId, speakerType) => 
         {speakerId}
     )(params)(dispatch).then((payload) => {
             dispatch(stopLoading());
-            history.push(`/app/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
+
+            if (payload.response.approved) {
+                history.push(`/app/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
+            } else {
+                swal({
+                    title: T.translate("edit_speaker.auth_pending"),
+                    text: T.translate("edit_speaker.auth_pending_text"),
+                    type: "warning",
+                }).catch(swal.noop);
+            }
+
         }
     );
 };
