@@ -25,6 +25,7 @@ class NavMenu extends React.Component {
         super(props);
 
         this.state = {
+            open: false,
             activeItem: props.active
         }
     }
@@ -42,22 +43,24 @@ class NavMenu extends React.Component {
     render() {
 
         let {user} = this.props;
-        let {activeItem} = this.state;
+        let {activeItem, open} = this.state;
 
         return (
             <div id="app_menu" >
-                <p className="user-img" style={{backgroundImage: 'url(' + user.pic + ')'}} ></p>
-                <h3 className="user-name">{user.first_name} {user.last_name}</h3>
-                <ul className="items">
-                    { MenuItemsDefinitions.map(it => (
-                        <MenuItem
-                            key={it.name}
-                            {...it}
-                            onClick={(e) => this.onMenuItemClick(e, it)}
-                            active={activeItem == it.name}
-                        />
-                    ))}
-                </ul>
+                <div id="app_menu_body">
+                    <p className="user-img" style={{backgroundImage: 'url(' + user.pic + ')'}} ></p>
+                    <h3 className="user-name">{user.first_name} {user.last_name}</h3>
+                    <ul className="items">
+                        { MenuItemsDefinitions.map(it => (
+                            <MenuItem
+                                key={it.name}
+                                {...it}
+                                onClick={(e) => this.onMenuItemClick(e, it)}
+                                active={activeItem == it.name}
+                            />
+                        ))}
+                    </ul>
+                </div>
             </div>
         );
     }

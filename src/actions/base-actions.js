@@ -187,3 +187,4 @@ export const selectionPlanErrorHandler = (err, res) => (dispatch) => {
             swal("ERROR", T.translate("errors.server_error"), "error");
     }
 }
+

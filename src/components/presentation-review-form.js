@@ -79,10 +79,10 @@ class PresentationReviewForm extends React.Component {
                     <label>{T.translate("edit_presentation.attending_media")}</label><br/>
                     {entity.attending_media ? 'Yes' : 'No'}
                 </div>
-                <hr/>
 
                 {entity.moderator &&
                 <div className="main-panel-section confirm-block">
+                    <hr/>
                     <label>Moderators</label>
                     <div className="row">
                         <div className="col-lg-2">
@@ -105,8 +105,9 @@ class PresentationReviewForm extends React.Component {
                 </div>
                 }
 
-                <hr/>
+
                 <div className="main-panel-section confirm-block">
+                    <hr/>
                     <label>Speakers</label>
                     { entity.speakers.map(s => (
                         <div className="row" key={'speaker_review_'+s.id}>
@@ -130,6 +131,7 @@ class PresentationReviewForm extends React.Component {
                     ))}
                 </div>
 
+                <hr/>
                 <SubmitButtons onSubmit={this.handleSubmit.bind(this)} backStep="speakers" />
             </form>
         );

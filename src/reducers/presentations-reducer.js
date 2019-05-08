@@ -12,7 +12,8 @@
  **/
 
 import { LOGOUT_USER } from 'openstack-uicore-foundation/lib/actions';
-import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED, PRESENTATION_DELETED } from '../actions/presentations-actions';
+import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED } from '../actions/presentations-actions';
+import { PRESENTATION_DELETED } from '../actions/presentation-actions'
 
 const DEFAULT_STATE = {
     presentations_created: [],

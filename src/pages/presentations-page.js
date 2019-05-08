@@ -85,11 +85,11 @@ class PresentationsPage extends React.Component {
             <div className="page-wrap" id="presentations-page">
                 <div className="header">
                     <div className="row">
-                        <div className="col-md-6">
+                        <div className="col-md-6 your-title">
                             <h2> {T.translate("presentations.presentations")}</h2>
                         </div>
                         {cfpOpen &&
-                        <div className="col-md-6 text-right">
+                        <div className="col-md-6 text-right add-pres-wrapper">
                             <button className="btn btn-success add-presentation-btn"
                                     onClick={this.handleNewPresentation}>
                                 {T.translate("presentations.add_presentation")}

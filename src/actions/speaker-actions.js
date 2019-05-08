@@ -22,23 +22,29 @@ import {
     startLoading,
     showMessage,
     showSuccessMessage,
-    authErrorHandler
+    authErrorHandler,
+    doLogin,
+    initLogOut
 } from "openstack-uicore-foundation/lib/methods";
 
 import history from '../history'
+import swal from "sweetalert2";
+import {SELECTION_CLOSED} from "./base-actions";
 
-
-export const RECEIVE_SPEAKER        = 'RECEIVE_SPEAKER';
-export const REQUEST_SPEAKER        = 'REQUEST_SPEAKER';
-export const RESET_SPEAKER_FORM     = 'RESET_SPEAKER_FORM';
-export const UPDATE_SPEAKER         = 'UPDATE_SPEAKER';
-export const SPEAKER_UPDATED        = 'SPEAKER_UPDATED';
-export const SPEAKER_SAVED          = 'SPEAKER_SAVED';
-export const SPEAKER_ASSIGNED       = 'SPEAKER_ASSIGNED';
-export const SPEAKER_REMOVED        = 'SPEAKER_REMOVED';
-export const MODERATOR_ASSIGNED     = 'MODERATOR_ASSIGNED';
-export const MODERATOR_REMOVED      = 'MODERATOR_REMOVED';
-export const PIC_ATTACHED           = 'PIC_ATTACHED';
+export const RECEIVE_SPEAKER_PERMISSION     = 'RECEIVE_SPEAKER_PERMISSION';
+export const REQUEST_SPEAKER_PERMISSION     = 'REQUEST_SPEAKER_PERMISSION';
+export const SPEAKER_PERMISSION_REQUESTED   = 'SPEAKER_PERMISSION_REQUESTED';
+export const RECEIVE_SPEAKER                = 'RECEIVE_SPEAKER';
+export const REQUEST_SPEAKER                = 'REQUEST_SPEAKER';
+export const RESET_SPEAKER_FORM             = 'RESET_SPEAKER_FORM';
+export const UPDATE_SPEAKER                 = 'UPDATE_SPEAKER';
+export const SPEAKER_UPDATED                = 'SPEAKER_UPDATED';
+export const SPEAKER_SAVED                  = 'SPEAKER_SAVED';
+export const SPEAKER_ASSIGNED               = 'SPEAKER_ASSIGNED';
+export const SPEAKER_REMOVED                = 'SPEAKER_REMOVED';
+export const MODERATOR_ASSIGNED             = 'MODERATOR_ASSIGNED';
+export const MODERATOR_REMOVED              = 'MODERATOR_REMOVED';
+export const PIC_ATTACHED                   = 'PIC_ATTACHED';
 
 export const RECEIVE_SPEAKER_PROFILE        = 'RECEIVE_SPEAKER_PROFILE';
 export const REQUEST_SPEAKER_PROFILE        = 'REQUEST_SPEAKER_PROFILE';
@@ -73,9 +79,91 @@ export const getSpeaker = (speakerId) => (dispatch, getState) => {
     );
 };
 
+
+export const getSpeakerPermission = (presentationId, speakerId, speakerType) => (dispatch, getState) => {
+
+    let { loggedUserState, profileState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    if (speakerId == profileState.entity.id) {
+        history.push(`/app/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
+        return;
+    }
+
+    dispatch(startLoading());
+
+    let params = {
+        access_token : accessToken,
+        expand: 'member,presentations'
+    };
+
+    return getRequest(
+        createAction(REQUEST_SPEAKER_PERMISSION),
+        createAction(RECEIVE_SPEAKER_PERMISSION),
+        `${window.API_BASE_URL}/api/v1/speakers/${speakerId}/edit-permission`,
+        speakerPermissionErrorHandler,
+        {speakerId}
+    )(params)(dispatch).then((payload) => {
+            dispatch(stopLoading());
+            history.push(`/app/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
+        }
+    );
+};
+
+export const speakerPermissionErrorHandler = (err, res) => (dispatch) => {
+    let code = err.status;
+    dispatch(stopLoading());
+
+    if (code == 404) {
+        swal({
+            title: T.translate("edit_speaker.auth_required"),
+            text: T.translate("edit_speaker.auth_required_text"),
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#00ca00",
+            confirmButtonText: T.translate("edit_speaker.request_auth")
+        }).then(function(result){
+            if (result.value) {
+                dispatch(requestSpeakerPermission());
+            }
+        }).catch(swal.noop);
+    } else {
+        dispatch(authErrorHandler(err, res));
+    }
+}
+
+export const requestSpeakerPermission = () => (dispatch, getState) => {
+    let { loggedUserState, speakerState } = getState();
+    let { accessToken }                 = loggedUserState;
+    let { speakerPermissionRequest }    = speakerState;
+
+    dispatch(startLoading());
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    putRequest(
+        createAction(REQUEST_SPEAKER_PERMISSION),
+        createAction(SPEAKER_PERMISSION_REQUESTED),
+        `${window.API_BASE_URL}/api/v1/speakers/${speakerPermissionRequest}/edit-permission`,
+        {},
+        authErrorHandler
+    )(params)(dispatch)
+    .then((payload) => {
+        dispatch(stopLoading());
+        dispatch(showSuccessMessage(T.translate("edit_speaker.auth_requested_success")));
+    });
+
+
+}
+
+
 export const resetSpeakerForm = (email = '') => (dispatch, getState) => {
     dispatch(createAction(RESET_SPEAKER_FORM)({email}));
 };
+
+
 
 export const saveSpeaker = (entity, type) => (dispatch, getState) => {
     let { loggedUserState, presentationState } = getState();
@@ -284,6 +372,7 @@ export const removeModeratorFromPresentation = (moderatorId) => (dispatch, getSt
 };
 
 
+
 const normalizeEntity = (entity) => {
     let normalizedEntity = {...entity};
 
@@ -303,6 +392,9 @@ const normalizeEntity = (entity) => {
 
     return normalizedEntity;
 }
+
+
+
 
 
 

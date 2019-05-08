@@ -73,9 +73,7 @@ class App extends React.PureComponent {
         let header_title = '';
         if (selectionPlan) {
             let end_date = formatEpoch(selectionPlan.submission_end_date);
-            header_title = `${selectionPlan.name} - Open til ${end_date}`;
-        } else {
-            header_title = 'CLOSED';
+            header_title = `: ${selectionPlan.name} - Open til ${end_date}`;
         }
 
         return (
@@ -88,7 +86,7 @@ class App extends React.PureComponent {
                     />
                     <div className="header">
                         <div className={"header-title " + (isLoggedUser ? '' : 'center')}>
-                            {T.translate("landing.call_for_presentations")} : {header_title}
+                            {T.translate("landing.call_for_presentations")} {header_title}
                             <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} doLogin={this.onClickLogin.bind(this)} initLogOut={initLogOut}/>
                         </div>
                     </div>

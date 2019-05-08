@@ -150,7 +150,11 @@
     "speaker_created": "Speaker created successfully!",
     "speaker_saved": "Speaker saved successfully!",
     "moderator_created": "Moderator created successfully!",
-    "moderator_saved": "Moderator saved successfully!"
+    "moderator_saved": "Moderator saved successfully!",
+    "auth_required": "Permission Required",
+    "auth_required_text": "You don't have permission to edit this member profile info. Please request permission to edit.",
+    "request_auth": "Request Permission",
+    "auth_requested_success": "Permission requested successfully."
   },
   "preview_presentation": {
     "preview_presentation": "Preview Your Submission"

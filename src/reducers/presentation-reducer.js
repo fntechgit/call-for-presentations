@@ -98,6 +98,7 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
 
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
+        break;
         case PRESENTATION_ADDED:
         case PRESENTATION_COMPLETED:
         case PRESENTATION_UPDATED: {
@@ -111,8 +112,11 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
             delete entity.tags;
             delete entity.extra_questions;
 
-            return {...state, entity: {...state.entity, ...entity} };
+            let tmp_entity = {...state.entity, ...entity};
+
+            return {...state, entity: tmp_entity };
         }
+        break;
         case RECEIVE_EVENT_CATEGORY: {
             let entity = {...payload.response};
             return {...state, track: {...entity}};

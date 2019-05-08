@@ -149,7 +149,11 @@
     "speaker_created": "扬声器创建成功！",
     "speaker_saved": "扬声器保存成功！",
     "moderator_created": "主持人创建成功！",
-    "moderator_saved": "主持人保存成功！"
+    "moderator_saved": "主持人保存成功！",
+    "auth_required": "Permission Required",
+    "auth_required_text": "You don't have permission to edit this member profile info. Please request permission to edit.",
+    "request_auth": "Request Permission",
+    "auth_requested_success": "Permission requested successfully."
   },
   "preview_presentation": {
     "preview_presentation": "预览已提交的演讲议题"

@@ -15,7 +15,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import { savePresentation, completePresentation } from "../actions/presentation-actions";
-import { removeSpeakerFromPresentation, removeModeratorFromPresentation, assignModeratorToPresentation, assignSpeakerToPresentation } from "../actions/speaker-actions";
+import { getSpeakerPermission, removeSpeakerFromPresentation, removeModeratorFromPresentation, assignModeratorToPresentation, assignSpeakerToPresentation } from "../actions/speaker-actions";
 import { loadEventCategory } from "../actions/base-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
 import PresentationNav from "../components/presentation-nav/index";
@@ -30,6 +30,15 @@ class EditPresentationPage extends React.Component {
 
     constructor(props){
         super(props);
+
+    }
+
+    componentWillMount() {
+        let {entity} = this.props;
+
+        if (entity.track_id && (!this.props.track || this.props.track.id != entity.track_id)) {
+            this.props.loadEventCategory();
+        }
 
     }
 
@@ -48,7 +57,7 @@ class EditPresentationPage extends React.Component {
     }
 
     render() {
-        let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, completePresentation } = this.props;
+        let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, completePresentation, getSpeakerPermission } = this.props;
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
 
@@ -95,6 +104,7 @@ class EditPresentationPage extends React.Component {
                         onRemoveSpeaker={this.props.removeSpeakerFromPresentation}
                         onRemoveModerator={this.props.removeModeratorFromPresentation}
                         onSubmit={savePresentation}
+                        onSpeakerEdit={getSpeakerPermission}
                     />
                 </div>
                 }
@@ -130,6 +140,7 @@ export default connect (
         removeSpeakerFromPresentation,
         removeModeratorFromPresentation,
         assignModeratorToPresentation,
-        assignSpeakerToPresentation
+        assignSpeakerToPresentation,
+        getSpeakerPermission
     }
 )(EditPresentationPage);

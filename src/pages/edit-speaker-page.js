@@ -59,7 +59,12 @@ class EditSpeakerPage extends React.Component {
     }
 
     render() {
-        let {entity, orgRoles, loggedMember, errors, attachPicture} = this.props;
+        let {entity, orgRoles, loggedMember, errors, attachPicture, speakerPermission, match} = this.props;
+        let speakerId = match.params.speaker_id;
+
+        if (!speakerPermission && speakerId) {
+            return (<div>You do not have permission to edit this speaker</div>);
+        }
 
         return (
             <div className="page-wrap" id="edit-speaker-page">

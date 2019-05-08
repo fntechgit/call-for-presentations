@@ -18,7 +18,9 @@ import
     UPDATE_SPEAKER,
     SPEAKER_UPDATED,
     PIC_ATTACHED,
-    RECEIVE_ORG_ROLES
+    RECEIVE_ORG_ROLES,
+    RECEIVE_SPEAKER_PERMISSION,
+    REQUEST_SPEAKER_PERMISSION
 } from '../actions/speaker-actions';
 
 import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
@@ -48,6 +50,8 @@ export const DEFAULT_ENTITY = {
 
 const DEFAULT_STATE = {
     entity: DEFAULT_ENTITY,
+    speakerPermissionRequest: 0,
+    speakerPermission: 0,
     orgRoles: [],
     errors: {}
 };
@@ -109,6 +113,16 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
         case RECEIVE_ORG_ROLES: {
             let orgRoles = [...payload.response.data];
             return {...state, orgRoles: orgRoles}
+        }
+        break;
+        case REQUEST_SPEAKER_PERMISSION: {
+            let {speakerId} = payload;
+            return {...state, speakerPermissionRequest: speakerId}
+        }
+        break;
+        case RECEIVE_SPEAKER_PERMISSION: {
+            let speakerPermission = payload.response;
+            return {...state, speakerPermission}
         }
         break;
         case VALIDATE: {
