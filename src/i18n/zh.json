@@ -3,7 +3,16 @@
     "call_for_presentations"  : "征集演讲",
     "sign_out"                : "退出登录",
     "log_in"                  : "登录",
-    "not_logged_in"           : "您尚未登录。请登录以继续:"
+    "not_logged_in"           : "您尚未登录。请登录以继续:",
+    "title"                   : "Would you like to present at the Open Infrastructure Summit?",
+    "steps_title"             : "Here are three steps you should take as a potential speaker:",
+    "review_link"             : "Review the list of Summit Categories & Tracks.",
+    "learn_link"              : "Learn about the selection process.",
+    "submit_link"             : "Submit your session proposal below. (Limit of 3 per speaker)",
+    "submit_title"            : "Submit Your Speaking Proposal",
+    "already_member"          : "Already a member?",
+    "or_join_us"              : "Or Join Us",
+    "join_us"                 : "Join the Foundation"
   },
   "errors": {
     "user_not_authz"            : "坚持，稍等。您的用户未获得授权！",
@@ -106,6 +115,7 @@
     "speaker_important": "重要！我们在参与者的个人简历中添加了新的问题，请在提交前审核本场演讲所有参与者的简历。",
     "speaker_note": "请注意：我们在演讲者的生物形式中添加了新的问题。请在提交前查看所有发言人的简历。",
     "more_speaker": "添加更多参与者？",
+    "more_moderator": "Please add a moderator.",
     "enter_speaker": "请依次输入参与者的姓、名或电子邮箱（*）",
     "speaker_declaimer": "参与者同意OpenStack基金会记录和发布其本人在开源基础设施上海峰会上发表的言论。如果您代表某参与者提交申请，则向OpenStack基金会表明：您有权代表该参与者提交申请，并同意基金会录制和发布其在活动中发表的言论。",
     "add_speaker": "添加",
@@ -114,6 +124,7 @@
     "review_important": "查看以下所有内容，确保所有信息准确无误。重要！请点击“确认提交”完成议题提交流程。",
     "permission_denied": "没有权限",
     "no_edit": "您无权编辑此演示文稿",
+    "add_speaker_error": "You need to add at least one speaker to the presentation.",
     "placeholders": {
     }
   },

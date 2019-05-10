@@ -3,7 +3,16 @@
     "call_for_presentations"  : "Call for Presentations",
     "sign_out"                : "Sign out",
     "log_in"                  : "Log in",
-    "not_logged_in"           : "You are not logged in. Please log in to continue:"
+    "not_logged_in"           : "You are not logged in. Please log in to continue:",
+    "title"                   : "Would you like to present at the Open Infrastructure Summit?",
+    "steps_title"             : "Here are three steps you should take as a potential speaker:",
+    "review_link"             : "Review the list of Summit Categories & Tracks.",
+    "learn_link"              : "Learn about the selection process.",
+    "submit_link"             : "Submit your session proposal below. (Limit of 3 per speaker)",
+    "submit_title"            : "Submit Your Speaking Proposal",
+    "already_member"          : "Already a member?",
+    "or_join_us"              : "Or Join Us",
+    "join_us"                 : "Join the Foundation"
   },
   "errors": {
     "user_not_authz"            : "Hold on. Your user is not authorized!.",
@@ -106,7 +115,8 @@
     "speaker_included": "Participants included in this presentation",
     "speaker_important": "IMPORTANT! We have added new questions to the participant bio form. Please review the bios for all participants before submitting.",
     "speaker_note": "Please Note: We have added new questions to the speaker bio form. Please review the bios for all speakers before submitting.",
-    "more_speaker": "Any more participants to add?",
+    "more_speaker": "Any more speakers to add?",
+    "more_moderator": "Please add a moderator.",
     "enter_speaker": "Enter the first name, last name or email address of the participant (*)",
     "speaker_declaimer": "Participants agree that OpenStack Foundation may record and publish their talks presented during the OpenStack Summit. If you submit a proposal on behalf of a participant, you represent to OpenStack Foundation that you have the authority to submit the proposal on the participants’s behalf and agree to the recording and publication of their presentation.",
     "add_speaker": "Add",
@@ -115,6 +125,7 @@
     "review_important": "Look over everything below to make sure it's to your liking. *IMPORTANT!* You MUST push 'CONFIRM MY SUBMISSION' to complete the process.",
     "permission_denied": "Permission Denied",
     "no_edit": "You are not allowed to edit this presentation",
+    "add_speaker_error": "You need to add at least one speaker to the presentation.",
     "placeholders": {
     }
   },

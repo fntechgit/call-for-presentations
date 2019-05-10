@@ -94,6 +94,16 @@ class PresentationSummaryForm extends React.Component {
                 return ({value: et.id, label: et.name, type: et.class_name});
         });
 
+        let event_types_limits = '';
+        for (var event_type of event_types_ddl) {
+            let ev_type_obj = summit.event_types.find(ev => ev.id == event_type.value);
+            event_types_limits += ev_type_obj.name + ': Max Speakers ' + ev_type_obj.max_speakers;
+            if (ev_type_obj.max_moderators) {
+                event_types_limits += ', Max Moderators ' + ev_type_obj.max_moderators;
+            }
+            event_types_limits += ' - ';
+        }
+
         // TODO get event level options
         let level_ddl = [
             {label: 'Beginner', value: 'Beginner'},
@@ -127,6 +137,7 @@ class PresentationSummaryForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_presentation.format")} </label>
+                        <p> {event_types_limits} </p>
                         <Dropdown
                             id="type_id"
                             value={entity.type_id}

@@ -16,6 +16,7 @@ import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import SubmitButtons from "./presentation-submit-buttons";
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
+import swal from "sweetalert2";
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {
@@ -38,7 +39,11 @@ class PresentationSpeakersForm extends React.Component {
         let entity = {...this.props.entity};
         ev.preventDefault();
 
-        this.props.onSubmit(this.props.entity, 'review');
+        if (entity.speakers.length == 0) {
+            swal("Validation error", T.translate("edit_presentation.add_speaker_error"), "warning");
+        } else {
+            this.props.onSubmit(this.props.entity, 'review');
+        }
     }
 
     handleBack(ev) {
@@ -111,6 +116,13 @@ class PresentationSpeakersForm extends React.Component {
         let canAddParticipant = canAddModerator || canAddSpeakers;
         let speakerType = (canAddModerator) ? 'moderator' : 'speaker';
 
+        let addMoreParticipantsLabel = '';
+        if (canAddModerator) {
+            addMoreParticipantsLabel = T.translate("edit_presentation.more_moderator");
+        } else if (canAddParticipant) {
+            addMoreParticipantsLabel = T.translate("edit_presentation.more_speaker");
+        }
+
         return (
             <div>
 
@@ -168,7 +180,7 @@ class PresentationSpeakersForm extends React.Component {
 
                     {canAddParticipant &&
                     <div>
-                        <h3 className="more-speakers">{T.translate("edit_presentation.more_speaker")}</h3>
+                        <h3 className="more-speakers">{addMoreParticipantsLabel}</h3>
 
                         <div className="row form-group">
                             <div className="col-md-8">

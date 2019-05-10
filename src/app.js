@@ -27,6 +27,7 @@ import T from 'i18n-react';
 import history from './history'
 import CustomErrorPage from "./pages/custom-error-page";
 import { resetLoading } from './actions/base-actions';
+import LandingPage from "./pages/landing-page";
 
 // here is set by default user lang as en
 
@@ -85,11 +86,16 @@ class App extends React.PureComponent {
                         idpBaseUrl={window.IDP_BASE_URL}
                     />
                     <div className="header">
-                        <div className={"header-title " + (isLoggedUser ? '' : 'center')}>
+                        <div className={"header-title"}>
                             {T.translate("landing.call_for_presentations")} {header_title}
-                            <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} doLogin={this.onClickLogin.bind(this)} initLogOut={initLogOut}/>
+                            <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} initLogOut={initLogOut}/>
                         </div>
                     </div>
+
+                    {!isLoggedUser &&
+                        <LandingPage doLogin={this.onClickLogin.bind(this)} />
+                    }
+
                     <Switch>
                         <AuthorizedRoute isLoggedUser={isLoggedUser} backUrl={backUrl} path="/app" component={PrimaryLayout} />
                         <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getUserInfo={getUserInfo} />
