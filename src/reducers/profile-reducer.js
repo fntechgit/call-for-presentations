@@ -35,6 +35,7 @@ export const DEFAULT_ENTITY = {
     irc: '',
     bio: '',
     pic: '',
+    pic_file: null,
     affiliations: [],
     available_for_bureau: false,
     willing_to_present_video: false,
@@ -109,9 +110,10 @@ const profileReducer = (state = DEFAULT_STATE, action) => {
         }
         break;
         case PROFILE_PIC_ATTACHED: {
-            let pic = state.entity.pic + '?' + new Date().getTime();
-            return {...state, entity: {...state.entity, pic: pic} };;
+            let pic_info = {...payload.response};
+            return {...state, entity: {...state.entity, pic: pic_info.url, pic_file: null} };
         }
+        break;
         case SPEAKER_PROFILE_UPDATED: {
             return state;
         }

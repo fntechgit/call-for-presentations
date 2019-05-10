@@ -186,6 +186,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
         access_token : accessToken,
     };
 
+    let pic_file = entity.pic_file;
     let normalizedEntity = normalizeEntity(entity);
 
     let success_message = {
@@ -211,6 +212,13 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
                 } else {
                     success_message.html = T.translate("edit_speaker.speaker_saved");
                     dispatch(assignSpeakerToPresentation(payload.response));
+                }
+
+                return payload;
+            })
+            .then((payload) => {
+                if (pic_file) {
+                    dispatch(uploadFile(payload.response, pic_file));
                 }
             })
             .then((payload) => {
@@ -238,6 +246,12 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
                     success_message.html = T.translate("edit_speaker.speaker_created");
                     dispatch(assignSpeakerToPresentation(payload.response));
                 }
+                return payload;
+            })
+            .then((payload) => {
+                if (pic_file) {
+                    dispatch(uploadFile(payload.response, pic_file));
+                }
             })
             .then((payload) => {
                 dispatch(showMessage(
@@ -245,36 +259,6 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
                     () => { history.push(`/app/presentations/${presentationId}/speakers`) }
                 ));
             });
-    }
-}
-
-export const attachPicture = (entity, file) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
-
-    //dispatch(startLoading());
-
-    let params = {
-        access_token : accessToken,
-    };
-
-    if (entity.id) {
-        return dispatch(uploadFile(entity, file));
-    } else {
-        return postRequest(
-            null,
-            createAction(SPEAKER_UPDATED),
-            `${window.API_BASE_URL}/api/v1/speakers`,
-            entity,
-            authErrorHandler
-        )(params)(dispatch)
-            .then((payload) => {
-                dispatch(uploadFile(payload.response, file));
-            })
-            .then(() => {
-                dispatch(stopLoading());
-            }
-        );
     }
 }
 
@@ -286,11 +270,14 @@ const uploadFile = (entity, file) => (dispatch, getState) => {
         access_token : accessToken,
     };
 
+    let formData = new FormData();
+    formData.append('file', file);
+
     postRequest(
         null,
         createAction(PIC_ATTACHED),
         `${window.API_BASE_URL}/api/v1/speakers/${entity.id}/photo`,
-        file,
+        formData,
         authErrorHandler,
         {pic: entity.pic}
     )(params)(dispatch)
@@ -338,6 +325,7 @@ export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState)
         }
     );
 };
+
 
 export const assignModeratorToPresentation = (moderator) => (dispatch, getState) => {
     let { loggedUserState, presentationState } = getState();
@@ -396,6 +384,7 @@ const normalizeEntity = (entity) => {
     delete normalizedEntity['affiliations'];
     delete normalizedEntity['gender'];
     delete normalizedEntity['pic'];
+    delete normalizedEntity['pic_file'];
     delete normalizedEntity['member'];
     delete normalizedEntity['summit_assistance'];
     delete normalizedEntity['code_redeemed'];
@@ -424,6 +413,7 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
         access_token : accessToken,
     };
 
+    let pic_file = entity.pic_file;
     let normalizedEntity = normalizeEntityProfile(entity);
 
     let success_message = {
@@ -443,6 +433,11 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
             entity
         )(params)(dispatch)
             .then((payload) => {
+                if (pic_file) {
+                    dispatch(uploadFileProfile(payload.response, pic_file));
+                }
+            })
+            .then((payload) => {
                 success_message.html = T.translate("edit_profile.profile_saved");
                 dispatch(showMessage(success_message));
             });
@@ -458,6 +453,11 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
             entity
         )(params)(dispatch)
             .then((payload) => {
+                if (pic_file) {
+                    dispatch(uploadFileProfile(payload.response, pic_file));
+                }
+            })
+            .then((payload) => {
                 success_message.html = T.translate("edit_profile.profile_saved");
                 dispatch(showMessage(success_message));
             });
@@ -465,39 +465,12 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
 }
 
 
-export const attachProfilePicture = (entity, file) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
-
-    //dispatch(startLoading());
-
-    let params = {
-        access_token : accessToken,
-    };
-
-    if (entity.id) {
-        return dispatch(uploadFileProfile(entity, file));
-    } else {
-        return postRequest(
-            null,
-            createAction(SPEAKER_PROFILE_SAVED),
-            `${window.API_BASE_URL}/api/v1/speakers`,
-            entity,
-            authErrorHandler
-        )(params)(dispatch)
-            .then((payload) => {
-                dispatch(uploadFileProfile(payload.response, file));
-            })
-            .then(() => {
-                    dispatch(stopLoading());
-                }
-            );
-    }
-}
-
 const uploadFileProfile = (entity, file) => (dispatch, getState) => {
     let { loggedUserState } = getState();
     let { accessToken }     = loggedUserState;
+
+    let formData = new FormData();
+    formData.append('file', file);
 
     let params = {
         access_token : accessToken,
@@ -507,7 +480,7 @@ const uploadFileProfile = (entity, file) => (dispatch, getState) => {
         null,
         createAction(PROFILE_PIC_ATTACHED),
         `${window.API_BASE_URL}/api/v1/speakers/${entity.id}/photo`,
-        file,
+        formData,
         authErrorHandler,
         {pic: entity.pic}
     )(params)(dispatch)
@@ -547,6 +520,7 @@ const normalizeEntityProfile = (entity) => {
 
     delete normalizedEntity['affiliations'];
     delete normalizedEntity['pic'];
+    delete normalizedEntity['pic_file'];
     delete normalizedEntity['member'];
 
     return normalizedEntity;

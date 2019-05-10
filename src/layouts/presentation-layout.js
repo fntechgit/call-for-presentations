@@ -38,9 +38,7 @@ class PresentationLayout extends React.Component {
         let oldId = this.props.match.params.presentation_id;
         let newId = newProps.match.params.presentation_id;
 
-        if (!newId) {
-            this.props.resetPresentation();
-        } else if (oldId != newId) {
+        if (newId && oldId != newId) {
             this.props.getPresentation(newId);
         }
     }
@@ -50,7 +48,7 @@ class PresentationLayout extends React.Component {
         let presentation = new Presentation(entity, summit, selectionPlan, speaker, cfpOpen);
         let isNew = !match.params.presentation_id;
 
-        if (loading || (!isNew && !entity.id)) return(<div></div>);
+        if (!loading && !isNew && !entity.id) return(<div></div>);
 
         if (!isNew && match.params.presentation_id == entity.id && !presentation.canEdit() && !location.pathname.endsWith('preview') ) {
             return(<Redirect to={`${match.url}/preview`} />);

@@ -103,8 +103,8 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
         }
         break;
         case PIC_ATTACHED: {
-            let pic = state.entity.pic + '?' + new Date().getTime();
-            return {...state, entity: {...state.entity, pic: pic} };;
+            let pic_info = {...payload.response};
+            return {...state, entity: {...state.entity, pic: pic_info.url, pic_file: null} };;
         }
         case SPEAKER_UPDATED: {
             return state;

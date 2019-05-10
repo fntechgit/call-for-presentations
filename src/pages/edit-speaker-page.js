@@ -17,7 +17,7 @@ import T from 'i18n-react/dist/i18n-react';
 import swal from "sweetalert2";
 import { formatEpoch } from '../utils/methods';
 import SpeakerForm from '../components/speaker-form'
-import { getSpeaker, resetSpeakerForm, saveSpeaker, attachPicture, getOrganizationalRoles } from "../actions/speaker-actions";
+import { getSpeaker, resetSpeakerForm, saveSpeaker, getOrganizationalRoles } from "../actions/speaker-actions";
 import history from "../history";
 
 //import '../styles/presentations-page.less';
@@ -37,12 +37,33 @@ class EditSpeakerPage extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    componentWillReceiveProps(newProps) {
+        let speakerId = newProps.match.params.speaker_id;
+        let {entity, location, history, currentPresentation}   = newProps;
+
+        if (!location.state) {
+            history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+        }
+
+        if (!speakerId || isNaN(speakerId)) {
+            if (!location.state.hasOwnProperty('email')) {
+                history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+            }
+        } else if (speakerId != entity.id){
+            this.props.getSpeaker(speakerId);
+        }
+    }
+
     componentWillMount () {
         let speakerId = this.props.match.params.speaker_id;
         let {entity, location, history, currentPresentation, orgRoles}   = this.props;
 
+        if (!location.state) {
+            history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+        }
+
         if (!speakerId || isNaN(speakerId)) {
-            if (!location.state || !location.state.hasOwnProperty('email')) {
+            if (!location.state.hasOwnProperty('email')) {
                 history.push(`/app/presentations/${currentPresentation.id}/speakers`);
             } else {
                 this.props.resetSpeakerForm(location.state.email);
@@ -62,7 +83,7 @@ class EditSpeakerPage extends React.Component {
     }
 
     render() {
-        let {entity, orgRoles, loggedMember, errors, attachPicture, speakerPermission, match, currentPresentation, loggedInSpeaker} = this.props;
+        let {entity, orgRoles, loggedMember, errors, speakerPermission, match, currentPresentation, loggedInSpeaker} = this.props;
         let speakerId = match.params.speaker_id;
 
         if (speakerId && speakerId != loggedInSpeaker.id && speakerPermission && (!speakerPermission.approved || speakerId != speakerPermission.speaker_id) ) {
@@ -88,7 +109,6 @@ class EditSpeakerPage extends React.Component {
                     member={loggedMember}
                     orgRoles={orgRoles}
                     onSubmit={this.handleSubmit}
-                    onAttach={attachPicture}
                 />
             </div>
         );
@@ -108,7 +128,6 @@ export default connect (
         getSpeaker,
         resetSpeakerForm,
         saveSpeaker,
-        attachPicture,
         getOrganizationalRoles
     }
 )(EditSpeakerPage);

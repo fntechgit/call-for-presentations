@@ -73,8 +73,8 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         break;
         case PROFILE_PIC_ATTACHED: {
-            let pic = state.speaker.pic + '?' + new Date().getTime();
-            return {...state, speaker: {...state.speaker, pic: pic} };;
+            let pic_info = {...payload.response};
+            return {...state, speaker: {...state.speaker, pic: pic_info.url} };;
         }
         break;
         default:

@@ -16,7 +16,7 @@ import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import swal from "sweetalert2";
 import SpeakerForm from '../components/speaker-form'
-import { saveSpeakerProfile, attachProfilePicture, getOrganizationalRoles } from "../actions/speaker-actions";
+import { saveSpeakerProfile, getOrganizationalRoles } from "../actions/speaker-actions";
 import { getSpeakerInfo } from "../actions/auth-actions";
 
 import '../styles/profile-page.less';
@@ -25,8 +25,6 @@ class ProfilePage extends React.Component {
 
     constructor(props){
         super(props);
-
-
     }
 
     componentWillMount () {
@@ -40,7 +38,7 @@ class ProfilePage extends React.Component {
     }
 
     render() {
-        let {entity, orgRoles, loggedMember, errors, saveSpeakerProfile, attachProfilePicture, loading} = this.props;
+        let {entity, orgRoles, loggedMember, errors, saveSpeakerProfile, loading} = this.props;
 
         if (!entity.id && !loading && !errors) {
             swal({
@@ -60,7 +58,6 @@ class ProfilePage extends React.Component {
                     member={loggedMember}
                     orgRoles={orgRoles}
                     onSubmit={saveSpeakerProfile}
-                    onAttach={attachProfilePicture}
                     showAffiliations
                 />
             </div>
@@ -80,7 +77,6 @@ export default connect (
     mapStateToProps,
     {
         saveSpeakerProfile,
-        attachProfilePicture,
         getSpeakerInfo,
         getOrganizationalRoles
     }

@@ -65,16 +65,16 @@ class SpeakerForm extends React.Component {
     }
 
     handleUploadFile(file) {
-        console.log('file uploaded');
-        let formData = new FormData();
-        formData.append('file', file);
-        this.props.onAttach(this.state.entity, formData)
+        let entity = {...this.state.entity};
+        entity.pic_file = file;
+        entity.pic = file.preview;
+        this.setState({entity: entity});
     }
 
     handleRemoveFile(ev) {
         let entity = {...this.state.entity};
-
-        entity.attachment = '';
+        entity.pic_file = null;
+        entity.pic = '';
         this.setState({entity:entity});
     }
 

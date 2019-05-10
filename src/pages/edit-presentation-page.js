@@ -43,14 +43,14 @@ class EditPresentationPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        let {history} = newProps;
+        let {history, loading} = newProps;
         let step = newProps.match.params.step;
 
         if (!NavStepsDefinitions.map(s => s.name).includes(step)) {
             history.push('summary');
         }
 
-        if (newProps.entity.track_id && (!newProps.track || newProps.entity.track_id != this.props.entity.track_id)) {
+        if (!loading && newProps.entity.track_id && (!newProps.track || newProps.entity.track_id != this.props.entity.track_id)) {
             this.props.loadEventCategory();
         }
 
@@ -128,6 +128,7 @@ const mapStateToProps = ({ baseState, presentationState }) => ({
     selectionPlan : baseState.selectionPlan,
     summit : baseState.summit,
     tagGroups: baseState.tagGroups,
+    loading : baseState.loading,
     ...presentationState
 })
 

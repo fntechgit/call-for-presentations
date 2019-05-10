@@ -69,15 +69,16 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
                 return {...state,  entity: {...DEFAULT_ENTITY}, errors: {} };
             }
         }
-            break;
+        break;
         case RESET_PRESENTATION: {
             return DEFAULT_STATE;
         }
-            break;
+        break;
         case UPDATE_PRESENTATION: {
-            return {...state,  entity: {...state.entity, ...payload}, errors: {} };
+            let entity = {...payload};
+            return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
-            break;
+        break;
         case RECEIVE_PRESENTATION: {
             let entity = {...payload.response};
 
