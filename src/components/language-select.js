@@ -30,9 +30,6 @@ export default class LanguageSelect extends React.Component {
             case 'US':
                 lang = 'en';
                 break;
-            case 'ES':
-                lang = 'es';
-                break;
             case 'CN':
                 lang = 'zh';
                 break;
@@ -50,9 +47,6 @@ export default class LanguageSelect extends React.Component {
             case 'en':
                 defaultLang = 'US';
                 break;
-            case 'es':
-                defaultLang = 'ES';
-                break;
             case 'zh':
                 defaultLang = 'CN';
                 break;
@@ -63,7 +57,7 @@ export default class LanguageSelect extends React.Component {
             <div className="language-select">
                 <ReactFlagsSelect
                     defaultCountry={defaultLang}
-                    countries={["US", "ES", "CN"]}
+                    countries={["US", "CN"]}
                     showSelectedLabel={false}
                     showOptionLabel={false}
                     onSelect={this.handleChange}
