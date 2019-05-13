@@ -13,6 +13,7 @@
 
 import React from 'react'
 import { Switch, Route, Router } from 'react-router-dom'
+import moment from 'moment-timezone';
 import PrimaryLayout from "./layouts/primary-layout"
 import AuthorizedRoute from './routes/authorized-route'
 import AuthorizationCallbackRoute from "./routes/authorization-callback-route"
@@ -28,18 +29,22 @@ import history from './history'
 import CustomErrorPage from "./pages/custom-error-page";
 import { resetLoading } from './actions/base-actions';
 import LandingPage from "./pages/landing-page";
+import LanguageSelect from "./components/language-select";
 
 // here is set by default user lang as en
 
-let language = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage;
+let language = localStorage.getItem('PREFERRED_LANGUAGE');
 
-// language would be something like es-ES or es_ES
-// However we store our files with format es.json or en.json
-// therefore retrieve only the first 2 digits
+if (!language) {
+    language = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage;
 
-if (language.length > 2) {
-    language = language.split("-")[0];
-    language = language.split("_")[0];
+    // language would be something like es-ES or es_ES
+    // However we store our files with format es.json or en.json therefore retrieve only the first 2 digits
+
+    if (language.length > 2) {
+        language = language.split("-")[0];
+        language = language.split("_")[0];
+    }
 }
 
 try {
@@ -72,9 +77,11 @@ class App extends React.PureComponent {
         let profile_pic = member ? member.pic : '';
 
         let header_title = '';
+        let header_subtitle = '';
         if (selectionPlan) {
             let end_date = formatEpoch(selectionPlan.submission_end_date);
-            header_title = `: ${selectionPlan.name} - Open til ${end_date}`;
+            header_title = `: ${selectionPlan.name}`;
+            header_subtitle = `Open til ${end_date} (${moment.tz.guess()})`;
         }
 
         return (
@@ -86,9 +93,19 @@ class App extends React.PureComponent {
                         idpBaseUrl={window.IDP_BASE_URL}
                     />
                     <div className="header">
-                        <div className={"header-title"}>
-                            {T.translate("landing.call_for_presentations")} {header_title}
-                            <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} initLogOut={initLogOut}/>
+                        <div className="header-title row">
+                            <div className="col-md-3 col-xs-6 text-left">
+                                <img className="header-logo" src="https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/www-images-prod/openstack-logo-full.svg" />
+                            </div>
+                            <div className="col-md-3 col-md-push-6 col-xs-6">
+                                <LanguageSelect language={language} />
+                                <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} initLogOut={initLogOut}/>
+                            </div>
+                            <div className="col-md-6 col-md-pull-3 col-xs-12 title">
+                                <span>{T.translate("landing.call_for_presentations")} {header_title}</span>
+                                <br/>
+                                <span className="subtitle"> {header_subtitle} </span>
+                            </div>
                         </div>
                     </div>
 

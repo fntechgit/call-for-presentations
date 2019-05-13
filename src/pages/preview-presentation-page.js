@@ -59,7 +59,7 @@ class PreviewPresentationPage extends React.Component {
                     <hr/>
                     <div className="item">
                         <label>{T.translate("edit_presentation.level")}</label><br/>
-                        {entity.level}
+                        {T.translate("event_level." + entity.level)}
                     </div>
                     {track &&
                     <div className="item">

@@ -132,7 +132,7 @@ export const completePresentation = (entity) => (dispatch, getState) => {
     )(params)(dispatch)
         .then((payload) => {
             dispatch(stopLoading());
-            history.push(`/app/presentations`);
+            history.push(`/app/presentations/${entity.id}/thank-you`);
         });
 }
 

@@ -45,14 +45,28 @@ class PresentationReviewForm extends React.Component {
     }
 
     render() {
-        let {entity, track} = this.props;
+        let {entity, track, presentation, step} = this.props;
+        let title = '';
+        let subtitle = '';
+
+        if (presentation.isSubmitted()) {
+            title = T.translate("edit_presentation.review_title");
+            subtitle = T.translate("edit_presentation.review_subtitle");
+        } else {
+            title = T.translate("edit_presentation.confirm_title");
+            subtitle = T.translate("edit_presentation.review_important");
+        }
 
         return (
             <form className="presentation-review-form">
+                {!presentation.isSubmitted() &&
+                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} backStep="tags"/>
+                }
+
                 <input type="hidden" id="id" value={entity.id} />
 
-                <h1>{T.translate("edit_presentation.review_title")}</h1>
-                <h3>{T.translate("edit_presentation.review_important")}</h3>
+                <h1>{title}</h1>
+                <h3>{subtitle}</h3>
                 <hr/>
                 <div className="item">
                     <label>{T.translate("edit_presentation.title")}</label><br/>
@@ -67,7 +81,7 @@ class PresentationReviewForm extends React.Component {
                 <hr/>
                 <div className="item">
                     <label>{T.translate("edit_presentation.level")}</label><br/>
-                    {entity.level}
+                    {T.translate("event_level." + entity.level)}
                 </div>
                 <div className="item">
                     <label>{T.translate("edit_presentation.general_topic")}</label><br/>
@@ -132,7 +146,7 @@ class PresentationReviewForm extends React.Component {
                 </div>
 
                 <hr/>
-                <SubmitButtons onSubmit={this.handleSubmit.bind(this)} backStep="speakers" />
+                <SubmitButtons presentation={presentation} onSubmit={this.handleSubmit.bind(this)} step={step} backStep="speakers" />
             </form>
         );
     }

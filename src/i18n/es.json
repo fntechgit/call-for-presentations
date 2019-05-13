@@ -61,6 +61,9 @@
     "done"                : "Done!",
     "of"                  : "of",
     "cancel"              : "Cancel",
+    "already_submitted"   : "Your presentation is submitted and awaiting review by Track Chairs",
+    "confirm_submission"  : "Confirm my Submission",
+    "got_it"              : "Got it",
     "placeholders": {
       "select_one": "-- Select one --"
     }
@@ -91,13 +94,24 @@
     "speakers": "Speakers",
     "review": "Review"
   },
+  "event_type": {
+    "Presentation": "Presentation",
+    "Panel": "Panel",
+    "Lightning Talk": "Lightning Talk"
+  },
+  "event_level": {
+    "Advanced": "Advanced",
+    "Intermediate": "Intermediate",
+    "Beginner": "Beginner"
+  },
   "edit_presentation": {
     "presentation": "Presentation",
     "step": "Step",
     "of": "of",
     "title": "Proposed Presentation Title",
     "format": "Select the format",
-    "format_description": "(Presentation Max 3 speakers; Panel Max 3 speakers 1 moderator;)",
+    "format_max_speakers": "Max Speakers",
+    "format_max_moderators": "Max Moderators",
     "general_topic": "What is the general topic of the presentation?",
     "level": "Select the technical level of your presentation content",
     "abstract": "Abstract (1000 chars)",
@@ -121,8 +135,10 @@
     "speaker_declaimer": "Participants agree that OpenStack Foundation may record and publish their talks presented during the OpenStack Summit. If you submit a proposal on behalf of a participant, you represent to OpenStack Foundation that you have the authority to submit the proposal on the participants’s behalf and agree to the recording and publication of their presentation.",
     "add_speaker": "Add",
     "max_speakers": "You have reached the maximum of participants.",
-    "review_title": "One Last Step - Confirm Your Submission",
+    "confirm_title": "One Last Step - Confirm Your Submission",
+    "review_title": "Review Your Submission",
     "review_important": "Look over everything below to make sure it's to your liking. *IMPORTANT!* You MUST push 'CONFIRM MY SUBMISSION' to complete the process.",
+    "review_subtitle": "Your presentation is submitted and awaiting review by Track Chairs",
     "permission_denied": "Permission Denied",
     "no_edit": "You are not allowed to edit this presentation",
     "add_speaker_error": "You need to add at least one speaker to the presentation.",
@@ -172,6 +188,11 @@
   },
   "preview_presentation": {
     "preview_presentation": "Preview Your Submission"
+  },
+  "thankyou_presentation": {
+    "thank_you": "Thank you !",
+    "saved": "Your submission has been saved and is ready for review.",
+    "body": "Once you've completed adding in the details, a confirmation email will be sent to you and all associated speakers/moderators. Check inbox and junk folders for an email sent from speakersupport@openstack.org."
   },
   "edit_profile": {
     "profile": "Speaker Profile",

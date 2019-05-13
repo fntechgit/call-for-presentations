@@ -124,8 +124,20 @@ const config = {
                 use: "file-loader?name=images/[name].[ext]"
             },
             {
-                test: /\.svg/,
-                use: "file-loader?name=svg/[name].[ext]!svgo-loader"
+                test: /\.svg$/,
+                use: [
+                    {loader: 'file-loader'},
+                    {
+                        loader: 'svgo-loader',
+                        options: {
+                            plugins: [
+                                {removeTitle: true},
+                                {convertColors: {shorthex: false}},
+                                {convertPathData: false}
+                            ]
+                        }
+                    }
+                ]
             },
             {
                 test: /\.yaml$/,

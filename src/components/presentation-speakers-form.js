@@ -107,7 +107,7 @@ class PresentationSpeakersForm extends React.Component {
 
 
     render() {
-        let {summit, entity} = this.props;
+        let {summit, entity, presentation, step} = this.props;
         let {speakerInput} = this.state;
         let eventType = summit.event_types.find(t => t.id == entity.type_id);
 
@@ -125,7 +125,6 @@ class PresentationSpeakersForm extends React.Component {
 
         return (
             <div>
-
                 <h3>{T.translate("edit_presentation.speaker_included")}</h3>
                 <p>{T.translate("edit_presentation.speaker_important")}</p>
 
@@ -209,7 +208,7 @@ class PresentationSpeakersForm extends React.Component {
                         <label>{T.translate("edit_presentation.speaker_declaimer")}</label>
                     </div>
                     <hr/>
-                    <SubmitButtons onSubmit={this.handleSubmit.bind(this)} backStep="tags"/>
+                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} backStep="tags"/>
                 </form>
 
             </div>

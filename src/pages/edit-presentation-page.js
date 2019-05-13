@@ -25,6 +25,7 @@ import PresentationSpeakersForm from "../components/presentation-speakers-form";
 import PresentationReviewForm from "../components/presentation-review-form";
 
 import '../styles/edit-presentation-page.less';
+import Presentation from "../model/presentation";
 
 class EditPresentationPage extends React.Component {
 
@@ -57,9 +58,11 @@ class EditPresentationPage extends React.Component {
     }
 
     render() {
-        let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, completePresentation, getSpeakerPermission } = this.props;
+        let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation,
+            completePresentation, getSpeakerPermission, cfpOpen, loggedSpeaker } = this.props;
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
+        let presentation = new Presentation(entity, summit, selectionPlan, loggedSpeaker, cfpOpen);
 
         if (!summit.event_types || !summit.tracks) return (<div></div>);
 
@@ -74,6 +77,8 @@ class EditPresentationPage extends React.Component {
                 <div className="presentation-form-wrapper">
                     <PresentationSummaryForm
                         entity={entity}
+                        presentation={presentation}
+                        step={step}
                         summit={summit}
                         selectionPlan={selectionPlan}
                         errors={errors}
@@ -86,6 +91,8 @@ class EditPresentationPage extends React.Component {
                 <div className="tag-form-wrapper">
                     <PresentationTagsForm
                         entity={entity}
+                        presentation={presentation}
+                        step={step}
                         track={track}
                         tagGroups={tagGroups}
                         onSubmit={savePresentation}
@@ -98,6 +105,8 @@ class EditPresentationPage extends React.Component {
                     <PresentationSpeakersForm
                         history={history}
                         entity={entity}
+                        presentation={presentation}
+                        step={step}
                         summit={summit}
                         onAddSpeaker={this.props.assignSpeakerToPresentation}
                         onAddModerator={this.props.assignModeratorToPresentation}
@@ -113,7 +122,9 @@ class EditPresentationPage extends React.Component {
                 <div className="review-form-wrapper">
                     <PresentationReviewForm
                         entity={entity}
+                        presentation={presentation}
                         track={track}
+                        step={step}
                         onSubmit={completePresentation}
                     />
                 </div>
@@ -129,6 +140,8 @@ const mapStateToProps = ({ baseState, presentationState }) => ({
     summit : baseState.summit,
     tagGroups: baseState.tagGroups,
     loading : baseState.loading,
+    loggedSpeaker : baseState.speaker,
+    cfpOpen : baseState.cfpOpen,
     ...presentationState
 })
 

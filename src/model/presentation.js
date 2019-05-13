@@ -38,6 +38,10 @@ class Presentation {
         }
     }
 
+    isSubmitted() {
+        return (this._presentation.is_published || this._presentation.status == 'Received');
+    }
+
     canEdit() {
         if (!this._selectionPlan || !this._cfpOpen) return false;
 

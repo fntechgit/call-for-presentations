@@ -86,29 +86,29 @@ class PresentationSummaryForm extends React.Component {
 
     render() {
         let {entity} = this.state;
-        let {selectionPlan, summit} = this.props;
+        let {selectionPlan, summit, presentation, step} = this.props;
 
         let event_types_ddl = summit.event_types
             .filter(et => et.should_be_available_on_cfp)
             .map(et => {
-                return ({value: et.id, label: et.name, type: et.class_name});
+                return ({value: et.id, label: T.translate("event_type."+et.name), type: et.class_name});
         });
 
         let event_types_limits = '';
         for (var event_type of event_types_ddl) {
             let ev_type_obj = summit.event_types.find(ev => ev.id == event_type.value);
-            event_types_limits += ev_type_obj.name + ': Max Speakers ' + ev_type_obj.max_speakers;
+            event_types_limits += T.translate("event_type."+ev_type_obj.name) + ': ' + T.translate("edit_presentation.format_max_speakers") + ' ' + ev_type_obj.max_speakers;
             if (ev_type_obj.max_moderators) {
-                event_types_limits += ', Max Moderators ' + ev_type_obj.max_moderators;
+                event_types_limits += ', ' + T.translate("edit_presentation.format_max_moderators") + ' ' + ev_type_obj.max_moderators;
             }
             event_types_limits += ' - ';
         }
 
         // TODO get event level options
         let level_ddl = [
-            {label: 'Beginner', value: 'Beginner'},
-            {label: 'Intermediate', value: 'Intermediate'},
-            {label: 'Advanced', value: 'Advanced'},
+            {label: T.translate("event_level.Beginner"), value: 'Beginner'},
+            {label: T.translate("event_level.Intermediate"), value: 'Intermediate'},
+            {label: T.translate("event_level.Advanced"), value: 'Advanced'},
             {label: 'N/A', value: 'N/A'}
         ];
 
@@ -233,7 +233,7 @@ class PresentationSummaryForm extends React.Component {
                     </div>
                 </div>
                 <hr/>
-                <SubmitButtons onSubmit={this.handleSubmit.bind(this)} />
+                <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} />
             </form>
         );
     }

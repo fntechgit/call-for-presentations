@@ -53,6 +53,7 @@
     "save"                : "保存",
     "save_and_continue"   : "保存并继续",
     "go_back"             : "返回",
+    "export"              : "Export",
     "are_you_sure"        : "你确定吗?",
     "yes_delete"          : "是的，删除.",
     "id"                  : "Id",
@@ -60,6 +61,9 @@
     "done"                : "完成！",
     "of"                  : "的",
     "cancel"              : "取消",
+    "already_submitted"   : "Your presentation is submitted and awaiting review by Track Chairs",
+    "confirm_submission"  : "Confirm my Submission",
+    "got_it"              : "Got it",
     "placeholders": {
       "select_one": "-- 选择一个 --"
     }
@@ -90,13 +94,24 @@
     "speakers": "演讲者",
     "review": "审核和提交"
   },
+  "event_type": {
+    "Presentation": "Presentation",
+    "Panel": "Panel",
+    "Lightning Talk": "Lightning Talk"
+  },
+  "event_level": {
+    "Advanced": "Advanced",
+    "Intermediate": "Intermediate",
+    "Beginner": "Beginner"
+  },
   "edit_presentation": {
     "presentation": "讲座",
     "step": "步",
     "of": "的",
     "title": "推荐议题",
     "format": "选择活动形式",
-    "format_description": "(Presentation Max 3 speakers; Panel Max 3 speakers 1 moderator;)",
+    "format_max_speakers": "Max Speakers",
+    "format_max_moderators": "Max Moderators",
     "general_topic": "本议题属于哪个专题?",
     "level": "选择会议的技术级别",
     "abstract": "摘要（1000字符以内）",
@@ -171,6 +186,11 @@
   },
   "preview_presentation": {
     "preview_presentation": "预览已提交的演讲议题"
+  },
+  "thankyou_presentation": {
+    "thank_you": "Thank you !",
+    "saved": "Your submission has been saved and is ready for review.",
+    "body": "Once you've completed adding in the details, a confirmation email will be sent to you and all associated speakers/moderators. Check inbox and junk folders for an email sent from speakersupport@openstack.org."
   },
   "edit_profile": {
     "profile": "演讲者简介",

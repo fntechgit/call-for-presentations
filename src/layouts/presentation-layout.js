@@ -19,6 +19,7 @@ import T from "i18n-react/dist/i18n-react";
 import { getPresentation, resetPresentation } from '../actions/presentation-actions'
 import EditPresentationPage from '../pages/edit-presentation-page'
 import PreviewPresentationPage from '../pages/preview-presentation-page'
+import ThankYouPresentationPage from '../pages/thankyou-presentation-page'
 import EditSpeakerPage from '../pages/edit-speaker-page'
 import Presentation from '../model/presentation'
 
@@ -63,6 +64,7 @@ class PresentationLayout extends React.Component {
                 <Route strict exact path={`${match.url}/speakers/new`} component={EditSpeakerPage}/>
                 <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} component={EditSpeakerPage}/>
                 <Route strict exact path={`${match.url}/preview`} component={PreviewPresentationPage}/>
+                <Route strict exact path={`${match.url}/thank-you`} component={ThankYouPresentationPage}/>
                 <Route strict exact path={`${match.url}/:step`} component={EditPresentationPage}/>
                 <Route render={props => (<Redirect to={`${match.url}/summary`} />)}/>
             </Switch>
