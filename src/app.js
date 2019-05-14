@@ -95,7 +95,7 @@ class App extends React.PureComponent {
                     <div className="header">
                         <div className="header-title row">
                             <div className="col-md-3 col-xs-6 text-left">
-                                <img className="header-logo" src="https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/www-images-prod/openstack-logo-full.svg" />
+                                <img className="header-logo" src="https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/www-assets-prod/Uploads/arrows.svg" />
                             </div>
                             <div className="col-md-3 col-md-push-6 col-xs-6">
                                 <LanguageSelect language={language} />

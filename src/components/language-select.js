@@ -58,8 +58,7 @@ export default class LanguageSelect extends React.Component {
                 <ReactFlagsSelect
                     defaultCountry={defaultLang}
                     countries={["US", "CN"]}
-                    showSelectedLabel={false}
-                    showOptionLabel={false}
+                    customLabels={{"US": "EN","CN": "中文"}}
                     onSelect={this.handleChange}
                 />
             </div>
