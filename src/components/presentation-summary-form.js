@@ -17,6 +17,7 @@ import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import { Input, TextEditor, UploadInput, Dropdown, RadioList } from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 import SubmitButtons from './presentation-submit-buttons'
+import {validate} from '../utils/methods'
 
 
 class PresentationSummaryForm extends React.Component {
@@ -68,10 +69,36 @@ class PresentationSummaryForm extends React.Component {
     }
 
     handleSubmit(ev) {
-        let entity = {...this.state.entity};
+        let {entity, errors} = this.state;
         ev.preventDefault();
 
-        this.props.onSubmit(entity, 'tags');
+        let rules = {
+            title: {required: 'Title is required.'},
+            type_id: {required: 'Format is required.'},
+            track_id: {required: 'Please select a track.'},
+            level: {required: 'Please select the level.'},
+            description: {
+                required: 'Abstract is required.',
+                maxLength: {value: 1000, msg: 'Value exeeded max limit of 1000 characters'}
+            },
+            social_description: {
+                maxLength: {value: 100, msg: 'Value exeeded max limit of 100 characters'}
+            },
+            attendees_expected_learnt: {
+                maxLength: {value: 1000, msg: 'Value exeeded max limit of 100 characters'}
+            },
+            link_0: { link: 'Link is not valid' },
+            link_1: { link: 'Link is not valid' },
+            link_2: { link: 'Link is not valid' },
+            link_3: { link: 'Link is not valid' },
+            link_4: { link: 'Link is not valid' },
+        }
+
+        if (validate(entity, rules, errors)) {
+            this.props.onSubmit(entity, 'tags');
+        } else {
+            this.setState({errors});
+        }
     }
 
     hasErrors(field) {
@@ -131,7 +158,7 @@ class PresentationSummaryForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_presentation.title")} </label>
-                        <Input className="form-control" id="title" value={entity.title} onChange={this.handleChange} />
+                        <Input className="form-control" id="title" value={entity.title} onChange={this.handleChange} error={this.hasErrors('title')} />
                     </div>
                 </div>
                 <div className="row form-group">
@@ -176,7 +203,7 @@ class PresentationSummaryForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_presentation.abstract")} </label>
-                        <TextEditor id="description" className="editor" value={entity.description} onChange={this.handleChange} />
+                        <TextEditor id="description" className="editor" value={entity.description} onChange={this.handleChange} error={this.hasErrors('description')} />
                     </div>
                 </div>
                 <hr/>

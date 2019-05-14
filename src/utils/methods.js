@@ -13,6 +13,7 @@
 
 import moment from 'moment-timezone';
 import URI from "urijs";
+import validator from 'validator';
 
 
 export const findElementPos = (obj) => {
@@ -63,5 +64,61 @@ export const getBackURL = () => {
         backUrl += `#${fragment}`;
     }
     return backUrl;
+}
+
+export const validate = (entity, rules, errors) => {
+    let result = true;
+    let firstError = null;
+
+    for (var field in rules) {
+
+        if (rules[field].hasOwnProperty('required')) {
+            if (!entity[field] || entity[field].length == 0) {
+                errors[field] = rules[field].required;
+                result = false;
+                if (!firstError) {
+                    firstError = document.getElementById(field);
+                }
+            }
+        }
+
+        if (rules[field].hasOwnProperty('email')) {
+            if (!validator.isEmail(entity[field])) {
+                errors[field] = rules[field].email;
+                result = false;
+                if (!firstError) {
+                    firstError = document.getElementById(field);
+                }
+            }
+        }
+
+        if (rules[field].hasOwnProperty('maxLength')) {
+            if (entity[field].length > rules[field].maxLength.value) {
+                errors[field] = rules[field].maxLength.msg;
+                result = false;
+                if (!firstError) {
+                    firstError = document.getElementById(field);
+                }
+            }
+        }
+
+        if (rules[field].hasOwnProperty('link')) {
+            if (!validator.isURL(entity[field])) {
+                errors[field] = rules[field].link;
+                result = false;
+                if (!firstError) {
+                    firstError = document.getElementById(field);
+                }
+            }
+        }
+
+    }
+
+    if (!result) {
+        firstError = firstError ? firstError : document.getElementsByTagName("form")[0];
+        firstError.scrollIntoView({behavior: "smooth", block: "center"});
+    }
+
+    return result;
 }
 
