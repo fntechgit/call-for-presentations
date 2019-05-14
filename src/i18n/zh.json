@@ -23,23 +23,23 @@
     "access_denied"             : "访问拒绝"
   },
   "general": {
-    "summit"              : "首脑",
+    "summit"              : "峰会",
     "speakers"            : "其他演讲者",
     "speaker"             : "主讲人",
     "attendees"           : "与会者",
     "attendee"            : "与会者",
     "summit_event"        : "峰会活动",
-    "presentation"        : "讲座",
-    "presentations"       : "演讲/论坛议题提交",
+    "presentation"        : "演讲",
+    "presentations"       : "演讲议题",
     "email"               : "邮件",
-    "name"                : "名称",
+    "name"                : "名字",
     "description"         : "描述",
     "file"                : "文件",
-    "first_name"          : "名字",
+    "first_name"          : "名",
     "last_name"           : "姓",
-    "member"              : "会员",
-    "members"             : "会员",
-    "event"               : "事件",
+    "member"              : "成员",
+    "members"             : "成员",
+    "event"               : "活动",
     "group"               : "组",
     "yes"                 : "是",
     "no"                  : "否",
@@ -71,7 +71,7 @@
   "menu": {
     "presentations": "提交",
     "profile": "个人简介",
-    "tracks_guide": "类别和曲目",
+    "tracks_guide": "特定议题群组指南",
     "selection_process": "筛选流程",
     "logout": "退出登录"
   },
@@ -86,7 +86,7 @@
     "no_presentations_moderator": "暂无人邀请您担任演讲/会议活动的主持人",
     "remove_warning": "您正在删除演示文稿 ",
     "not_submitted" : "没有提交",
-    "published"     : "发表"
+    "published"     : "发布"
   },
   "presentation_nav": {
     "summary": "总结",
@@ -106,9 +106,9 @@
   },
   "edit_presentation": {
     "presentation": "讲座",
-    "step": "步",
+    "step": "步骤",
     "of": "的",
-    "title": "推荐议题",
+    "title": "标题",
     "format": "选择活动形式",
     "format_max_speakers": "Max Speakers",
     "format_max_moderators": "Max Moderators",
@@ -221,7 +221,7 @@
     "contact": ", 参与讨论，或通过邮件summit@openstack.org直接与基金会峰会团队联系。"
   },
   "tracks_guide": {
-    "title": "峰会曲目",
+    "title": "标题",
     "the_summit": "峰会",
     "the_summit_desc": "OpenStack峰会是一个为期四天的活动，涵盖所有开放基础设施。内容包括主题演讲，演示文稿，小组讨论，实践研讨会和协作工作会议。期待听到许多开源基础设施项目的交集，包括Ansible，Ceph，Kata Containers，Kubernetes，ONAP，OpenStack等。",
     "5g": "5G、网络功能虚拟化与边缘计算",
