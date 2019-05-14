@@ -4,15 +4,15 @@
     "sign_out"                : "退出登录",
     "log_in"                  : "登录",
     "not_logged_in"           : "您尚未登录。请登录以继续:",
-    "title"                   : "Would you like to present at the Open Infrastructure Summit?",
-    "steps_title"             : "Here are three steps you should take as a potential speaker:",
-    "review_link"             : "Review the list of Summit Categories & Tracks.",
-    "learn_link"              : "Learn about the selection process.",
-    "submit_link"             : "Submit your session proposal below. (Limit of 3 per speaker)",
-    "submit_title"            : "Submit Your Speaking Proposal",
-    "already_member"          : "Already a member?",
-    "or_join_us"              : "Or Join Us",
-    "join_us"                 : "Join the Foundation"
+    "title"                   : "想要在开源基础设施峰会上演讲吗？",
+    "steps_title"             : "您可以通过下面三个步骤成为一名潜在的演讲者",
+    "review_link"             : "查看峰会议题类别以及特定议题群组的列表",
+    "learn_link"              : "了解筛选过程",
+    "submit_link"             : "请在下面提交您的议题提案。（每位演讲者至多3个）",
+    "submit_title"            : "提交您的演讲提案",
+    "already_member"          : "已经是社区的成员了？",
+    "or_join_us"              : "或者加入我们",
+    "join_us"                 : "加入基金会"
   },
   "errors": {
     "user_not_authz"            : "坚持，稍等。您的用户未获得授权！",
@@ -20,7 +20,7 @@
     "session_expired"           : "坚持，稍等。你的会话已经过期了！",
     "server_error"              : "我们的服务器出现问题，请联系管理员。",
     "not_found"                 : "未找到",
-    "access_denied"             : "Access Denied"
+    "access_denied"             : "访问拒绝"
   },
   "general": {
     "summit"              : "首脑",
@@ -53,7 +53,7 @@
     "save"                : "保存",
     "save_and_continue"   : "保存并继续",
     "go_back"             : "返回",
-    "export"              : "Export",
+    "export"              : "导出",
     "are_you_sure"        : "你确定吗?",
     "yes_delete"          : "是的，删除.",
     "id"                  : "Id",
@@ -61,9 +61,9 @@
     "done"                : "完成！",
     "of"                  : "的",
     "cancel"              : "取消",
-    "already_submitted"   : "Your presentation is submitted and awaiting review by Track Chairs",
-    "confirm_submission"  : "Confirm my Submission",
-    "got_it"              : "Got it",
+    "already_submitted"   : "您的演讲已经提交并等待特定议题群组负责人审阅",
+    "confirm_submission"  : "确认我的提交",
+    "got_it"              : "了解",
     "placeholders": {
       "select_one": "-- 选择一个 --"
     }
@@ -95,14 +95,14 @@
     "review": "审核和提交"
   },
   "event_type": {
-    "Presentation": "Presentation",
-    "Panel": "Panel",
-    "Lightning Talk": "Lightning Talk"
+    "Presentation": "演讲",
+    "Panel": "小组讨论",
+    "Lightning Talk": "快闪说"
   },
   "event_level": {
-    "Advanced": "Advanced",
-    "Intermediate": "Intermediate",
-    "Beginner": "Beginner"
+    "Advanced": "进阶级别",
+    "Intermediate": "中间级别",
+    "Beginner": "入门级别"
   },
   "edit_presentation": {
     "presentation": "讲座",
@@ -177,20 +177,20 @@
     "speaker_saved": "扬声器保存成功！",
     "moderator_created": "主持人创建成功！",
     "moderator_saved": "主持人保存成功！",
-    "auth_required": "Permission Required",
-    "auth_required_text": "You don't have permission to edit this member profile info. Please request permission to edit.",
-    "request_auth": "Request Permission",
-    "auth_requested_success": "Permission requested successfully.",
-    "auth_pending": "Permission Request Pending",
-    "auth_pending_text": "You already requested permission to edit, but the speaker has not granted it yet."
+    "auth_required": "需要权限",
+    "auth_required_text": "您没有权限编辑这个成员资料信息。请申请权限编辑。",
+    "request_auth": "申请权限",
+    "auth_requested_success": "权限申请成功。",
+    "auth_pending": "权限申请待定",
+    "auth_pending_text": "您已经提交了申请权限编辑，但是演讲者还未授予权限。"
   },
   "preview_presentation": {
     "preview_presentation": "预览已提交的演讲议题"
   },
   "thankyou_presentation": {
-    "thank_you": "Thank you !",
-    "saved": "Your submission has been saved and is ready for review.",
-    "body": "Once you've completed adding in the details, a confirmation email will be sent to you and all associated speakers/moderators. Check inbox and junk folders for an email sent from speakersupport@openstack.org."
+    "thank_you": "感谢您！",
+    "saved": "您的提交已经保存并准备好审核。",
+    "body": "一旦您完成了添加具体信息，一封确认邮件将会发送给您和所有关联的演讲人/主持人。请查看收件箱和垃圾邮件箱是否有一封来自speakersupport@openstack.org的邮件。"
   },
   "edit_profile": {
     "profile": "演讲者简介",
@@ -215,9 +215,9 @@
     "paragraph_4": "演讲议题的征集结束后，所有成功提交的演讲议题将在社区进行投票。 社区投票结束后，编程委员会成员将会审核收到的演讲议题，并确定相应专题的最终演讲议题。 社区投票旨在帮助决策，但不是唯一的指南。编程委员会成员将根据其专业背景进行判断，并帮助确保会议和演讲者的多样性。 真实的用户案例和技术，深入实践的经验往往比推销宣传更受青睐。",
     "paragraph_5": "编程委员会做出最终决定后，演讲者们将会在2019年7月中旬收到通知。如果您成功入选为演讲者（或候补演讲者），您将收到一个免费注册上海峰会的代码，以及一系列需要在峰会前的截止日期内提交的材料。",
     "paragraph_6": "请注意！上述流程适用于峰会期间的演讲，而非论坛会议，更多详情请访问 ",
-    "openstack_wiki": "OpenStack Wiki",
+    "openstack_wiki": "OpenStack 维基",
     "provide_feedback": "想就此流程提供您的反馈意见？欢迎加入 ",
-    "mailing_list": "openstack-community mailing list",
+    "mailing_list": "openstack-community 邮件列表",
     "contact": ", 参与讨论，或通过邮件summit@openstack.org直接与基金会峰会团队联系。"
   },
   "tracks_guide": {
@@ -234,12 +234,12 @@
     "container_infra_desc": "议题包括：大规模运行容器、容器生态系统、容器网络、容器存储、容器安全、混合虚拟机与容器架构、容器与裸机等。",
     "getting_started": "新手入门",
     "getting_started_desc": "学习入门教程，掌握所有与开放基础设施相关的基础知识。",
-    "edge_comp": "Edge Computing",
-    "edge_comp_desc": "Topics include: 5G, cloudlet, distributed computing, Mesh, security, networking, architecture, ease of deployment, edge ecosystem, hardware performance accelerators (e.g. GPUs, ASICs, etc.), hardware profile, IoT, low end-to-end latency, management tools, scaling, edge-enabled applications, physical hardening, QoS, remote/extreme environments, remote troubleshooting, standalone cloudlets, tamper evidence, tamper resistance, VM and container handoff across WAN connections, zero-touch provisioning",
+    "edge_comp": "边缘计算",
+    "edge_comp_desc": "议题包括：5G、微云计算、分布式计算、网格、安全、网络、架构、简化部署、边缘计算生态系统、硬件性能加速器（如GPUs, ASICs等）、硬件配置文件、物联网、端到端低延迟、管理工具、弹性伸缩、边缘驱动的应用、物理强化、QoS、远程/极端环境、远程故障排除、独立微云、篡改证据、防篡改技术、跨广域网络连接的虚拟机和容器切换、零接触配置等。",
     "hands_on": "实践工坊",
     "hands_on_desc": "实践工坊可为不同项目的运维者和应用开发者们提供培训，每次会议通常为90分钟，需遵守RSVP协议并做一些准备工作。带上您的笔记本电脑来参加，您将收获成为开源贡献者所需的技能。",
-    "hpc": "HPC / GPU / AI",
-    "hpc_desc": "Topics include: AI, computation, cluster, economics, exascale, government, GPUs, grid, HPC, HTC, machine learning, New applications for AI running on OpenStack clouds, Novel/Emerging architectures for GPUs/AI, operations at scale, performance, scientific research,",
+    "hpc": "高性能计算 / GPU / 人工智能",
+    "hpc_desc": "议题包括：人工智能，计算，集群，经济，百亿亿次级别计算，政府，GPU，网格，高性能计算，高吞吐量计算，机器学习，在OpenStack云上运行的人工智能新应用，用于GPU / 人工智能的新型/新兴架构，大规模运维，性能，科学研究，",
     "open_dev": "开放式开发",
     "open_dev_desc": "议题包括：四个开放准则、免费和开源软件的未来、开放式协作所面临的挑战、开放式开发最佳实践和工具、开源治理模型、多样性和包容性、指导和拓展、社区管理等。",
     "private_cloud": "私有云和混合云",
@@ -248,8 +248,8 @@
     "public_cloud_desc": "议题包括：架构/硬件、经济效益、云可移植性、功能与需求、联合、硬件、运维/升级、多租户、网络、性能、规模、安全与合规、SLAs、存储、开源平台、工具与SDKs、UI/UX、升级、用户体验等。",
     "security": "安全",
     "security_desc": "议题包括：认证、真实性、授权、数据保护、加密、身份识别、策略实施、隐私、法规遵从性、风险管理、可信计算、漏洞追踪/缓解等。",
-    "telecom": "Telecom &amp; NFV",
-    "telecom_desc": "Topics include: 5G, architecture, NFV, economics, hardware, operations, performance, QoS, SDN, SLAs, standardization e.g. ETSI NFV",
+    "telecom": "电信及网络功能虚拟化",
+    "telecom_desc": "议题包括：5G，架构，网络功能虚拟化，经济，硬件，运维，性能，QoS，软件定义网络，服务级别协议，标准化如ETSI NFV行业规范等。",
     "forum": "论坛",
     "forum_desc": "运维者和开发者们集思广益，共同探讨下一版本的需求，收集以往版本的反馈意见，并进行一个发布周期以上的战略讨论。",
     "project_onboarding": "项目入门培训",
