@@ -220,7 +220,7 @@
     "openstack_wiki": "OpenStack Wiki",
     "provide_feedback": "Want to provide feedback on this process? Join the discussion on the ",
     "mailing_list": "openstack-community mailing list",
-    "contact": ", and/or contact the Foundation Summit Team directly summit@openstack.org."
+    "contact": ", and/or contact the Foundation Summit Team directly {email}"
   },
   "tracks_guide": {
     "title": "Summit Tracks",

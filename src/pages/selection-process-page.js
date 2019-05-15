@@ -13,6 +13,7 @@
 
 import React from 'react';
 import T from 'i18n-react/dist/i18n-react';
+import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 
 export default class SelectionProcessPage extends React.Component {
 
@@ -51,8 +52,9 @@ export default class SelectionProcessPage extends React.Component {
                     <a href="http://lists.openstack.org/cgi-bin/mailman/listinfo/community" target="_blank">
                         {T.translate("selection_process.mailing_list")}
                     </a>
-                    {T.translate("selection_process.contact")}
-                    <a href="mailto:summit@openstack.org">summit@openstack.org</a>.
+                    <RawHTML>
+                        {T.translate("selection_process.contact", {email: '<a href="mailto:summit@openstack.org">summit@openstack.org</a>'})}
+                    </RawHTML>
                 </p>
             </div>
         );

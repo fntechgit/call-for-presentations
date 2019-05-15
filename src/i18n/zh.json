@@ -221,7 +221,7 @@
     "openstack_wiki": "OpenStack 维基",
     "provide_feedback": "想就此流程提供您的反馈意见？欢迎加入 ",
     "mailing_list": "openstack-community 邮件列表",
-    "contact": ", 参与讨论，或通过邮件summit@openstack.org直接与基金会峰会团队联系。"
+    "contact": ", 参与讨论，或通过邮件{email}直接与基金会峰会团队联系。"
   },
   "tracks_guide": {
     "title": "峰会专题",
