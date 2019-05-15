@@ -6,7 +6,7 @@
     "not_logged_in"           : "您尚未登录。请登录以继续:",
     "title"                   : "想要在开源基础设施峰会上演讲吗？",
     "steps_title"             : "您可以通过下面三个步骤成为一名潜在的演讲者",
-    "review_link"             : "查看峰会议题类别以及特定议题群组的列表",
+    "review_link"             : "查看峰会议题类别以及专题的列表",
     "learn_link"              : "了解筛选过程",
     "submit_link"             : "请在下面提交您的议题提案。（每位演讲者至多3个）",
     "submit_title"            : "提交您的演讲提案",
@@ -61,7 +61,7 @@
     "done"                : "完成！",
     "of"                  : "的",
     "cancel"              : "取消",
-    "already_submitted"   : "您的演讲已经提交并等待特定议题群组负责人审阅",
+    "already_submitted"   : "您的演讲已经提交并等待专题负责人审阅",
     "confirm_submission"  : "确认我的提交",
     "got_it"              : "了解",
     "placeholders": {
@@ -71,7 +71,7 @@
   "menu": {
     "presentations": "提交",
     "profile": "个人简介",
-    "tracks_guide": "特定议题群组指南",
+    "tracks_guide": "专题指南",
     "selection_process": "筛选流程",
     "logout": "退出登录"
   },
@@ -138,7 +138,7 @@
     "confirm_title": "最后一步-确认您的提交",
     "review_title": "最后一步 - 确认提交",
     "review_important": "查看以下所有内容，确保所有信息准确无误。重要！请点击“确认提交”完成议题提交流程。",
-    "review_subtitle": "您的演讲已经提交并等待特定议题群组负责人审阅",
+    "review_subtitle": "您的演讲已经提交并等待专题负责人审阅",
     "permission_denied": "没有权限",
     "no_edit": "您无权编辑此演示文稿",
     "add_speaker_error": "您需要添加至少一名演讲者到演讲议题中来。",
@@ -224,7 +224,7 @@
     "contact": ", 参与讨论，或通过邮件summit@openstack.org直接与基金会峰会团队联系。"
   },
   "tracks_guide": {
-    "title": "峰会特定议题群组",
+    "title": "峰会专题",
     "the_summit": "峰会",
     "the_summit_desc": "OpenStack峰会是一个为期四天的活动，涵盖所有开放基础设施。内容包括主题演讲，演示文稿，小组讨论，实践研讨会和协作工作会议。期待听到许多开源基础设施项目的交集，包括Ansible，Ceph，Kata Containers，Kubernetes，ONAP，OpenStack等。",
     "5g": "5G、网络功能虚拟化与边缘计算",
