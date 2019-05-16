@@ -73,15 +73,15 @@ class App extends React.PureComponent {
     }
 
     render() {
-        let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member, selectionPlan, backUrl, loading} = this.props;
+        let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member, selectionPlan, backUrl, loading, summit} = this.props;
         let profile_pic = member ? member.pic : '';
 
-        let header_title = '';
+        let header_title = ': Open Infrastructure Summit Shanghai';
         let header_subtitle = '';
         if (selectionPlan) {
             let end_date = formatEpoch(selectionPlan.submission_end_date);
-            header_title = `: ${selectionPlan.name}`;
-            header_subtitle = `Open til ${end_date} (${moment.tz.guess()})`;
+            header_title = `: ${selectionPlan.name} ${summit.name}`;
+            header_subtitle = `Accepting submissions until ${end_date} (${moment.tz.guess()})`;
         }
 
         return (
@@ -131,7 +131,8 @@ const mapStateToProps = ({ loggedUserState, baseState }) => ({
     isLoggedUser: loggedUserState.isLoggedUser,
     member: loggedUserState.member,
     loading : baseState.loading,
-    selectionPlan: baseState.selectionPlan
+    selectionPlan: baseState.selectionPlan,
+    summit: baseState.summit,
 })
 
 export default connect(mapStateToProps, {
