@@ -83,7 +83,7 @@ export const validate = (entity, rules, errors) => {
         }
 
         if (rules[field].hasOwnProperty('email')) {
-            if (!validator.isEmail(entity[field])) {
+            if (entity[field] && !validator.isEmail(entity[field])) {
                 errors[field] = rules[field].email;
                 result = false;
                 if (!firstError) {
@@ -93,7 +93,7 @@ export const validate = (entity, rules, errors) => {
         }
 
         if (rules[field].hasOwnProperty('maxLength')) {
-            if (entity[field].length > rules[field].maxLength.value) {
+            if (entity[field].length > 0 && entity[field].length > rules[field].maxLength.value) {
                 errors[field] = rules[field].maxLength.msg;
                 result = false;
                 if (!firstError) {
@@ -103,7 +103,7 @@ export const validate = (entity, rules, errors) => {
         }
 
         if (rules[field].hasOwnProperty('link')) {
-            if (!validator.isURL(entity[field])) {
+            if (entity[field] && !validator.isURL(entity[field])) {
                 errors[field] = rules[field].link;
                 result = false;
                 if (!firstError) {

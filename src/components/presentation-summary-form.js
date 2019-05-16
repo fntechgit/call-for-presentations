@@ -82,9 +82,11 @@ class PresentationSummaryForm extends React.Component {
                 maxLength: {value: 1000, msg: 'Value exeeded max limit of 1000 characters'}
             },
             social_description: {
+                required: 'Social summary is required.',
                 maxLength: {value: 100, msg: 'Value exeeded max limit of 100 characters'}
             },
             attendees_expected_learnt: {
+                required: 'This field is required.',
                 maxLength: {value: 1000, msg: 'Value exeeded max limit of 100 characters'}
             },
             link_0: { link: 'Link is not valid' },
@@ -212,12 +214,15 @@ class PresentationSummaryForm extends React.Component {
                         <p>{T.translate("edit_presentation.social_summary_desc")}</p>
                         <label> {T.translate("edit_presentation.social_summary")} </label>
                         <textarea id="social_description" value={entity.social_description} onChange={this.handleChange} />
+                        {this.hasErrors('social_description') &&
+                            <p className="error-label">{this.hasErrors('social_description')}</p>
+                        }
                     </div>
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_presentation.expected_learn")} </label>
-                        <TextEditor id="attendees_expected_learnt" className="editor" value={entity.attendees_expected_learnt} onChange={this.handleChange} />
+                        <TextEditor id="attendees_expected_learnt" className="editor" value={entity.attendees_expected_learnt} onChange={this.handleChange} error={this.hasErrors('attendees_expected_learnt')} />
                     </div>
                 </div>
                 <div className="row form-group">
