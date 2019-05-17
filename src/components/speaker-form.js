@@ -19,6 +19,8 @@ import AffiliationsTable from './affiliationstable'
 import PresentationLinks from "./inputs/presentation-links";
 import { Input, TextEditor, UploadInput, RadioList, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput } from 'openstack-uicore-foundation/lib/components'
 import {validate} from "../utils/methods";
+import validator from 'validator';
+import swal from "sweetalert2";
 
 
 class SpeakerForm extends React.Component {
@@ -81,6 +83,7 @@ class SpeakerForm extends React.Component {
 
     handleSubmit(ev) {
         let {entity, errors} = this.state;
+        let linksOk = true;
         ev.preventDefault();
 
         let rules = {
@@ -90,13 +93,24 @@ class SpeakerForm extends React.Component {
             email: {required: 'Email is required.', email: 'This is not a valid email address.'},
             country: { required: 'Please select a Country.'},
             bio: { required: 'Please tell us about yourself.', maxLength: {value: 1000, msg: 'Value exeeded max limit of 1000 characters'}}
+        };
+
+        for (let link of entity.other_presentation_links) {
+            if(link.link && !validator.isURL(link.link,{protocols: ['http', 'https'], require_protocol:true})) {
+                swal("Validation error", 'Links must start with http://', "warning");
+                linksOk = false;
+                break;
+            }
         }
 
-        if (validate(entity, rules, errors)) {
-            this.props.onSubmit(this.state.entity);
-        } else {
-            this.setState({errors});
+        if (linksOk) {
+            if (validate(entity, rules, errors)) {
+                this.props.onSubmit(this.state.entity);
+            } else {
+                this.setState({errors});
+            }
         }
+
     }
 
     hasErrors(field) {
