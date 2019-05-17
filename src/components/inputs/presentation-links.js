@@ -26,8 +26,9 @@ export default class PresentationLinks extends React.Component {
 
     handleChange(attr, idx, ev) {
         let links = [...this.props.links];
-        let link = links[idx];
+        let link = Object.assign({}, links[idx]);
         link[attr] = ev.target.value;
+        links[idx] = link;
 
         let event = {target: {
             id: 'other_presentation_links',

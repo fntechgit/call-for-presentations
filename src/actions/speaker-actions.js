@@ -376,7 +376,9 @@ const normalizeEntity = (entity) => {
 
     normalizedEntity.member_id = (normalizedEntity.member != null) ? normalizedEntity.member.id : 0;
     normalizedEntity.areas_of_expertise = entity.areas_of_expertise.map(aoe => aoe.label);
+    normalizedEntity.other_presentation_links = entity.other_presentation_links.filter(l => l.link);
 
+    delete normalizedEntity['member_id'];
     delete normalizedEntity['presentations'];
     delete normalizedEntity['all_presentations'];
     delete normalizedEntity['moderated_presentations'];
@@ -516,12 +518,14 @@ const normalizeEntityProfile = (entity) => {
     normalizedEntity.other_organizational_role = entity.organizational_roles.filter( r => typeof r === 'string');
 
     normalizedEntity.areas_of_expertise = entity.areas_of_expertise.map(a => a.label);
+    normalizedEntity.other_presentation_links = entity.other_presentation_links.filter(l => l.link);
 
 
     delete normalizedEntity['affiliations'];
     delete normalizedEntity['pic'];
     delete normalizedEntity['pic_file'];
     delete normalizedEntity['member'];
+    delete normalizedEntity['member_id'];
 
     return normalizedEntity;
 }

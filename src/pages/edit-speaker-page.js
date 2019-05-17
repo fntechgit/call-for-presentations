@@ -39,7 +39,7 @@ class EditSpeakerPage extends React.Component {
 
     componentWillReceiveProps(newProps) {
         let speakerId = newProps.match.params.speaker_id;
-        let {entity, location, history, currentPresentation}   = newProps;
+        let {entity, location, history, currentPresentation, loading}   = newProps;
 
         if (!location.state) {
             history.push(`/app/presentations/${currentPresentation.id}/speakers`);
@@ -49,7 +49,7 @@ class EditSpeakerPage extends React.Component {
             if (!location.state.hasOwnProperty('email')) {
                 history.push(`/app/presentations/${currentPresentation.id}/speakers`);
             }
-        } else if (speakerId != entity.id){
+        } else if (speakerId != entity.id && !loading){
             this.props.getSpeaker(speakerId);
         }
     }
@@ -116,6 +116,7 @@ class EditSpeakerPage extends React.Component {
 }
 
 const mapStateToProps = ({ baseState, speakerState, presentationState, profileState }) => ({
+    loading : baseState.loading,
     selectionPlan : baseState.selectionPlan,
     currentPresentation: presentationState.entity,
     loggedInSpeaker: profileState.entity,

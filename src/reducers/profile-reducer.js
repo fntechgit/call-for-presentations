@@ -106,6 +106,16 @@ const profileReducer = (state = DEFAULT_STATE, action) => {
             let travel_preferences = entity.travel_preferences.map(c => c.country_iso_code);
             entity.travel_preferences = travel_preferences;
 
+
+            if (entity.other_presentation_links.length < 5) {
+                let link = {title:'', link:''};
+                let missing = 5 - entity.other_presentation_links.length;
+                let presentation_links = [...entity.other_presentation_links];
+                presentation_links.length += missing;
+                presentation_links.fill(Object.assign({}, link), entity.other_presentation_links.length);
+                entity.other_presentation_links = presentation_links;
+            }
+
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
         }
         break;
