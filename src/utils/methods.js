@@ -66,19 +66,28 @@ export const getBackURL = () => {
     return backUrl;
 }
 
+export const scrollToError = () => {
+    let firstError = document.getElementsByClassName("error-label")[0];
+    if (firstError) {
+        firstError.scrollIntoView({behavior: "smooth", block: "center"});
+    }
+}
+
 export const validate = (entity, rules, errors) => {
     let result = true;
-    let firstError = null;
 
     for (var field in rules) {
 
         if (rules[field].hasOwnProperty('required')) {
-            if (!entity[field] || entity[field].length == 0) {
+            if (typeof entity[field] == 'string') {
+                var stripedHtml = entity[field].replace(/<[^>]+>/g, '');
+                if (!stripedHtml) {
+                    errors[field] = rules[field].required;
+                    result = false;
+                }
+            } else if (!entity[field] || entity[field].length == 0) {
                 errors[field] = rules[field].required;
                 result = false;
-                if (!firstError) {
-                    firstError = document.getElementById(field);
-                }
             }
         }
 
@@ -86,9 +95,6 @@ export const validate = (entity, rules, errors) => {
             if (entity[field] && !validator.isEmail(entity[field])) {
                 errors[field] = rules[field].email;
                 result = false;
-                if (!firstError) {
-                    firstError = document.getElementById(field);
-                }
             }
         }
 
@@ -96,9 +102,6 @@ export const validate = (entity, rules, errors) => {
             if (entity[field].length > 0 && entity[field].length > rules[field].maxLength.value) {
                 errors[field] = rules[field].maxLength.msg;
                 result = false;
-                if (!firstError) {
-                    firstError = document.getElementById(field);
-                }
             }
         }
 
@@ -106,17 +109,29 @@ export const validate = (entity, rules, errors) => {
             if (entity[field] && !validator.isURL(entity[field])) {
                 errors[field] = rules[field].link;
                 result = false;
-                if (!firstError) {
-                    firstError = document.getElementById(field);
+            }
+        }
+
+        if (rules[field].hasOwnProperty('links')) {
+            for (let [idx, link] of entity[field].entries()) {
+                if (link && !validator.isURL(link)) {
+                    errors['link_'+idx] = rules[field].links;
+                    result = false;
+                    break;
                 }
             }
         }
 
-    }
+        if (rules[field].hasOwnProperty('title_link')) {
+            for (let link of entity[field]) {
+                if (link.link && !validator.isURL(link.link,{protocols: ['http', 'https'], require_protocol:true})) {
+                    errors[field] = rules[field].title_link;
+                    result = false;
+                    break;
+                }
+            }
+        }
 
-    if (!result) {
-        firstError = firstError ? firstError : document.getElementsByTagName("form")[0];
-        firstError.scrollIntoView({behavior: "smooth", block: "center"});
     }
 
     return result;

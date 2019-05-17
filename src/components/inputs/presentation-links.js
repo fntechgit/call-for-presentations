@@ -60,21 +60,28 @@ export default class PresentationLinks extends React.Component {
 
     render() {
         let rows = [0,1,2,3,4];
+        let {id, error} = this.props;
+        let has_error = ( this.props.hasOwnProperty('error') && error != '' );
 
         return (
-            <table className="table table-striped">
-                <thead>
-                    <tr>
-                        <th>{T.translate("edit_speaker.link")}</th>
-                        <th>{T.translate("edit_speaker.title")}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows.map(r =>
-                        this.drawRow(r)
-                    )}
-                </tbody>
-            </table>
+            <div>
+                <table className="table table-striped" id={id}>
+                    <thead>
+                        <tr>
+                            <th>{T.translate("edit_speaker.link")}</th>
+                            <th>{T.translate("edit_speaker.title")}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows.map(r =>
+                            this.drawRow(r)
+                        )}
+                    </tbody>
+                </table>
+                {has_error &&
+                <p className="error-label">{error}</p>
+                }
+            </div>
         );
 
     }

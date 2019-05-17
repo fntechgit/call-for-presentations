@@ -78,7 +78,7 @@ class App extends React.PureComponent {
 
         let header_title = ': Open Infrastructure Summit Shanghai';
         let header_subtitle = 'Accepting submissions until July 3rd 2:59pm (Asia/Shanghai)';
-        if (selectionPlan) {
+        if (selectionPlan && summit) {
             let end_date = formatEpoch(selectionPlan.submission_end_date, 'MMM Do h:mm a');
             header_title = `: ${selectionPlan.name} ${summit.name}`;
             header_subtitle = `Accepting submissions until ${end_date} (${moment.tz.guess()})`;

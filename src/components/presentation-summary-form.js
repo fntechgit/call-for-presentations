@@ -14,10 +14,10 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import { Input, TextEditor, UploadInput, Dropdown, RadioList } from 'openstack-uicore-foundation/lib/components'
+import { Input, TextEditor, UploadInput, Dropdown, RadioList, TextArea } from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 import SubmitButtons from './presentation-submit-buttons'
-import {validate} from '../utils/methods'
+import {validate, scrollToError} from '../utils/methods'
 
 
 class PresentationSummaryForm extends React.Component {
@@ -58,12 +58,13 @@ class PresentationSummaryForm extends React.Component {
         }
 
         if (id.startsWith('link_')) {
+            delete(errors[id]);
             id = 'links';
             value = [...entity.links];
             value[ev.target.dataset.key] = ev.target.value;
         }
 
-        errors[id] = '';
+        delete(errors[id]);
         entity[id] = value;
         this.setState({entity: entity, errors: errors});
     }
@@ -89,17 +90,19 @@ class PresentationSummaryForm extends React.Component {
                 required: 'This field is required.',
                 maxLength: {value: 1000, msg: 'Value exeeded max limit of 100 characters'}
             },
-            link_0: { link: 'Link is not valid' },
-            link_1: { link: 'Link is not valid' },
-            link_2: { link: 'Link is not valid' },
-            link_3: { link: 'Link is not valid' },
-            link_4: { link: 'Link is not valid' },
+            links: { links: 'Link is not valid' },
         }
 
-        if (validate(entity, rules, errors)) {
+        validate(entity, rules, errors)
+
+        if (Object.keys(errors).length == 0) {
             this.props.onSubmit(entity, 'tags');
         } else {
-            this.setState({errors});
+            this.setState({errors}, () => {
+                if (Object.keys(errors).length > 0) {
+                    scrollToError();
+                }
+            });
         }
     }
 
@@ -116,6 +119,8 @@ class PresentationSummaryForm extends React.Component {
     render() {
         let {entity} = this.state;
         let {selectionPlan, summit, presentation, step} = this.props;
+
+        if (!summit || !selectionPlan) return(<div></div>);
 
         let event_types_ddl = summit.event_types
             .filter(et => et.should_be_available_on_cfp)
@@ -213,10 +218,7 @@ class PresentationSummaryForm extends React.Component {
                     <div className="col-md-12">
                         <p>{T.translate("edit_presentation.social_summary_desc")}</p>
                         <label> {T.translate("edit_presentation.social_summary")} </label>
-                        <textarea id="social_description" value={entity.social_description} onChange={this.handleChange} />
-                        {this.hasErrors('social_description') &&
-                            <p className="error-label">{this.hasErrors('social_description')}</p>
-                        }
+                        <TextArea id="social_description" value={entity.social_description} onChange={this.handleChange} error={this.hasErrors('social_description')} />
                     </div>
                 </div>
                 <div className="row form-group">
@@ -245,23 +247,23 @@ class PresentationSummaryForm extends React.Component {
                     </div>
                     <div className="col-md-12">
                         <label> #1 </label>
-                        <Input className="form-control" id="link_0" data-key="0" value={entity.links[0]} onChange={this.handleChange} />
+                        <Input className="form-control" id="link_0" data-key="0" value={entity.links[0]} onChange={this.handleChange} error={this.hasErrors('link_0')} />
                     </div>
                     <div className="col-md-12">
                         <label> #2 </label>
-                        <Input className="form-control" id="link_1" data-key="1" value={entity.links[1]} onChange={this.handleChange} />
+                        <Input className="form-control" id="link_1" data-key="1" value={entity.links[1]} onChange={this.handleChange} error={this.hasErrors('link_1')} />
                     </div>
                     <div className="col-md-12">
                         <label> #3 </label>
-                        <Input className="form-control" id="link_2" data-key="2" value={entity.links[2]} onChange={this.handleChange} />
+                        <Input className="form-control" id="link_2" data-key="2" value={entity.links[2]} onChange={this.handleChange} error={this.hasErrors('link_2')} />
                     </div>
                     <div className="col-md-12">
                         <label> #4 </label>
-                        <Input className="form-control" id="link_3" data-key="3" value={entity.links[3]} onChange={this.handleChange} />
+                        <Input className="form-control" id="link_3" data-key="3" value={entity.links[3]} onChange={this.handleChange} error={this.hasErrors('link_3')} />
                     </div>
                     <div className="col-md-12">
                         <label> #5 </label>
-                        <Input className="form-control" id="link_4" data-key="4" value={entity.links[4]} onChange={this.handleChange} />
+                        <Input className="form-control" id="link_4" data-key="4" value={entity.links[4]} onChange={this.handleChange} error={this.hasErrors('link_4')} />
                     </div>
                 </div>
                 <hr/>

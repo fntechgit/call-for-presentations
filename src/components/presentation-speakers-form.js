@@ -111,8 +111,8 @@ class PresentationSpeakersForm extends React.Component {
         let {speakerInput} = this.state;
         let eventType = summit.event_types.find(t => t.id == entity.type_id);
 
-        let canAddSpeakers = (eventType.max_speakers > entity.speakers.length);
-        let canAddModerator = (eventType.max_moderators && !entity.moderator);
+        let canAddSpeakers = (eventType && eventType.max_speakers > entity.speakers.length);
+        let canAddModerator = (eventType && eventType.max_moderators && !entity.moderator);
         let canAddParticipant = canAddModerator || canAddSpeakers;
         let speakerType = (canAddModerator) ? 'moderator' : 'speaker';
 

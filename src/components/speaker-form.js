@@ -18,9 +18,7 @@ import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 import AffiliationsTable from './affiliationstable'
 import PresentationLinks from "./inputs/presentation-links";
 import { Input, TextEditor, UploadInput, RadioList, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput } from 'openstack-uicore-foundation/lib/components'
-import {validate} from "../utils/methods";
-import validator from 'validator';
-import swal from "sweetalert2";
+import {validate, scrollToError} from "../utils/methods";
 
 
 class SpeakerForm extends React.Component {
@@ -62,7 +60,7 @@ class SpeakerForm extends React.Component {
             value = ev.target.checked;
         }
 
-        errors[id] = '';
+        delete(errors[id]);
         entity[id] = value;
         this.setState({entity: entity, errors: errors});
     }
@@ -92,23 +90,20 @@ class SpeakerForm extends React.Component {
             last_name: {required: 'Last name is required.'},
             email: {required: 'Email is required.', email: 'This is not a valid email address.'},
             country: { required: 'Please select a Country.'},
-            bio: { required: 'Please tell us about yourself.', maxLength: {value: 1000, msg: 'Value exeeded max limit of 1000 characters'}}
+            bio: { required: 'Please tell us about yourself.', maxLength: {value: 1000, msg: 'Value exeeded max limit of 1000 characters'}},
+            other_presentation_links: {title_link: 'Links must start with http or https'}
         };
 
-        for (let link of entity.other_presentation_links) {
-            if(link.link && !validator.isURL(link.link,{protocols: ['http', 'https'], require_protocol:true})) {
-                swal("Validation error", 'Links must start with http://', "warning");
-                linksOk = false;
-                break;
-            }
-        }
+        validate(entity, rules, errors)
 
-        if (linksOk) {
-            if (validate(entity, rules, errors)) {
-                this.props.onSubmit(this.state.entity);
-            } else {
-                this.setState({errors});
-            }
+        if (Object.keys(errors).length == 0) {
+            this.props.onSubmit(this.state.entity);
+        } else {
+            this.setState({errors}, () => {
+                if (Object.keys(errors).length > 0) {
+                    scrollToError();
+                }
+            });
         }
 
     }
@@ -246,7 +241,12 @@ class SpeakerForm extends React.Component {
                         <label>{T.translate("edit_speaker.previous_links")}</label>
                     </div>
                     <div className="col-md-8">
-                        <PresentationLinks links={entity.other_presentation_links} onChange={this.handleChange} />
+                        <PresentationLinks
+                            id="other_presentation_links"
+                            links={entity.other_presentation_links}
+                            onChange={this.handleChange}
+                            error={this.hasErrors('other_presentation_links')}
+                        />
                     </div>
                 </div>
                 <hr/>
