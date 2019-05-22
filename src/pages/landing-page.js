@@ -27,8 +27,8 @@ export default class LandingPage extends React.Component {
             <div className="container landing-page-wrapper">
                 <h1 className="title">{T.translate("landing.title")}</h1>
 
-                <div class="steps-wrapper">
-                    <div class="steps-title">{T.translate("landing.steps_title")}</div>
+                <div className="steps-wrapper">
+                    <div className="steps-title">{T.translate("landing.steps_title")}</div>
                     <ul className="submit-steps">
                         <li>
                             <span>1</span>

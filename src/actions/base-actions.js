@@ -37,6 +37,8 @@ export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
 export const RECEIVE_TAG_GROUPS             = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY         = 'RECEIVE_EVENT_CATEGORY';
 export const RESET_LOADER                   = 'RESET_LOADER';
+export const RECEIVE_SUMMIT_PUBLIC          = 'RECEIVE_SUMMIT_PUBLIC';
+export const RECEIVE_SELECTION_PLAN_PUBLIC  = 'RECEIVE_SELECTION_PLAN_PUBLIC';
 
 
 export const resetLoading = () => (dispatch, getState) => {
@@ -84,6 +86,26 @@ export const loadCurrentSummit = () => (dispatch, getState) => {
         `${window.API_BASE_URL}/api/v1/summits/current`,
         authErrorHandler
     )(params)(dispatch);
+}
+
+export const getCurrentSelectionPlanPublic = () => (dispatch, getState) => {
+
+    return getRequest(
+        null,
+        createAction(RECEIVE_SELECTION_PLAN_PUBLIC),
+        `${window.API_BASE_URL}/api/public/v1/summits/all/selection-plans/current/submission`,
+        authErrorHandler
+    )({})(dispatch);
+};
+
+export const getCurrentSummitPublic = () => (dispatch, getState) => {
+
+    return getRequest(
+        null,
+        createAction(RECEIVE_SUMMIT_PUBLIC),
+        `${window.API_BASE_URL}/api/public/v1/summits/all/current`,
+        authErrorHandler
+    )({})(dispatch);
 }
 
 export const getSummitById = (summitId) => (dispatch, getState) => {

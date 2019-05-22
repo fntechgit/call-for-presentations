@@ -27,7 +27,7 @@ import {getBackURL, formatEpoch, doLogin, doLogout, initLogOut, getUserInfo} fro
 import T from 'i18n-react';
 import history from './history'
 import CustomErrorPage from "./pages/custom-error-page";
-import { resetLoading } from './actions/base-actions';
+import {getCurrentSelectionPlanPublic, getCurrentSummitPublic, resetLoading} from './actions/base-actions';
 import LandingPage from "./pages/landing-page";
 import LanguageSelect from "./components/language-select";
 
@@ -66,6 +66,8 @@ class App extends React.PureComponent {
 
     componentWillMount() {
         this.props.resetLoading();
+        this.props.getCurrentSummitPublic();
+        this.props.getCurrentSelectionPlanPublic();
     }
 
     onClickLogin(){
@@ -73,14 +75,15 @@ class App extends React.PureComponent {
     }
 
     render() {
-        let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member, selectionPlan, backUrl, loading, summit} = this.props;
+        let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member, backUrl, loading, publicSelectionPlan, publicSummit} = this.props;
         let profile_pic = member ? member.pic : '';
 
-        let header_title = ': Open Infrastructure Summit Shanghai';
-        let header_subtitle = 'Accepting submissions until July 3rd 2:59pm (Asia/Shanghai)';
-        if (selectionPlan && summit) {
-            let end_date = formatEpoch(selectionPlan.submission_end_date, 'MMM Do h:mm a');
-            header_title = `: ${selectionPlan.name} ${summit.name}`;
+        let header_title = '';
+        let header_subtitle = '';
+
+        if(publicSummit && publicSelectionPlan) {
+            let end_date = formatEpoch(publicSelectionPlan.submission_end_date, 'MMM Do h:mm a');
+            header_title = `: ${publicSelectionPlan.name} ${publicSummit.name}`;
             header_subtitle = `Accepting submissions until ${end_date} (${moment.tz.guess()})`;
         }
 
@@ -127,17 +130,19 @@ class App extends React.PureComponent {
     }
 }
 
-const mapStateToProps = ({ loggedUserState, baseState }) => ({
+const mapStateToProps = ({ loggedUserState, baseState, landingState }) => ({
     isLoggedUser: loggedUserState.isLoggedUser,
     member: loggedUserState.member,
     loading : baseState.loading,
-    selectionPlan: baseState.selectionPlan,
-    summit: baseState.summit,
+    publicSummit: landingState.summit,
+    publicSelectionPlan: landingState.selectionPlan
 })
 
 export default connect(mapStateToProps, {
     onUserAuth,
     doLogout,
     getUserInfo,
-    resetLoading
+    resetLoading,
+    getCurrentSummitPublic,
+    getCurrentSelectionPlanPublic
 })(App)

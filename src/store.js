@@ -17,6 +17,7 @@ import presentationsReducer from './reducers/presentations-reducer'
 import speakerReducer from './reducers/speaker-reducer'
 import profileReducer from './reducers/profile-reducer'
 import presentationReducer from './reducers/presentation-reducer'
+import landingReducer from './reducers/landing-reducer'
 import { loggedUserReducer } from "openstack-uicore-foundation/lib/reducers"
 
 import thunk from 'redux-thunk';
@@ -34,7 +35,8 @@ const reducers = persistCombineReducers(config, {
     presentationsState: presentationsReducer,
     speakerState: speakerReducer,
     profileState: profileReducer,
-    presentationState: presentationReducer
+    presentationState: presentationReducer,
+    landingState: landingReducer
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
