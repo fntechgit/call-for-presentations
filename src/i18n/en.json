@@ -12,7 +12,9 @@
     "submit_title"            : "Submit Your Speaking Proposal",
     "already_member"          : "Already a member?",
     "or_join_us"              : "Or Join Us",
-    "join_us"                 : "Join the Foundation"
+    "join_us"                 : "Join the Foundation",
+    "speaker_profile_required"      : "Speaker Profile Required",
+    "speaker_profile_required_text" : "Please create your speaker profile to continue."
   },
   "errors": {
     "user_not_authz"            : "Hold on. Your user is not authorized!.",

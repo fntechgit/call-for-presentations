@@ -12,7 +12,9 @@
     "submit_title"            : "提交您的演讲提案",
     "already_member"          : "已经是社区的成员了？",
     "or_join_us"              : "或者加入我们",
-    "join_us"                 : "加入基金会"
+    "join_us"                 : "加入基金会",
+    "speaker_profile_required"      : "Speaker Profile Required",
+    "speaker_profile_required_text" : "Please create your speaker profile to continue."
   },
   "errors": {
     "user_not_authz"            : "坚持，稍等。您的用户未获得授权！",
@@ -210,7 +212,7 @@
   },
   "selection_process": {
     "about_title": "开源基础设施峰会演讲议题的提交和筛选流程",
-    
+
    "paragraph_1": "通常OpenStack基金会会收到超过1000份峰会演讲议题，而我们只能选出其中的25-30%在峰会上展示。议题规划委员会负责对所有成功提交的演讲议题进行筛选，决定哪些议题将通过审核。",
    "paragraph_2": "开源基础设施峰会围绕多个专题进行，重点关注开源基础设施领域的特定问题，如“5G、网络功能虚拟化与边缘计算”，“持续集成/持续交付”，或“私有云与混合云”等。每个专题的演讲议题由负责该专题的议题规划委员会确定，议题规划委员会通常由3-5名成员组成。议题规划委员会的成员由基金会从社区提名的候选名单中选定，基金会致力于从来自各公司，地区和不同职业的社区成员（即正在为社区做贡献的开发者，用户和商业领袖）中招募议题规划委员会成员。如有意向推荐某人为峰会议题规划委员会候选成员，请填写 ",
    "nomination_form": "提名表格",

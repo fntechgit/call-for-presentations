@@ -29,7 +29,7 @@ class ProfilePage extends React.Component {
 
     componentWillMount () {
         if (!this.props.speaker) {
-            this.props.getSpeakerInfo(null);
+            //this.props.getSpeakerInfo(null);
         }
 
         if (this.props.orgRoles.length == 0) {

@@ -23,6 +23,8 @@ import {
 import {SET_LOGGED_USER} from "openstack-uicore-foundation/lib/actions"
 
 import history from '../history'
+import T from "i18n-react/dist/i18n-react";
+import swal from "sweetalert2";
 
 export const RECEIVE_SPEAKER_INFO       = 'RECEIVE_SPEAKER_INFO';
 
@@ -53,7 +55,7 @@ export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
         null,
         createAction(RECEIVE_SPEAKER_INFO),
         `${window.API_BASE_URL}/api/v1/speakers/me`,
-        authErrorHandler
+        speakerErrorHandler
     )(params)(dispatch, getState).then(() => {
 
         dispatch(stopLoading());
@@ -63,3 +65,19 @@ export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
         }
     });
 }
+
+export const speakerErrorHandler = (err, res) => (dispatch) => {
+    let code = err.status;
+    dispatch(stopLoading());
+
+    if (code == 404) {
+        swal({
+            title: T.translate("landing.speaker_profile_required"),
+            text: T.translate("landing.speaker_profile_required_text"),
+            type: "warning",
+        }).catch(swal.noop);
+    } else {
+        dispatch(authErrorHandler(err, res));
+    }
+}
+

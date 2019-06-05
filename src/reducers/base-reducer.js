@@ -14,7 +14,7 @@
 import { START_LOADING, STOP_LOADING, LOGOUT_USER } from "openstack-uicore-foundation/lib/actions";
 import {RESET_LOADER, SELECTION_CLOSED, SELECTION_PLAN_RECEIVED, RECEIVE_SUMMIT, RECEIVE_TAG_GROUPS} from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
-import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
+import {PROFILE_PIC_ATTACHED, SPEAKER_PROFILE_SAVED} from "../actions/speaker-actions";
 
 
 const DEFAULT_STATE = {

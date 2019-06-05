@@ -29,7 +29,7 @@ import {
 
 import history from '../history'
 import swal from "sweetalert2";
-import {SELECTION_CLOSED} from "./base-actions";
+import {getSpeakerInfo} from "./auth-actions";
 
 export const RECEIVE_SPEAKER_PERMISSION     = 'RECEIVE_SPEAKER_PERMISSION';
 export const REQUEST_SPEAKER_PERMISSION     = 'REQUEST_SPEAKER_PERMISSION';
@@ -458,6 +458,10 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
                 if (pic_file) {
                     dispatch(uploadFileProfile(payload.response, pic_file));
                 }
+            })
+            .then((payload) => {
+                // we need to call this because we need the expanded member in the speaker payload
+                dispatch(getSpeakerInfo(null));
             })
             .then((payload) => {
                 success_message.html = T.translate("edit_profile.profile_saved");
