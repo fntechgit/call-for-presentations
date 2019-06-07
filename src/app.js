@@ -113,17 +113,23 @@ class App extends React.PureComponent {
                     </div>
 
                     {!isLoggedUser &&
-                        <LandingPage doLogin={this.onClickLogin.bind(this)} />
+                        <React.Fragment>
+                            <LandingPage doLogin={this.onClickLogin.bind(this)} />
+                            <Switch>
+                                <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getUserInfo={getUserInfo} />
+                                <Route path="/error" component={CustomErrorPage}/>
+                            </Switch>
+                        </React.Fragment>
                     }
 
-                    <Switch>
-                        <AuthorizedRoute isLoggedUser={isLoggedUser} backUrl={backUrl} path="/app" component={PrimaryLayout} />
-                        <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getUserInfo={getUserInfo} />
-                        <LogOutCallbackRoute doLogout={doLogout}  path='/auth/logout'/>
-                        <Route path="/404" render={props => (<p>404 - Not Found</p>)}/>
-                        <Route path="/error" component={CustomErrorPage}/>
-                        <DefaultRoute isLoggedUser={isLoggedUser} />
-                    </Switch>
+                    {isLoggedUser &&
+                        <Switch>
+                            <AuthorizedRoute isLoggedUser={isLoggedUser} backUrl={backUrl} path="/app" component={PrimaryLayout} />
+                            <Route path="/404" render={props => (<p>404 - Not Found</p>)}/>
+                            <LogOutCallbackRoute path='/auth/logout' doLogout={doLogout} />
+                            <DefaultRoute isLoggedUser={isLoggedUser} />
+                        </Switch>
+                    }
                 </div>
             </Router>
         );
