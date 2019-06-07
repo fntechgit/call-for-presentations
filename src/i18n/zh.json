@@ -17,12 +17,17 @@
     "speaker_profile_required_text" : "Please create your speaker profile to continue."
   },
   "errors": {
-    "user_not_authz"            : "坚持，稍等。您的用户未获得授权！",
-    "user_not_set"              : "坚持，稍等。无法获得任何有效用户。",
-    "session_expired"           : "坚持，稍等。你的会话已经过期了！",
-    "server_error"              : "我们的服务器出现问题，请联系管理员。",
-    "not_found"                 : "未找到",
-    "access_denied"             : "访问拒绝"
+    "user_not_authz"              : "坚持，稍等。您的用户未获得授权！",
+    "user_not_set"                : "坚持，稍等。无法获得任何有效用户。",
+    "session_expired"             : "坚持，稍等。你的会话已经过期了！",
+    "server_error"                : "我们的服务器出现问题，请联系管理员。",
+    "not_found"                   : "未找到",
+    "access_denied"               : "访问拒绝",
+    "access_denied_text"          : "Please log in to use the app.",
+    "token_validation_error"      : "Token Invalid",
+    "token_validation_error_text" : "Your login token is invalid, please try logging in again.",
+    "consent_required"            : "Consent Required",
+    "consent_required_text"       : "You must accept the consent to log in."
   },
   "general": {
     "summit"              : "峰会",

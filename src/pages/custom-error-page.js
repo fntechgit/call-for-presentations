@@ -22,8 +22,8 @@ class CustomErrorPage extends React.Component {
 
     componentDidMount() {
         let query = URI.parseQuery(this.props.location.search);
-        swal(query.error,
-            query.error_description,
+        swal(T.translate(`errors.${query.error}`),
+            T.translate(`errors.${query.error}_text`),
             "error");
     }
 
@@ -34,12 +34,12 @@ class CustomErrorPage extends React.Component {
     render(){
         return (
             <div className="error_page_wrapper container">
-                <h1>{T.translate("landing.not_logged_in")}</h1>
+                {/*<h1>{T.translate("landing.not_logged_in")}</h1>
 
                 <br/><br/>
                 <button className="btn btn-primary btn-lg" onClick={this.onClickLogin.bind(this)}>
                     {T.translate("landing.log_in")}
-                </button>
+                </button>*/}
             </div>
         );
     }

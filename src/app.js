@@ -23,7 +23,7 @@ import LogOutCallbackRoute from './routes/logout-callback-route'
 import { connect } from 'react-redux'
 import { onUserAuth } from './actions/auth-actions'
 import { AjaxLoader, OPSessionChecker } from "openstack-uicore-foundation/lib/components";
-import {getBackURL, formatEpoch, doLogin, doLogout, initLogOut, getUserInfo} from "openstack-uicore-foundation/lib/methods";
+import {getBackURL, formatEpoch, doLogout, initLogOut, getUserInfo, doLogin} from "openstack-uicore-foundation/lib/methods";
 import T from 'i18n-react';
 import history from './history'
 import CustomErrorPage from "./pages/custom-error-page";

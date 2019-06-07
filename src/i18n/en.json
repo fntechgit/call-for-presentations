@@ -17,12 +17,17 @@
     "speaker_profile_required_text" : "Please create your speaker profile to continue."
   },
   "errors": {
-    "user_not_authz"            : "Hold on. Your user is not authorized!.",
-    "user_not_set"              : "Hold on. Can not get any valid user.",
-    "session_expired"           : "Hold on. Your session expired!.",
-    "server_error"              : "There was a problem with our server, please contact admin.",
-    "not_found"                 : "Not Found",
-    "access_denied"             : "Access Denied"
+    "user_not_authz"              : "Hold on. Your user is not authorized!.",
+    "user_not_set"                : "Hold on. Can not get any valid user.",
+    "session_expired"             : "Hold on. Your session expired!.",
+    "server_error"                : "There was a problem with our server, please contact admin.",
+    "not_found"                   : "Not Found",
+    "access_denied"               : "Access Denied",
+    "access_denied_text"          : "Please log in to use the app.",
+    "token_validation_error"      : "Token Invalid",
+    "token_validation_error_text" : "Your login token is invalid, please try logging in again.",
+    "consent_required"            : "Consent Required",
+    "consent_required_text"       : "You must accept the consent to log in."
   },
   "general": {
     "summit"              : "Summit",

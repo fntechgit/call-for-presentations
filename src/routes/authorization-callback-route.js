@@ -26,6 +26,7 @@ class AuthorizationCallbackRoute extends React.Component {
         this.state = {
             access_token: null ,
             id_token: null,
+            id_token_is_valid: null,
             session_state: null,
             error: null,
             error_description: null,
@@ -58,36 +59,39 @@ class AuthorizationCallbackRoute extends React.Component {
     componentWillMount() {
         console.log("AuthorizationCallbackRoute::componentWillMount");
         let { access_token , id_token, session_state, error, error_description } = this.extractHashParams();
-        this.setState({...this.state, access_token, id_token, session_state, error ,error_description});
+        let id_token_is_valid = id_token ? this.validateIdToken(id_token) : false;
+        this.setState({...this.state, access_token, id_token, id_token_is_valid, session_state, error ,error_description});
     }
 
     componentDidMount() {
         console.log("AuthorizationCallbackRoute::componentDidMount");
         let { getUserInfo } = this.props;
-        let {access_token, id_token, session_state } = this.state;
+        let {access_token, id_token, id_token_is_valid, session_state } = this.state;
 
-        this.props.onUserAuth(access_token, id_token, session_state);
-        let url              = URI( window.location.href);
-        let query            = url.search(true);
-        let fragment         = URI.parseQuery(url.fragment());
+        if(access_token && id_token_is_valid) {
+            this.props.onUserAuth(access_token, id_token, session_state);
+            let url = URI(window.location.href);
+            let query = url.search(true);
+            let fragment = URI.parseQuery(url.fragment());
 
-        // purge fragment
-        delete fragment['access_token'];
-        delete fragment['expires_in'];
-        delete fragment['token_type'];
-        delete fragment['scope'];
-        delete fragment['id_token'];
-        delete fragment['session_state'];
+            // purge fragment
+            delete fragment['access_token'];
+            delete fragment['expires_in'];
+            delete fragment['token_type'];
+            delete fragment['scope'];
+            delete fragment['id_token'];
+            delete fragment['session_state'];
 
-        let backUrl = query.hasOwnProperty('BackUrl') ? query['BackUrl'] : '/app';
+            let backUrl = query.hasOwnProperty('BackUrl') ? query['BackUrl'] : '/app';
 
-        if (fragment.length > 0) {
-            backUrl     += `#${URI.buildQuery(fragment)}`;
+            if (fragment.length > 0) {
+                backUrl += `#${URI.buildQuery(fragment)}`;
+            }
+
+            console.log("backUrl is " + backUrl);
+
+            getUserInfo(backUrl, history);
         }
-
-        console.log("backUrl is "+backUrl);
-
-        getUserInfo(backUrl, history);
 
     }
 
@@ -96,27 +100,24 @@ class AuthorizationCallbackRoute extends React.Component {
     }
 
     render() {
-        console.log("AuthorizationCallbackRoute::render");
-        let { getUserInfo } = this.props;
-        let {access_token, id_token } = this.state;
+        let {access_token, id_token, id_token_is_valid, error, error_description } = this.state;
 
         if(access_token == null){
             console.log("AuthorizationCallbackRoute::render - access_token is null");
             return (
                 <Route render={ props => {
-                    return <Redirect to={`/error?error=${error}&error_description=${error_description}`} />
+                    return <Redirect to={`/error?error=${error}`} />
                 }} />
             )
         }
 
-        if(!this.validateIdToken(id_token))
+        if(!id_token_is_valid)
         {
             console.log("AuthorizationCallbackRoute::render - not valid id_token");
-            let error = "validation error";
-            let error_description = "invalid id token";
+            let error = "token_validation_error";
             return (
                 <Route render={ props => {
-                    return <Redirect to={`/error?error=${error}&error_description=${error_description}`} />
+                    return <Redirect to={`/error?error=${error}`} />
                 }} />
             )
         }
