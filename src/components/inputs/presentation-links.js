@@ -48,10 +48,10 @@ export default class PresentationLinks extends React.Component {
         return (
             <tr key={"presentation_link_" + idx}>
                 <td>
-                    <input id={"link_title_" + idx} value={title} onChange={this.handleChange.bind(this,'title',idx)} className="form-control"/>
+                    <input id={"link_url_" + idx} value={url} onChange={this.handleChange.bind(this,'link',idx)} className="form-control"/>
                 </td>
                 <td>
-                    <input id={"link_url_" + idx} value={url} onChange={this.handleChange.bind(this,'link',idx)} className="form-control"/>
+                    <input id={"link_title_" + idx} value={title} onChange={this.handleChange.bind(this,'title',idx)} className="form-control"/>
                 </td>
             </tr>
         );
