@@ -53,6 +53,7 @@ class PrimaryLayout extends React.Component {
         if (!summit) return (<div></div>);
 
         let loggedUser = (speaker && speaker.id) ? speaker : member;
+        if(loggedUser == null) return null;
 
         return(
             <div className="primary-layout container-fluid">

@@ -20,24 +20,11 @@ import {
     authErrorHandler
 } from "openstack-uicore-foundation/lib/methods";
 
-import {SET_LOGGED_USER} from "openstack-uicore-foundation/lib/actions"
-
 import history from '../history'
 import T from "i18n-react/dist/i18n-react";
 import swal from "sweetalert2";
 
 export const RECEIVE_SPEAKER_INFO       = 'RECEIVE_SPEAKER_INFO';
-
-export const onUserAuth = (accessToken, idToken, sessionState) => (dispatch) => {
-    dispatch({
-        type: SET_LOGGED_USER,
-        payload: {accessToken, idToken, sessionState}
-    });
-
-    dispatch(getSpeakerInfo(null));
-}
-
-
 
 export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
 

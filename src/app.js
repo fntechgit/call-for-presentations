@@ -21,9 +21,8 @@ import AuthButton from './components/auth-button'
 import DefaultRoute from './routes/default-route'
 import LogOutCallbackRoute from './routes/logout-callback-route'
 import { connect } from 'react-redux'
-import { onUserAuth } from './actions/auth-actions'
 import { AjaxLoader, OPSessionChecker } from "openstack-uicore-foundation/lib/components";
-import {getBackURL, formatEpoch, doLogout, initLogOut, getUserInfo, doLogin} from "openstack-uicore-foundation/lib/methods";
+import {getBackURL, formatEpoch, doLogout, initLogOut, doLogin, getUserInfo, onUserAuth} from "openstack-uicore-foundation/lib/methods";
 import T from 'i18n-react';
 import history from './history'
 import CustomErrorPage from "./pages/custom-error-page";
@@ -112,24 +111,21 @@ class App extends React.PureComponent {
                         </div>
                     </div>
 
-                    {!isLoggedUser &&
+
                         <React.Fragment>
-                            <LandingPage doLogin={this.onClickLogin.bind(this)} />
+                            {!isLoggedUser &&
+                                <LandingPage doLogin={this.onClickLogin.bind(this)}/>
+                            }
                             <Switch>
                                 <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getUserInfo={getUserInfo} />
                                 <Route path="/error" component={CustomErrorPage}/>
+                                <AuthorizedRoute isLoggedUser={isLoggedUser} backUrl={backUrl} path="/app" component={PrimaryLayout} />
+                                <Route path="/404" render={props => (<p>404 - Not Found</p>)}/>
+                                <LogOutCallbackRoute path='/auth/logout' doLogout={doLogout} />
+                                <DefaultRoute isLoggedUser={isLoggedUser} />
                             </Switch>
                         </React.Fragment>
-                    }
 
-                    {isLoggedUser &&
-                        <Switch>
-                            <AuthorizedRoute isLoggedUser={isLoggedUser} backUrl={backUrl} path="/app" component={PrimaryLayout} />
-                            <Route path="/404" render={props => (<p>404 - Not Found</p>)}/>
-                            <LogOutCallbackRoute path='/auth/logout' doLogout={doLogout} />
-                            <DefaultRoute isLoggedUser={isLoggedUser} />
-                        </Switch>
-                    }
                 </div>
             </Router>
         );
