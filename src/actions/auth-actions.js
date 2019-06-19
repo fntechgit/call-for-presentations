@@ -17,8 +17,12 @@ import {
     showMessage,
     startLoading,
     stopLoading,
-    authErrorHandler
+    authErrorHandler,
+    initLogOut
 } from "openstack-uicore-foundation/lib/methods";
+
+import {REQUEST_USER_INFO, RECEIVE_USER_INFO} from 'openstack-uicore-foundation/lib/actions';
+
 
 import history from '../history'
 import T from "i18n-react/dist/i18n-react";
@@ -28,8 +32,8 @@ export const RECEIVE_SPEAKER_INFO       = 'RECEIVE_SPEAKER_INFO';
 
 export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
 
-    let { loggedUserState }     = getState();
-    let { accessToken } = loggedUserState;
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
 
     dispatch(startLoading());
 
@@ -53,18 +57,44 @@ export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
     });
 }
 
-export const speakerErrorHandler = (err, res) => (dispatch) => {
+export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
     let code = err.status;
     dispatch(stopLoading());
 
     if (code == 404) {
+        // speaker not found
+        //try to get member
+
         swal({
             title: T.translate("landing.speaker_profile_required"),
             text: T.translate("landing.speaker_profile_required_text"),
             type: "warning",
         }).catch(swal.noop);
-    } else {
-        dispatch(authErrorHandler(err, res));
+
+        return getRequest(
+            createAction(REQUEST_USER_INFO),
+            createAction(RECEIVE_USER_INFO),
+            `${window.API_BASE_URL}/api/v1/members/me?expand=groups&access_token=${accessToken}`,
+            authErrorHandler
+        )({})(dispatch, getState).then(() => {
+            dispatch(stopLoading());
+
+            let { member } = getState().loggedUserState;
+            if( member == null || member == undefined){
+                let error_message = {
+                    title: 'ERROR',
+                    html: T.translate("errors.user_not_set"),
+                    type: 'error'
+                };
+
+                dispatch(showMessage( error_message, initLogOut ));
+                return;
+            }
+            history.push('/app/profile');
+        });
+
     }
+    dispatch(authErrorHandler(err, res));
+
 }
 
