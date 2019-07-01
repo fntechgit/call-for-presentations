@@ -15,6 +15,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import { RawHTML } from 'openstack-uicore-foundation/lib/components'
+import { loadEventCategory } from "../actions/base-actions";
 
 import '../styles/preview-presentation-page.less';
 
@@ -28,7 +29,11 @@ class PreviewPresentationPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
+      let {history, loading} = newProps;
 
+      if (!loading && newProps.entity.track_id && (!newProps.track || newProps.entity.track_id != newProps.track.id)) {
+        this.props.loadEventCategory();
+      }
     }
 
     onDone(ev) {
@@ -142,11 +147,13 @@ class PreviewPresentationPage extends React.Component {
 
 const mapStateToProps = ({ baseState, presentationState }) => ({
     selectionPlan : baseState.selectionPlan,
+    loading : baseState.loading,
     ...presentationState
 })
 
 export default connect (
     mapStateToProps,
     {
+      loadEventCategory
     }
 )(PreviewPresentationPage);
