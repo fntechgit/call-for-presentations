@@ -51,7 +51,7 @@ class EditPresentationPage extends React.Component {
             history.push('summary');
         }
 
-        if (!loading && newProps.entity.track_id && (!newProps.track || newProps.entity.track_id != this.props.entity.track_id)) {
+        if (!loading && newProps.entity.track_id && (!newProps.track || newProps.entity.track_id != newProps.track.id)) {
             this.props.loadEventCategory();
         }
 
