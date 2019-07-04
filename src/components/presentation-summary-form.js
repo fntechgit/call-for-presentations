@@ -14,10 +14,11 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import { Input, TextEditor, UploadInput, Dropdown, RadioList, TextArea } from 'openstack-uicore-foundation/lib/components'
+import { Input, TextEditor, UploadInput, Dropdown, RadioList, TextArea, Exclusive } from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 import SubmitButtons from './presentation-submit-buttons'
 import {validate, scrollToError} from '../utils/methods'
+
 
 
 class PresentationSummaryForm extends React.Component {
@@ -31,6 +32,8 @@ class PresentationSummaryForm extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleUploadFile = this.handleUploadFile.bind(this);
+        this.handleRemoveFile = this.handleRemoveFile.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -46,6 +49,21 @@ class PresentationSummaryForm extends React.Component {
             let firstNode = document.getElementById(firstError);
             if (firstNode) window.scrollTo(0, findElementPos(firstNode));
         }
+    }
+
+    handleUploadFile(file) {
+        let entity = {...this.state.entity};
+        entity.material_file = file;
+        entity.material_preview = file.preview;
+        this.setState({entity: entity});
+    }
+
+    handleRemoveFile(ev) {
+        let entity = {...this.state.entity};
+        entity.material_file = null;
+        entity.material_preview = '';
+        entity.remove_material = entity.material;
+        this.setState({entity:entity});
     }
 
     handleChange(ev) {
@@ -159,6 +177,7 @@ class PresentationSummaryForm extends React.Component {
             {label: T.translate("general.no"), value: 0}
         ];
 
+
         return (
             <form className="presentation-summary-form">
                 <input type="hidden" id="id" value={entity.id} />
@@ -266,6 +285,20 @@ class PresentationSummaryForm extends React.Component {
                         <Input className="form-control" id="link_4" data-key="4" value={entity.links[4]} onChange={this.handleChange} error={this.hasErrors('link_4')} />
                     </div>
                 </div>
+
+                <Exclusive name="presentation-attachment">
+                    <hr/>
+                    <label>{T.translate("edit_presentation.presentation_material")}</label>
+                    <UploadInput
+                        value={entity.material_preview}
+                        handleUpload={this.handleUploadFile}
+                        handleRemove={this.handleRemoveFile}
+                        className="dropzone col-md-6"
+                        multiple={false}
+                        accept="application/pdf"
+                    />
+                </Exclusive>
+
                 <hr/>
                 <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} />
             </form>

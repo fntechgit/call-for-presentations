@@ -29,6 +29,8 @@ import CustomErrorPage from "./pages/custom-error-page";
 import {getCurrentSelectionPlanPublic, getCurrentSummitPublic, resetLoading} from './actions/base-actions';
 import LandingPage from "./pages/landing-page";
 import LanguageSelect from "./components/language-select";
+import exclusiveSections from 'js-yaml-loader!./exclusive-sections.yml';
+
 
 // here is set by default user lang as en
 
@@ -60,6 +62,11 @@ window.API_BASE_URL        = process.env['API_BASE_URL'];
 window.OAUTH2_CLIENT_ID    = process.env['OAUTH2_CLIENT_ID'];
 window.SCOPES              = process.env['SCOPES'];
 window.ALLOWED_USER_GROUPS = "";
+window.EXCLUSIVE_SECTIONS  = [];
+
+if (exclusiveSections.hasOwnProperty(process.env['APP_CLIENT_NAME'])) {
+    window.EXCLUSIVE_SECTIONS = exclusiveSections[process.env['APP_CLIENT_NAME']];
+}
 
 class App extends React.PureComponent {
 

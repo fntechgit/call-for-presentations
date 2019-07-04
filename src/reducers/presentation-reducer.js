@@ -17,12 +17,19 @@ import
     UPDATE_PRESENTATION,
     PRESENTATION_UPDATED,
     PRESENTATION_ADDED,
-    PRESENTATION_COMPLETED
+    PRESENTATION_COMPLETED,
+    PRESENTATION_MATERIAL_ATTACHED
 } from '../actions/presentation-actions';
 
 import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
 import { RECEIVE_EVENT_CATEGORY } from '../actions/base-actions';
-import {SPEAKER_ASSIGNED, SPEAKER_REMOVED, MODERATOR_ASSIGNED, MODERATOR_REMOVED} from '../actions/speaker-actions';
+import {
+    SPEAKER_ASSIGNED,
+    SPEAKER_REMOVED,
+    MODERATOR_ASSIGNED,
+    MODERATOR_REMOVED,
+    PIC_ATTACHED
+} from '../actions/speaker-actions';
 
 
 export const DEFAULT_ENTITY = {
@@ -41,7 +48,8 @@ export const DEFAULT_ENTITY = {
     extra_questions: [],
     tags: [],
     speakers: [],
-    moderator: null
+    moderator: null,
+    material: null,
 }
 
 const DEFAULT_STATE = {
@@ -95,6 +103,11 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
                 entity.links.fill('', length, 5);
             }
 
+            if (entity.slides.length > 0) {
+                entity.material = entity.slides[0];
+                entity.material_preview = entity.slides[0].file;
+            }
+
             entity.progressNum = state.steps.find(s => s.name == entity.progress).step;
 
             return {...state, entity: {...state.entity, ...entity}, errors: {} };
@@ -116,6 +129,11 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
             let tmp_entity = {...state.entity, ...entity};
 
             return {...state, entity: tmp_entity };
+        }
+        break;
+        case PRESENTATION_MATERIAL_ATTACHED: {
+            let material = {...payload.response};
+            return {...state, entity: {...state.entity, material: material} };;
         }
         break;
         case RECEIVE_EVENT_CATEGORY: {

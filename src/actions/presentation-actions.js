@@ -22,7 +22,9 @@ import {
     showMessage,
     showSuccessMessage,
     authErrorHandler,
-    doLogin
+    doLogin,
+    postFile,
+    putFile
 } from "openstack-uicore-foundation/lib/methods";
 import T from "i18n-react/dist/i18n-react";
 import swal from "sweetalert2";
@@ -37,6 +39,7 @@ export const PRESENTATION_UPDATED           = 'PRESENTATION_UPDATED';
 export const PRESENTATION_ADDED             = 'PRESENTATION_ADDED';
 export const PRESENTATION_DELETED           = 'PRESENTATION_DELETED';
 export const PRESENTATION_COMPLETED         = 'PRESENTATION_COMPLETED';
+export const PRESENTATION_MATERIAL_ATTACHED = 'PRESENTATION_MATERIAL_ATTACHED';
 
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
@@ -49,7 +52,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let params = {
         access_token : accessToken,
-        expand: 'track_groups, speakers'
+        expand: 'track_groups, speakers, presentation_materials'
     };
 
     return getRequest(
@@ -91,6 +94,11 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
             entity
         )(params)(dispatch)
             .then((payload) => {
+                if (entity.material_file) {
+                    dispatch(savePresentationMaterial(payload.response, entity.material, entity.material_file));
+                }
+            })
+            .then((payload) => {
                 dispatch(stopLoading());
                 history.push(`/app/presentations/${payload.response.id}/${nextStep}`);
             });
@@ -106,11 +114,55 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
             entity
         )(params)(dispatch)
             .then((payload) => {
+                if (entity.material_file) {
+                    dispatch(savePresentationMaterial(payload.response, null, entity.material_file));
+                }
+            })
+            .then((payload) => {
                 dispatch(stopLoading());
                 history.push(`/app/presentations/${payload.response.id}/tags`);
             });
     }
 }
+
+const savePresentationMaterial = (entity, material, file) => (dispatch, getState) => {
+    let { loggedUserState, baseState } = getState();
+    let { accessToken }     = loggedUserState;
+    let { summit }          = baseState;
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    if (material && material.id) {
+        putFile(
+            null,
+            createAction(PRESENTATION_MATERIAL_ATTACHED),
+            `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/slides/${material.id}`,
+            file,
+            material,
+            authErrorHandler
+        )(params)(dispatch);
+
+    } else {
+        let material = {
+            name: 'Speaker PDF',
+            description: '',
+            featured: false,
+            display_on_site: false
+        };
+
+        postFile(
+            null,
+            createAction(PRESENTATION_MATERIAL_ATTACHED),
+            `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/slides`,
+            file,
+            material,
+            authErrorHandler
+        )(params)(dispatch);
+    }
+}
+
 
 export const completePresentation = (entity) => (dispatch, getState) => {
     let { loggedUserState, baseState } = getState();

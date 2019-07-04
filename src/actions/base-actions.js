@@ -94,7 +94,7 @@ export const getCurrentSelectionPlanPublic = () => (dispatch, getState) => {
         null,
         createAction(RECEIVE_SELECTION_PLAN_PUBLIC),
         `${window.API_BASE_URL}/api/public/v1/summits/all/selection-plans/current/submission`,
-        authErrorHandler
+        selectionPlanErrorHandler
     )({})(dispatch);
 };
 
