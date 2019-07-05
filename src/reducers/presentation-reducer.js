@@ -50,6 +50,8 @@ export const DEFAULT_ENTITY = {
     speakers: [],
     moderator: null,
     material: null,
+    material_preview: null,
+    material_file: null,
 }
 
 const DEFAULT_STATE = {
@@ -105,12 +107,13 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
 
             if (entity.slides.length > 0) {
                 entity.material = entity.slides[0];
-                entity.material_preview = entity.slides[0].file;
+                entity.material_preview = entity.material.link;
+                entity.material_file = null;
             }
 
             entity.progressNum = state.steps.find(s => s.name == entity.progress).step;
 
-            return {...state, entity: {...state.entity, ...entity}, errors: {} };
+            return {...state, entity: {...DEFAULT_ENTITY, ...entity}, errors: {} };
         }
         break;
         case PRESENTATION_ADDED:
@@ -133,7 +136,7 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
         break;
         case PRESENTATION_MATERIAL_ATTACHED: {
             let material = {...payload.response};
-            return {...state, entity: {...state.entity, material: material} };;
+            return {...state, entity: {...state.entity, material: material, material_preview: '', material_file: null} };;
         }
         break;
         case RECEIVE_EVENT_CATEGORY: {

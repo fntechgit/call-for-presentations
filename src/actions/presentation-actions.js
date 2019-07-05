@@ -40,6 +40,7 @@ export const PRESENTATION_ADDED             = 'PRESENTATION_ADDED';
 export const PRESENTATION_DELETED           = 'PRESENTATION_DELETED';
 export const PRESENTATION_COMPLETED         = 'PRESENTATION_COMPLETED';
 export const PRESENTATION_MATERIAL_ATTACHED = 'PRESENTATION_MATERIAL_ATTACHED';
+export const PRESENTATION_MATERIAL_DELETED  = 'PRESENTATION_MATERIAL_DELETED';
 
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
@@ -96,7 +97,10 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
             .then((payload) => {
                 if (entity.material_file) {
                     dispatch(savePresentationMaterial(payload.response, entity.material, entity.material_file));
+                } else if (entity.remove_material) {
+                    dispatch(deletePresentationMaterial(entity.id, entity.remove_material.id));
                 }
+                return payload;
             })
             .then((payload) => {
                 dispatch(stopLoading());
@@ -117,6 +121,7 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
                 if (entity.material_file) {
                     dispatch(savePresentationMaterial(payload.response, null, entity.material_file));
                 }
+                return payload;
             })
             .then((payload) => {
                 dispatch(stopLoading());
@@ -135,6 +140,9 @@ const savePresentationMaterial = (entity, material, file) => (dispatch, getState
     };
 
     if (material && material.id) {
+
+        delete(material.link);
+
         putFile(
             null,
             createAction(PRESENTATION_MATERIAL_ATTACHED),
@@ -147,9 +155,9 @@ const savePresentationMaterial = (entity, material, file) => (dispatch, getState
     } else {
         let material = {
             name: 'Speaker PDF',
-            description: '',
-            featured: false,
-            display_on_site: false
+            description: 'empty',
+            featured: 0,
+            display_on_site: 0
         };
 
         postFile(
@@ -162,6 +170,24 @@ const savePresentationMaterial = (entity, material, file) => (dispatch, getState
         )(params)(dispatch);
     }
 }
+
+export const deletePresentationMaterial = (presentationId, materialId) => (dispatch, getState) => {
+
+    let { loggedUserState, baseState } = getState();
+    let { accessToken }     = loggedUserState;
+    let { summit }          = baseState;
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    return deleteRequest(
+        null,
+        createAction(PRESENTATION_MATERIAL_DELETED)({materialId}),
+        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}/slides/${materialId}`,
+        authErrorHandler
+    )(params)(dispatch);
+};
 
 
 export const completePresentation = (entity) => (dispatch, getState) => {

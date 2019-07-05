@@ -173,6 +173,7 @@ class SpeakerForm extends React.Component {
                         <label> {T.translate("edit_speaker.profile_pic")} </label>
                         <UploadInput
                             value={entity.pic}
+                            file={entity.pic_file}
                             handleUpload={this.handleUploadFile}
                             handleRemove={this.handleRemoveFile}
                             className="dropzone col-md-6"

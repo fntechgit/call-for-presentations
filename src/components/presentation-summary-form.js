@@ -288,15 +288,20 @@ class PresentationSummaryForm extends React.Component {
 
                 <Exclusive name="presentation-attachment">
                     <hr/>
-                    <label>{T.translate("edit_presentation.presentation_material")}</label>
-                    <UploadInput
-                        value={entity.material_preview}
-                        handleUpload={this.handleUploadFile}
-                        handleRemove={this.handleRemoveFile}
-                        className="dropzone col-md-6"
-                        multiple={false}
-                        accept="application/pdf"
-                    />
+                    <div className="row form-group">
+                        <div className="col-md-12">
+                            <label>{T.translate("edit_presentation.presentation_material")}</label>
+                            <UploadInput
+                                value={entity.material_preview}
+                                file={entity.material_file}
+                                handleUpload={this.handleUploadFile}
+                                handleRemove={this.handleRemoveFile}
+                                className="dropzone col-md-6"
+                                multiple={false}
+                                accept="application/pdf"
+                            />
+                        </div>
+                    </div>
                 </Exclusive>
 
                 <hr/>
