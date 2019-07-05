@@ -97,10 +97,12 @@ class App extends React.PureComponent {
             <Router history={history}>
                 <div>
                     <AjaxLoader show={ loading } size={ 120 }/>
+                    {isLoggedUser &&
                     <OPSessionChecker
                         clientId={window.OAUTH2_CLIENT_ID}
                         idpBaseUrl={window.IDP_BASE_URL}
                     />
+                    }
                     <div className="header">
                         <div className="header-title row">
                             <div className="col-md-3 col-xs-6 text-left">
