@@ -27,7 +27,9 @@
     "token_validation_error"      : "Token Invalid",
     "token_validation_error_text" : "Your login token is invalid, please try logging in again.",
     "consent_required"            : "Consent Required",
-    "consent_required_text"       : "You must accept the consent to log in."
+    "consent_required_text"       : "You must accept the consent to log in.",
+    "invalid_scope"               : "Scopes Invalid",
+    "invalid_scope_text"          : "Scopes are invalid, please contact admin."
   },
   "general": {
     "summit"              : "峰会",

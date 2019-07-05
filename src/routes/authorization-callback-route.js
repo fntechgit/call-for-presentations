@@ -14,6 +14,7 @@ import React from 'react'
 import { connect } from 'react-redux';
 import {getSpeakerInfo } from '../actions/auth-actions';
 import { AbstractAuthorizationCallbackRoute } from "openstack-uicore-foundation/lib/components";
+import { Route, Redirect } from 'react-router-dom';
 
 class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
 
@@ -23,6 +24,14 @@ class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
 
     _callback(backUrl) {
         this.props.getSpeakerInfo(backUrl);
+    }
+
+    _redirect2Error(error){
+        return (
+            <Route render={ props => {
+                return <Redirect to={`/error?error=${error}`} />
+            }} />
+        )
     }
 }
 
