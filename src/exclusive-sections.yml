@@ -1,7 +1,7 @@
 # each app name contains the fields that are eclusive for that app only
 
 openstack:
-  - presentation-attachment
+  - nada
 
 fntech:
   - presentation-attachment
