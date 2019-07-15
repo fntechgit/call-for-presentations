@@ -13,11 +13,13 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import URI from "urijs";
 import T from 'i18n-react/dist/i18n-react';
 import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 import { loadEventCategory } from "../actions/base-actions";
 
 import '../styles/preview-presentation-page.less';
+import {findElementPos} from "openstack-uicore-foundation/lib/methods";
 
 class PreviewPresentationPage extends React.Component {
 
@@ -29,12 +31,22 @@ class PreviewPresentationPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-      let {history, loading} = newProps;
+        let {history, loading} = newProps;
 
-      if (!loading && newProps.entity.track_id && (!newProps.track || newProps.entity.track_id != newProps.track.id)) {
-        this.props.loadEventCategory();
-      }
+        if (!loading && newProps.entity.track_id && (!newProps.track || newProps.entity.track_id != newProps.track.id)) {
+            this.props.loadEventCategory();
+        }
     }
+
+    /*componentDidUpdate() {
+        let url      = URI(window.location.href);
+        let fragment = url.fragment();
+
+        if (fragment.indexOf("comments") !== -1) {
+            let commentNode = document.getElementById("comments");
+            if (commentNode) commentNode.scrollIntoView({behavior: 'smooth'});
+        }
+    }*/
 
     onDone(ev) {
         let {history} = this.props;
@@ -76,10 +88,10 @@ class PreviewPresentationPage extends React.Component {
                         <label>{T.translate("edit_presentation.attending_media")}</label><br/>
                         {entity.attending_media ? 'Yes' : 'No'}
                     </div>
-                    <hr/>
 
                     {entity.moderator &&
                     <div className="main-panel-section confirm-block">
+                        <hr/>
                         <label>Moderators</label>
                         <div className="row">
                             <div className="col-lg-2">
@@ -104,8 +116,8 @@ class PreviewPresentationPage extends React.Component {
                     </div>
                     }
 
-                    <hr/>
                     <div className="main-panel-section confirm-block">
+                        <hr/>
                         <label>Speakers</label>
                         { entity.speakers.map(s => (
                             <div className="row" key={'speaker_review_'+s.id}>
@@ -130,6 +142,22 @@ class PreviewPresentationPage extends React.Component {
                             </div>
                         ))}
                     </div>
+
+                    {entity.public_comments && entity.public_comments.length > 0 &&
+                    <div>
+                        <hr/>
+                        <div className="main-panel-section confirm-block comments" id="comments">
+                            <label>{T.translate("edit_presentation.chair_comments")}</label>
+                            <ul>
+                            {entity.public_comments.map(c => (
+                                <li className="comment-item" key={'comment_review_' + c.id}>
+                                    {c.body}
+                                </li>
+                            ))}
+                            </ul>
+                        </div>
+                    </div>
+                    }
 
                     <hr/>
                     <div className="row submit-buttons">

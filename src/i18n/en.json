@@ -95,7 +95,8 @@
     "no_presentations_moderator": "There are no presentations submitted by others with you as a moderator.",
     "remove_warning": "You are deleting presentation ",
     "not_submitted" : "not submitted",
-    "published"     : "published"
+    "published"     : "published",
+    "review"        : "Review"
   },
   "presentation_nav": {
     "summary": "Summary",
@@ -152,6 +153,7 @@
     "no_edit": "You are not allowed to edit this presentation",
     "add_speaker_error": "You need to add at least one speaker to the presentation.",
     "presentation_material": "Upload Presentation Material",
+    "chair_comments": "Chair Comments",
     "placeholders": {
     }
   },

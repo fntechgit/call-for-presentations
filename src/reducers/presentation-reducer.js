@@ -52,6 +52,7 @@ export const DEFAULT_ENTITY = {
     material: null,
     material_preview: null,
     material_file: null,
+    public_comments: []
 }
 
 const DEFAULT_STATE = {

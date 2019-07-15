@@ -47,6 +47,13 @@ class PresentationsPage extends React.Component {
         history.push(presentation.getProgressLink());
     }
 
+    handleReviewPresentation(presentation, ev) {
+        let {history} = this.props;
+        ev.preventDefault();
+
+        history.push(`/app/presentations/${presentation.id}/preview#comments`);
+    }
+
     handleDeletePresentation(presentation, ev) {
         let {deletePresentation} = this.props;
 
@@ -118,6 +125,12 @@ class PresentationsPage extends React.Component {
                                             </td>
                                             <td>
                                                 {presentation.getStatus()}
+                                                {p.public_comments && p.public_comments.length > 0 &&
+                                                    <button className="btn btn-default btn-xs review-btn" onClick={this.handleReviewPresentation.bind(this, p)}>
+                                                        <i className="fa fa-exclamation-triangle blink" aria-hidden="true"></i>
+                                                        {T.translate("presentations.review")}
+                                                    </button>
+                                                }
                                             </td>
                                             <td>
                                                 {presentation.getSelectionPlanName()}
