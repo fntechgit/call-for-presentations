@@ -28,7 +28,7 @@ import {
 } from "openstack-uicore-foundation/lib/methods";
 
 import history from '../history'
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import {getSpeakerInfo} from "./auth-actions";
 
 export const RECEIVE_SPEAKER_PERMISSION     = 'RECEIVE_SPEAKER_PERMISSION';
@@ -109,11 +109,11 @@ export const getSpeakerPermission = (presentationId, speakerId, speakerType) => 
             if (payload.response.approved) {
                 history.push(`/app/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
             } else {
-                swal({
+                Swal.fire({
                     title: T.translate("edit_speaker.auth_pending"),
                     text: T.translate("edit_speaker.auth_pending_text"),
                     type: "warning",
-                }).catch(swal.noop);
+                });
             }
 
         }
@@ -125,7 +125,7 @@ export const speakerPermissionErrorHandler = (err, res) => (dispatch) => {
     dispatch(stopLoading());
 
     if (code == 404) {
-        swal({
+        Swal.fire({
             title: T.translate("edit_speaker.auth_required"),
             text: T.translate("edit_speaker.auth_required_text"),
             type: "warning",
@@ -136,7 +136,7 @@ export const speakerPermissionErrorHandler = (err, res) => (dispatch) => {
             if (result.value) {
                 dispatch(requestSpeakerPermission());
             }
-        }).catch(swal.noop);
+        });
     } else {
         dispatch(authErrorHandler(err, res));
     }

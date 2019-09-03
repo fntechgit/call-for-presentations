@@ -12,7 +12,7 @@
  **/
 import React from 'react';
 import URI from "urijs";
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import '../styles/error-page.less';
 import T from "i18n-react/dist/i18n-react";
 import {getBackURL, doLogin} from "openstack-uicore-foundation/lib/methods";
@@ -22,7 +22,7 @@ class CustomErrorPage extends React.Component {
 
     componentDidMount() {
         let query = URI.parseQuery(this.props.location.search);
-        swal(T.translate(`errors.${query.error}`),
+        Swal.fire(T.translate(`errors.${query.error}`),
             T.translate(`errors.${query.error}_text`),
             "error");
     }

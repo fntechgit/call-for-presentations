@@ -14,7 +14,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import { formatEpoch } from '../utils/methods';
 import SpeakerForm from '../components/speaker-form'
 import { getSpeaker, resetSpeakerForm, saveSpeaker, getOrganizationalRoles } from "../actions/speaker-actions";
@@ -88,13 +88,13 @@ class EditSpeakerPage extends React.Component {
 
         if (speakerId && speakerId != loggedInSpeaker.id && speakerPermission && (!speakerPermission.approved || speakerId != speakerPermission.speaker_id) ) {
 
-            swal({
+            Swal.fire({
                 title: T.translate("errors.access_denied"),
                 text: T.translate("edit_speaker.auth_required_text"),
                 type: "warning",
             }).then(function(result){
                 history.push(`/app/presentations/${currentPresentation.id}/speakers`);
-            }).catch(swal.noop);
+            });
 
             return (<div></div>);
         }

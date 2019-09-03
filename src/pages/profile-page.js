@@ -14,7 +14,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import SpeakerForm from '../components/speaker-form'
 import { saveSpeakerProfile, getOrganizationalRoles } from "../actions/speaker-actions";
 import { getSpeakerInfo } from "../actions/auth-actions";
@@ -41,7 +41,7 @@ class ProfilePage extends React.Component {
         let {entity, orgRoles, loggedMember, errors, saveSpeakerProfile, loading} = this.props;
 
         if (!entity.id && !loading && !errors) {
-            swal({
+            Swal.fire({
                 title: T.translate("edit_profile.important"),
                 text: T.translate("edit_profile.fill_speaker_details"),
                 type: "warning"

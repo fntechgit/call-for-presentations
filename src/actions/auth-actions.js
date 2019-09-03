@@ -26,7 +26,7 @@ import {REQUEST_USER_INFO, RECEIVE_USER_INFO} from 'openstack-uicore-foundation/
 
 import history from '../history'
 import T from "i18n-react/dist/i18n-react";
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 
 export const RECEIVE_SPEAKER_INFO       = 'RECEIVE_SPEAKER_INFO';
 
@@ -65,11 +65,11 @@ export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
         // speaker not found
         //try to get member
 
-        swal({
+        Swal.fire({
             title: T.translate("landing.speaker_profile_required"),
             text: T.translate("landing.speaker_profile_required_text"),
             type: "warning",
-        }).catch(swal.noop);
+        });
 
         return getRequest(
             createAction(REQUEST_USER_INFO),

@@ -12,7 +12,7 @@
  **/
 
 import T from "i18n-react/dist/i18n-react";
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import {
     getRequest,
     putRequest,
@@ -199,14 +199,14 @@ export const selectionPlanErrorHandler = (err, res) => (dispatch) => {
             for (var [key, value] of Object.entries(err.response.body.errors)) {
                 msg += '- ' + value + '<br>';
             }
-            swal("Validation error", msg, "warning");
+            Swal.fire("Validation error", msg, "warning");
             dispatch({
                 type: VALIDATE,
                 payload: {errors: err.response.body.errors}
             });
             break;
         default:
-            swal("ERROR", T.translate("errors.server_error"), "error");
+            Swal.fire("ERROR", T.translate("errors.server_error"), "error");
     }
 }
 

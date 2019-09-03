@@ -107,7 +107,8 @@
   "event_type": {
     "Presentation": "Presentation",
     "Panel": "Panel",
-    "Lightning Talk": "Lightning Talk"
+    "Lightning Talk": "Lightning Talk",
+    "Fishbowl": "Fishbowl"
   },
   "event_level": {
     "Advanced": "Advanced",

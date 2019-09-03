@@ -14,7 +14,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import { getAllPresentations } from '../actions/presentations-actions';
 import { deletePresentation } from '../actions/presentation-actions';
 import { formatEpoch } from '../utils/methods';
@@ -59,7 +59,7 @@ class PresentationsPage extends React.Component {
 
         ev.preventDefault();
 
-        swal({
+        Swal.fire({
             title: T.translate("general.are_you_sure"),
             text: T.translate("presentations.remove_warning") + ' ' + presentation.title,
             type: "warning",
@@ -70,7 +70,7 @@ class PresentationsPage extends React.Component {
             if (result.value) {
                 deletePresentation(presentation.id);
             }
-        }).catch(swal.noop);
+        });
 
     }
 

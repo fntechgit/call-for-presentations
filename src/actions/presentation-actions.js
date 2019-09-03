@@ -27,7 +27,7 @@ import {
     putFile
 } from "openstack-uicore-foundation/lib/methods";
 import T from "i18n-react/dist/i18n-react";
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 import history from '../history'
 
 
@@ -257,7 +257,7 @@ const presentationErrorHandler = (err, res) => (dispatch) => {
 
     switch (code) {
         case 403:
-            swal("ERROR", T.translate("errors.user_not_authz"), "warning");
+            Swal.fire("ERROR", T.translate("errors.user_not_authz"), "warning");
             break;
         case 401:
             doLogin(window.location.pathname);
@@ -274,6 +274,6 @@ const presentationErrorHandler = (err, res) => (dispatch) => {
             ));
             break;
         default:
-            swal("ERROR", T.translate("errors.server_error"), "error");
+            Swal.fire("ERROR", T.translate("errors.server_error"), "error");
     }
 }

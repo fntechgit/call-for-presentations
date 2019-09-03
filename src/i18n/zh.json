@@ -107,7 +107,8 @@
   "event_type": {
     "Presentation": "演讲",
     "Panel": "小组讨论",
-    "Lightning Talk": "快闪说"
+    "Lightning Talk": "快闪说",
+    "Fishbowl": "Fishbowl"
   },
   "event_level": {
     "Advanced": "进阶级别",

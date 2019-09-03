@@ -16,7 +16,7 @@ import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import SubmitButtons from "./presentation-submit-buttons";
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
-import swal from "sweetalert2";
+import Swal from "sweetalert2";
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {
@@ -40,7 +40,7 @@ class PresentationSpeakersForm extends React.Component {
         ev.preventDefault();
 
         if (entity.speakers.length == 0) {
-            swal("Validation error", T.translate("edit_presentation.add_speaker_error"), "warning");
+            Swal.fire("Validation error", T.translate("edit_presentation.add_speaker_error"), "warning");
         } else {
             this.props.onSubmit(this.props.entity, 'review');
         }
