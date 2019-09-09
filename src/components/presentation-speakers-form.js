@@ -14,6 +14,7 @@
 import React from 'react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import SubmitButtons from "./presentation-submit-buttons";
+import { Exclusive } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
 import Swal from "sweetalert2";
@@ -205,9 +206,12 @@ class PresentationSpeakersForm extends React.Component {
                     <h3 className="limit-speakers">{T.translate("edit_presentation.max_speakers")}</h3>
                     }
 
-                    <div id="legal-other">
-                        <label>{T.translate("edit_presentation.speaker_declaimer")}</label>
-                    </div>
+                    <Exclusive name="legal-disclaimer-speakers">
+                        <div id="legal-other">
+                            <label>{T.translate("edit_presentation.speaker_declaimer")}</label>
+                        </div>
+                    </Exclusive>
+
                     <hr/>
                     <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} backStep="tags"/>
                 </form>

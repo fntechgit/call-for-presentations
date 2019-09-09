@@ -4,7 +4,7 @@
     "sign_out"                : "Sign out",
     "log_in"                  : "Log in",
     "not_logged_in"           : "You are not logged in. Please log in to continue:",
-    "title"                   : "Would you like to present at the Open Infrastructure Summit?",
+    "title"                   : "Would you like to present at the ",
     "steps_title"             : "Here are three steps you should take as a potential speaker:",
     "review_link"             : "Review the list of Summit Categories & Tracks.",
     "learn_link"              : "Learn about the selection process.",
@@ -155,6 +155,7 @@
     "add_speaker_error": "You need to add at least one speaker or moderator to the presentation.",
     "presentation_material": "Upload Presentation Material",
     "chair_comments": "Chair Comments",
+    "presentation_material": "Presentation Material",
     "placeholders": {
     }
   },

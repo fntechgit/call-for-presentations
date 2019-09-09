@@ -61,11 +61,12 @@ window.IDP_BASE_URL        = process.env['IDP_BASE_URL'];
 window.API_BASE_URL        = process.env['API_BASE_URL'];
 window.OAUTH2_CLIENT_ID    = process.env['OAUTH2_CLIENT_ID'];
 window.SCOPES              = process.env['SCOPES'];
+window.APP_CLIENT_NAME     = process.env['APP_CLIENT_NAME'];
 window.ALLOWED_USER_GROUPS = "";
 window.EXCLUSIVE_SECTIONS  = [];
 
-if (exclusiveSections.hasOwnProperty(process.env['APP_CLIENT_NAME'])) {
-    window.EXCLUSIVE_SECTIONS = exclusiveSections[process.env['APP_CLIENT_NAME']];
+if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
+    window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
 }
 
 class App extends React.PureComponent {
@@ -81,16 +82,24 @@ class App extends React.PureComponent {
     }
 
     render() {
-        let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member, backUrl, loading, publicSelectionPlan, publicSummit} = this.props;
-        let profile_pic = member ? member.pic : '';
+        let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member, speaker, backUrl, loading, publicSelectionPlan, publicSummit} = this.props;
+        let profile_pic = speaker ? speaker.member.pic : (member ? member.pic : '');
 
         let header_title = '';
         let header_subtitle = '';
+        let summit_logo = 'https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/www-assets-prod/Uploads/arrows.svg';
 
-        if(publicSummit && publicSelectionPlan) {
-            let end_date = formatEpoch(publicSelectionPlan.submission_end_date, 'MMM Do h:mm a');
-            header_title = `: ${publicSelectionPlan.name} ${publicSummit.name}`;
-            header_subtitle = `Accepting submissions until ${end_date} (${moment.tz.guess()})`;
+        if(publicSummit) {
+            summit_logo = (publicSummit.logo) ? publicSummit.logo : summit_logo;
+
+            if (publicSelectionPlan) {
+                let end_date = formatEpoch(publicSelectionPlan.submission_end_date, 'MMM Do h:mm a');
+                header_title = `: ${publicSelectionPlan.name} ${publicSummit.name}`;
+                header_subtitle = `Accepting submissions until ${end_date} (${moment.tz.guess()})`;
+            } else {
+                header_title = `: ${publicSummit.name}`;
+                header_subtitle = `SUBMISSION IS CLOSED`;
+            }
         }
 
         return (
@@ -106,7 +115,7 @@ class App extends React.PureComponent {
                     <div className="header">
                         <div className="header-title row">
                             <div className="col-md-3 col-xs-6 text-left">
-                                <img className="header-logo" src="https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/www-assets-prod/Uploads/arrows.svg" />
+                                <img className="header-logo" src={summit_logo} />
                             </div>
                             <div className="col-md-3 col-md-push-6 col-xs-6">
                                 <LanguageSelect language={language} />
@@ -123,7 +132,7 @@ class App extends React.PureComponent {
 
                     <React.Fragment>
                         {!isLoggedUser &&
-                            <LandingPage doLogin={this.onClickLogin.bind(this)}/>
+                            <LandingPage doLogin={this.onClickLogin.bind(this)} summit={publicSummit}/>
                         }
                         <Switch>
                             <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getUserInfo={getUserInfo} />
@@ -144,6 +153,7 @@ class App extends React.PureComponent {
 const mapStateToProps = ({ loggedUserState, baseState, landingState }) => ({
     isLoggedUser: loggedUserState.isLoggedUser,
     member: loggedUserState.member,
+    speaker: baseState.speaker,
     loading : baseState.loading,
     publicSummit: landingState.summit,
     publicSelectionPlan: landingState.selectionPlan

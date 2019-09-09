@@ -17,7 +17,7 @@ import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 import AffiliationsTable from './affiliationstable'
 import PresentationLinks from "./inputs/presentation-links";
-import { Input, TextEditor, UploadInput, RadioList, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput } from 'openstack-uicore-foundation/lib/components'
+import { Input, TextEditor, UploadInput, Exclusive, RadioList, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput } from 'openstack-uicore-foundation/lib/components'
 import {validate, scrollToError} from "../utils/methods";
 
 
@@ -195,35 +195,41 @@ class SpeakerForm extends React.Component {
                     </div>
                 </div>
                 }
-                <hr/>
-                <div className="row form-group">
-                    <div className="col-md-12">
-                        <label>{T.translate("edit_speaker.disclaimer")}</label><br/>
-                        {T.translate("edit_speaker.disclaimer_text")}
-                    </div>
-                </div>
-                <div className="row form-group speaker-bureau-wrapper">
-                    <div className="col-md-12">
-                        <label>{T.translate("edit_speaker.want_bureau")}</label><br/>
-                        {T.translate("edit_speaker.want_bureau_text")}
-                        <div className="checkboxes-div">
-                            <div className="form-check abc-checkbox">
-                                <input type="checkbox" id="available_for_bureau" checked={entity.available_for_bureau}
-                                       onChange={this.handleChange} className="form-check-input" />
-                                <label className="form-check-label" htmlFor="available_for_bureau">
-                                    {T.translate("edit_speaker.speaker_bureau")}
-                                </label>
-                            </div>
-                            <div className="form-check abc-checkbox">
-                                <input type="checkbox" id="willing_to_present_video" checked={entity.willing_to_present_video}
-                                       onChange={this.handleChange} className="form-check-input" />
-                                <label className="form-check-label" htmlFor="willing_to_present_video">
-                                    {T.translate("edit_speaker.video_conference")}
-                                </label>
+                <Exclusive name="speaker-recording-disclaimer">
+                    <div>
+                        <hr/>
+                        <div className="row form-group">
+                            <div className="col-md-12">
+                                <label>{T.translate("edit_speaker.disclaimer")}</label><br/>
+                                {T.translate("edit_speaker.disclaimer_text")}
                             </div>
                         </div>
                     </div>
-                </div>
+                </Exclusive>
+                <Exclusive name="speaker-bureau">
+                    <div className="row form-group speaker-bureau-wrapper">
+                        <div className="col-md-12">
+                            <label>{T.translate("edit_speaker.want_bureau")}</label><br/>
+                            {T.translate("edit_speaker.want_bureau_text")}
+                            <div className="checkboxes-div">
+                                <div className="form-check abc-checkbox">
+                                    <input type="checkbox" id="available_for_bureau" checked={entity.available_for_bureau}
+                                           onChange={this.handleChange} className="form-check-input" />
+                                    <label className="form-check-label" htmlFor="available_for_bureau">
+                                        {T.translate("edit_speaker.speaker_bureau")}
+                                    </label>
+                                </div>
+                                <div className="form-check abc-checkbox">
+                                    <input type="checkbox" id="willing_to_present_video" checked={entity.willing_to_present_video}
+                                           onChange={this.handleChange} className="form-check-input" />
+                                    <label className="form-check-label" htmlFor="willing_to_present_video">
+                                        {T.translate("edit_speaker.video_conference")}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Exclusive>
                 <hr/>
                 <div className="row form-group">
                     <div className="col-md-12">
@@ -276,32 +282,36 @@ class SpeakerForm extends React.Component {
                         </div>
                     </div>
                 </div>
-                <hr/>
-                <h3>{T.translate("edit_speaker.role")}</h3>
-                <div className="row form-group">
-                    <div className="col-md-12">
-                        <label>{T.translate("edit_speaker.org_role")}</label>
-                        <CheckboxList
-                            id="organizational_roles"
-                            value={entity.organizational_roles}
-                            options={roleOptions}
-                            onChange={this.handleChange}
-                            error={this.hasErrors('organizational_roles')}
-                            allowOther
-                        />
+                <Exclusive name="speaker-role">
+                    <div>
+                        <hr/>
+                        <h3>{T.translate("edit_speaker.role")}</h3>
+                        <div className="row form-group">
+                            <div className="col-md-12">
+                                <label>{T.translate("edit_speaker.org_role")}</label>
+                                <CheckboxList
+                                    id="organizational_roles"
+                                    value={entity.organizational_roles}
+                                    options={roleOptions}
+                                    onChange={this.handleChange}
+                                    error={this.hasErrors('organizational_roles')}
+                                    allowOther
+                                />
+                            </div>
+                            <div className="col-md-12 org-has-cloud-wrapper">
+                                <label>{T.translate("edit_speaker.opertating_os")}</label>
+                                <RadioList
+                                    id="org_has_cloud"
+                                    inline
+                                    value={entity.org_has_cloud}
+                                    onChange={this.handleChange}
+                                    options={[{value: 1, label: T.translate("general.yes")}, {value: 0, label: T.translate("general.no")}]}
+                                    error={this.hasErrors('org_has_cloud')}
+                                />
+                            </div>
+                        </div>
                     </div>
-                    <div className="col-md-12 org-has-cloud-wrapper">
-                        <label>{T.translate("edit_speaker.opertating_os")}</label>
-                        <RadioList
-                            id="org_has_cloud"
-                            inline
-                            value={entity.org_has_cloud}
-                            onChange={this.handleChange}
-                            options={[{value: 1, label: T.translate("general.yes")}, {value: 0, label: T.translate("general.no")}]}
-                            error={this.hasErrors('org_has_cloud')}
-                        />
-                    </div>
-                </div>
+                </Exclusive>
 
                 <div className="row">
                     <div className="col-md-12 submit-buttons">

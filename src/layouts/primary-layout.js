@@ -60,7 +60,7 @@ class PrimaryLayout extends React.Component {
             <div className="primary-layout container-fluid">
                 <div className="row">
                     <div className="col-md-3">
-                        <NavMenu user={loggedUser} active={this.getActiveMenu()}/>
+                        <NavMenu user={loggedUser} active={this.getActiveMenu()} exclusiveSections={window.EXCLUSIVE_SECTIONS}/>
                     </div>
                     <div className="col-md-9">
                         <main id="page-wrap">

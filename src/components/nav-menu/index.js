@@ -42,19 +42,21 @@ class NavMenu extends React.Component {
 
     render() {
 
-        let {user} = this.props;
+        let {user, exclusiveSections} = this.props;
         let {activeItem, open} = this.state;
 
         return (
             <div id="app_menu" >
                 <div id="app_menu_body">
-                    <p className="user-img" style={{backgroundImage: 'url(' + user.pic + ')'}} ></p>
+                    <p className="user-img" style={{backgroundImage: `url('${user.pic}')`}} ></p>
                     <h3 className="user-name">{user.first_name} {user.last_name}</h3>
                     <ul className="items">
                         { MenuItemsDefinitions.map(it => (
                             <MenuItem
                                 key={it.name}
-                                {...it}
+                                name={it.name}
+                                iconClass={it.iconClass}
+                                show={it.show ? it.show : exclusiveSections.includes(it.name)}
                                 onClick={(e) => this.onMenuItemClick(e, it)}
                                 active={activeItem == it.name}
                             />

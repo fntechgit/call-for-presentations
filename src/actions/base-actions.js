@@ -193,7 +193,7 @@ export const selectionPlanErrorHandler = (err, res) => (dispatch) => {
             doLogin(window.location.pathname);
             break;
         case 404:
-            dispatch({type: SELECTION_CLOSED});
+            dispatch(createAction(SELECTION_CLOSED)({}));
             break;
         case 412:
             for (var [key, value] of Object.entries(err.response.body.errors)) {

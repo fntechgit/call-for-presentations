@@ -1,9 +1,17 @@
 # each app name contains the fields that are eclusive for that app only
 
 openstack:
-  - nada
+  - os-landing
+  - tracks_guide
+  - selection_process
+  - speaker-recording-disclaimer
+  - speaker-bureau
+  - speaker-role
+  - legal-disclaimer-speakers
+  - thank-you-body
 
 fntech:
+  - fntech-landing
   - presentation-attachment
 
 

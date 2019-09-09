@@ -93,6 +93,11 @@ class PresentationReviewForm extends React.Component {
                     <label>{T.translate("edit_presentation.attending_media")}</label><br/>
                     {entity.attending_media ? 'Yes' : 'No'}
                 </div>
+                <div className="item">
+                    <label>{T.translate("edit_presentation.presentation_material")}</label><br/>
+                    {entity.slides.map(f => <a href={f.link}>{f.name}</a>)}
+                </div>
+
 
                 {entity.moderator &&
                 <div className="main-panel-section confirm-block">
@@ -100,7 +105,7 @@ class PresentationReviewForm extends React.Component {
                     <label>Moderators</label>
                     <div className="row">
                         <div className="col-lg-2">
-                            <p className="user-img" style={{ backgroundImage: `url(${entity.moderator.pic})` }}></p>
+                            <p className="user-img" style={{ backgroundImage: `url('${entity.moderator.pic}')` }}></p>
                         </div>
                         <div className="col-lg-10">
                             <label>Moderator</label>
@@ -126,7 +131,7 @@ class PresentationReviewForm extends React.Component {
                     { entity.speakers.map(s => (
                         <div className="row" key={'speaker_review_'+s.id}>
                             <div className="col-lg-2">
-                                <p className="user-img" style={{ backgroundImage: `url(${s.pic})` }}></p>
+                                <p className="user-img" style={{ backgroundImage: `url('${s.pic}')` }}></p>
                             </div>
                             <div className="col-lg-10">
                                 <label>Speaker</label>

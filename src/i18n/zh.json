@@ -155,6 +155,7 @@
     "add_speaker_error": "您需要添加至少一名演讲者到演讲议题中来。",
     "presentation_material": "Upload Presentation Material",
     "chair_comments": "Chair Comments",
+    "presentation_material": "Presentation Material",
     "placeholders": {
     }
   },

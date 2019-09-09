@@ -15,6 +15,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import { RawHTML } from 'openstack-uicore-foundation/lib/components'
+import { Exclusive } from 'openstack-uicore-foundation/lib/components'
 
 import '../styles/preview-presentation-page.less';
 
@@ -51,9 +52,11 @@ class ThankYouPresentationPage extends React.Component {
                     <p>
                         {T.translate("thankyou_presentation.saved")}
                     </p>
+                    <Exclusive name="thank-you-body">
                     <p>
                         {T.translate("thankyou_presentation.body")}
                     </p>
+                    </Exclusive>
 
                     <hr/>
                     <div className="row submit-buttons">
