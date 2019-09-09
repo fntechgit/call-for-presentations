@@ -152,7 +152,7 @@
     "review_subtitle": "Your presentation is submitted and awaiting review by Track Chairs",
     "permission_denied": "Permission Denied",
     "no_edit": "You are not allowed to edit this presentation",
-    "add_speaker_error": "You need to add at least one speaker to the presentation.",
+    "add_speaker_error": "You need to add at least one speaker or moderator to the presentation.",
     "presentation_material": "Upload Presentation Material",
     "chair_comments": "Chair Comments",
     "placeholders": {
