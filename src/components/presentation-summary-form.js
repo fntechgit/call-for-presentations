@@ -108,7 +108,7 @@ class PresentationSummaryForm extends React.Component {
                 required: 'This field is required.',
                 maxLength: {value: 1000, msg: 'Value exeeded max limit of 100 characters'}
             },
-            links: { links: 'Link is not valid' },
+            links: { links: 'Link is not valid. Links must start with http:// or https://' },
         }
 
         validate(entity, rules, errors)

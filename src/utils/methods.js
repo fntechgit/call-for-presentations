@@ -114,7 +114,7 @@ export const validate = (entity, rules, errors) => {
 
         if (rules[field].hasOwnProperty('links')) {
             for (let [idx, link] of entity[field].entries()) {
-                if (link && !validator.isURL(link)) {
+                if (link && !validator.isURL(link,{require_protocol: true})) {
                     errors['link_'+idx] = rules[field].links;
                     result = false;
                     break;
