@@ -14,6 +14,7 @@
 import React from 'react';
 import T from "i18n-react/dist/i18n-react";
 import history from '../history'
+import {getMarketingValue} from "./marketing-setting";
 
 export default class SubmitButtons extends React.Component {
 
@@ -28,12 +29,14 @@ export default class SubmitButtons extends React.Component {
         let {onSubmit, presentation, step} = this.props;
         let showBack = this.props.hasOwnProperty('backStep');
         let submitButton = '';
+        const review_tc_note = getMarketingValue('spkmgmt_review_tc_note');
 
         if (step == 'review') {
             if (presentation.isSubmitted()) {
-                submitButton = <button disabled className="btn btn-default pull-right" >
-                    {T.translate("general.already_submitted")} &nbsp;
-                </button>;
+                submitButton =
+                    <button disabled className="btn btn-default pull-right" >
+                        {review_tc_note || T.translate("general.already_submitted")} &nbsp;
+                    </button>;
             } else {
                 submitButton = <button onClick={onSubmit} className="btn btn-primary btn-save pull-right" >
                     {T.translate("general.confirm_submission")} &nbsp;

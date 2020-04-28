@@ -26,10 +26,11 @@ import {getBackURL, formatEpoch, doLogout, initLogOut, doLogin, getUserInfo, onU
 import T from 'i18n-react';
 import history from './history'
 import CustomErrorPage from "./pages/custom-error-page";
-import {getCurrentSelectionPlanPublic, getCurrentSummitPublic, resetLoading} from './actions/base-actions';
+import {getCurrentSelectionPlanPublic, getCurrentSummitPublic, resetLoading, getMarketingSettings} from './actions/base-actions';
 import LandingPage from "./pages/landing-page";
 import LanguageSelect from "./components/language-select";
 import exclusiveSections from 'js-yaml-loader!./exclusive-sections.yml';
+import {getMarketingValue} from "./components/marketing-setting";
 
 
 // here is set by default user lang as en
@@ -57,13 +58,14 @@ try {
 
 // move all env var to global scope so ui core has access to this
 
-window.IDP_BASE_URL        = process.env['IDP_BASE_URL'];
-window.API_BASE_URL        = process.env['API_BASE_URL'];
-window.OAUTH2_CLIENT_ID    = process.env['OAUTH2_CLIENT_ID'];
-window.SCOPES              = process.env['SCOPES'];
-window.APP_CLIENT_NAME     = process.env['APP_CLIENT_NAME'];
-window.ALLOWED_USER_GROUPS = "";
-window.EXCLUSIVE_SECTIONS  = [];
+window.IDP_BASE_URL             = process.env['IDP_BASE_URL'];
+window.API_BASE_URL             = process.env['API_BASE_URL'];
+window.MARKETING_API_BASE_URL   = process.env['MARKETING_API_BASE_URL'];
+window.OAUTH2_CLIENT_ID         = process.env['OAUTH2_CLIENT_ID'];
+window.SCOPES                   = process.env['SCOPES'];
+window.APP_CLIENT_NAME          = process.env['APP_CLIENT_NAME'];
+window.ALLOWED_USER_GROUPS      = "";
+window.EXCLUSIVE_SECTIONS       = [];
 
 if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
     window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
@@ -73,7 +75,8 @@ class App extends React.PureComponent {
 
     componentWillMount() {
         this.props.resetLoading();
-        this.props.getCurrentSummitPublic();
+        this.props.getCurrentSummitPublic()
+            .then(({response}) => this.props.getMarketingSettings(response.id));
         this.props.getCurrentSelectionPlanPublic();
     }
 
@@ -85,22 +88,28 @@ class App extends React.PureComponent {
         let { isLoggedUser, onUserAuth, doLogout, getUserInfo, member, speaker, backUrl, loading, publicSelectionPlan, publicSummit} = this.props;
         let profile_pic = speaker ? speaker.member.pic : (member ? member.pic : '');
 
-        let header_title = '';
+        let header_title = T.translate("landing.call_for_presentations");
         let header_subtitle = '';
         let summit_logo = 'https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/www-assets-prod/Uploads/arrows.svg';
+        const mkt_header_title = getMarketingValue('spkmgmt_header_title');
+        const mkt_header_logo = getMarketingValue('spkmgmt_header_logo');
+
 
         if(publicSummit) {
             summit_logo = (publicSummit.logo) ? publicSummit.logo : summit_logo;
 
             if (publicSelectionPlan) {
                 let end_date = formatEpoch(publicSelectionPlan.submission_end_date, 'MMM Do h:mm a');
-                header_title = `: ${publicSelectionPlan.name} ${publicSummit.name}`;
+                header_title += `: ${publicSelectionPlan.name} ${publicSummit.name}`;
                 header_subtitle = `Accepting submissions until ${end_date} (${moment.tz.guess()})`;
             } else {
-                header_title = `: ${publicSummit.name}`;
+                header_title += `: ${publicSummit.name}`;
                 header_subtitle = `SUBMISSION IS CLOSED`;
             }
         }
+
+        header_title = mkt_header_title ? mkt_header_title : header_title;
+        summit_logo = mkt_header_logo ? mkt_header_logo : summit_logo;
 
         return (
             <Router history={history}>
@@ -122,7 +131,7 @@ class App extends React.PureComponent {
                                 <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} initLogOut={initLogOut}/>
                             </div>
                             <div className="col-md-6 col-md-pull-3 col-xs-12 title">
-                                <span>{T.translate("landing.call_for_presentations")} {header_title}</span>
+                                <span>{header_title}</span>
                                 <br/>
                                 <span className="subtitle"> {header_subtitle} </span>
                             </div>
@@ -165,5 +174,6 @@ export default connect(mapStateToProps, {
     getUserInfo,
     resetLoading,
     getCurrentSummitPublic,
-    getCurrentSelectionPlanPublic
+    getCurrentSelectionPlanPublic,
+    getMarketingSettings
 })(App)

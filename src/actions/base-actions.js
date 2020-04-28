@@ -39,6 +39,7 @@ export const RECEIVE_EVENT_CATEGORY         = 'RECEIVE_EVENT_CATEGORY';
 export const RESET_LOADER                   = 'RESET_LOADER';
 export const RECEIVE_SUMMIT_PUBLIC          = 'RECEIVE_SUMMIT_PUBLIC';
 export const RECEIVE_SELECTION_PLAN_PUBLIC  = 'RECEIVE_SELECTION_PLAN_PUBLIC';
+export const RECEIVE_MARKETING_SETTINGS     = 'RECEIVE_MARKETING_SETTINGS';
 
 
 export const resetLoading = () => (dispatch, getState) => {
@@ -170,6 +171,22 @@ export const loadEventCategory = () => (dispatch, getState) => {
             dispatch(stopLoading());
         }
     );
+};
+
+
+export const getMarketingSettings = (summitId) => (dispatch, getState) => {
+
+    let params = {
+        per_page: 100,
+        page: 1
+    };
+
+    return getRequest(
+        null,
+        createAction(RECEIVE_MARKETING_SETTINGS),
+        `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
+        authErrorHandler
+    )(params)(dispatch);
 };
 
 

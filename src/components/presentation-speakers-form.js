@@ -18,6 +18,7 @@ import { Exclusive } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
 import Swal from "sweetalert2";
+import {getMarketingValue} from "./marketing-setting";
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {
@@ -112,6 +113,8 @@ class PresentationSpeakersForm extends React.Component {
         let {summit, entity, presentation, step} = this.props;
         let {speakerInput} = this.state;
         let eventType = summit.event_types.find(t => t.id == entity.type_id);
+        const speaker_subtitle_1 = getMarketingValue('spkmgmt_speaker_subtitle_1');
+        const speaker_subtitle_2 = getMarketingValue('spkmgmt_speaker_subtitle_2');
 
         let canAddSpeakers = (eventType && eventType.max_speakers > entity.speakers.length);
         let canAddModerator = (eventType && eventType.max_moderators && !entity.moderator);
@@ -125,10 +128,11 @@ class PresentationSpeakersForm extends React.Component {
             addMoreParticipantsLabel = T.translate("edit_presentation.more_speaker");
         }
 
+
         return (
             <div>
-                <h3>{T.translate("edit_presentation.speaker_included")}</h3>
-                <p>{T.translate("edit_presentation.speaker_important")}</p>
+                <h3>{speaker_subtitle_1 || T.translate("edit_presentation.speaker_included")}</h3>
+                <p>{speaker_subtitle_2 || T.translate("edit_presentation.speaker_important")}</p>
 
                 <hr/>
                 <div className="speakers">

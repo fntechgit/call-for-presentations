@@ -12,12 +12,13 @@
  **/
 
 import { START_LOADING, STOP_LOADING, LOGOUT_USER } from "openstack-uicore-foundation/lib/actions";
-import {RECEIVE_SUMMIT_PUBLIC, RECEIVE_SELECTION_PLAN_PUBLIC, SELECTION_CLOSED} from "../actions/base-actions";
+import {RECEIVE_SUMMIT_PUBLIC, RECEIVE_SELECTION_PLAN_PUBLIC, SELECTION_CLOSED, RECEIVE_MARKETING_SETTINGS} from "../actions/base-actions";
 
 
 const DEFAULT_STATE = {
     selectionPlan: null,
     summit: null,
+    marketingSettings: null,
 }
 
 const landingReducer = (state = DEFAULT_STATE, action) => {
@@ -37,6 +38,10 @@ const landingReducer = (state = DEFAULT_STATE, action) => {
             let entity = {...payload.response};
 
             return {...state, summit: entity};
+        }
+        break;
+        case RECEIVE_MARKETING_SETTINGS: {
+            return {...state, marketingSettings: payload.response.data};
         }
         break;
         case SELECTION_CLOSED: {

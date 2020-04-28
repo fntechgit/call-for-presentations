@@ -16,6 +16,7 @@ import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import SubmitButtons from "./presentation-submit-buttons";
 import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
+import {getMarketingValue} from "./marketing-setting";
 
 class PresentationReviewForm extends React.Component {
     constructor(props) {
@@ -48,10 +49,12 @@ class PresentationReviewForm extends React.Component {
         let {entity, track, presentation, step} = this.props;
         let title = '';
         let subtitle = '';
+        const review_title = getMarketingValue('spkmgmt_review_title');
+        const review_subtitle = getMarketingValue('spkmgmt_review_subtitle');
 
         if (presentation.isSubmitted()) {
-            title = T.translate("edit_presentation.review_title");
-            subtitle = T.translate("edit_presentation.review_subtitle");
+            title = review_title || T.translate("edit_presentation.review_title");
+            subtitle = review_subtitle || T.translate("edit_presentation.review_subtitle");
         } else {
             title = T.translate("edit_presentation.confirm_title");
             subtitle = T.translate("edit_presentation.review_important");
