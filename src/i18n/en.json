@@ -73,6 +73,12 @@
     "already_submitted"   : "Your presentation is submitted and awaiting review by Track Chairs",
     "confirm_submission"  : "Confirm my Submission",
     "got_it"              : "Got it",
+    "select_summit"       : "Select a Summit...",
+    "drop_files"          : "Drop images or click to select files to upload.",
+    "drag_and_drop"       : "Drag and Drop to sort items.",
+    "other"               : "Other",
+    "type_something"      : "Type something and press tab or enter.",
+    "remove_warning"      : "Are you sure you want to delete this?",
     "placeholders": {
       "select_one": "-- Select one --"
     }

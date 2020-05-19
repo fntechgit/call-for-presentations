@@ -141,7 +141,7 @@ body {
       &:hover {
         background-color: #EEEEEE;
       }
-      .selected--flag--option {
+      .flag-select__option {
         text-align: center;
         img {
           height: auto;
@@ -150,27 +150,32 @@ body {
           left: 1px;
           display: none;
         }
-        .country-label {
+        .flag-select__option__label {
           padding: 0;
-          top: 12px;
+          top: 8px;
+          left: -1px;
         }
       }
-      .country-label {
-        padding: 0;
-      }
-      .flag-options {
+      .flag-select__options {
         margin-top: 30px;
         padding: 0;
         height: 60px;
+        
         img {
           height: auto;
           width: 30px;
           left: 1px;
           display: none;
         }
+
+        .flag-select__option__label {
+          padding: 0;
+          top: 2px;
+          left: -1px;
+        }
       }
-      .arrow-down {
-        display: none;
+      .flag-select__btn::after {
+        content: none;
       }
     }
   }
