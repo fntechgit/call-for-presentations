@@ -143,13 +143,13 @@ class PresentationSummaryForm extends React.Component {
         let event_types_ddl = summit.event_types
             .filter(et => et.should_be_available_on_cfp)
             .map(et => {
-                return ({value: et.id, label: T.translate("event_type."+et.name), type: et.class_name});
+                return ({value: et.id, label: et.name, type: et.class_name});
         });
 
         let event_types_limits = '';
         for (var event_type of event_types_ddl) {
             let ev_type_obj = summit.event_types.find(ev => ev.id == event_type.value);
-            event_types_limits += T.translate("event_type."+ev_type_obj.name) + ': ' + T.translate("edit_presentation.format_max_speakers") + ' ' + ev_type_obj.max_speakers;
+            event_types_limits += ev_type_obj.name + ': ' + T.translate("edit_presentation.format_max_speakers") + ' ' + ev_type_obj.max_speakers;
             if (ev_type_obj.max_moderators) {
                 event_types_limits += ', ' + T.translate("edit_presentation.format_max_moderators") + ' ' + ev_type_obj.max_moderators;
             }
