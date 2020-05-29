@@ -41,6 +41,7 @@ export const PRESENTATION_DELETED           = 'PRESENTATION_DELETED';
 export const PRESENTATION_COMPLETED         = 'PRESENTATION_COMPLETED';
 export const PRESENTATION_MATERIAL_ATTACHED = 'PRESENTATION_MATERIAL_ATTACHED';
 export const PRESENTATION_MATERIAL_DELETED  = 'PRESENTATION_MATERIAL_DELETED';
+export const SUMMIT_DOCS_RECEIVED           = 'SUMMIT_DOCS_RECEIVED';
 
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
@@ -53,7 +54,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let params = {
         access_token : accessToken,
-        expand: 'track_groups, speakers, presentation_materials'
+        expand: 'track_groups, speakers, presentation_materials, type'
     };
 
     return getRequest(
@@ -61,8 +62,9 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
         createAction(RECEIVE_PRESENTATION),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/events/${presentationId}`,
         presentationErrorHandler
-    )(params)(dispatch).then(() => {
+    )(params)(dispatch).then((payload) => {
             dispatch(stopLoading());
+            return payload.response;
         }
     );
 };
@@ -277,3 +279,28 @@ const presentationErrorHandler = (err, res) => (dispatch) => {
             Swal.fire("ERROR", T.translate("errors.server_error"), "error");
     }
 }
+
+export const getSummitDocs = (eventTypeName) => (dispatch, getState) => {
+    let { loggedUserState, baseState } = getState();
+    let { accessToken }     = loggedUserState;
+    let { summit }          = baseState;
+
+    dispatch(startLoading());
+
+    let params = {
+        access_token : accessToken,
+        'filter[]': [`event_type==${eventTypeName}`]
+    };
+
+    return getRequest(
+        null,
+        createAction(SUMMIT_DOCS_RECEIVED),
+        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/summit-documents`,
+        authErrorHandler
+    )(params)(dispatch).then(() => {
+            dispatch(stopLoading());
+        }
+    );
+};
+
+

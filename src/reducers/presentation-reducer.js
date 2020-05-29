@@ -18,7 +18,8 @@ import
     PRESENTATION_UPDATED,
     PRESENTATION_ADDED,
     PRESENTATION_COMPLETED,
-    PRESENTATION_MATERIAL_ATTACHED
+    PRESENTATION_MATERIAL_ATTACHED,
+    SUMMIT_DOCS_RECEIVED
 } from '../actions/presentation-actions';
 
 import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
@@ -66,6 +67,7 @@ const DEFAULT_STATE = {
         {name: 'REVIEW', step: 4},
         {name: 'COMPLETE', step: 5}
     ],
+    summitDocs: [],
     errors: {}
 }
 
@@ -110,6 +112,10 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
                 entity.material = entity.slides[0];
                 entity.material_preview = entity.material.link;
                 entity.material_file = null;
+            }
+
+            if(type) {
+                entity.type_id = type.id;
             }
 
             entity.progressNum = state.steps.find(s => s.name == entity.progress).step;
@@ -165,6 +171,12 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
         case MODERATOR_REMOVED: {
             let {moderatorId} = payload;
             return {...state, entity: {...state.entity, moderator: null}};
+        }
+        break;
+        case SUMMIT_DOCS_RECEIVED: {
+            let summitDocs = [...payload.response.data];
+
+            return {...state, summitDocs};
         }
         break;
         case VALIDATE: {

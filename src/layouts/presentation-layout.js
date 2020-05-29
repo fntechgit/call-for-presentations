@@ -15,7 +15,7 @@ import React from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import T from "i18n-react/dist/i18n-react";
-import { getPresentation, resetPresentation } from '../actions/presentation-actions'
+import { getPresentation, resetPresentation, getSummitDocs } from '../actions/presentation-actions'
 import EditPresentationPage from '../pages/edit-presentation-page'
 import PreviewPresentationPage from '../pages/preview-presentation-page'
 import ThankYouPresentationPage from '../pages/thankyou-presentation-page'
@@ -30,7 +30,12 @@ class PresentationLayout extends React.Component {
         if (!presentationId) {
             this.props.resetPresentation();
         } else {
-            this.props.getPresentation(presentationId);
+            this.props.getPresentation(presentationId)
+                .then(presentation => {
+                    if (presentation.type) {
+                        this.props.getSummitDocs(presentation.type.name);
+                    }
+                });
         }
     }
 
@@ -38,8 +43,13 @@ class PresentationLayout extends React.Component {
         let oldId = this.props.match.params.presentation_id;
         let newId = newProps.match.params.presentation_id;
 
-        if (newId && oldId != newId) {
-            this.props.getPresentation(newId);
+        if (newId && oldId !== newId) {
+            this.props.getPresentation(newId)
+                .then(presentation => {
+                    if (presentation.type) {
+                        this.props.getSummitDocs(presentation.type.name);
+                    }
+                });
         }
     }
 
@@ -85,7 +95,8 @@ export default connect(
     mapStateToProps,
     {
         getPresentation,
-        resetPresentation
+        resetPresentation,
+        getSummitDocs
     }
 )(PresentationLayout)
 

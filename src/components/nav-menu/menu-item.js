@@ -18,7 +18,7 @@ export default class MenuItem extends React.Component {
 
 
     render() {
-        let {name, iconClass, show, onClick, active} = this.props;
+        let {name, iconClass, show, onClick, active, label} = this.props;
 
         if(!show) return null;
 
@@ -27,7 +27,7 @@ export default class MenuItem extends React.Component {
         return (
             <li>
                 <a id={name + '-menu'} className={"menu-item" + active_class} onClick={onClick} >
-                    {T.translate('menu.' + name)}
+                    {label || T.translate('menu.' + name)}
                     <i className={iconClass + ' fa'} />
                 </a>
             </li>

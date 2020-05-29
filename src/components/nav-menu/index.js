@@ -18,6 +18,8 @@ import history from '../../history'
 import MenuItem from './menu-item'
 import MenuItemsDefinitions from './menu-items-definition'
 import '../../styles/menu.less';
+import {connect} from "react-redux";
+import {getPresentation, resetPresentation} from "../../actions/presentation-actions";
 
 class NavMenu extends React.Component {
 
@@ -42,7 +44,7 @@ class NavMenu extends React.Component {
 
     render() {
 
-        let {user, exclusiveSections} = this.props;
+        let {user, exclusiveSections, summitDocs} = this.props;
         let {activeItem, open} = this.state;
 
         return (
@@ -61,6 +63,17 @@ class NavMenu extends React.Component {
                                 active={activeItem == it.name}
                             />
                         ))}
+                        {summitDocs.map(doc => (
+                            <MenuItem
+                                key={doc.name}
+                                name={doc.name}
+                                label={doc.label}
+                                iconClass="fa-download"
+                                show
+                                onClick={(e) => window.open(doc.file, '_blank')}
+                                active={false}
+                            />
+                        ))}
                     </ul>
                 </div>
             </div>
@@ -69,4 +82,10 @@ class NavMenu extends React.Component {
 
 }
 
-export default withRouter(NavMenu);
+const mapStateToProps = ({ presentationState }) => ({
+    summitDocs: presentationState.summitDocs
+})
+
+export default withRouter(connect(
+    mapStateToProps,
+)(NavMenu));
