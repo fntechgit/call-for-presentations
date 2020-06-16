@@ -12,14 +12,15 @@
  **/
 
 import { LOGOUT_USER } from 'openstack-uicore-foundation/lib/actions';
-import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED } from '../actions/presentations-actions';
-import { PRESENTATION_DELETED } from '../actions/presentation-actions'
+import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED, SUMMIT_DOCS_RECEIVED } from '../actions/presentations-actions';
+import {PRESENTATION_DELETED} from '../actions/presentation-actions'
 
 const DEFAULT_STATE = {
     presentations_created: [],
     presentations_speaker: [],
-    presentations_moderator: []
-}
+    presentations_moderator: [],
+    summitDocs: [],
+};
 
 const presentationsReducer = (state = DEFAULT_STATE, action) => {
     const { type, payload } = action
@@ -65,6 +66,12 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
                 presentations_speaker: new_presentations_speaker,
                 presentations_moderator: new_presentations_moderator
             };
+        }
+        break;
+        case SUMMIT_DOCS_RECEIVED: {
+            let summitDocs = [...payload.response.data];
+
+            return {...state, summitDocs};
         }
         break;
         default:

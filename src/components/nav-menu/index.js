@@ -82,8 +82,8 @@ class NavMenu extends React.Component {
 
 }
 
-const mapStateToProps = ({ presentationState }) => ({
-    summitDocs: presentationState.summitDocs
+const mapStateToProps = ({ presentationsState }) => ({
+    summitDocs: presentationsState.summitDocs
 })
 
 export default withRouter(connect(

@@ -11,26 +11,21 @@
  * limitations under the License.
  **/
 
-import T from "i18n-react/dist/i18n-react";
 import {
     getRequest,
-    putRequest,
-    postRequest,
-    deleteRequest,
     createAction,
     stopLoading,
     startLoading,
-    showMessage,
-    showSuccessMessage,
     authErrorHandler
 } from "openstack-uicore-foundation/lib/methods";
 
 export const CREATED_RECEIVED       = 'CREATED_RECEIVED';
 export const SPEAKER_RECEIVED       = 'SPEAKER_RECEIVED';
 export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
+export const SUMMIT_DOCS_RECEIVED   = 'SUMMIT_DOCS_RECEIVED';
 
 
-export const getAllPresentations = () => (dispatch, getState) => {
+export const getAllPresentations = () => async (dispatch, getState) => {
 
     let { loggedUserState, baseState } = getState();
     let { accessToken } = loggedUserState;
@@ -38,14 +33,15 @@ export const getAllPresentations = () => (dispatch, getState) => {
 
     dispatch(startLoading());
 
-    let created = dispatch(getCreatorPresentations(summitId, accessToken));
+    let created = await dispatch(getCreatorPresentations(summitId, accessToken));
 
-    let speaker = dispatch(getSpeakerPresentations(summitId, accessToken));
+    let speaker = await dispatch(getSpeakerPresentations(summitId, accessToken));
 
-    let moderator = dispatch(getModeratorPresentations(summitId, accessToken));
+    let moderator = await dispatch(getModeratorPresentations(summitId, accessToken));
 
-    Promise.all([created, speaker, moderator]).then(() => {
+    return Promise.all([created, speaker, moderator]).then(() => {
             dispatch(stopLoading());
+            return [...created.response.data, ...speaker.response.data, ...moderator.response.data];
         }
     );
 };
@@ -53,7 +49,8 @@ export const getAllPresentations = () => (dispatch, getState) => {
 
 export const getCreatorPresentations = (summitId, accessToken) => (dispatch, getState) => {
     let params = {
-        access_token : accessToken
+        access_token : accessToken,
+        expand: 'type'
     };
 
     return getRequest(
@@ -66,10 +63,11 @@ export const getCreatorPresentations = (summitId, accessToken) => (dispatch, get
 
 export const getSpeakerPresentations = (summitId, accessToken) => (dispatch, getState) => {
     let params = {
-        access_token : accessToken
+        access_token : accessToken,
+        expand: 'type'
     };
 
-    getRequest(
+    return getRequest(
         null,
         createAction(SPEAKER_RECEIVED),
         `${window.API_BASE_URL}/api/v1/speakers/me/presentations/speaker/summits/${summitId}`,
@@ -80,13 +78,40 @@ export const getSpeakerPresentations = (summitId, accessToken) => (dispatch, get
 
 export const getModeratorPresentations = (summitId, accessToken) => (dispatch, getState) => {
     let params = {
-        access_token : accessToken
+        access_token : accessToken,
+        expand: 'type'
     };
 
-    getRequest(
+    return getRequest(
         null,
         createAction(MODERATOR_RECEIVED),
         `${window.API_BASE_URL}/api/v1/speakers/me/presentations/moderator/summits/${summitId}`,
         authErrorHandler
     )(params)(dispatch);
-}
+};
+
+export const getSummitDocs = (presentations) => (dispatch, getState) => {
+    let { loggedUserState, baseState } = getState();
+    let { accessToken }     = loggedUserState;
+    let { summit }          = baseState;
+
+    dispatch(startLoading());
+
+    let eventTypes = presentations.map(p => p.type.name);
+    eventTypes = eventTypes.filter((t,i) => eventTypes.indexOf(t) === i);
+
+    let params = {
+        access_token : accessToken,
+        'filter[]': [`event_type==${eventTypes.join('||')}`]
+    };
+
+    return getRequest(
+        null,
+        createAction(SUMMIT_DOCS_RECEIVED),
+        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/summit-documents`,
+        authErrorHandler
+    )(params)(dispatch).then(() => {
+            dispatch(stopLoading());
+        }
+    );
+};

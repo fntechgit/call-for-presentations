@@ -41,7 +41,6 @@ export const PRESENTATION_DELETED           = 'PRESENTATION_DELETED';
 export const PRESENTATION_COMPLETED         = 'PRESENTATION_COMPLETED';
 export const PRESENTATION_MATERIAL_ATTACHED = 'PRESENTATION_MATERIAL_ATTACHED';
 export const PRESENTATION_MATERIAL_DELETED  = 'PRESENTATION_MATERIAL_DELETED';
-export const SUMMIT_DOCS_RECEIVED           = 'SUMMIT_DOCS_RECEIVED';
 
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
@@ -249,7 +248,7 @@ const normalizeEntity = (entity) => {
     normalizedEntity.tags = tags;
 
     return normalizedEntity;
-}
+};
 
 const presentationErrorHandler = (err, res) => (dispatch) => {
     let code = err.status;
@@ -278,29 +277,6 @@ const presentationErrorHandler = (err, res) => (dispatch) => {
         default:
             Swal.fire("ERROR", T.translate("errors.server_error"), "error");
     }
-}
-
-export const getSummitDocs = (eventTypeName) => (dispatch, getState) => {
-    let { loggedUserState, baseState } = getState();
-    let { accessToken }     = loggedUserState;
-    let { summit }          = baseState;
-
-    dispatch(startLoading());
-
-    let params = {
-        access_token : accessToken,
-        'filter[]': [`event_type==${eventTypeName}`]
-    };
-
-    return getRequest(
-        null,
-        createAction(SUMMIT_DOCS_RECEIVED),
-        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/summit-documents`,
-        authErrorHandler
-    )(params)(dispatch).then(() => {
-            dispatch(stopLoading());
-        }
-    );
 };
 
 

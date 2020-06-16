@@ -15,7 +15,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
-import { getAllPresentations } from '../actions/presentations-actions';
+import { getAllPresentations, getSummitDocs } from '../actions/presentations-actions';
 import { deletePresentation } from '../actions/presentation-actions';
 import { formatEpoch } from '../utils/methods';
 import Presentation from '../model/presentation'
@@ -31,7 +31,11 @@ class PresentationsPage extends React.Component {
     }
 
     componentWillMount () {
-        this.props.getAllPresentations();
+        this.props.getAllPresentations().then(presentations => {
+            if (presentations.length > 0) {
+                this.props.getSummitDocs(presentations);
+            }
+        });
     }
 
     handleNewPresentation(ev) {
@@ -252,6 +256,7 @@ export default connect (
     mapStateToProps,
     {
         getAllPresentations,
-        deletePresentation
+        deletePresentation,
+        getSummitDocs
     }
 )(PresentationsPage);
