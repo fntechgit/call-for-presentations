@@ -112,8 +112,8 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
                 entity.material_file = null;
             }
 
-            if(type) {
-                entity.type_id = type.id;
+            if(entity.type) {
+                entity.type_id = entity.type.id;
             }
 
             entity.progressNum = state.steps.find(s => s.name == entity.progress).step;
