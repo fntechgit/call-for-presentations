@@ -15,42 +15,65 @@ import React from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import NavMenu from '../components/nav-menu/index'
-import { loadCurrentSelectionPlan, loadCurrentSummit } from '../actions/base-actions'
 import PresentationsPage from '../pages/presentations-page'
 import ProfilePage from '../pages/profile-page'
 import SelectionProcessPage from '../pages/selection-process-page'
 import TracksGuidePage from '../pages/tracks-guide-page'
 import PresentationLayout from './presentation-layout'
+import { getAllFromSummit } from '../actions/base-actions';
 
 class PrimaryLayout extends React.Component {
 
-    componentWillMount () {
-        this.props.loadCurrentSelectionPlan();
-        this.props.loadCurrentSummit();
+    componentWillMount() {
+        let summitSlug = this.props.match.params.summit_slug;
+        console.log(`PrimaryLayout::componentDidMount summitSlug ${summitSlug}`);
+    }
+
+    componentDidMount() {
+        let summitSlug = this.props.match.params.summit_slug;
+        console.log(`PrimaryLayout::componentDidMount summitSlug ${summitSlug}`);
+        if (this.props.summit == null || summitSlug !== this.props.summit.slug) {
+            this.props.getAllFromSummit(summitSlug);
+        }
+    }
+
+    componentWillReceiveProps(newProps) {
+        let oldSummitSlug = this.props.match.params.summit_slug;
+        let newSummitSlug = newProps.match.params.summit_slug;
+        console.log(`PrimaryLayout::componentWillReceiveProps oldSummitSlug ${oldSummitSlug} newSummitSlug ${newSummitSlug}`);
+        if(newSummitSlug === 'profile') return;
+        if(newSummitSlug === 'presentations') return;
+        if (newSummitSlug !== oldSummitSlug) {
+            if (newSummitSlug) {
+                this.props.getAllFromSummit(newSummitSlug);
+            }
+        }
     }
 
     getActiveMenu() {
-        let {location} = this.props;
+        let {location, summit} = this.props;
         switch(location.pathname) {
-            case '/app/presentations':
+            case `/app/${summit.slug}/presentations`:
                 return 'presentations';
                 break;
             case '/app/profile':
                 return 'profile';
-                break
+                break;
         }
     }
 
     render(){
+        console.log(`PrimaryLayout::render`);
+
         let { location, speaker, member, summit, loading } = this.props;
 
-        if((!speaker || !speaker.id) && location.pathname != '/app/profile' && !loading) {
+        if((!speaker || !speaker.id) && location.pathname !== '/app/profile' && !loading) {
             return (
                 <Redirect exact to={{ pathname: '/app/profile' }}  />
             );
         }
 
-        if (!summit) return (<div></div>);
+        if (!summit) return null;
 
         let loggedUser = (speaker && speaker.id) ? speaker : member;
 
@@ -65,13 +88,13 @@ class PrimaryLayout extends React.Component {
                     <div className="col-md-9">
                         <main id="page-wrap">
                             <Switch>
-                                <Route strict exact path="/app/presentations" component={PresentationsPage}/>
-                                <Route path="/app/presentations/:presentation_id(\d+)" component={PresentationLayout}/>
-                                <Route path="/app/presentations/new" component={PresentationLayout}/>
+                                <Route strict exact path="/app/:summit_slug/presentations" component={PresentationsPage}/>
+                                <Route path="/app/:summit_slug/presentations/:presentation_id(\d+)" component={PresentationLayout}/>
+                                <Route path="/app/:summit_slug/presentations/new" component={PresentationLayout}/>
                                 <Route exact path="/app/profile" component={ProfilePage}/>
                                 <Route exact path="/app/selection_process" component={SelectionProcessPage}/>
                                 <Route exact path="/app/tracks_guide" component={TracksGuidePage}/>
-                                <Route render={props => (<Redirect to="/app/presentations"/>)}/>
+                                <Route render={props => (<Redirect to={"/app/"+summit.slug+"/presentations"}/>)}/>
                             </Switch>
                         </main>
                     </div>
@@ -86,14 +109,14 @@ const mapStateToProps = ({ loggedUserState, baseState }) => ({
     member: loggedUserState.member,
     speaker: baseState.speaker,
     summit: baseState.summit,
+    selectionPlan: baseState.selectionPlan,
     loading: baseState.loading
 })
 
 export default connect(
     mapStateToProps,
     {
-        loadCurrentSelectionPlan,
-        loadCurrentSummit
+        getAllFromSummit
     }
 )(PrimaryLayout)
 

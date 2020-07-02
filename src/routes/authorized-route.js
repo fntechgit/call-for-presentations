@@ -20,11 +20,12 @@ class AuthorizedRoute extends React.Component {
     }
 
     render() {
-        const { component: Component, isLoggedUser,currentSummit, ...rest } = this.props;
+        const { component: Component, isLoggedUser, ...rest } = this.props;
         return (
             <Route {...rest} render={props => {
                 let { location } = this.props;
                 let backUrl = location.pathname;
+                let summit_slug = this.props.computedMatch.params.summit_slug;
                 if(location.search != null && location.search != null){
                     backUrl += location.search
                 }
@@ -34,10 +35,10 @@ class AuthorizedRoute extends React.Component {
                 }
 
                 return isLoggedUser
-                    ? <Component currentSummit={currentSummit} {...props} />
+                    ? <Component {...props} />
                     : <Redirect
                         to={{
-                            pathname: `/?BackUrl=${encodeURIComponent(backUrl)}`,
+                            pathname: `/${summit_slug}/?BackUrl=${encodeURIComponent(backUrl)}`,
                             state: { from: location }
                         }}
                     />

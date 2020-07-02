@@ -33,10 +33,10 @@ class ThankYouPresentationPage extends React.Component {
     }
 
     onDone(ev) {
-        let {history} = this.props;
+        let {history, summit} = this.props;
         ev.preventDefault();
 
-        history.push(`/app/presentations`);
+        history.push(`/app/${summit.slug}/presentations`);
     }
 
     render() {
@@ -74,6 +74,7 @@ class ThankYouPresentationPage extends React.Component {
 
 const mapStateToProps = ({ baseState, presentationState }) => ({
     selectionPlan : baseState.selectionPlan,
+    summit:baseState.summit,
     ...presentationState
 })
 

@@ -35,7 +35,6 @@ export const RECEIVE_SPEAKER_PERMISSION     = 'RECEIVE_SPEAKER_PERMISSION';
 export const REQUEST_SPEAKER_PERMISSION     = 'REQUEST_SPEAKER_PERMISSION';
 export const SPEAKER_PERMISSION_REQUESTED   = 'SPEAKER_PERMISSION_REQUESTED';
 export const RECEIVE_SPEAKER                = 'RECEIVE_SPEAKER';
-export const REQUEST_SPEAKER                = 'REQUEST_SPEAKER';
 export const RESET_SPEAKER_FORM             = 'RESET_SPEAKER_FORM';
 export const UPDATE_SPEAKER                 = 'UPDATE_SPEAKER';
 export const SPEAKER_UPDATED                = 'SPEAKER_UPDATED';
@@ -47,7 +46,6 @@ export const MODERATOR_REMOVED              = 'MODERATOR_REMOVED';
 export const PIC_ATTACHED                   = 'PIC_ATTACHED';
 
 export const RECEIVE_SPEAKER_PROFILE        = 'RECEIVE_SPEAKER_PROFILE';
-export const REQUEST_SPEAKER_PROFILE        = 'REQUEST_SPEAKER_PROFILE';
 export const RESET_PROFILE_FORM             = 'RESET_PROFILE_FORM';
 export const UPDATE_SPEAKER_PROFILE         = 'UPDATE_SPEAKER_PROFILE';
 export const SPEAKER_PROFILE_UPDATED        = 'SPEAKER_PROFILE_UPDATED';
@@ -82,11 +80,12 @@ export const getSpeaker = (speakerId) => (dispatch, getState) => {
 
 export const getSpeakerPermission = (presentationId, speakerId, speakerType) => (dispatch, getState) => {
 
-    let { loggedUserState, profileState } = getState();
-    let { accessToken }     = loggedUserState;
+    let { loggedUserState, profileState, baseState } = getState();
+    let { accessToken } = loggedUserState;
+    let { summit } = baseState;
 
     if (speakerId == profileState.entity.id) {
-        history.push(`/app/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
+        history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
         return;
     }
 
@@ -107,7 +106,7 @@ export const getSpeakerPermission = (presentationId, speakerId, speakerType) => 
             dispatch(stopLoading());
 
             if (payload.response.approved) {
-                history.push(`/app/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
+                history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
             } else {
                 Swal.fire({
                     title: T.translate("edit_speaker.auth_pending"),
@@ -168,17 +167,15 @@ export const requestSpeakerPermission = () => (dispatch, getState) => {
 
 }
 
-
 export const resetSpeakerForm = (email = '') => (dispatch, getState) => {
     dispatch(createAction(RESET_SPEAKER_FORM)({email}));
 };
 
-
-
 export const saveSpeaker = (entity, type) => (dispatch, getState) => {
-    let { loggedUserState, presentationState } = getState();
-    let { accessToken }     = loggedUserState;
-    let presentationId      = presentationState.entity.id;
+    let { loggedUserState, presentationState, baseState } = getState();
+    let { accessToken } = loggedUserState;
+    let { summit } = baseState;
+    let presentationId = presentationState.entity.id;
 
     dispatch(startLoading());
 
@@ -224,7 +221,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
             .then((payload) => {
                 dispatch(showMessage(
                     success_message,
-                    () => { history.push(`/app/presentations/${presentationId}/speakers`) }
+                    () => { history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers`) }
                 ));
             });
 
@@ -256,7 +253,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
             .then((payload) => {
                 dispatch(showMessage(
                     success_message,
-                    () => { history.push(`/app/presentations/${presentationId}/speakers`) }
+                    () => { history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers`) }
                 ));
             });
     }

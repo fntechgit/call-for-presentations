@@ -30,18 +30,31 @@ class PresentationsPage extends React.Component {
         this.handleNewPresentation = this.handleNewPresentation.bind(this);
     }
 
-    componentWillMount () {
-        this.props.getAllPresentations().then(presentations => {
+    componentDidMount () {
+        let {summit} = this.props;
+        this.props.getAllPresentations(summit.id).then(presentations => {
             if (presentations.length > 0) {
-                this.props.getSummitDocs(presentations);
+                this.props.getSummitDocs(presentations, summit.id);
             }
         });
     }
 
+    componentWillReceiveProps(newProps) {
+        let oldSummit = this.props.summit;
+        let newSummit = newProps.summit;
+        if (oldSummit.id !== newSummit.id) {
+            this.props.getAllPresentations(newSummit.id).then(presentations => {
+                if (presentations.length > 0) {
+                    this.props.getSummitDocs(presentations, newSummit.id);
+                }
+            });
+        }
+    }
+
     handleNewPresentation(ev) {
-        let {history} = this.props;
+        let {history, summit} = this.props;
         ev.preventDefault();
-        history.push(`/app/presentations/new/summary`);
+        history.push(`/app/${summit.slug}/presentations/new/summary`);
     }
 
     handleEditPresentation(presentation, ev) {
@@ -52,10 +65,10 @@ class PresentationsPage extends React.Component {
     }
 
     handleReviewPresentation(presentation, ev) {
-        let {history} = this.props;
+        let {history, summit} = this.props;
         ev.preventDefault();
 
-        history.push(`/app/presentations/${presentation.id}/preview#comments`);
+        history.push(`/app/${summit.slug}/presentations/${presentation.id}/preview#comments`);
     }
 
     handleDeletePresentation(presentation, ev) {
@@ -85,12 +98,12 @@ class PresentationsPage extends React.Component {
             presentations_moderator,
             selectionPlan,
             summit,
-            cfpOpen,
+            submissionIsClosed,
             loggedSpeaker,
             loading
         } = this.props;
 
-        if (loading) return(<div></div>);
+        if (loading ||summit == null ||  selectionPlan == null) return(<div></div>);
 
         return (
             <div className="page-wrap" id="presentations-page">
@@ -99,14 +112,14 @@ class PresentationsPage extends React.Component {
                         <div className="col-md-6 your-title">
                             <h2> {T.translate("presentations.presentations")}</h2>
                         </div>
-                        {cfpOpen &&
                         <div className="col-md-6 text-right add-pres-wrapper">
-                            <button className="btn btn-success add-presentation-btn"
-                                    onClick={this.handleNewPresentation}>
-                                {T.translate("presentations.add_presentation")}
-                            </button>
+                            {!submissionIsClosed &&
+                                <button className="btn btn-success add-presentation-btn"
+                                        onClick={this.handleNewPresentation}>
+                                    {T.translate("presentations.add_presentation")}
+                                </button>
+                            }
                         </div>
-                        }
                     </div>
                 </div>
                 <div className="body">
@@ -119,7 +132,7 @@ class PresentationsPage extends React.Component {
                             <table className="table">
                                 <tbody>
                                 { presentations_created.map(p => {
-                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, cfpOpen);
+                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker);
 
                                     return (
                                         <tr key={'presentation_' + p.id}>
@@ -140,7 +153,7 @@ class PresentationsPage extends React.Component {
                                                 {presentation.getSelectionPlanName()}
                                             </td>
                                             <td className="text-right">
-                                                {cfpOpen && presentation.canDelete() &&
+                                                {!submissionIsClosed && presentation.canDelete() &&
                                                 <button className="btn btn-danger btn-xs" onClick={this.handleDeletePresentation.bind(this, p)}>
                                                     {T.translate("general.delete")}
                                                 </button>
@@ -169,7 +182,7 @@ class PresentationsPage extends React.Component {
                             <table className="table">
                                 <tbody>
                                 { presentations_speaker.map(p => {
-                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, cfpOpen);
+                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker);
 
                                     return (
                                         <tr key={'presentation_' + p.id}>
@@ -206,7 +219,7 @@ class PresentationsPage extends React.Component {
                             <table className="table">
                                 <tbody>
                                 { presentations_moderator.map(p => {
-                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, cfpOpen);
+                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker);
 
                                     return (
                                         <tr key={'presentation_' + p.id}>
@@ -241,15 +254,15 @@ class PresentationsPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ presentationsState, loggedUserState, baseState }) => ({
+const mapStateToProps = ({ presentationsState, baseState }) => ({
     selectionPlan : baseState.selectionPlan,
-    cfpOpen : baseState.cfpOpen,
     summit : baseState.summit,
     presentations_created : presentationsState.presentations_created,
     presentations_speaker : presentationsState.presentations_speaker,
     presentations_moderator : presentationsState.presentations_moderator,
     loggedSpeaker : baseState.speaker,
-    loading: baseState.loading
+    loading: baseState.loading,
+    submissionIsClosed: baseState.submissionIsClosed,
 })
 
 export default connect (

@@ -60,10 +60,10 @@ class PresentationSpeakersForm extends React.Component {
     }
 
     handleSpeakerClick(speakerId, speakerType, ev) {
-        let {history, entity} = this.props;
+        let {history, entity, summit} = this.props;
         ev.preventDefault();
 
-        history.push(`/app/presentations/${entity.id}/speakers/${speakerId}`, {type: speakerType});
+        history.push(`/app/${summit.slug}/presentations/${entity.id}/speakers/${speakerId}`, {type: speakerType});
     }
 
     handleSpeakerRemove(speakerId, ev) {
@@ -84,13 +84,11 @@ class PresentationSpeakersForm extends React.Component {
         ev.preventDefault();
 
         this.props.onSpeakerEdit(entity.id, speakerId, speakerType);
-
-        //history.push(`/app/presentations/${entity.id}/speakers/${speakerId}`, {type: speakerType});
     }
 
     handleAddSpeaker(speakerType, ev) {
         let {speaker} = this.state;
-        let {history, entity, onAddSpeaker, onAddModerator} = this.props;
+        let {history, entity, onAddSpeaker, onAddModerator, summit} = this.props;
 
         ev.preventDefault();
 
@@ -103,7 +101,7 @@ class PresentationSpeakersForm extends React.Component {
 
             this.setState({speakerInput: null});
         } else if (speaker.value) {
-            history.push(`/app/presentations/${entity.id}/speakers/new`, { email: speaker.value, type: speakerType });
+            history.push(`/app/${summit.slug}/presentations/${entity.id}/speakers/new`, { email: speaker.value, type: speakerType });
         }
 
     }
@@ -127,7 +125,6 @@ class PresentationSpeakersForm extends React.Component {
         } else if (canAddParticipant) {
             addMoreParticipantsLabel = T.translate("edit_presentation.more_speaker");
         }
-
 
         return (
             <div>

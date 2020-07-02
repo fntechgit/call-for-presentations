@@ -17,12 +17,12 @@ import presentationsReducer from './reducers/presentations-reducer'
 import speakerReducer from './reducers/speaker-reducer'
 import profileReducer from './reducers/profile-reducer'
 import presentationReducer from './reducers/presentation-reducer'
-import landingReducer from './reducers/landing-reducer'
 import { loggedUserReducer } from "openstack-uicore-foundation/lib/reducers"
 
 import thunk from 'redux-thunk';
 import { persistStore, persistCombineReducers } from 'redux-persist'
-import storage from 'redux-persist/es/storage' // default: localStorage if web, AsyncStorage if react-native
+import storage from 'redux-persist/es/storage'
+import summitSelectionReducer from "./reducers/summit-selection-reducer"; // default: localStorage if web, AsyncStorage if react-native
 
 const config = {
     key: 'root',
@@ -36,7 +36,7 @@ const reducers = persistCombineReducers(config, {
     speakerState: speakerReducer,
     profileState: profileReducer,
     presentationState: presentationReducer,
-    landingState: landingReducer
+    summitSelectionState: summitSelectionReducer,
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

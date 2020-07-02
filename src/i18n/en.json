@@ -1,10 +1,14 @@
 {
+  "summit_selection_page":{
+    "title": "Select a show to start",
+    "not_available_summits": "Submission Process is closed"
+  },
   "landing": {
     "call_for_presentations"  : "Call for Presentations",
     "sign_out"                : "Sign out",
     "log_in"                  : "Log in",
     "not_logged_in"           : "You are not logged in. Please log in to continue:",
-    "title"                   : "Would you like to present at the ",
+    "title"                   : "Would you like to present at the {summit_name} ?",
     "steps_title"             : "Here are three steps you should take as a potential speaker:",
     "review_link"             : "Review the list of Summit Categories & Tracks.",
     "learn_link"              : "Learn about the selection process.",
@@ -14,7 +18,9 @@
     "or_join_us"              : "Or Join Us",
     "join_us"                 : "Join the Foundation",
     "speaker_profile_required"      : "Speaker Profile Required",
-    "speaker_profile_required_text" : "Please create your speaker profile to continue."
+    "speaker_profile_required_text" : "Please create your speaker profile to continue.",
+    "subtitle": "Accepting submissions until {end_date} {when}",
+    "closed": "SUBMISSION IS CLOSED"
   },
   "errors": {
     "user_not_authz"              : "Hold on. Your user is not authorized!.",

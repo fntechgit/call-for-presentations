@@ -44,8 +44,8 @@ class PresentationLayout extends React.Component {
     }
 
     render(){
-        let { match, entity, summit, selectionPlan, speaker, history, loading, location, cfpOpen } = this.props;
-        let presentation = new Presentation(entity, summit, selectionPlan, speaker, cfpOpen);
+        let { match, entity, summit, selectionPlan, speaker, history, loading, location } = this.props;
+        let presentation = new Presentation(entity, summit, selectionPlan, speaker);
         let isNew = !match.params.presentation_id;
 
         if (!loading && !isNew && !entity.id) return(<div></div>);
@@ -76,7 +76,6 @@ const mapStateToProps = ({ loggedUserState, baseState, presentationState }) => (
     speaker: baseState.speaker,
     selectionPlan: baseState.selectionPlan,
     summit: baseState.summit,
-    cfpOpen : baseState.cfpOpen,
     loading: baseState.loading,
     ...presentationState
 })

@@ -59,10 +59,10 @@ class EditPresentationPage extends React.Component {
 
     render() {
         let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation,
-            completePresentation, getSpeakerPermission, cfpOpen, loggedSpeaker } = this.props;
+            completePresentation, getSpeakerPermission, loggedSpeaker } = this.props;
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
-        let presentation = new Presentation(entity, summit, selectionPlan, loggedSpeaker, cfpOpen);
+        let presentation = new Presentation(entity, summit, selectionPlan, loggedSpeaker);
 
         if (!summit.event_types || !summit.tracks) return (<div></div>);
 
@@ -141,8 +141,7 @@ const mapStateToProps = ({ baseState, presentationState }) => ({
     tagGroups: baseState.tagGroups,
     loading : baseState.loading,
     loggedSpeaker : baseState.speaker,
-    cfpOpen : baseState.cfpOpen,
-    ...presentationState
+     ...presentationState
 })
 
 export default connect (

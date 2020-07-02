@@ -17,8 +17,8 @@ import store from '../store';
 
 
 export const getMarketingValue = (key) => {
-    const {landingState} = store.getState();
-    const {marketingSettings} = landingState;
+    const {baseState} = store.getState();
+    const {marketingSettings} = baseState;
 
     if (!marketingSettings) return null;
     const setting = marketingSettings.find(s => s.key === key);
@@ -65,8 +65,8 @@ const MarketingTag = ({type, key, className, settings}) => {
 
 };
 
-const mapStateToProps = ({ landingState }) => ({
-    settings: landingState.marketingSettings
+const mapStateToProps = ({ baseState }) => ({
+    settings: baseState.marketingSettings
 });
 
 export default connect(mapStateToProps, {})(MarketingTag)

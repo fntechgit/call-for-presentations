@@ -1,10 +1,14 @@
 {
+  "summit_selection_page":{
+    "title": "Select a show to start",
+    "not_available_summits": "Submission Process is closed"
+  },
   "landing": {
     "call_for_presentations"  : "征集演讲",
     "sign_out"                : "退出登录",
     "log_in"                  : "登录",
     "not_logged_in"           : "您尚未登录。请登录以继续:",
-    "title"                   : "想要在开源基础设施峰会上演讲吗？",
+    "title"                   : "想要在开源基础设施峰会上演讲吗 {summit_name} ？",
     "steps_title"             : "您可以通过下面三个步骤成为一名潜在的演讲者",
     "review_link"             : "查看峰会议题类别以及专题的列表",
     "learn_link"              : "了解筛选过程",
@@ -14,7 +18,9 @@
     "or_join_us"              : "或者加入我们",
     "join_us"                 : "加入基金会",
     "speaker_profile_required"      : "Speaker Profile Required",
-    "speaker_profile_required_text" : "Please create your speaker profile to continue."
+    "speaker_profile_required_text" : "Please create your speaker profile to continue.",
+    "subtitle": "Accepting submissions until {end_date} {when}",
+    "closed": "SUBMISSION IS CLOSED"
   },
   "errors": {
     "user_not_authz"              : "坚持，稍等。您的用户未获得授权！",

@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 OpenStack Foundation
+ * Copyright 2020 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -10,29 +10,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-
 import React from 'react'
-import { Route, Redirect } from 'react-router-dom'
+import {Redirect, Route} from 'react-router-dom'
 
-class DefaultRoute extends React.Component {
+class LandingRoute extends React.Component {
 
     render() {
-        const { isLoggedUser,summit, ...rest } = this.props;
+
+        const { location, component: Component, isLoggedUser, doLogin, ...rest } = this.props;
+        let summit_slug = this.props.computedMatch.params.summit_slug;
         return (
+
             <Route {...rest} render={props => {
-                if(isLoggedUser)
-                    return (<Redirect
-                        exact
-                        to={{
-                            pathname: `/app/${summit.slug}/presentations`,
-                            state: { from: props.location }
-                        }}
-                    />)
-                return null;
+                return isLoggedUser ? <Redirect
+                    to={{
+                        pathname: `/app/${summit_slug}`,
+                        state: { from: location }
+                    }}
+                />:
+                 <Component doLogin={doLogin} {...props} />
             }} />
         )
     }
 }
 
-
-export default DefaultRoute;
+export default LandingRoute;

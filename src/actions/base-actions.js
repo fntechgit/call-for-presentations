@@ -15,98 +15,124 @@ import T from "i18n-react/dist/i18n-react";
 import Swal from "sweetalert2";
 import {
     getRequest,
-    putRequest,
-    postRequest,
-    deleteRequest,
     createAction,
     stopLoading,
     startLoading,
     showMessage,
-    showSuccessMessage,
-    getBackURL,
     authErrorHandler,
     doLogin,
     initLogOut
 } from "openstack-uicore-foundation/lib/methods";
 
-import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
+import history from '../history'
+import { VALIDATE } from 'openstack-uicore-foundation/lib/actions';
 
-export const SELECTION_PLAN_RECEIVED        = 'SELECTION_PLAN_RECEIVED';
 export const SELECTION_CLOSED               = 'SELECTION_CLOSED';
-export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
 export const RECEIVE_TAG_GROUPS             = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY         = 'RECEIVE_EVENT_CATEGORY';
 export const RESET_LOADER                   = 'RESET_LOADER';
-export const RECEIVE_SUMMIT_PUBLIC          = 'RECEIVE_SUMMIT_PUBLIC';
-export const RECEIVE_SELECTION_PLAN_PUBLIC  = 'RECEIVE_SELECTION_PLAN_PUBLIC';
+export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
+export const RECEIVE_SELECTION_PLAN         = 'RECEIVE_SELECTION_PLAN';
 export const RECEIVE_MARKETING_SETTINGS     = 'RECEIVE_MARKETING_SETTINGS';
+export const RECEIVE_AVAILABLE_SUMMITS      = 'RECEIVE_AVAILABLE_SUMMITS';
+export const ERROR_RECEIVE_SUMMIT           = 'ERROR_RECEIVE_SUMMIT';
+export const CLEAR_SUMMIT                   = 'CLEAR_SUMMIT';
 
 
 export const resetLoading = () => (dispatch, getState) => {
     dispatch(createAction(RESET_LOADER)({}));
 }
 
-export const loadCurrentSelectionPlan = () => (dispatch, getState) => {
+export const clearCurrentSummit = () => (dispatch, getState) => {
+    dispatch(createAction(CLEAR_SUMMIT)({}));
+};
 
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+
+export const getCurrentSelectionPlanPublic = (summit_id) => (dispatch, getState) => {
 
     let params = {
-        access_token : accessToken,
         expand: 'summit,track_groups'
     };
 
-    dispatch(startLoading());
-
     return getRequest(
         null,
-        createAction(SELECTION_PLAN_RECEIVED),
-        `${window.API_BASE_URL}/api/v1/summits/all/selection-plans/current/submission`,
+        createAction(RECEIVE_SELECTION_PLAN),
+        `${window.API_BASE_URL}/api/public/v1/summits/${summit_id}/selection-plans/current/submission`,
         selectionPlanErrorHandler
-    )(params)(dispatch).then((payload) => {
-
-            dispatch(getTagGroups(payload.response.summit.id)).then(() => { dispatch(stopLoading()); });
-
-        }
-    );
+    )(params)(dispatch);
 };
 
-export const loadCurrentSummit = () => (dispatch, getState) => {
 
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
+    console.log(`getAllFromSummit summitSlug ${summitSlug}`);
+    dispatch(startLoading());
+    return getCurrentSummitPublic(summitSlug)(dispatch, getState)
+        .then(({response}) => getCurrentSelectionPlanPublic(response.id)(dispatch, getState))
+        .then(({response}) => getMarketingSettings(response.summit.id)(dispatch, getState))
+        .then(() => { dispatch(stopLoading()); });
+}
+
+const currentSummitErrorHandler = (err, res) => (dispatch, state) => {
+    let code = err.status;
+    let msg = '';
+
+    dispatch(stopLoading());
+
+    switch (code) {
+        case 404:
+            msg = "";
+            if (err.response.body && err.response.body.message) msg = err.response.body.message;
+            else if (err.response.error && err.response.error.message) msg = err.response.error.message;
+            else msg = err.message;
+            // clear state
+            dispatch(createAction(ERROR_RECEIVE_SUMMIT)({}));
+            Swal.fire("Not Found", msg, "warning");
+            // back selection page
+            history.push('/');
+            break;
+        default:
+            Swal.fire("ERROR", T.translate("errors.server_error"), "error");
+            break
+    }
+}
+
+export const getCurrentSummitPublic = (id) => (dispatch, getState) => {
 
     let params = {
-        access_token : accessToken,
         expand: 'event_types,tracks'
     };
 
     return getRequest(
         null,
         createAction(RECEIVE_SUMMIT),
-        `${window.API_BASE_URL}/api/v1/summits/current`,
-        authErrorHandler
+        `${window.API_BASE_URL}/api/public/v1/summits/all/${id}`,
+        currentSummitErrorHandler
     )(params)(dispatch);
 }
 
-export const getCurrentSelectionPlanPublic = () => (dispatch, getState) => {
+export const getAvailableSummits = () => (dispatch, getState) => {
+
+    dispatch(startLoading());
+
+    // depends on user clocks
+    const secondsSinceEpoch = Math.round(Date.now() / 1000);
+
+    let filters = [
+        `submission_begin_date=>${secondsSinceEpoch}`,
+        `submission_end_date>=${secondsSinceEpoch}`,
+        'selection_plan_enabled==1'
+    ];
+
+    let params = {
+        'filter[]': filters,
+    };
 
     return getRequest(
         null,
-        createAction(RECEIVE_SELECTION_PLAN_PUBLIC),
-        `${window.API_BASE_URL}/api/public/v1/summits/all/selection-plans/current/submission`,
-        selectionPlanErrorHandler
-    )({})(dispatch);
-};
-
-export const getCurrentSummitPublic = () => (dispatch, getState) => {
-
-    return getRequest(
-        null,
-        createAction(RECEIVE_SUMMIT_PUBLIC),
-        `${window.API_BASE_URL}/api/public/v1/summits/all/current`,
+        createAction(RECEIVE_AVAILABLE_SUMMITS),
+        `${window.API_BASE_URL}/api/public/v1/summits/all`,
         authErrorHandler
-    )({})(dispatch);
+    )(params)(dispatch).then(() => { dispatch(stopLoading()); });
 }
 
 export const getSummitById = (summitId) => (dispatch, getState) => {
@@ -147,7 +173,6 @@ export const getTagGroups = (summitId) => (dispatch, getState) => {
     )(params)(dispatch);
 };
 
-
 export const loadEventCategory = () => (dispatch, getState) => {
 
     let { loggedUserState, baseState, presentationState } = getState();
@@ -173,7 +198,6 @@ export const loadEventCategory = () => (dispatch, getState) => {
     );
 };
 
-
 export const getMarketingSettings = (summitId) => (dispatch, getState) => {
 
     let params = {
@@ -188,7 +212,6 @@ export const getMarketingSettings = (summitId) => (dispatch, getState) => {
         authErrorHandler
     )(params)(dispatch);
 };
-
 
 export const selectionPlanErrorHandler = (err, res) => (dispatch) => {
     let code = err.status;

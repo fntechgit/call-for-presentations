@@ -38,21 +38,11 @@ class PreviewPresentationPage extends React.Component {
         }
     }
 
-    /*componentDidUpdate() {
-        let url      = URI(window.location.href);
-        let fragment = url.fragment();
-
-        if (fragment.indexOf("comments") !== -1) {
-            let commentNode = document.getElementById("comments");
-            if (commentNode) commentNode.scrollIntoView({behavior: 'smooth'});
-        }
-    }*/
-
     onDone(ev) {
-        let {history} = this.props;
+        let {history, summit} = this.props;
         ev.preventDefault();
 
-        history.push(`/app/presentations`);
+        history.push(`/app/${summit.slug}/presentations`);
     }
 
     render() {
@@ -175,6 +165,7 @@ class PreviewPresentationPage extends React.Component {
 
 const mapStateToProps = ({ baseState, presentationState }) => ({
     selectionPlan : baseState.selectionPlan,
+    summit: baseState.summit,
     loading : baseState.loading,
     ...presentationState
 })

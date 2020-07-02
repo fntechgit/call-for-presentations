@@ -31,28 +31,28 @@ import Swal from "sweetalert2";
 import history from '../history'
 
 
-export const RECEIVE_PRESENTATION           = 'RECEIVE_PRESENTATION';
-export const REQUEST_PRESENTATION           = 'REQUEST_PRESENTATION';
-export const RESET_PRESENTATION             = 'RESET_PRESENTATION';
-export const UPDATE_PRESENTATION            = 'UPDATE_PRESENTATION';
-export const PRESENTATION_UPDATED           = 'PRESENTATION_UPDATED';
-export const PRESENTATION_ADDED             = 'PRESENTATION_ADDED';
-export const PRESENTATION_DELETED           = 'PRESENTATION_DELETED';
-export const PRESENTATION_COMPLETED         = 'PRESENTATION_COMPLETED';
+export const RECEIVE_PRESENTATION = 'RECEIVE_PRESENTATION';
+export const REQUEST_PRESENTATION = 'REQUEST_PRESENTATION';
+export const RESET_PRESENTATION = 'RESET_PRESENTATION';
+export const UPDATE_PRESENTATION = 'UPDATE_PRESENTATION';
+export const PRESENTATION_UPDATED = 'PRESENTATION_UPDATED';
+export const PRESENTATION_ADDED = 'PRESENTATION_ADDED';
+export const PRESENTATION_DELETED = 'PRESENTATION_DELETED';
+export const PRESENTATION_COMPLETED = 'PRESENTATION_COMPLETED';
 export const PRESENTATION_MATERIAL_ATTACHED = 'PRESENTATION_MATERIAL_ATTACHED';
-export const PRESENTATION_MATERIAL_DELETED  = 'PRESENTATION_MATERIAL_DELETED';
+export const PRESENTATION_MATERIAL_DELETED = 'PRESENTATION_MATERIAL_DELETED';
 
 
 export const getPresentation = (presentationId) => (dispatch, getState) => {
 
-    let { loggedUserState, baseState } = getState();
-    let { accessToken } = loggedUserState;
-    let { summit }      = baseState;
+    let {loggedUserState, baseState} = getState();
+    let {accessToken} = loggedUserState;
+    let {summit} = baseState;
 
     dispatch(startLoading());
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
         expand: 'track_groups, speakers, presentation_materials, type'
     };
 
@@ -73,21 +73,21 @@ export const resetPresentation = () => (dispatch, getState) => {
 };
 
 export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
-    let { loggedUserState, baseState } = getState();
-    let { accessToken }     = loggedUserState;
-    let { summit }          = baseState;
+    let {loggedUserState, baseState} = getState();
+    let {accessToken} = loggedUserState;
+    let {summit} = baseState;
 
     dispatch(startLoading());
 
     let normalizedEntity = normalizeEntity(entity);
 
     let params = {
-        access_token : accessToken
+        access_token: accessToken
     };
 
     if (entity.id) {
 
-        putRequest(
+        return putRequest(
             createAction(UPDATE_PRESENTATION),
             createAction(PRESENTATION_UPDATED),
             `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}`,
@@ -105,44 +105,44 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
             })
             .then((payload) => {
                 dispatch(stopLoading());
-                history.push(`/app/presentations/${payload.response.id}/${nextStep}`);
+                history.push(`/app/${summit.slug}/presentations/${payload.response.id}/${nextStep}`);
             });
 
-    } else {
-
-        postRequest(
-            createAction(UPDATE_PRESENTATION),
-            createAction(PRESENTATION_ADDED),
-            `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations`,
-            normalizedEntity,
-            authErrorHandler,
-            entity
-        )(params)(dispatch)
-            .then((payload) => {
-                if (entity.material_file) {
-                    dispatch(savePresentationMaterial(payload.response, null, entity.material_file));
-                }
-                return payload;
-            })
-            .then((payload) => {
-                dispatch(stopLoading());
-                history.push(`/app/presentations/${payload.response.id}/tags`);
-            });
     }
+
+    return postRequest(
+        createAction(UPDATE_PRESENTATION),
+        createAction(PRESENTATION_ADDED),
+        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations`,
+        normalizedEntity,
+        authErrorHandler,
+        entity
+    )(params)(dispatch)
+        .then((payload) => {
+            if (entity.material_file) {
+                dispatch(savePresentationMaterial(payload.response, null, entity.material_file));
+            }
+            return payload;
+        })
+        .then((payload) => {
+            dispatch(stopLoading());
+            history.push(`/app/${summit.slug}/presentations/${payload.response.id}/tags`);
+        });
+
 }
 
 const savePresentationMaterial = (entity, material, file) => (dispatch, getState) => {
-    let { loggedUserState, baseState } = getState();
-    let { accessToken }     = loggedUserState;
-    let { summit }          = baseState;
+    let {loggedUserState, baseState} = getState();
+    let {accessToken} = loggedUserState;
+    let {summit} = baseState;
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     if (material && material.id) {
 
-        delete(material.link);
+        delete (material.link);
 
         putFile(
             null,
@@ -174,12 +174,12 @@ const savePresentationMaterial = (entity, material, file) => (dispatch, getState
 
 export const deletePresentationMaterial = (presentationId, materialId) => (dispatch, getState) => {
 
-    let { loggedUserState, baseState } = getState();
-    let { accessToken }     = loggedUserState;
-    let { summit }          = baseState;
+    let {loggedUserState, baseState} = getState();
+    let {accessToken} = loggedUserState;
+    let {summit} = baseState;
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     return deleteRequest(
@@ -192,14 +192,14 @@ export const deletePresentationMaterial = (presentationId, materialId) => (dispa
 
 
 export const completePresentation = (entity) => (dispatch, getState) => {
-    let { loggedUserState, baseState } = getState();
-    let { accessToken }     = loggedUserState;
-    let { summit }          = baseState;
+    let {loggedUserState, baseState} = getState();
+    let {accessToken} = loggedUserState;
+    let {summit} = baseState;
 
     dispatch(startLoading());
 
     let params = {
-        access_token : accessToken
+        access_token: accessToken
     };
 
     putRequest(
@@ -211,19 +211,19 @@ export const completePresentation = (entity) => (dispatch, getState) => {
     )(params)(dispatch)
         .then((payload) => {
             dispatch(stopLoading());
-            history.push(`/app/presentations/${entity.id}/thank-you`);
+            history.push(`/app/${summit.slug}/presentations/${entity.id}/thank-you`);
         });
 }
 
 
 export const deletePresentation = (presentationId) => (dispatch, getState) => {
 
-    let { loggedUserState, baseState } = getState();
-    let { accessToken }     = loggedUserState;
-    let { summit }          = baseState;
+    let {loggedUserState, baseState} = getState();
+    let {accessToken} = loggedUserState;
+    let {summit} = baseState;
 
     let params = {
-        access_token : accessToken
+        access_token: accessToken
     };
 
     return deleteRequest(
@@ -271,7 +271,9 @@ const presentationErrorHandler = (err, res) => (dispatch) => {
             };
             dispatch(showMessage(
                 error_message,
-                () => { window.location = `${ window.location.origin}/presentations` }
+                () => {
+                    window.location = `${window.location.origin}/presentations`
+                }
             ));
             break;
         default:

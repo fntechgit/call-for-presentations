@@ -25,11 +25,10 @@ export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
 export const SUMMIT_DOCS_RECEIVED   = 'SUMMIT_DOCS_RECEIVED';
 
 
-export const getAllPresentations = () => async (dispatch, getState) => {
+export const getAllPresentations = (summitId) => async (dispatch, getState) => {
 
-    let { loggedUserState, baseState } = getState();
+    let { loggedUserState } = getState();
     let { accessToken } = loggedUserState;
-    let summitId = baseState.summit.id;
 
     dispatch(startLoading());
 
@@ -48,6 +47,7 @@ export const getAllPresentations = () => async (dispatch, getState) => {
 
 
 export const getCreatorPresentations = (summitId, accessToken) => (dispatch, getState) => {
+
     let params = {
         access_token : accessToken,
         expand: 'type'
@@ -62,6 +62,7 @@ export const getCreatorPresentations = (summitId, accessToken) => (dispatch, get
 }
 
 export const getSpeakerPresentations = (summitId, accessToken) => (dispatch, getState) => {
+
     let params = {
         access_token : accessToken,
         expand: 'type'
@@ -77,6 +78,7 @@ export const getSpeakerPresentations = (summitId, accessToken) => (dispatch, get
 
 
 export const getModeratorPresentations = (summitId, accessToken) => (dispatch, getState) => {
+
     let params = {
         access_token : accessToken,
         expand: 'type'
@@ -90,10 +92,11 @@ export const getModeratorPresentations = (summitId, accessToken) => (dispatch, g
     )(params)(dispatch);
 };
 
-export const getSummitDocs = (presentations) => (dispatch, getState) => {
+export const getSummitDocs = (presentations, summitId) => (dispatch, getState) => {
+
+
     let { loggedUserState, baseState } = getState();
     let { accessToken }     = loggedUserState;
-    let { summit }          = baseState;
 
     dispatch(startLoading());
 
@@ -108,7 +111,7 @@ export const getSummitDocs = (presentations) => (dispatch, getState) => {
     return getRequest(
         null,
         createAction(SUMMIT_DOCS_RECEIVED),
-        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/summit-documents`,
+        `${window.API_BASE_URL}/api/v1/summits/${summitId}/summit-documents`,
         authErrorHandler
     )(params)(dispatch).then(() => {
             dispatch(stopLoading());

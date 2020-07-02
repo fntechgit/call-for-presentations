@@ -39,15 +39,15 @@ class EditSpeakerPage extends React.Component {
 
     componentWillReceiveProps(newProps) {
         let speakerId = newProps.match.params.speaker_id;
-        let {entity, location, history, currentPresentation, loading}   = newProps;
+        let {entity, location, history, currentPresentation, loading, summit}   = newProps;
 
         if (!location.state) {
-            history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+            history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
         }
 
         if (!speakerId || isNaN(speakerId)) {
             if (!location.state.hasOwnProperty('email')) {
-                history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+                history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
             }
         } else if (speakerId != entity.id && !loading){
             this.props.getSpeaker(speakerId);
@@ -56,15 +56,15 @@ class EditSpeakerPage extends React.Component {
 
     componentWillMount () {
         let speakerId = this.props.match.params.speaker_id;
-        let {entity, location, history, currentPresentation, orgRoles}   = this.props;
+        let {entity, location, history, currentPresentation, orgRoles, summit}   = this.props;
 
         if (!location.state) {
-            history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+            history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
         }
 
         if (!speakerId || isNaN(speakerId)) {
             if (!location.state.hasOwnProperty('email')) {
-                history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+                history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
             } else {
                 this.props.resetSpeakerForm(location.state.email);
             }
@@ -83,7 +83,7 @@ class EditSpeakerPage extends React.Component {
     }
 
     render() {
-        let {entity, orgRoles, loggedMember, errors, speakerPermission, match, currentPresentation, loggedInSpeaker} = this.props;
+        let {entity, orgRoles, loggedMember, errors, speakerPermission, match, currentPresentation, loggedInSpeaker, summit} = this.props;
         let speakerId = match.params.speaker_id;
 
         if (speakerId && speakerId != loggedInSpeaker.id && speakerPermission && (!speakerPermission.approved || speakerId != speakerPermission.speaker_id) ) {
@@ -93,7 +93,7 @@ class EditSpeakerPage extends React.Component {
                 text: T.translate("edit_speaker.auth_required_text"),
                 type: "warning",
             }).then(function(result){
-                history.push(`/app/presentations/${currentPresentation.id}/speakers`);
+                history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
             });
 
             return (<div></div>);
@@ -118,6 +118,7 @@ class EditSpeakerPage extends React.Component {
 const mapStateToProps = ({ baseState, speakerState, presentationState, profileState }) => ({
     loading : baseState.loading,
     selectionPlan : baseState.selectionPlan,
+    summit : baseState.summit,
     currentPresentation: presentationState.entity,
     loggedInSpeaker: profileState.entity,
     ...speakerState

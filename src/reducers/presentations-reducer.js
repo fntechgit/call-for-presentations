@@ -32,7 +32,7 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
         case CREATED_RECEIVED: {
             let presentations = [...payload.response.data];
 
-            return {...state, presentations_created: presentations};
+            return {...state, presentations_created: presentations, summitDocs: []};
         }
         break;
         case SPEAKER_RECEIVED: {
@@ -41,7 +41,7 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
 
             presentations = presentations.filter(p => !createdIds.includes(p.id));
 
-            return {...state, presentations_speaker: presentations};
+            return {...state, presentations_speaker: presentations, summitDocs: []};
         }
         break;
         case MODERATOR_RECEIVED: {
@@ -50,7 +50,7 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
 
             presentations = presentations.filter(p => !createdIds.includes(p.id));
 
-            return {...state, presentations_moderator: presentations};
+            return {...state, presentations_moderator: presentations, summitDocs: []};
         }
         break;
         case PRESENTATION_DELETED: {

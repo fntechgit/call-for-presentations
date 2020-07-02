@@ -16,11 +16,10 @@ import {NavStepsDefinitions} from "../components/presentation-nav/nav-steps-defi
 
 class Presentation {
 
-    constructor(presentation, summit, selectionPlan, loggedUser, cfpOpen){
+    constructor(presentation, summit, selectionPlan, loggedUser){
         this._presentation  = presentation;
         this._selectionPlan = selectionPlan;
         this._user = loggedUser;
-        this._cfpOpen = cfpOpen;
         this._summit = summit;
 
         let presentationSelectionPlan = summit.selection_plans.find(sp => sp.id == presentation.selection_plan_id);
@@ -43,7 +42,7 @@ class Presentation {
     }
 
     canEdit() {
-        if (!this._selectionPlan || !this._cfpOpen) return false;
+        if (!this._selectionPlan) return false;
 
         let speakers = this._presentation.speakers.map(s => {
             if (typeof s == 'object') return s.id;
@@ -63,7 +62,7 @@ class Presentation {
 
     canDelete() {
         let belongsToSP = (this._presentation.selection_plan_id == this._selectionPlan.id);
-        return (!this._presentation.is_published && this._cfpOpen && belongsToSP);
+        return (!this._presentation.is_published && belongsToSP);
     }
 
     getProgressLink() {
@@ -75,9 +74,9 @@ class Presentation {
                 step = progress;
             }
 
-            return `/app/presentations/${this._presentation.id}/${step}`;
+            return `/app/${this._summit.slug}/presentations/${this._presentation.id}/${step}`;
         } else {
-            return `/app/presentations/${this._presentation.id}/preview`;
+            return `/app/${this._summit.slug}/presentations/${this._presentation.id}/preview`;
         }
     }
 

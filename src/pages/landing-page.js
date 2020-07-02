@@ -17,19 +17,46 @@ import T from "i18n-react/dist/i18n-react";
 import SelectionProcessPage from "./selection-process-page";
 import TracksGuidePage from "./tracks-guide-page";
 import { Exclusive } from 'openstack-uicore-foundation/lib/components'
+import { getAllFromSummit } from '../actions/base-actions';
+import { connect } from 'react-redux'
 
+class LandingPage extends React.Component {
 
+    componentDidMount() {
+        let { isLoggedUser } = this.props;
 
-export default class LandingPage extends React.Component {
+        let summitSlug = this.props.match.params.summit_slug;
+
+        if (summitSlug && !isLoggedUser) {
+            this.props.getAllFromSummit(summitSlug);
+        }
+    }
+
+    componentWillReceiveProps(newProps) {
+        let { isLoggedUser } = this.props;
+        if(isLoggedUser) return;
+
+        let oldSummitSlug = this.props.match.params.summit_slug;
+        let newSummitSlug = newProps.match.params.summit_slug;
+
+        if (newSummitSlug !== oldSummitSlug) {
+            if (newSummitSlug) {
+                this.props.getAllFromSummit(newSummitSlug);
+            }
+        }
+    }
 
     render(){
-        let {history, isLoggedUser, doLogin, initLogOut, picture, summit} = this.props;
+
+        let {doLogin, summit, isLoggedUser} = this.props;
+
+        if(summit == null || isLoggedUser ) return null;
 
         return (
             <div className="container landing-page-wrapper">
                 <Exclusive name="landing">
                     <div>
-                        <h1 className="title">{T.translate("landing.title")}</h1>
+                        <h1 className="title">{T.translate("landing.title", {'summit_name' : summit.name})}</h1>
 
                         <div className="steps-wrapper">
                             <div className="steps-title">{T.translate("landing.steps_title")}</div>
@@ -104,3 +131,21 @@ export default class LandingPage extends React.Component {
         );
     }
 }
+
+
+const mapStateToProps = ({ loggedUserState, baseState }) => ({
+    isLoggedUser: loggedUserState.isLoggedUser,
+    member: loggedUserState.member,
+    speaker: baseState.speaker,
+    loading : baseState.loading,
+    summit: baseState.summit,
+});
+
+export default connect(
+    mapStateToProps,
+    {
+        getAllFromSummit
+    }
+)(LandingPage);
+
+

@@ -12,55 +12,46 @@
  **/
 
 import { START_LOADING, STOP_LOADING, LOGOUT_USER } from "openstack-uicore-foundation/lib/actions";
-import {RESET_LOADER, SELECTION_CLOSED, SELECTION_PLAN_RECEIVED, RECEIVE_SUMMIT, RECEIVE_TAG_GROUPS} from "../actions/base-actions";
+import {
+    RESET_LOADER,
+    SELECTION_CLOSED,
+    RECEIVE_TAG_GROUPS,
+    CLEAR_SUMMIT,
+    ERROR_RECEIVE_SUMMIT, RECEIVE_SELECTION_PLAN, RECEIVE_SUMMIT, RECEIVE_MARKETING_SETTINGS
+} from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
-import {PROFILE_PIC_ATTACHED, SPEAKER_PROFILE_SAVED} from "../actions/speaker-actions";
+import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
 
 
 const DEFAULT_STATE = {
+    tagGroups: [],
+    loading: false,
+    countries: [],
+    speaker: null,
     selectionPlan: null,
     summit: null,
-    cfpOpen: false,
-    tagGroups: [],
-    loading: 0,
-    countries: [],
-    speaker: null
+    marketingSettings: null,
+    submissionIsClosed: false,
 }
 
 const baseReducer = (state = DEFAULT_STATE, action) => {
-    const { type, payload } = action
+    const { type, payload } = action;
 
     switch(type){
         case RESET_LOADER:
+            console.log(`baseReducer.RESET_LOADER`);
             return {...state, loading: 0};
         break;
         case LOGOUT_USER:
             return DEFAULT_STATE;
         break;
         case START_LOADING:
-            return {...state, loading: (state.loading + 1)};
+            console.log(`baseReducer.START_LOADING`);
+            return {...state, loading: true};
         break;
         case STOP_LOADING:
-            let loadingCount = (state.loading == 0) ? 0 : state.loading -1;
-            return {...state, loading: loadingCount};
-        break;
-        case SELECTION_PLAN_RECEIVED: {
-            let entity = {...payload.response};
-            let cfpOpen = (entity && state.summit && state.summit.id == entity.summit.id);
-
-            return {...state, selectionPlan: entity, cfpOpen: cfpOpen};
-        }
-        break;
-        case SELECTION_CLOSED: {
-            return {...state, selectionPlan: null, cfpOpen: false};
-        }
-        break;
-        case RECEIVE_SUMMIT: {
-            let entity = {...payload.response};
-            let cfpOpen = (state.selectionPlan && entity && entity.id == state.selectionPlan.summit.id);
-
-            return {...state, summit: entity, cfpOpen: cfpOpen};
-        }
+            console.log(`baseReducer.STOP_LOADING`);
+            return {...state, loading: false};
         break;
         case RECEIVE_TAG_GROUPS: {
             let groups = [...payload.response.data];
@@ -77,6 +68,32 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
             return {...state, speaker: {...state.speaker, pic: pic_info.url} };;
         }
         break;
+        // summit / selection plan
+        case CLEAR_SUMMIT:
+            return {...state, selectionPlan: null, summit: null, marketingSettings: null, submissionIsClosed: false};
+            break;
+        case ERROR_RECEIVE_SUMMIT:
+            return {...state, selectionPlan: null, summit: null, marketingSettings: null, submissionIsClosed: false};
+            break;
+        case RECEIVE_SELECTION_PLAN: {
+            let entity = {...payload.response};
+
+            return {...state, selectionPlan: entity};
+        }
+            break;
+        case RECEIVE_SUMMIT: {
+            let entity = {...payload.response};
+            return {...state, summit: entity, marketingSettings: null, selectionPlan: null};
+        }
+            break;
+        case RECEIVE_MARKETING_SETTINGS: {
+            return {...state, marketingSettings: payload.response.data};
+        }
+            break;
+        case SELECTION_CLOSED: {
+            return {...state, selectionPlan: null, submissionIsClosed : true};
+        }
+            break;
         default:
             return state;
         break;
