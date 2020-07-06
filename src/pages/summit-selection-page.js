@@ -50,9 +50,19 @@ class SummitSelectionPage extends React.Component {
     }
 
     render() {
-        let {availableSummits} = this.props;
+        let {availableSummits, loading} = this.props;
         let {currentSummit} = this.state;
-        if (availableSummits.length === 0) return <p>{T.translate("summit_selection_page.not_available_summits")}</p>;
+        if (availableSummits.length === 0){
+            if(!loading)
+                return (
+                    <div className="center row">
+                        <div className="col-sm-12 col-xs-12 col-lg-12">
+                            <p>{T.translate("summit_selection_page.not_available_summits")}</p>
+                        </div>
+                    </div>
+                );
+            return null;
+        }
         return (
             <div className="row summit-select-container">
                 <div className="col-sm-12 col-xs-12 col-lg-12">
@@ -76,8 +86,9 @@ class SummitSelectionPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({summitSelectionState}) => ({
+const mapStateToProps = ({summitSelectionState, baseState}) => ({
     availableSummits: summitSelectionState.availableSummits,
+    loading: baseState.loading,
 })
 
 
