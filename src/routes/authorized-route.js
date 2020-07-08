@@ -26,11 +26,11 @@ class AuthorizedRoute extends React.Component {
                 let { location } = this.props;
                 let backUrl = location.pathname;
                 let summit_slug = this.props.computedMatch.params.summit_slug;
-                if(location.search != null && location.search != null){
+                if(location.search != null){
                     backUrl += location.search
                 }
 
-                if(location.hash != null && location.hash != null){
+                if(location.hash != null){
                     backUrl += location.hash
                 }
 
@@ -38,7 +38,7 @@ class AuthorizedRoute extends React.Component {
                     ? <Component {...props} />
                     : <Redirect
                         to={{
-                            pathname: `/${summit_slug}/?BackUrl=${encodeURIComponent(backUrl)}`,
+                            pathname: `/app/${summit_slug}?BackUrl=${encodeURIComponent(backUrl)}`,
                             state: { from: location }
                         }}
                     />

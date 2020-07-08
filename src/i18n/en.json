@@ -180,6 +180,7 @@
     "irc": "IRC",
     "bio": "Bio",
     "profile_pic": "Profile Pic",
+    "big_pic": "Large Pic",
     "affiliations": "Affiliations",
     "affiliations_disclaimer": "For our purposes, an affiliation is defined as any company where you are an officer, director or employee, or any person or company that has paid you more than $60,000 USD as an independent contractor in the last 12 months. Please list all affiliations which meet this criteria. If you're not being paid to work on OpenStack please put \"Unaffiliated\".",
     "disclaimer": "Disclaimer",

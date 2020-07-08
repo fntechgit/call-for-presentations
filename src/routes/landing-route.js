@@ -24,7 +24,7 @@ class LandingRoute extends React.Component {
             <Route {...rest} render={props => {
                 return isLoggedUser ? <Redirect
                     to={{
-                        pathname: `/app/${summit_slug}`,
+                        pathname: `/app/${summit_slug}/presentations`,
                         state: { from: location }
                     }}
                 />:

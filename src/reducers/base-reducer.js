@@ -39,18 +39,15 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
 
     switch(type){
         case RESET_LOADER:
-            console.log(`baseReducer.RESET_LOADER`);
             return {...state, loading: 0};
         break;
         case LOGOUT_USER:
             return DEFAULT_STATE;
         break;
         case START_LOADING:
-            console.log(`baseReducer.START_LOADING`);
             return {...state, loading: true};
         break;
         case STOP_LOADING:
-            console.log(`baseReducer.STOP_LOADING`);
             return {...state, loading: false};
         break;
         case RECEIVE_TAG_GROUPS: {

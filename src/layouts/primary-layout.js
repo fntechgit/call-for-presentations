@@ -24,29 +24,18 @@ import { getAllFromSummit } from '../actions/base-actions';
 
 class PrimaryLayout extends React.Component {
 
-    componentWillMount() {
-        let summitSlug = this.props.match.params.summit_slug;
-        console.log(`PrimaryLayout::componentDidMount summitSlug ${summitSlug}`);
-    }
-
     componentDidMount() {
         let summitSlug = this.props.match.params.summit_slug;
-        console.log(`PrimaryLayout::componentDidMount summitSlug ${summitSlug}`);
-        if (this.props.summit == null || summitSlug !== this.props.summit.slug) {
-            this.props.getAllFromSummit(summitSlug);
-        }
+
+        this.props.getAllFromSummit(summitSlug);
     }
 
     componentWillReceiveProps(newProps) {
         let oldSummitSlug = this.props.match.params.summit_slug;
         let newSummitSlug = newProps.match.params.summit_slug;
-        console.log(`PrimaryLayout::componentWillReceiveProps oldSummitSlug ${oldSummitSlug} newSummitSlug ${newSummitSlug}`);
-        if(newSummitSlug === 'profile') return;
-        if(newSummitSlug === 'presentations') return;
-        if (newSummitSlug !== oldSummitSlug) {
-            if (newSummitSlug) {
-                this.props.getAllFromSummit(newSummitSlug);
-            }
+
+        if (newSummitSlug && newSummitSlug !== oldSummitSlug) {
+            this.props.getAllFromSummit(newSummitSlug);
         }
     }
 
@@ -56,24 +45,22 @@ class PrimaryLayout extends React.Component {
             case `/app/${summit.slug}/presentations`:
                 return 'presentations';
                 break;
-            case '/app/profile':
+            case `/app/${summit.slug}/profile`:
                 return 'profile';
                 break;
         }
     }
 
     render(){
-        console.log(`PrimaryLayout::render`);
+        let { location, speaker, member, summit, loading, match } = this.props;
 
-        let { location, speaker, member, summit, loading } = this.props;
+        if (!summit) return null;
 
         if((!speaker || !speaker.id) && location.pathname !== '/app/profile' && !loading) {
             return (
-                <Redirect exact to={{ pathname: '/app/profile' }}  />
+                <Redirect exact to={{ pathname: `/app//${summit.slug}/profile` }}  />
             );
         }
-
-        if (!summit) return null;
 
         let loggedUser = (speaker && speaker.id) ? speaker : member;
 
@@ -88,13 +75,13 @@ class PrimaryLayout extends React.Component {
                     <div className="col-md-9">
                         <main id="page-wrap">
                             <Switch>
-                                <Route strict exact path="/app/:summit_slug/presentations" component={PresentationsPage}/>
-                                <Route path="/app/:summit_slug/presentations/:presentation_id(\d+)" component={PresentationLayout}/>
-                                <Route path="/app/:summit_slug/presentations/new" component={PresentationLayout}/>
-                                <Route exact path="/app/profile" component={ProfilePage}/>
-                                <Route exact path="/app/selection_process" component={SelectionProcessPage}/>
-                                <Route exact path="/app/tracks_guide" component={TracksGuidePage}/>
-                                <Route render={props => (<Redirect to={"/app/"+summit.slug+"/presentations"}/>)}/>
+                                <Route strict exact path={`${match.url}/presentations`} component={PresentationsPage}/>
+                                <Route path={`${match.url}/presentations/new`} component={PresentationLayout}/>
+                                <Route path={`${match.url}/presentations/:presentation_id(\\d+)`} component={PresentationLayout}/>
+                                <Route exact path={`${match.url}/profile`} component={ProfilePage}/>
+                                <Route exact path={`${match.url}/selection_process`} component={SelectionProcessPage}/>
+                                <Route exact path={`${match.url}/tracks_guide`} component={TracksGuidePage}/>
+                                <Route render={props => (<Redirect to={`/app/${summit.slug}/presentations`}/>)}/>
                             </Switch>
                         </main>
                     </div>

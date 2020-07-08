@@ -35,13 +35,12 @@ class SummitSelectionPage extends React.Component {
     }
 
     componentDidMount() {
-        console.log(`SummitSelectionPage::componentDidMount`);
         this.props.clearCurrentSummit();
         this.props.getAvailableSummits();
     }
 
     onSelectedSummit(slug) {
-        history.push(`/${slug}`);
+        history.push(`/app/${slug}/presentations`);
     }
 
     handleChange(ev) {
@@ -52,6 +51,7 @@ class SummitSelectionPage extends React.Component {
     render() {
         let {availableSummits, loading} = this.props;
         let {currentSummit} = this.state;
+
         if (availableSummits.length === 0){
             if(!loading)
                 return (
@@ -63,6 +63,7 @@ class SummitSelectionPage extends React.Component {
                 );
             return null;
         }
+
         return (
             <div className="row summit-select-container">
                 <div className="col-sm-12 col-xs-12 col-lg-12">

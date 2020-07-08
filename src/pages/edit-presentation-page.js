@@ -64,7 +64,7 @@ class EditPresentationPage extends React.Component {
         let step = this.props.match.params.step;
         let presentation = new Presentation(entity, summit, selectionPlan, loggedSpeaker);
 
-        if (!summit.event_types || !summit.tracks) return (<div></div>);
+        if (!summit.event_types || !summit.tracks) return null;
 
         return (
             <div className="page-wrap" id="edit-presentation-page">

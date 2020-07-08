@@ -97,7 +97,6 @@ class App extends React.PureComponent {
         let {summit} = this.props;
 
         let defaultLocation = summit != null ? `/app/${summit.slug}` : '/';
-        console.log(`App::getBackURL defaultLocation ${defaultLocation}`);
         let url = URI(window.location.href);
         let location = url.pathname();
         if (location === '/'+summit.slug) location = defaultLocation;
@@ -107,8 +106,6 @@ class App extends React.PureComponent {
         if (fragment != null && fragment != '') {
             backUrl += `#${fragment}`;
         }
-
-        console.log(`App::getBackURL backUrl ${backUrl}`);
 
         return backUrl;
 
@@ -125,7 +122,6 @@ class App extends React.PureComponent {
             selectionPlan, summit, loading, submissionIsClosed
         } = this.props;
 
-        console.log(`app.render loading ${loading} submissionIsClosed ${submissionIsClosed}`);
         let profile_pic = speaker ? speaker.member.pic : (member ? member.pic : '');
 
         let header_title = T.translate('landing.call_for_presentations');
@@ -184,15 +180,13 @@ class App extends React.PureComponent {
 
                     <React.Fragment>
                         <Switch>
-                            <LogOutCallbackRoute path='/auth/logout' doLogout={doLogout}/>
-                            <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback'
-                                                        getUserInfo={getUserInfo}/>
-                            <Route path="/error" component={CustomErrorPage}/>
-                            <Route path="/404" render={props => (<p>404 - Not Found</p>)}/>
-                            <AuthorizedRoute isLoggedUser={isLoggedUser} backUrl={backUrl} path="/app/:summit_slug"
-                                             component={PrimaryLayout}/>
-                            <LandingRoute isLoggedUser={isLoggedUser} path="/:summit_slug" component={LandingPage} doLogin={this.onClickLogin}/>
-                            <Route path="/" component={SummitSelectionPage}/>
+                            <LogOutCallbackRoute path='/auth/logout' doLogout={doLogout} />
+                            <AuthorizationCallbackRoute onUserAuth={onUserAuth} path='/auth/callback' getUserInfo={getUserInfo} />
+                            <Route path="/error" component={CustomErrorPage} />
+                            <Route path="/404" render={props => (<p>404 - Not Found</p>)} />
+                            <Route path="/app/start" component={SummitSelectionPage} />
+                            <LandingRoute path="/app/:summit_slug" strict exact isLoggedUser={isLoggedUser} component={LandingPage} doLogin={this.onClickLogin}/>
+                            <AuthorizedRoute path="/app/:summit_slug" isLoggedUser={isLoggedUser} backUrl={backUrl} component={PrimaryLayout}/>
                             <DefaultRoute isLoggedUser={isLoggedUser}/>
                         </Switch>
                     </React.Fragment>

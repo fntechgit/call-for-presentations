@@ -64,7 +64,6 @@ export const getCurrentSelectionPlanPublic = (summit_id) => (dispatch, getState)
 
 
 export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
-    console.log(`getAllFromSummit summitSlug ${summitSlug}`);
     dispatch(startLoading());
     return getCurrentSummitPublic(summitSlug)(dispatch, getState)
         .then(({response}) => getCurrentSelectionPlanPublic(response.id)(dispatch, getState))

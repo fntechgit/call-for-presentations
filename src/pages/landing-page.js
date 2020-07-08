@@ -23,34 +23,28 @@ import { connect } from 'react-redux'
 class LandingPage extends React.Component {
 
     componentDidMount() {
-        let { isLoggedUser } = this.props;
+        let { isLoggedUser, match } = this.props;
+        let summitSlug = match.params.summit_slug;
 
-        let summitSlug = this.props.match.params.summit_slug;
-
-        if (summitSlug && !isLoggedUser) {
+        if (!isLoggedUser && summitSlug) {
             this.props.getAllFromSummit(summitSlug);
         }
     }
 
     componentWillReceiveProps(newProps) {
-        let { isLoggedUser } = this.props;
-        if(isLoggedUser) return;
-
-        let oldSummitSlug = this.props.match.params.summit_slug;
+        let { isLoggedUser, match } = this.props;
+        let oldSummitSlug = match.params.summit_slug;
         let newSummitSlug = newProps.match.params.summit_slug;
 
-        if (newSummitSlug !== oldSummitSlug) {
-            if (newSummitSlug) {
-                this.props.getAllFromSummit(newSummitSlug);
-            }
+        if (!isLoggedUser && newSummitSlug && newSummitSlug !== oldSummitSlug) {
+            this.props.getAllFromSummit(newSummitSlug);
         }
     }
 
     render(){
-
         let {doLogin, summit, isLoggedUser} = this.props;
 
-        if(summit == null || isLoggedUser ) return null;
+        if( !summit || isLoggedUser ) return null;
 
         return (
             <div className="container landing-page-wrapper">

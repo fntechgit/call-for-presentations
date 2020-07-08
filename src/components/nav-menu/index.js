@@ -35,16 +35,12 @@ class NavMenu extends React.Component {
     onMenuItemClick(event, item){
         event.preventDefault();
         let {summit} = this.props;
+
         this.setState({
             activeItem: item.name
         });
-        let itemName = item.name;
 
-        if(itemName === 'presentations' && summit !== null){
-            itemName = `${summit.slug}/${itemName};`
-        }
-
-        history.push(`/app/${itemName}`);
+        history.push(`/app/${summit.slug}/${item.name}`);
     }
 
     render() {

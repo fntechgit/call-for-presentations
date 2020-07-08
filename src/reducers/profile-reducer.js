@@ -18,6 +18,7 @@ import
     UPDATE_SPEAKER_PROFILE,
     SPEAKER_PROFILE_UPDATED,
     PROFILE_PIC_ATTACHED,
+    BIG_PIC_ATTACHED,
     RECEIVE_ORG_ROLES
 } from '../actions/speaker-actions';
 
@@ -36,6 +37,8 @@ export const DEFAULT_ENTITY = {
     bio: '',
     pic: '',
     pic_file: null,
+    big_pic: '',
+    big_pic_file: null,
     affiliations: [],
     available_for_bureau: false,
     willing_to_present_video: false,
@@ -122,6 +125,11 @@ const profileReducer = (state = DEFAULT_STATE, action) => {
         case PROFILE_PIC_ATTACHED: {
             let pic_info = {...payload.response};
             return {...state, entity: {...state.entity, pic: pic_info.url, pic_file: null} };
+        }
+        break;
+        case BIG_PIC_ATTACHED: {
+            let pic_info = {...payload.response};
+            return {...state, entity: {...state.entity, big_pic: pic_info.url, big_pic_file: null} };
         }
         break;
         case SPEAKER_PROFILE_UPDATED: {

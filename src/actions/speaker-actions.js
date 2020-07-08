@@ -51,6 +51,7 @@ export const UPDATE_SPEAKER_PROFILE         = 'UPDATE_SPEAKER_PROFILE';
 export const SPEAKER_PROFILE_UPDATED        = 'SPEAKER_PROFILE_UPDATED';
 export const SPEAKER_PROFILE_SAVED          = 'SPEAKER_PROFILE_SAVED';
 export const PROFILE_PIC_ATTACHED           = 'PROFILE_PIC_ATTACHED';
+export const BIG_PIC_ATTACHED               = 'BIG_PIC_ATTACHED';
 export const RECEIVE_ORG_ROLES              = 'RECEIVE_ORG_ROLES';
 
 
@@ -413,6 +414,7 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
     };
 
     let pic_file = entity.pic_file;
+    let big_pic_file = entity.big_pic_file;
     let normalizedEntity = normalizeEntityProfile(entity);
 
     let success_message = {
@@ -435,6 +437,9 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
                 if (pic_file) {
                     dispatch(uploadFileProfile(payload.response, pic_file));
                 }
+                if (big_pic_file) {
+                    dispatch(uploadFileBigPhoto(payload.response, big_pic_file));
+                }
             })
             .then((payload) => {
                 success_message.html = T.translate("edit_profile.profile_saved");
@@ -454,6 +459,9 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
             .then((payload) => {
                 if (pic_file) {
                     dispatch(uploadFileProfile(payload.response, pic_file));
+                }
+                if (big_pic_file) {
+                    dispatch(uploadFileBigPhoto(payload.response, big_pic_file));
                 }
             })
             .then((payload) => {
@@ -483,6 +491,27 @@ const uploadFileProfile = (entity, file) => (dispatch, getState) => {
         null,
         createAction(PROFILE_PIC_ATTACHED),
         `${window.API_BASE_URL}/api/v1/speakers/${entity.id}/photo`,
+        formData,
+        authErrorHandler,
+        {pic: entity.pic}
+    )(params)(dispatch)
+}
+
+const uploadFileBigPhoto = (entity, file) => (dispatch, getState) => {
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    let formData = new FormData();
+    formData.append('file', file);
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    postRequest(
+        null,
+        createAction(BIG_PIC_ATTACHED),
+        `${window.API_BASE_URL}/api/v1/speakers/${entity.id}/big-photo`,
         formData,
         authErrorHandler,
         {pic: entity.pic}

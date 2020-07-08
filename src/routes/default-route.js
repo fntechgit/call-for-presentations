@@ -17,19 +17,12 @@ import { Route, Redirect } from 'react-router-dom'
 class DefaultRoute extends React.Component {
 
     render() {
-        const { isLoggedUser,summit, ...rest } = this.props;
         return (
-            <Route {...rest} render={props => {
-                if(isLoggedUser)
-                    return (<Redirect
-                        exact
-                        to={{
-                            pathname: `/app/${summit.slug}/presentations`,
-                            state: { from: props.location }
-                        }}
-                    />)
-                return null;
-            }} />
+            <Route {...this.props}
+                   render={
+                       props => <Redirect exact to={{ pathname: `/app/start`, state: { from: props.location } }} />
+                   }
+            />
         )
     }
 }
