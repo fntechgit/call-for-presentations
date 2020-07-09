@@ -25,17 +25,13 @@ import Presentation from '../model/presentation'
 class PresentationLayout extends React.Component {
 
     componentDidMount() {
-        let {presentation_id, summit_slug} = this.props.match.params;
+        let {presentation_id} = this.props.match.params;
         let {summit} = this.props;
         if (!presentation_id) {
             this.props.resetPresentation();
             return;
         }
-        // need to verify currnet slug with current summit slug in case that we are deep linking from
-        // another summit
-        if(summit.slug === summit_slug)
-            this.props.getPresentation(presentation_id);
-
+        this.props.getPresentation(presentation_id);
     }
 
     componentWillReceiveProps(newProps) {

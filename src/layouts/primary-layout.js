@@ -26,7 +26,6 @@ class PrimaryLayout extends React.Component {
 
     componentDidMount() {
         let summitSlug = this.props.match.params.summit_slug;
-        console.log(`PrimaryLayout::componentDidMount summitSlug ${summitSlug}`);
         this.props.getAllFromSummit(summitSlug);
     }
 
@@ -35,7 +34,6 @@ class PrimaryLayout extends React.Component {
         let newSummitSlug = newProps.match.params.summit_slug;
 
         if (newSummitSlug && newSummitSlug !== oldSummitSlug) {
-            console.log(`PrimaryLayout::componentWillReceiveProps newSummitSlug ${newSummitSlug}`);
             this.props.getAllFromSummit(newSummitSlug);
         }
     }
@@ -57,6 +55,8 @@ class PrimaryLayout extends React.Component {
 
         if (!summit) return null;
 
+        if(summit.slug !== match.params.summit_slug) return null;
+
         if((!speaker || !speaker.id) && location.pathname !== '/app/profile' && !loading) {
             return (
                 <Redirect exact to={{ pathname: `/app//${summit.slug}/profile` }}  />
@@ -76,9 +76,9 @@ class PrimaryLayout extends React.Component {
                     <div className="col-md-9">
                         <main id="page-wrap">
                             <Switch>
-                                <Route path="/app/:summit_slug/presentations/new" component={PresentationLayout}/>
-                                <Route path="/app/:summit_slug/presentations/:presentation_id(\d+)" component={PresentationLayout}/>
                                 <Route strict exact path={`${match.url}/presentations`} component={PresentationsPage}/>
+                                <Route path={`${match.url}/presentations/new`} component={PresentationLayout}/>
+                                <Route path={`${match.url}/presentations/:presentation_id(\\d+)`} component={PresentationLayout}/>
                                 <Route exact path={`${match.url}/profile`} component={ProfilePage}/>
                                 <Route exact path={`${match.url}/selection_process`} component={SelectionProcessPage}/>
                                 <Route exact path={`${match.url}/tracks_guide`} component={TracksGuidePage}/>
