@@ -44,6 +44,8 @@ import {getMarketingValue} from "./components/marketing-setting";
 import SummitSelectionPage from "./pages/summit-selection-page";
 import LandingRoute from "./routes/landing-route";
 import URI from "urijs";
+import ProfilePage from "./pages/profile-page";
+import DirectAuthorizedRoute from "./routes/direct-authorized-route";
 
 // here is set by default user lang as en
 
@@ -185,6 +187,7 @@ class App extends React.PureComponent {
                             <Route path="/error" component={CustomErrorPage} />
                             <Route path="/404" render={props => (<p>404 - Not Found</p>)} />
                             <Route path="/app/start" component={SummitSelectionPage} />
+                            <DirectAuthorizedRoute path="/app/profile" strict exact isLoggedUser={isLoggedUser} component={ProfilePage}/>
                             <LandingRoute path="/app/:summit_slug" strict exact isLoggedUser={isLoggedUser} component={LandingPage} doLogin={this.onClickLogin}/>
                             <AuthorizedRoute path="/app/:summit_slug" isLoggedUser={isLoggedUser} backUrl={backUrl} component={PrimaryLayout}/>
                             <DefaultRoute isLoggedUser={isLoggedUser}/>

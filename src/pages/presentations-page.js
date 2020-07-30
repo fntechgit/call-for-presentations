@@ -31,7 +31,13 @@ class PresentationsPage extends React.Component {
     }
 
     componentDidMount () {
-        let {summit} = this.props;
+        console.log('PresentationsPage::componentDidMount');
+        let {summit, loggedSpeaker, history} = this.props;
+        if(loggedSpeaker == null){
+            console.log('navigating to profile ...');
+            history.push(`/app/profile`);
+            return;
+        }
         this.props.getAllPresentations(summit.id).then(presentations => {
             if (presentations.length > 0) {
                 this.props.getSummitDocs(presentations, summit.id);
@@ -103,7 +109,7 @@ class PresentationsPage extends React.Component {
             loading
         } = this.props;
 
-        if (loading || summit == null || selectionPlan == null) return null;
+        if (loading || summit == null || selectionPlan == null || loggedSpeaker == null) return null;
 
         return (
             <div className="page-wrap" id="presentations-page">

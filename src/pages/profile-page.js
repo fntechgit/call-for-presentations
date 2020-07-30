@@ -25,6 +25,7 @@ class ProfilePage extends React.Component {
 
     constructor(props){
         super(props);
+        this.handleSaveSpeakerProfile = this.handleSaveSpeakerProfile.bind(this);
     }
 
     componentWillMount () {
@@ -37,8 +38,20 @@ class ProfilePage extends React.Component {
         }
     }
 
+    handleSaveSpeakerProfile(entity){
+        let{ history, saveSpeakerProfile, summit} = this.props;
+        saveSpeakerProfile(entity).then(() => {
+            if(summit){
+                history.push(`/app/${summit.slug}/presentations`);
+                return;
+            }
+            // if we dont have a summit , the we are at /app/profile path
+            history.push('/app/start')
+        });
+    }
+
     render() {
-        let {entity, orgRoles, loggedMember, errors, saveSpeakerProfile, loading} = this.props;
+        let {entity, orgRoles, loggedMember, errors, loading} = this.props;
 
         if (!entity.id && !loading && !errors) {
             Swal.fire({
@@ -57,7 +70,7 @@ class ProfilePage extends React.Component {
                     errors={errors}
                     member={loggedMember}
                     orgRoles={orgRoles}
-                    onSubmit={saveSpeakerProfile}
+                    onSubmit={this.handleSaveSpeakerProfile}
                     showAffiliations
                 />
             </div>
@@ -66,7 +79,7 @@ class ProfilePage extends React.Component {
 }
 
 const mapStateToProps = ({ profileState, loggedUserState, baseState }) => ({
-    selectionPlan : baseState.selectionPlan,
+    summit : baseState.summit,
     loggedMember: loggedUserState.member,
     speaker: baseState.speaker,
     loading: baseState.loading,

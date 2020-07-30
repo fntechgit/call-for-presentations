@@ -31,39 +31,39 @@ import history from '../history'
 import Swal from "sweetalert2";
 import {getSpeakerInfo} from "./auth-actions";
 
-export const RECEIVE_SPEAKER_PERMISSION     = 'RECEIVE_SPEAKER_PERMISSION';
-export const REQUEST_SPEAKER_PERMISSION     = 'REQUEST_SPEAKER_PERMISSION';
-export const SPEAKER_PERMISSION_REQUESTED   = 'SPEAKER_PERMISSION_REQUESTED';
-export const RECEIVE_SPEAKER                = 'RECEIVE_SPEAKER';
-export const RESET_SPEAKER_FORM             = 'RESET_SPEAKER_FORM';
-export const UPDATE_SPEAKER                 = 'UPDATE_SPEAKER';
-export const SPEAKER_UPDATED                = 'SPEAKER_UPDATED';
-export const SPEAKER_SAVED                  = 'SPEAKER_SAVED';
-export const SPEAKER_ASSIGNED               = 'SPEAKER_ASSIGNED';
-export const SPEAKER_REMOVED                = 'SPEAKER_REMOVED';
-export const MODERATOR_ASSIGNED             = 'MODERATOR_ASSIGNED';
-export const MODERATOR_REMOVED              = 'MODERATOR_REMOVED';
-export const PIC_ATTACHED                   = 'PIC_ATTACHED';
+export const RECEIVE_SPEAKER_PERMISSION = 'RECEIVE_SPEAKER_PERMISSION';
+export const REQUEST_SPEAKER_PERMISSION = 'REQUEST_SPEAKER_PERMISSION';
+export const SPEAKER_PERMISSION_REQUESTED = 'SPEAKER_PERMISSION_REQUESTED';
+export const RECEIVE_SPEAKER = 'RECEIVE_SPEAKER';
+export const RESET_SPEAKER_FORM = 'RESET_SPEAKER_FORM';
+export const UPDATE_SPEAKER = 'UPDATE_SPEAKER';
+export const SPEAKER_UPDATED = 'SPEAKER_UPDATED';
+export const SPEAKER_SAVED = 'SPEAKER_SAVED';
+export const SPEAKER_ASSIGNED = 'SPEAKER_ASSIGNED';
+export const SPEAKER_REMOVED = 'SPEAKER_REMOVED';
+export const MODERATOR_ASSIGNED = 'MODERATOR_ASSIGNED';
+export const MODERATOR_REMOVED = 'MODERATOR_REMOVED';
+export const PIC_ATTACHED = 'PIC_ATTACHED';
 
-export const RECEIVE_SPEAKER_PROFILE        = 'RECEIVE_SPEAKER_PROFILE';
-export const RESET_PROFILE_FORM             = 'RESET_PROFILE_FORM';
-export const UPDATE_SPEAKER_PROFILE         = 'UPDATE_SPEAKER_PROFILE';
-export const SPEAKER_PROFILE_UPDATED        = 'SPEAKER_PROFILE_UPDATED';
-export const SPEAKER_PROFILE_SAVED          = 'SPEAKER_PROFILE_SAVED';
-export const PROFILE_PIC_ATTACHED           = 'PROFILE_PIC_ATTACHED';
-export const BIG_PIC_ATTACHED               = 'BIG_PIC_ATTACHED';
-export const RECEIVE_ORG_ROLES              = 'RECEIVE_ORG_ROLES';
+export const RECEIVE_SPEAKER_PROFILE = 'RECEIVE_SPEAKER_PROFILE';
+export const RESET_PROFILE_FORM = 'RESET_PROFILE_FORM';
+export const UPDATE_SPEAKER_PROFILE = 'UPDATE_SPEAKER_PROFILE';
+export const SPEAKER_PROFILE_UPDATED = 'SPEAKER_PROFILE_UPDATED';
+export const SPEAKER_PROFILE_SAVED = 'SPEAKER_PROFILE_SAVED';
+export const PROFILE_PIC_ATTACHED = 'PROFILE_PIC_ATTACHED';
+export const BIG_PIC_ATTACHED = 'BIG_PIC_ATTACHED';
+export const RECEIVE_ORG_ROLES = 'RECEIVE_ORG_ROLES';
 
 
 export const getSpeaker = (speakerId) => (dispatch, getState) => {
 
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+    let {loggedUserState} = getState();
+    let {accessToken} = loggedUserState;
 
     dispatch(startLoading());
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
         expand: 'member,presentations'
     };
 
@@ -81,9 +81,9 @@ export const getSpeaker = (speakerId) => (dispatch, getState) => {
 
 export const getSpeakerPermission = (presentationId, speakerId, speakerType) => (dispatch, getState) => {
 
-    let { loggedUserState, profileState, baseState } = getState();
-    let { accessToken } = loggedUserState;
-    let { summit } = baseState;
+    let {loggedUserState, profileState, baseState} = getState();
+    let {accessToken} = loggedUserState;
+    let {summit} = baseState;
 
     if (speakerId == profileState.entity.id) {
         history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
@@ -93,7 +93,7 @@ export const getSpeakerPermission = (presentationId, speakerId, speakerType) => 
     dispatch(startLoading());
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
         expand: 'member,presentations'
     };
 
@@ -132,7 +132,7 @@ export const speakerPermissionErrorHandler = (err, res) => (dispatch) => {
             showCancelButton: true,
             confirmButtonColor: "#00ca00",
             confirmButtonText: T.translate("edit_speaker.request_auth")
-        }).then(function(result){
+        }).then(function (result) {
             if (result.value) {
                 dispatch(requestSpeakerPermission());
             }
@@ -143,14 +143,14 @@ export const speakerPermissionErrorHandler = (err, res) => (dispatch) => {
 }
 
 export const requestSpeakerPermission = () => (dispatch, getState) => {
-    let { loggedUserState, speakerState } = getState();
-    let { accessToken }                 = loggedUserState;
-    let { speakerPermissionRequest }    = speakerState;
+    let {loggedUserState, speakerState} = getState();
+    let {accessToken} = loggedUserState;
+    let {speakerPermissionRequest} = speakerState;
 
     dispatch(startLoading());
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     putRequest(
@@ -160,10 +160,10 @@ export const requestSpeakerPermission = () => (dispatch, getState) => {
         {},
         authErrorHandler
     )(params)(dispatch)
-    .then((payload) => {
-        dispatch(stopLoading());
-        dispatch(showSuccessMessage(T.translate("edit_speaker.auth_requested_success")));
-    });
+        .then((payload) => {
+            dispatch(stopLoading());
+            dispatch(showSuccessMessage(T.translate("edit_speaker.auth_requested_success")));
+        });
 
 
 }
@@ -173,15 +173,15 @@ export const resetSpeakerForm = (email = '') => (dispatch, getState) => {
 };
 
 export const saveSpeaker = (entity, type) => (dispatch, getState) => {
-    let { loggedUserState, presentationState, baseState } = getState();
-    let { accessToken } = loggedUserState;
-    let { summit } = baseState;
+    let {loggedUserState, presentationState, baseState} = getState();
+    let {accessToken} = loggedUserState;
+    let {summit} = baseState;
     let presentationId = presentationState.entity.id;
 
     dispatch(startLoading());
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     let pic_file = entity.pic_file;
@@ -222,7 +222,9 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
             .then((payload) => {
                 dispatch(showMessage(
                     success_message,
-                    () => { history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers`) }
+                    () => {
+                        history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers`)
+                    }
                 ));
             });
 
@@ -254,18 +256,20 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
             .then((payload) => {
                 dispatch(showMessage(
                     success_message,
-                    () => { history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers`) }
+                    () => {
+                        history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers`)
+                    }
                 ));
             });
     }
 }
 
 const uploadFile = (entity, file) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+    let {loggedUserState} = getState();
+    let {accessToken} = loggedUserState;
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     let formData = new FormData();
@@ -283,12 +287,12 @@ const uploadFile = (entity, file) => (dispatch, getState) => {
 
 
 export const assignSpeakerToPresentation = (speaker) => (dispatch, getState) => {
-    let { loggedUserState, presentationState } = getState();
-    let { accessToken }     = loggedUserState;
-    let presentationId      = presentationState.entity.id;
+    let {loggedUserState, presentationState} = getState();
+    let {accessToken} = loggedUserState;
+    let presentationId = presentationState.entity.id;
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     putRequest(
@@ -303,12 +307,12 @@ export const assignSpeakerToPresentation = (speaker) => (dispatch, getState) => 
 
 export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState) => {
 
-    let { loggedUserState, presentationState } = getState();
-    let { accessToken }     = loggedUserState;
-    let presentationId      = presentationState.entity.id;
+    let {loggedUserState, presentationState} = getState();
+    let {accessToken} = loggedUserState;
+    let presentationId = presentationState.entity.id;
 
     let params = {
-        access_token : accessToken
+        access_token: accessToken
     };
 
     dispatch(startLoading());
@@ -326,12 +330,12 @@ export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState)
 
 
 export const assignModeratorToPresentation = (moderator) => (dispatch, getState) => {
-    let { loggedUserState, presentationState } = getState();
-    let { accessToken }     = loggedUserState;
-    let presentationId      = presentationState.entity.id;
+    let {loggedUserState, presentationState} = getState();
+    let {accessToken} = loggedUserState;
+    let presentationId = presentationState.entity.id;
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     putRequest(
@@ -346,12 +350,12 @@ export const assignModeratorToPresentation = (moderator) => (dispatch, getState)
 
 export const removeModeratorFromPresentation = (moderatorId) => (dispatch, getState) => {
 
-    let { loggedUserState, presentationState } = getState();
-    let { accessToken }     = loggedUserState;
-    let presentationId      = presentationState.entity.id;
+    let {loggedUserState, presentationState} = getState();
+    let {accessToken} = loggedUserState;
+    let presentationId = presentationState.entity.id;
 
     let params = {
-        access_token : accessToken
+        access_token: accessToken
     };
 
     dispatch(startLoading());
@@ -366,7 +370,6 @@ export const removeModeratorFromPresentation = (moderatorId) => (dispatch, getSt
         }
     );
 };
-
 
 
 const normalizeEntity = (entity) => {
@@ -393,24 +396,18 @@ const normalizeEntity = (entity) => {
 }
 
 
-
-
-
-
-
 /******************************************** PROFILE *****************************************/
 
 
 
-
 export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
-    let { loggedUserState, presentationState } = getState();
-    let { accessToken }     = loggedUserState;
+    let {loggedUserState, presentationState} = getState();
+    let {accessToken} = loggedUserState;
 
     dispatch(startLoading());
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     let pic_file = entity.pic_file;
@@ -425,7 +422,7 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
 
     if (entity.id) {
 
-        putRequest(
+        return putRequest(
             createAction(UPDATE_SPEAKER_PROFILE),
             createAction(SPEAKER_PROFILE_SAVED),
             `${window.API_BASE_URL}/api/v1/speakers/${entity.id}`,
@@ -445,46 +442,44 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
                 success_message.html = T.translate("edit_profile.profile_saved");
                 dispatch(showMessage(success_message));
             });
-
-    } else {
-
-        postRequest(
-            createAction(UPDATE_SPEAKER_PROFILE),
-            createAction(SPEAKER_PROFILE_SAVED),
-            `${window.API_BASE_URL}/api/v1/speakers`,
-            normalizedEntity,
-            authErrorHandler,
-            entity
-        )(params)(dispatch)
-            .then((payload) => {
-                if (pic_file) {
-                    dispatch(uploadFileProfile(payload.response, pic_file));
-                }
-                if (big_pic_file) {
-                    dispatch(uploadFileBigPhoto(payload.response, big_pic_file));
-                }
-            })
-            .then((payload) => {
-                // we need to call this because we need the expanded member in the speaker payload
-                dispatch(getSpeakerInfo(null));
-            })
-            .then((payload) => {
-                success_message.html = T.translate("edit_profile.profile_saved");
-                dispatch(showMessage(success_message));
-            });
     }
+
+    return postRequest(
+        createAction(UPDATE_SPEAKER_PROFILE),
+        createAction(SPEAKER_PROFILE_SAVED),
+        `${window.API_BASE_URL}/api/v1/speakers`,
+        normalizedEntity,
+        authErrorHandler,
+        entity
+    )(params)(dispatch)
+        .then((payload) => {
+            if (pic_file) {
+                dispatch(uploadFileProfile(payload.response, pic_file));
+            }
+            if (big_pic_file) {
+                dispatch(uploadFileBigPhoto(payload.response, big_pic_file));
+            }
+        })
+        .then((payload) => {
+            // we need to call this because we need the expanded member in the speaker payload
+            dispatch(getSpeakerInfo(null));
+        })
+        .then((payload) => {
+            success_message.html = T.translate("edit_profile.profile_saved");
+            dispatch(showMessage(success_message));
+        });
 }
 
 
 const uploadFileProfile = (entity, file) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+    let {loggedUserState} = getState();
+    let {accessToken} = loggedUserState;
 
     let formData = new FormData();
     formData.append('file', file);
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     postRequest(
@@ -498,14 +493,14 @@ const uploadFileProfile = (entity, file) => (dispatch, getState) => {
 }
 
 const uploadFileBigPhoto = (entity, file) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+    let {loggedUserState} = getState();
+    let {accessToken} = loggedUserState;
 
     let formData = new FormData();
     formData.append('file', file);
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     postRequest(
@@ -520,13 +515,13 @@ const uploadFileBigPhoto = (entity, file) => (dispatch, getState) => {
 
 
 export const getOrganizationalRoles = () => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+    let {loggedUserState} = getState();
+    let {accessToken} = loggedUserState;
 
     dispatch(startLoading());
 
     let params = {
-        access_token : accessToken,
+        access_token: accessToken,
     };
 
     return getRequest(
@@ -544,8 +539,8 @@ export const getOrganizationalRoles = () => (dispatch, getState) => {
 const normalizeEntityProfile = (entity) => {
     let normalizedEntity = {...entity};
 
-    normalizedEntity.organizational_roles = entity.organizational_roles.filter( r => Number.isInteger(r));
-    normalizedEntity.other_organizational_role = entity.organizational_roles.filter( r => typeof r === 'string');
+    normalizedEntity.organizational_roles = entity.organizational_roles.filter(r => Number.isInteger(r));
+    normalizedEntity.other_organizational_role = entity.organizational_roles.filter(r => typeof r === 'string');
 
     normalizedEntity.areas_of_expertise = entity.areas_of_expertise.map(a => a.label);
     normalizedEntity.other_presentation_links = entity.other_presentation_links.filter(l => l.link);
