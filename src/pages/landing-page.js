@@ -43,6 +43,9 @@ class LandingPage extends React.Component {
 
     render(){
         let {doLogin, summit, isLoggedUser} = this.props;
+        var url = window.location.href;
+        var arr = url.split("/");
+        var domain = arr[0] + "//" + arr[2];
 
         if( !summit || isLoggedUser ) return null;
 
@@ -114,7 +117,7 @@ class LandingPage extends React.Component {
                             </div>
                             <div className="col-md-6 login-box">
                                 <div className="submit-subtitle"> {T.translate("landing.or_join_us")}</div>
-                                <a href="https://ss.staging.fnopen.com/join" className="btn btn-default btn-lg" target="_blank">
+                                <a href={`${window.IDP_BASE_URL}/auth/register?client_id=${window.OAUTH2_CLIENT_ID}&redirect_uri=${domain}/app/profile`} className="btn btn-default btn-lg" target="_blank">
                                     Register as a member
                                 </a>
                             </div>
