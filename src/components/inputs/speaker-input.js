@@ -32,17 +32,16 @@ const imageStyle = {
 const CustomOption = (option) => {
     if (option.__isNew__) {
         return option.label;
-    } else {
-        let {first_name, last_name, email, pic} = option;
-
-        return (
-            <div style={optionStyle}>
-                { pic && <img src={pic} style={imageStyle} /> }
-                { first_name }&nbsp;{ last_name }&nbsp;
-                { email && <span>({email})</span> }
-            </div>
-        );
     }
+    let {first_name, last_name, email, pic} = option;
+    email = decodeURIComponent(email);
+    return (
+        <div style={optionStyle}>
+            {pic && <img src={pic} style={imageStyle}/>}
+            {first_name}&nbsp;{last_name}&nbsp;
+            {email && <span>({email})</span>}
+        </div>
+    );
 };
 
 export default class CPFSpeakerInput extends React.Component {
@@ -56,11 +55,13 @@ export default class CPFSpeakerInput extends React.Component {
     }
 
     handleChange(value) {
-        let ev = {target: {
-            id: this.props.id,
-            value: value,
-            type: 'speakerinput'
-        }};
+        let ev = {
+            target: {
+                id: this.props.id,
+                value: value,
+                type: 'speakerinput'
+            }
+        };
 
         this.props.onChange(ev);
 
@@ -70,15 +71,15 @@ export default class CPFSpeakerInput extends React.Component {
         let {speakers} = this.props;
 
         if (speakers.length) {
-            return speakers.map(val => val.id).indexOf( option.value ) < 0
+            return speakers.map(val => val.id).indexOf(option.value) < 0
         }
 
         return true;
     }
 
-    getSpeakers (input, callback) {
+    getSpeakers(input, callback) {
         if (!input) {
-            return Promise.resolve({ options: [] });
+            return Promise.resolve({options: []});
         }
 
         querySpeakers(null, input, callback);
