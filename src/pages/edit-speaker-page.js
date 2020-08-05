@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 OpenStack Foundation
+ * Copyright 2020 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,12 +15,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
-import { formatEpoch } from '../utils/methods';
 import SpeakerForm from '../components/speaker-form'
 import { getSpeaker, resetSpeakerForm, saveSpeaker, getOrganizationalRoles } from "../actions/speaker-actions";
 import history from "../history";
 
-//import '../styles/presentations-page.less';
 
 class EditSpeakerPage extends React.Component {
 
@@ -54,9 +52,10 @@ class EditSpeakerPage extends React.Component {
         }
     }
 
-    componentWillMount () {
+    componentDidMount () {
         let speakerId = this.props.match.params.speaker_id;
-        let {entity, location, history, currentPresentation, orgRoles, summit}   = this.props;
+
+        let {entity, location, history, currentPresentation, loadedOrgRoles, summit}   = this.props;
 
         if (!location.state) {
             history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
@@ -72,7 +71,7 @@ class EditSpeakerPage extends React.Component {
             this.props.getSpeaker(speakerId);
         }
 
-        if (orgRoles.length == 0) {
+        if (!loadedOrgRoles) {
             this.props.getOrganizationalRoles();
         }
 
