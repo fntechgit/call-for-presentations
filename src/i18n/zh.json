@@ -102,7 +102,10 @@
     "remove_warning": "您正在删除演示文稿 ",
     "not_submitted" : "没有提交",
     "published"     : "发布",
-    "review"        : "Review"
+    "review"        : "Review",
+    "presentation_title": "Presentation Title",
+    "presentation_status": "Presentation Status",
+    "submission_plan": "Submission Plan"
   },
   "presentation_nav": {
     "summary": "总结",
@@ -159,7 +162,6 @@
     "permission_denied": "没有权限",
     "no_edit": "您无权编辑此演示文稿",
     "add_speaker_error": "您需要添加至少一名演讲者到演讲议题中来。",
-    "presentation_material": "Upload Presentation Material",
     "chair_comments": "Chair Comments",
     "presentation_material": "Presentation Material",
     "placeholders": {

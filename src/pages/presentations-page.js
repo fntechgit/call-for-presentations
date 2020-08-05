@@ -17,7 +17,6 @@ import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
 import { getAllPresentations, getSummitDocs } from '../actions/presentations-actions';
 import { deletePresentation } from '../actions/presentation-actions';
-import { formatEpoch } from '../utils/methods';
 import Presentation from '../model/presentation'
 
 import '../styles/presentations-page.less';
@@ -136,6 +135,14 @@ class PresentationsPage extends React.Component {
                         {presentations_created.length > 0 &&
                         <div className="col-md-12">
                             <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>{T.translate("presentations.presentation_title")}</th>
+                                        <th>{T.translate("presentations.presentation_status")}</th>
+                                        <th>{T.translate("presentations.submission_plan")}</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
                                 { presentations_created.map(p => {
                                     let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker);
@@ -186,6 +193,14 @@ class PresentationsPage extends React.Component {
                         {presentations_speaker.length > 0 &&
                         <div className="col-md-12">
                             <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>{T.translate("presentations.presentation_title")}</th>
+                                        <th>{T.translate("presentations.presentation_status")}</th>
+                                        <th>{T.translate("presentations.submission_plan")}</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
                                 { presentations_speaker.map(p => {
                                     let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker);
@@ -223,6 +238,14 @@ class PresentationsPage extends React.Component {
                         {presentations_moderator.length > 0 &&
                         <div className="col-md-12">
                             <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>{T.translate("presentations.presentation_title")}</th>
+                                        <th>{T.translate("presentations.presentation_status")}</th>
+                                        <th>{T.translate("presentations.submission_plan")}</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </thead>
                                 <tbody>
                                 { presentations_moderator.map(p => {
                                     let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker);

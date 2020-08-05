@@ -12,7 +12,7 @@
  **/
 
 import T from 'i18n-react/dist/i18n-react';
-import {NavStepsDefinitions} from "../components/presentation-nav/nav-steps-definition";
+import {formatEpoch} from "../utils/methods";
 
 class Presentation {
 
@@ -81,7 +81,15 @@ class Presentation {
     }
 
     getSelectionPlanName() {
-        let selectionPlanName = (this._presentation.selectionPlan) ? this._presentation.selectionPlan.name : 'N/A';
+        const {selectionPlan} = this._presentation;
+        let selectionPlanName = 'N/A';
+
+        if (selectionPlan) {
+            const startDate = formatEpoch(selectionPlan.submission_begin_date, 'MMM Do');
+            const endDate = formatEpoch(selectionPlan.submission_end_date, 'MMM Do');
+            selectionPlanName = `${selectionPlan.name} - ${startDate} to ${endDate}`;
+        } 
+        
         return selectionPlanName;
     }
 

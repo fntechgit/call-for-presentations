@@ -108,7 +108,10 @@
     "remove_warning": "You are deleting presentation ",
     "not_submitted" : "not submitted",
     "published"     : "published",
-    "review"        : "Review"
+    "review"        : "Review",
+    "presentation_title": "Presentation Title",
+    "presentation_status": "Presentation Status",
+    "submission_plan": "Submission Plan"
   },
   "presentation_nav": {
     "summary": "Summary",
@@ -165,7 +168,6 @@
     "permission_denied": "Permission Denied",
     "no_edit": "You are not allowed to edit this presentation",
     "add_speaker_error": "You need to add at least one speaker or moderator to the presentation.",
-    "presentation_material": "Upload Presentation Material",
     "chair_comments": "Chair Comments",
     "presentation_material": "Presentation Material",
     "placeholders": {
