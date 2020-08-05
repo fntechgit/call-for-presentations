@@ -269,9 +269,13 @@ const normalizeEntity = (entity) => {
     return normalizedEntity;
 };
 
-const presentationErrorHandler = (err, res) => (dispatch) => {
+
+const presentationErrorHandler = (err, res) => (dispatch, getState) => {
     let code = err.status;
     dispatch(stopLoading());
+
+    let {baseState} = getState();
+    let {summit} = baseState;
 
     let msg = '';
 
@@ -291,7 +295,7 @@ const presentationErrorHandler = (err, res) => (dispatch) => {
             dispatch(showMessage(
                 error_message,
                 () => {
-                    window.location = `${window.location.origin}/presentations`
+                    history.push(`/app/${summit.slug}/presentations/`);
                 }
             ));
             break;
@@ -299,5 +303,6 @@ const presentationErrorHandler = (err, res) => (dispatch) => {
             Swal.fire("ERROR", T.translate("errors.server_error"), "error");
     }
 };
+
 
 

@@ -53,6 +53,7 @@ const DEFAULT_STATE = {
     speakerPermissionRequest: 0,
     speakerPermission: 0,
     orgRoles: [],
+    loadedOrgRoles: false,
     errors: {}
 };
 
@@ -121,7 +122,7 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
         break;
         case RECEIVE_ORG_ROLES: {
             let orgRoles = [...payload.response.data];
-            return {...state, orgRoles: orgRoles}
+            return {...state, orgRoles: orgRoles, loadedOrgRoles: true}
         }
         break;
         case REQUEST_SPEAKER_PERMISSION: {
