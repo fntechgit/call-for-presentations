@@ -98,7 +98,7 @@ const currentSummitErrorHandler = (err, res) => (dispatch, state) => {
 export const getCurrentSummitPublic = (id) => (dispatch, getState) => {
 
     let params = {
-        expand: 'event_types,tracks'
+        expand: 'event_types,event_types.allowed_media_upload_types,event_types.allowed_media_upload_types.type,tracks'
     };
 
     return getRequest(

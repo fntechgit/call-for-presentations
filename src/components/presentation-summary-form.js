@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 OpenStack Foundation
+ * Copyright 2020 OpenStack Foundation
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,7 @@ import { Input, TextEditor, UploadInput, Dropdown, RadioList, TextArea, Exclusiv
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 import SubmitButtons from './presentation-submit-buttons'
 import {validate, scrollToError} from '../utils/methods'
-
+import Swal from "sweetalert2";
 
 
 class PresentationSummaryForm extends React.Component {
@@ -34,6 +34,7 @@ class PresentationSummaryForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleUploadFile = this.handleUploadFile.bind(this);
         this.handleRemoveFile = this.handleRemoveFile.bind(this);
+        this.handleFileError = this.handleFileError.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -51,18 +52,80 @@ class PresentationSummaryForm extends React.Component {
         }
     }
 
-    handleUploadFile(file) {
-        let entity = {...this.state.entity};
-        entity.material_file = file;
-        entity.material_preview = file.preview;
-        this.setState({entity: entity});
+    handleUploadFile(file, props) {
+
+        let { errors, entity} = this.state;
+        let {mediatype, mediaupload } = props;
+
+        if(mediaupload == null){
+            // new media upload
+            mediaupload = {
+                id: 0,
+                media_upload_type : mediatype,
+            };
+            // add
+            entity.media_uploads = [...entity.media_uploads, mediaupload];
+        }
+
+        if(mediaupload.hasOwnProperty('should_delete'))
+            delete mediaupload.should_delete;
+
+        mediaupload.file = file;
+        mediaupload.private_url = file.preview;
+
+        // update
+        entity.media_uploads = entity.media_uploads.map((item, index) => {
+            if (index !== mediaupload.index) {
+                // This isn't the item we care about - keep it as-is
+                return item
+            }
+
+            return {
+                ...item,
+                ...mediaupload
+            }
+        });
+
+        delete errors[mediatype.name];
+
+        this.setState({...this.state, entity, errors});
     }
 
-    handleRemoveFile(ev) {
+    handleFileError(error, props){
+        if(error.length > 0){
+            let file = error[0];
+            let {mediatype } = props;
+            Swal.fire("Validation Error", `File size is greather than allowed ${mediatype.max_size/1024} MB`, "warning");
+        }
+    }
+
+    handleRemoveFile(ev, props) {
+
         let entity = {...this.state.entity};
-        entity.material_file = null;
-        entity.material_preview = '';
-        entity.remove_material = entity.material;
+        let { mediaupload } = props;
+
+        mediaupload.should_delete = true;
+        mediaupload.private_url = '';
+        mediaupload.file = null;
+
+        if(mediaupload.id  > 0 ){
+            entity.media_uploads = entity.media_uploads.map((item, index) => {
+                if (index !== mediaupload.index) {
+                    // This isn't the item we care about - keep it as-is
+                    return item
+                }
+
+                return {
+                    ...item,
+                    ...mediaupload
+                }
+            });
+        }
+        else{
+            // delete it
+            entity.media_uploads=  [...entity.media_uploads.slice(0, mediaupload.index), ...entity.media_uploads.slice(mediaupload.index + 1)];
+        }
+
         this.setState({entity:entity});
     }
 
@@ -71,7 +134,7 @@ class PresentationSummaryForm extends React.Component {
         let errors = {...this.state.errors};
         let {value, id} = ev.target;
 
-        if (ev.target.type == 'checkbox') {
+        if (ev.target.type === 'checkbox') {
             value = ev.target.checked;
         }
 
@@ -88,7 +151,9 @@ class PresentationSummaryForm extends React.Component {
     }
 
     handleSubmit(ev) {
+
         let {entity, errors} = this.state;
+        let { summit } = this.props;
         ev.preventDefault();
 
         let rules = {
@@ -98,22 +163,42 @@ class PresentationSummaryForm extends React.Component {
             level: {required: 'Please select the level.'},
             description: {
                 required: 'Abstract is required.',
-                maxLength: {value: 1000, msg: 'Value exeeded max limit of 1000 characters'}
+                maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
             },
             social_description: {
                 required: 'Social summary is required.',
-                maxLength: {value: 100, msg: 'Value exeeded max limit of 100 characters'}
+                maxLength: {value: 100, msg: 'Value exceeds max limit of 100 characters'}
             },
             attendees_expected_learnt: {
                 required: 'This field is required.',
-                maxLength: {value: 1000, msg: 'Value exeeded max limit of 100 characters'}
+                maxLength: {value: 1000, msg: 'Value exceeds max limit of 100 characters'}
             },
             links: { links: 'Link is not valid. Links must start with http:// or https://' },
         }
 
-        validate(entity, rules, errors)
+        validate(entity, rules, errors);
 
-        if (Object.keys(errors).length == 0) {
+        var cur_event_type = summit.event_types.find(ev => ev.id === entity.type_id);
+        let allowed_media_upload_types = [];
+        if(cur_event_type){
+            allowed_media_upload_types = cur_event_type.allowed_media_upload_types;
+        }
+
+        for(var mediaUploadType of allowed_media_upload_types){
+            if(mediaUploadType.is_mandatory){
+                // check if user provided file
+                var mediaUpload = this.getMediaUploadByType(entity, mediaUploadType);
+                if(! mediaUpload){
+                    errors[mediaUploadType.name] = 'This field is required.';
+                }
+
+                if(this.getMediaUploadFile(entity, mediaUploadType) == null && this.getMediaUploadFilePreview(entity, mediaUploadType) === ''){
+                    errors[mediaUploadType.name] = 'This field is required.';
+                }
+            }
+        }
+
+        if (Object.keys(errors).length === 0) {
             this.props.onSubmit(entity, 'tags');
         } else {
             this.setState({errors}, () => {
@@ -133,6 +218,43 @@ class PresentationSummaryForm extends React.Component {
         return '';
     }
 
+    getMediaUploadFile(entity, mediaType){
+        if(entity.media_uploads.length > 0 ){
+            let mediaUpload = entity.media_uploads.filter(mu => mu.hasOwnProperty('media_upload_type') && mu.media_upload_type.id === mediaType.id);
+            if(mediaUpload.length > 0){
+                return mediaUpload[0].file;
+            }
+        }
+        return null;
+    }
+
+    getMediaUploadFilePreview(entity, mediaType){
+        if(entity.media_uploads.length > 0 ){
+            let mediaUpload = entity.media_uploads.filter(mu => mu.hasOwnProperty('media_upload_type') && mu.media_upload_type.id === mediaType.id);
+            if(mediaUpload.length > 0){
+                if(mediaUpload[0].hasOwnProperty('should_delete') && mediaUpload[0].should_delete)
+                    return '';
+                return mediaUpload[0].private_url !== '' ?  mediaUpload[0].private_url : mediaUpload[0].public_url ;
+            }
+        }
+        return '';
+    }
+
+    getMediaUploadFileName(entity, mediaType){
+        if(entity.media_uploads.length > 0 ){
+            let mediaUpload = entity.media_uploads.filter(mu => mu.hasOwnProperty('media_upload_type') && mu.media_upload_type.id === mediaType.id);
+            if(mediaUpload.length > 0){
+                return mediaUpload[0].hasOwnProperty('should_delete') && mediaUpload[0].should_delete ? '' : mediaUpload[0].filename;
+            }
+        }
+        return '';
+    }
+
+    getMediaUploadByType(entity, mediaType){
+        if(entity.media_uploads.length > 0 )
+            return entity.media_uploads.find(mu => mu.hasOwnProperty('media_upload_type') && mu.media_upload_type.id === mediaType.id);
+        return null;
+    }
 
     render() {
         let {entity} = this.state;
@@ -148,7 +270,7 @@ class PresentationSummaryForm extends React.Component {
 
         let event_types_limits = '';
         for (var event_type of event_types_ddl) {
-            let ev_type_obj = summit.event_types.find(ev => ev.id == event_type.value);
+            let ev_type_obj = summit.event_types.find(ev => ev.id === event_type.value);
             event_types_limits += ev_type_obj.name + ': ' + T.translate("edit_presentation.format_max_speakers") + ' ' + ev_type_obj.max_speakers;
             if (ev_type_obj.max_moderators) {
                 event_types_limits += ', ' + T.translate("edit_presentation.format_max_moderators") + ' ' + ev_type_obj.max_moderators;
@@ -177,6 +299,11 @@ class PresentationSummaryForm extends React.Component {
             {label: T.translate("general.no"), value: 0}
         ];
 
+        var cur_event_type = summit.event_types.find(ev => ev.id === entity.type_id);
+        let allowed_media_upload_types = [];
+        if(cur_event_type){
+            allowed_media_upload_types = cur_event_type.allowed_media_upload_types;
+        }
 
         return (
             <form className="presentation-summary-form">
@@ -286,24 +413,42 @@ class PresentationSummaryForm extends React.Component {
                     </div>
                 </div>
 
-                <Exclusive name="presentation-attachment">
-                    <hr/>
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <label>{T.translate("edit_presentation.presentation_material")}</label>
-                            <UploadInput
-                                value={entity.material_preview}
-                                file={entity.material_file}
-                                handleUpload={this.handleUploadFile}
-                                handleRemove={this.handleRemoveFile}
-                                className="dropzone col-md-6"
-                                multiple={false}
-                                accept="application/pdf"
-                            />
-                        </div>
-                    </div>
-                </Exclusive>
 
+                { allowed_media_upload_types.length > 0 &&
+
+                    <Exclusive name="presentation-attachment">
+
+                        <hr/>
+                        {
+                            allowed_media_upload_types.map(media_type => (
+                                <div key={media_type.id} className="row form-group">
+                                    <div className="col-md-12">
+                                        <label>{media_type.name} ({media_type.type.allowed_extensions.map((ext) => `.${ext.toLowerCase()}`).join(",")}) - Max. Size {media_type.max_size/1024} MB</label>
+                                        {
+                                            media_type.description !== '' &&
+                                            <h4>{media_type.description}</h4>
+                                        }
+                                        <UploadInput
+                                            fileName={this.getMediaUploadFileName(entity, media_type)}
+                                            mediatype= {media_type}
+                                            mediaupload={this.getMediaUploadByType(entity, media_type)}
+                                            handleUpload={this.handleUploadFile}
+                                            handleRemove={this.handleRemoveFile}
+                                            handleError={this.handleFileError}
+                                            className="dropzone col-md-6"
+                                            multiple={false}
+                                            maxSize={media_type.max_size * 1024}
+                                            error={this.hasErrors(media_type.name)}
+                                            value={this.getMediaUploadFilePreview(entity, media_type)}
+                                            file={this.getMediaUploadFile(entity, media_type)}
+                                            accept={media_type.type.allowed_extensions.map((ext) => `.${ext.toLowerCase()}`).join(",")}
+                                        />
+                                    </div>
+                                </div>
+                            ))
+                        }
+                    </Exclusive>
+                }
                 <hr/>
                 <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} />
             </form>

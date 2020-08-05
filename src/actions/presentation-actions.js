@@ -20,7 +20,6 @@ import {
     stopLoading,
     startLoading,
     showMessage,
-    showSuccessMessage,
     authErrorHandler,
     doLogin,
     postFile,
@@ -29,7 +28,6 @@ import {
 import T from "i18n-react/dist/i18n-react";
 import Swal from "sweetalert2";
 import history from '../history'
-
 
 export const RECEIVE_PRESENTATION = 'RECEIVE_PRESENTATION';
 export const REQUEST_PRESENTATION = 'REQUEST_PRESENTATION';
@@ -53,7 +51,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let params = {
         access_token: accessToken,
-        expand: 'track_groups, speakers, presentation_materials, type'
+        expand: 'track_groups,speakers,presentation_materials,type,media_uploads,media_uploads.media_upload_type'
     };
 
     return getRequest(
@@ -72,7 +70,7 @@ export const resetPresentation = () => (dispatch, getState) => {
     dispatch(createAction(RESET_PRESENTATION)({}));
 };
 
-export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
+export const savePresentation = (entity, nextStep) => async (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
     let {summit} = baseState;
@@ -96,18 +94,35 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
             entity
         )(params)(dispatch)
             .then((payload) => {
-                if (entity.material_file) {
-                    dispatch(savePresentationMaterial(payload.response, entity.material, entity.material_file));
-                } else if (entity.remove_material) {
-                    dispatch(deletePresentationMaterial(entity.id, entity.remove_material.id));
+
+                let promises = [];
+
+                if (entity.media_uploads.length > 0) {
+                    promises = entity.media_uploads.map( async (mediaUpload) =>
+                    {
+                        if(mediaUpload.hasOwnProperty('should_delete') && mediaUpload.should_delete && mediaUpload.id > 0)
+                            return await dispatch(deleteMediaUpload(entity.id, mediaUpload.id));
+                        if(mediaUpload.hasOwnProperty('file') && mediaUpload.file)
+                            return await dispatch(saveMediaUpload(payload.response, mediaUpload, mediaUpload.file));
+                        // do nothing
+                        return true;
+                    });
+                    return Promise.all(promises).then(() => {
+                            dispatch(stopLoading());
+
+                            return payload;
+                        }
+                    );
                 }
+
                 return payload;
             })
             .then((payload) => {
                 dispatch(stopLoading());
-                history.push(`/app/${summit.slug}/presentations/${payload.response.id}/${nextStep}`);
+                dispatch(getPresentation(payload.response.id)).then((payload) =>
+                    history.push(`/app/${summit.slug}/presentations/${payload.id}/${nextStep}`)
+                );
             });
-
     }
 
     return postRequest(
@@ -119,19 +134,30 @@ export const savePresentation = (entity, nextStep) => (dispatch, getState) => {
         entity
     )(params)(dispatch)
         .then((payload) => {
-            if (entity.material_file) {
-                dispatch(savePresentationMaterial(payload.response, null, entity.material_file));
+
+            let promises = [];
+
+            if (entity.media_uploads.length > 0) {
+                promises = entity.media_uploads.map( async (mediaUpload) => await dispatch(saveMediaUpload(payload.response, mediaUpload, mediaUpload.file)));
+                return Promise.all(promises).then(() => {
+                        dispatch(stopLoading());
+                        return payload;
+                    }
+                );
             }
+
             return payload;
         })
         .then((payload) => {
             dispatch(stopLoading());
-            history.push(`/app/${summit.slug}/presentations/${payload.response.id}/tags`);
+            dispatch(getPresentation(payload.response.id)).then((payload) =>
+                history.push(`/app/${summit.slug}/presentations/${payload.id}/tags`)
+            );
         });
 
 }
 
-const savePresentationMaterial = (entity, material, file) => (dispatch, getState) => {
+const saveMediaUpload = (entity, mediaUpload, file) => (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
     let {summit} = baseState;
@@ -140,39 +166,34 @@ const savePresentationMaterial = (entity, material, file) => (dispatch, getState
         access_token: accessToken,
     };
 
-    if (material && material.id) {
+    if(mediaUpload.hasOwnProperty('media_upload_type'))
+        mediaUpload.media_upload_type_id = mediaUpload.media_upload_type.id;
 
-        delete (material.link);
+    if (mediaUpload.id > 0) {
 
-        putFile(
+        return putFile(
             null,
             createAction(PRESENTATION_MATERIAL_ATTACHED),
-            `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/slides/${material.id}`,
+            `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/media-uploads/${mediaUpload.id}`,
             file,
-            material,
+            mediaUpload,
             authErrorHandler
         )(params)(dispatch);
 
-    } else {
-        let material = {
-            name: 'Speaker PDF',
-            description: 'empty',
-            featured: 0,
-            display_on_site: 0
-        };
-
-        postFile(
-            null,
-            createAction(PRESENTATION_MATERIAL_ATTACHED),
-            `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/slides`,
-            file,
-            material,
-            authErrorHandler
-        )(params)(dispatch);
     }
+
+    return postFile(
+            null,
+            createAction(PRESENTATION_MATERIAL_ATTACHED),
+            `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/media-uploads`,
+            file,
+            mediaUpload,
+            authErrorHandler
+        )(params)(dispatch);
+
 }
 
-export const deletePresentationMaterial = (presentationId, materialId) => (dispatch, getState) => {
+export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getState) => {
 
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
@@ -185,11 +206,10 @@ export const deletePresentationMaterial = (presentationId, materialId) => (dispa
     return deleteRequest(
         null,
         createAction(PRESENTATION_MATERIAL_DELETED)({materialId}),
-        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}/slides/${materialId}`,
+        `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}/media-uploads/${materialId}`,
         authErrorHandler
     )(params)(dispatch);
 };
-
 
 export const completePresentation = (entity) => (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();
@@ -236,7 +256,6 @@ export const deletePresentation = (presentationId) => (dispatch, getState) => {
         }
     );
 };
-
 
 const normalizeEntity = (entity) => {
     let normalizedEntity = {...entity};

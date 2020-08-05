@@ -49,10 +49,8 @@ export const DEFAULT_ENTITY = {
     tags: [],
     speakers: [],
     moderator: null,
-    material: null,
-    material_preview: null,
-    material_file: null,
-    public_comments: []
+    media_uploads:[],
+    public_comments: [],
 }
 
 const DEFAULT_STATE = {
@@ -106,10 +104,8 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
                 entity.links.fill('', length, 5);
             }
 
-            if (entity.slides.length > 0) {
-                entity.material = entity.slides[0];
-                entity.material_preview = entity.material.link;
-                entity.material_file = null;
+            if (entity.hasOwnProperty('media_uploads')) {
+                entity.media_uploads = entity.media_uploads.map((item, index) => ({...item, index: index}));
             }
 
             if(entity.type) {
@@ -141,7 +137,7 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
         break;
         case PRESENTATION_MATERIAL_ATTACHED: {
             let material = {...payload.response};
-            return {...state, entity: {...state.entity, material: material, material_preview: '', material_file: null} };;
+            return {...state, entity: {...state.entity, material: material, material_preview: '', material_file: null} };
         }
         break;
         case RECEIVE_EVENT_CATEGORY: {
