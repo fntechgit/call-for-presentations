@@ -194,6 +194,9 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
     };
 
     if (entity.id) {
+        if(entity.hasOwnProperty("email"))
+            // we do not send on update
+            delete entity.email;
 
         putRequest(
             createAction(UPDATE_SPEAKER),
@@ -228,40 +231,40 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
                 ));
             });
 
-    } else {
-
-        postRequest(
-            createAction(UPDATE_SPEAKER),
-            createAction(SPEAKER_SAVED),
-            `${window.API_BASE_URL}/api/v1/speakers`,
-            normalizedEntity,
-            authErrorHandler,
-            entity
-        )(params)(dispatch)
-            .then((payload) => {
-                if (type == 'moderator') {
-                    success_message.html = T.translate("edit_speaker.moderator_created");
-                    dispatch(assignModeratorToPresentation(payload.response));
-                } else {
-                    success_message.html = T.translate("edit_speaker.speaker_created");
-                    dispatch(assignSpeakerToPresentation(payload.response));
-                }
-                return payload;
-            })
-            .then((payload) => {
-                if (pic_file) {
-                    dispatch(uploadFile(payload.response, pic_file));
-                }
-            })
-            .then((payload) => {
-                dispatch(showMessage(
-                    success_message,
-                    () => {
-                        history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers`)
-                    }
-                ));
-            });
     }
+
+    postRequest(
+        createAction(UPDATE_SPEAKER),
+        createAction(SPEAKER_SAVED),
+        `${window.API_BASE_URL}/api/v1/speakers`,
+        normalizedEntity,
+        authErrorHandler,
+        entity
+    )(params)(dispatch)
+        .then((payload) => {
+            if (type == 'moderator') {
+                success_message.html = T.translate("edit_speaker.moderator_created");
+                dispatch(assignModeratorToPresentation(payload.response));
+            } else {
+                success_message.html = T.translate("edit_speaker.speaker_created");
+                dispatch(assignSpeakerToPresentation(payload.response));
+            }
+            return payload;
+        })
+        .then((payload) => {
+            if (pic_file) {
+                dispatch(uploadFile(payload.response, pic_file));
+            }
+        })
+        .then((payload) => {
+            dispatch(showMessage(
+                success_message,
+                () => {
+                    history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers`)
+                }
+            ));
+        });
+
 }
 
 const uploadFile = (entity, file) => (dispatch, getState) => {

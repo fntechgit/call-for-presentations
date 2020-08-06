@@ -104,7 +104,6 @@ class SpeakerForm extends React.Component {
             title: {required: 'Title is required.'},
             first_name: {required: 'First name is required.'},
             last_name: {required: 'Last name is required.'},
-            email: {required: 'Email is required.', email: 'This is not a valid email address.'},
             country: { required: 'Please select a Country.'},
             bio: { required: 'Please tell us about yourself.', maxLength: {value: 1000, msg: 'Value exeeded max limit of 1000 characters'}},
             other_presentation_links: {title_link: 'Links must start with http or https'}
@@ -129,10 +128,8 @@ class SpeakerForm extends React.Component {
         if(field in errors) {
             return errors[field];
         }
-
         return '';
     }
-
 
     render() {
         let {entity} = this.state;
@@ -161,7 +158,7 @@ class SpeakerForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-4">
                         <label> {T.translate("edit_speaker.email")} </label>
-                        <Input disabled className="form-control" id="email" value={entity.email} onChange={this.handleChange} error={this.hasErrors('email')}/>
+                        <Input disabled className="form-control" id="email" value={decodeURIComponent(entity.email)} onChange={this.handleChange}/>
                     </div>
                     <div className="col-md-4">
                         <label> {T.translate("edit_speaker.twitter")} </label>
@@ -210,6 +207,7 @@ class SpeakerForm extends React.Component {
                         />
                     </div>
                 </div>
+
                 {showAffiliation &&
                 <div className="row form-group">
                     <div className="col-md-12">
@@ -223,6 +221,7 @@ class SpeakerForm extends React.Component {
                     </div>
                 </div>
                 }
+
                 <Exclusive name="speaker-recording-disclaimer">
                     <div>
                         <hr/>
@@ -234,6 +233,7 @@ class SpeakerForm extends React.Component {
                         </div>
                     </div>
                 </Exclusive>
+
                 <Exclusive name="speaker-bureau">
                     <div className="row form-group speaker-bureau-wrapper">
                         <div className="col-md-12">
@@ -258,6 +258,8 @@ class SpeakerForm extends React.Component {
                         </div>
                     </div>
                 </Exclusive>
+
+
                 <hr/>
                 <div className="row form-group">
                     <div className="col-md-12">
@@ -265,12 +267,14 @@ class SpeakerForm extends React.Component {
                         <LanguageInput id="languages" multi value={entity.languages} onChange={this.handleChange} />
                     </div>
                 </div>
+
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label>{T.translate("edit_speaker.expertise")}</label><br/>
                         <FreeMultiTextInput id="areas_of_expertise" limit={5} value={entity.areas_of_expertise} onChange={this.handleChange} />
                     </div>
                 </div>
+
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label>{T.translate("edit_speaker.previous_links")}</label>
@@ -284,8 +288,10 @@ class SpeakerForm extends React.Component {
                         />
                     </div>
                 </div>
+
                 <hr/>
                 <h3>{T.translate("edit_speaker.travel")}</h3>
+
                 <div className="row form-group">
                     <div className="col-md-12 checkboxes-div">
                         <div className="form-check abc-checkbox">
@@ -310,6 +316,7 @@ class SpeakerForm extends React.Component {
                         </div>
                     </div>
                 </div>
+
                 <Exclusive name="speaker-role">
                     <div>
                         <hr/>
