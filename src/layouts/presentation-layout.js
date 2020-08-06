@@ -47,7 +47,7 @@ class PresentationLayout extends React.Component {
         let { match, entity, summit, selectionPlan, speaker, history, loading, location } = this.props;
         let isNew = !match.params.presentation_id;
 
-        if (loading || (!isNew && !entity.id)) return null;
+        if (loading || (!isNew && !entity.id) || !location.pathname) return null;
 
         let presentation = new Presentation(entity, summit, selectionPlan, speaker);
 
