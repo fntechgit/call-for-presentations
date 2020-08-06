@@ -165,6 +165,8 @@
     "chair_comments": "Chair Comments",
     "presentation_material": "Presentation Material",
     "placeholders": {
+      "type_id" : "-- Select One --",
+      "level" : "-- Select One --"
     }
   },
   "edit_speaker": {

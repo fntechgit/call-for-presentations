@@ -278,8 +278,13 @@ class PresentationSummaryForm extends React.Component {
             event_types_limits += ' - ';
         }
 
+        // empty value
+        event_types_ddl.push({value: 0, label: T.translate("edit_presentation.placeholders.type_id"), type: ''});
+
         // TODO get event level options
         let level_ddl = [
+            // empty value
+            {label: T.translate("edit_presentation.placeholders.level"), value: ''},
             {label: T.translate("event_level.Beginner"), value: 'Beginner'},
             {label: T.translate("event_level.Intermediate"), value: 'Intermediate'},
             {label: T.translate("event_level.Advanced"), value: 'Advanced'},
