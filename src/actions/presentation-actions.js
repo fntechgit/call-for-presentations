@@ -118,9 +118,10 @@ export const savePresentation = (entity, nextStep) => async (dispatch, getState)
                 return payload;
             })
             .then((payload) => {
-                dispatch(stopLoading());
-                dispatch(getPresentation(payload.response.id)).then((payload) =>
-                    history.push(`/app/${summit.slug}/presentations/${payload.id}/${nextStep}`)
+                dispatch(getPresentation(payload.response.id)).then((payload) => {
+                        dispatch(stopLoading());
+                        history.push(`/app/${summit.slug}/presentations/${payload.id}/${nextStep}`);
+                    }
                 );
             });
     }
@@ -149,9 +150,10 @@ export const savePresentation = (entity, nextStep) => async (dispatch, getState)
             return payload;
         })
         .then((payload) => {
-            dispatch(stopLoading());
-            dispatch(getPresentation(payload.response.id)).then((payload) =>
-                history.push(`/app/${summit.slug}/presentations/${payload.id}/tags`)
+            dispatch(getPresentation(payload.response.id)).then((payload) => {
+                    dispatch(stopLoading());
+                    history.push(`/app/${summit.slug}/presentations/${payload.id}/tags`);
+                }
             );
         });
 
