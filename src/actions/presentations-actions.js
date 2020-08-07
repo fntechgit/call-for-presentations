@@ -19,6 +19,8 @@ import {
     authErrorHandler
 } from "openstack-uicore-foundation/lib/methods";
 
+import {getTagGroups} from './base-actions';
+
 export const CREATED_RECEIVED       = 'CREATED_RECEIVED';
 export const SPEAKER_RECEIVED       = 'SPEAKER_RECEIVED';
 export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
@@ -38,7 +40,9 @@ export const getAllPresentations = (summitId) => async (dispatch, getState) => {
 
     let moderator = await dispatch(getModeratorPresentations(summitId, accessToken));
 
-    return Promise.all([created, speaker, moderator]).then(() => {
+    let tagGroups = await dispatch(getTagGroups(summitId));
+
+    return Promise.all([created, speaker, moderator, tagGroups]).then(() => {
             dispatch(stopLoading());
             return [...created.response.data, ...speaker.response.data, ...moderator.response.data];
         }
