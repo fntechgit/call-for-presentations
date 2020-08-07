@@ -14,6 +14,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
+import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 import { savePresentation, completePresentation } from "../actions/presentation-actions";
 import { getSpeakerPermission, removeSpeakerFromPresentation, removeModeratorFromPresentation, assignModeratorToPresentation, assignSpeakerToPresentation } from "../actions/speaker-actions";
 import { loadEventCategory } from "../actions/base-actions";
@@ -26,6 +27,7 @@ import PresentationReviewForm from "../components/presentation-review-form";
 
 import '../styles/edit-presentation-page.less';
 import Presentation from "../model/presentation";
+import {getMarketingValue} from "../components/marketing-setting";
 
 class EditPresentationPage extends React.Component {
 
@@ -63,6 +65,7 @@ class EditPresentationPage extends React.Component {
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
         let presentation = new Presentation(entity, summit, selectionPlan, loggedSpeaker);
+        const disclaimer = getMarketingValue('spkmgmt_disclaimer');
 
         if (!summit.event_types || !summit.tracks) return null;
 
@@ -75,6 +78,13 @@ class EditPresentationPage extends React.Component {
 
                 {step == 'summary' &&
                 <div className="presentation-form-wrapper">
+                    {disclaimer &&
+                    <div className="disclaimer">
+                        <RawHTML>
+                            {disclaimer}
+                        </RawHTML>
+                    </div>
+                    }
                     <PresentationSummaryForm
                         entity={entity}
                         presentation={presentation}
