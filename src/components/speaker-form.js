@@ -103,6 +103,7 @@ class SpeakerForm extends React.Component {
         let rules = {
             title: {required: 'Title is required.'},
             first_name: {required: 'First name is required.'},
+            email: {required: 'Email is required.', email: 'This is not a valid email address.'},
             last_name: {required: 'Last name is required.'},
             country: { required: 'Please select a Country.'},
             bio: { required: 'Please tell us about yourself.', maxLength: {value: 1000, msg: 'Value exeeded max limit of 1000 characters'}},
