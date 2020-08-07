@@ -52,7 +52,6 @@ export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
         dispatch(stopLoading());
 
         if (backUrl) {
-            console.log(`redirecting to ${backUrl}`);
             history.push(backUrl);
         }
     });

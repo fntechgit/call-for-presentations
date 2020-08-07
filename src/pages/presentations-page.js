@@ -16,7 +16,7 @@ import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
 import { getAllPresentations, getSummitDocs } from '../actions/presentations-actions';
-import { deletePresentation } from '../actions/presentation-actions';
+import { deletePresentation, resetPresentation } from '../actions/presentation-actions';
 import Presentation from '../model/presentation'
 
 import '../styles/presentations-page.less';
@@ -30,10 +30,8 @@ class PresentationsPage extends React.Component {
     }
 
     componentDidMount () {
-        console.log('PresentationsPage::componentDidMount');
         let {summit, loggedSpeaker, history} = this.props;
         if(loggedSpeaker == null){
-            console.log('navigating to profile ...');
             history.push(`/app/profile`);
             return;
         }
@@ -41,6 +39,8 @@ class PresentationsPage extends React.Component {
             if (presentations.length > 0) {
                 this.props.getSummitDocs(presentations, summit.id);
             }
+            // clear presentation form
+            this.props.resetPresentation();
         });
     }
 
@@ -299,6 +299,7 @@ export default connect (
     {
         getAllPresentations,
         deletePresentation,
-        getSummitDocs
+        getSummitDocs,
+        resetPresentation
     }
 )(PresentationsPage);

@@ -23,7 +23,7 @@ import 'sweetalert2/dist/sweetalert2.css';
 import 'openstack-uicore-foundation/lib/css/components.css';
 
 const onBeforeLift = () => {
-    console.log("reading state ...")
+
 }
 
 ReactDOM.render(

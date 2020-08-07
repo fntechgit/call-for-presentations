@@ -27,7 +27,6 @@ class LogOutCallbackRoute extends React.Component {
     render() {
         let storedState = window.localStorage.getItem('post_logout_state');
         window.localStorage.removeItem('post_logout_state');
-        console.log(`retrieved state ${storedState}`);
         let { doLogout, location, history } = this.props;
         let query = URI.parseQuery(location.search);
         if(!query.hasOwnProperty("state"))
