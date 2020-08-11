@@ -110,15 +110,15 @@ class LandingPage extends React.Component {
 
                         <div className="row">
                             <div className="col-md-6 login-box">
-                                <div className="submit-subtitle"> {T.translate("landing.already_member")} </div>
+                                <div className="submit-subtitle"> {T.translate("landing.have_login")} </div>
                                 <button className="btn btn-primary btn-lg" onClick={() => { doLogin(); }}>
                                     {T.translate("landing.log_in")}
                                 </button>
                             </div>
                             <div className="col-md-6 login-box">
-                                <div className="submit-subtitle"> {T.translate("landing.or_join_us")}</div>
+                                <div className="submit-subtitle"> {T.translate("landing.or_create_id")}</div>
                                 <a href={`${window.IDP_BASE_URL}/auth/register?client_id=${window.OAUTH2_CLIENT_ID}&redirect_uri=${domain}/app/profile`} className="btn btn-default btn-lg" target="_blank">
-                                    Register as a member
+                                    {T.translate("landing.sign_up")}
                                 </a>
                             </div>
                         </div>
