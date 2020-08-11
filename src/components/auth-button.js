@@ -38,9 +38,6 @@ export default class AuthButton extends React.Component {
         if (isLoggedUser) {
             return (
                 <div className="user-menu" onMouseEnter={this.toggleLogOut} onMouseLeave={this.toggleLogOut}>
-                    <div className="profile-pic">
-                        <img src={picture} />
-                    </div>
                     {showLogOut &&
                     <button className="btn btn-default logout" onClick={() => { initLogOut(); }}>
                         {T.translate("landing.sign_out")}
@@ -49,7 +46,7 @@ export default class AuthButton extends React.Component {
                 </div>
             );
         } else {
-            return (<div></div>);
+            return <div />;
         }
 
     }
