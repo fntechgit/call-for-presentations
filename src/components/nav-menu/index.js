@@ -75,6 +75,15 @@ class NavMenu extends React.Component {
                                 active={false}
                             />
                         ))}
+                        <MenuItem
+                            key="support"
+                            name="support"
+                            label="Contact Support"
+                            iconClass="fa-envelope"
+                            show
+                            onClick={(e) => window.open("mailto:support@fntech.com", '_blank')}
+                            active={false}
+                        />
                     </ul>
                 </div>
             </div>
