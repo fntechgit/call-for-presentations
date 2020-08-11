@@ -290,34 +290,37 @@ class SpeakerForm extends React.Component {
                     </div>
                 </div>
 
-                <hr/>
-                <h3>{T.translate("edit_speaker.travel")}</h3>
+                <Exclusive name="speaker-travel">
+                    <>
+                        <hr/>
+                        <h3>{T.translate("edit_speaker.travel")}</h3>
 
-                <div className="row form-group">
-                    <div className="col-md-12 checkboxes-div">
-                        <div className="form-check abc-checkbox">
-                            <input type="checkbox" id="willing_to_travel" checked={entity.willing_to_travel}
-                                   onChange={this.handleChange} className="form-check-input" />
-                            <label className="form-check-label" htmlFor="willing_to_travel">
-                                {T.translate("edit_speaker.travel_restrictions")}
-                            </label>
+                        <div className="row form-group">
+                            <div className="col-md-12 checkboxes-div">
+                                <div className="form-check abc-checkbox">
+                                    <input type="checkbox" id="willing_to_travel" checked={entity.willing_to_travel}
+                                           onChange={this.handleChange} className="form-check-input" />
+                                    <label className="form-check-label" htmlFor="willing_to_travel">
+                                        {T.translate("edit_speaker.travel_restrictions")}
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="col-md-12">
+                                <label>{T.translate("edit_speaker.select_countries")}</label>
+                                <CountryInput id="travel_preferences" multi value={entity.travel_preferences} onChange={this.handleChange} />
+                            </div>
+                            <div className="col-md-12 checkboxes-div">
+                                <div className="form-check abc-checkbox">
+                                    <input type="checkbox" id="funded_travel" checked={entity.funded_travel}
+                                           onChange={this.handleChange} className="form-check-input" />
+                                    <label className="form-check-label" htmlFor="funded_travel">
+                                        {T.translate("edit_speaker.company_willing")}
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div className="col-md-12">
-                        <label>{T.translate("edit_speaker.select_countries")}</label>
-                        <CountryInput id="travel_preferences" multi value={entity.travel_preferences} onChange={this.handleChange} />
-                    </div>
-                    <div className="col-md-12 checkboxes-div">
-                        <div className="form-check abc-checkbox">
-                            <input type="checkbox" id="funded_travel" checked={entity.funded_travel}
-                                   onChange={this.handleChange} className="form-check-input" />
-                            <label className="form-check-label" htmlFor="funded_travel">
-                                {T.translate("edit_speaker.company_willing")}
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
+                    </>
+                </Exclusive>
                 <Exclusive name="speaker-role">
                     <div>
                         <hr/>
