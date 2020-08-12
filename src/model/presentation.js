@@ -82,6 +82,8 @@ class Presentation {
     }
 
     canDelete() {
+        if (!this._selectionPlan) return false;
+
         let belongsToSP = (this._presentation.selection_plan_id == this._selectionPlan.id);
         return (!this._presentation.is_published && belongsToSP);
     }

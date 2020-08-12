@@ -108,7 +108,7 @@ class PresentationsPage extends React.Component {
             loading
         } = this.props;
 
-        if (loading || summit == null || selectionPlan == null || loggedSpeaker == null) return null;
+        if (loading || summit == null || loggedSpeaker == null) return null;
 
         return (
             <div className="page-wrap" id="presentations-page">
