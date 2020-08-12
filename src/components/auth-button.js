@@ -14,35 +14,17 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 
-
 export default class AuthButton extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            showLogOut: false,
-        };
-
-        this.toggleLogOut = this.toggleLogOut.bind(this);
-    }
-
-    toggleLogOut(ev) {
-        this.setState({showLogOut: !this.state.showLogOut});
-    }
 
     render() {
         let {isLoggedUser, initLogOut, picture} = this.props;
-        let {showLogOut} = this.state;
 
         if (isLoggedUser) {
             return (
-                <div className="user-menu" onMouseEnter={this.toggleLogOut} onMouseLeave={this.toggleLogOut}>
-                    {showLogOut &&
+                <div className="user-menu">
                     <button className="btn btn-default logout" onClick={() => { initLogOut(); }}>
                         {T.translate("landing.sign_out")}
                     </button>
-                    }
                 </div>
             );
         } else {
