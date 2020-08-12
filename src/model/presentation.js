@@ -41,8 +41,10 @@ class Presentation {
             if (!status) {
                 return T.translate("presentations.not_submitted");
             } else if (firstSelPlan && lastSelPlan) {
-                if (lastSelPlan.selection_end_date < now) {
-                    if (! selection_status || selection_status === 'unaccepted') {
+                if (firstSelPlan.selection_begin_date > now) {
+                    return T.translate("presentations.received");
+                } else if (lastSelPlan.selection_end_date < now) {
+                    if (!selection_status || selection_status === 'unaccepted') {
                         return T.translate("presentations.rejected");
                     } else {
                         return `${selection_status[0].toUpperCase()}${selection_status.slice(1)}`;
@@ -51,7 +53,7 @@ class Presentation {
                     return T.translate("presentations.in_review");
                 }
             } else {
-                return 'N/A';
+                return T.translate("presentations.received");
             }
         }
     }

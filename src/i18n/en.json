@@ -113,6 +113,7 @@
     "published"     : "Published",
     "in_review"     : "In Review",
     "rejected"      : "Rejected",
+    "received"      : "Received",
     "review"        : "Review",
     "presentation_title": "Presentation Title",
     "presentation_status": "Presentation Status",
