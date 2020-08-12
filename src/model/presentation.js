@@ -30,9 +30,9 @@ class Presentation {
 
     getStatus() {
         const {is_published, status, selection_status} = this._presentation;
-        const {selection_plans} = this._summit;
-        const firstSelPlan = selection_plans.length > 0 ? selection_plans[0] : null;
-        const lastSelPlan = selection_plans.length > 0 ? selection_plans[selection_plans.length - 1] : null;
+        const enabled_sel_plans = this._summit.selection_plans.filter(sp => sp.is_enabled);
+        const firstSelPlan = enabled_sel_plans.length > 0 ? enabled_sel_plans[0] : null;
+        const lastSelPlan = enabled_sel_plans.length > 0 ? enabled_sel_plans[enabled_sel_plans.length - 1] : null;
         const now  = moment.utc().unix();
 
         if (is_published) {
