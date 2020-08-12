@@ -13,6 +13,7 @@
 
 import T from 'i18n-react/dist/i18n-react';
 import {formatEpoch} from "../utils/methods";
+import moment from "moment";
 
 class Presentation {
 
@@ -28,12 +29,30 @@ class Presentation {
     }
 
     getStatus() {
-        if(this._presentation.is_published) {
+        const {is_published, status, selection_status} = this._presentation;
+        const {selection_plans} = this._summit;
+        const firstSelPlan = selection_plans.length > 0 ? selection_plans[0] : null;
+        const lastSelPlan = selection_plans.length > 0 ? selection_plans[selection_plans.length - 1] : null;
+        const now  = moment.utc().unix();
+
+        if (is_published) {
             return T.translate("presentations.published");
-        } else if (this._presentation.status) {
-            return this._presentation.status;
         } else {
-            return T.translate("presentations.not_submitted");
+            if (!status) {
+                return T.translate("presentations.not_submitted");
+            } else if (firstSelPlan && lastSelPlan) {
+                if (lastSelPlan.selection_end_date < now) {
+                    if (! selection_status || selection_status === 'unaccepted') {
+                        return T.translate("presentations.rejected");
+                    } else {
+                        return `${selection_status[0].toUpperCase()}${selection_status.slice(1)}`;
+                    }
+                } else if (firstSelPlan.selection_begin_date < now) {
+                    return T.translate("presentations.in_review");
+                }
+            } else {
+                return 'N/A';
+            }
         }
     }
 

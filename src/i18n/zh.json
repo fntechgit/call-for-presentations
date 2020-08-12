@@ -104,6 +104,8 @@
     "remove_warning": "您正在删除演示文稿 ",
     "not_submitted" : "没有提交",
     "published"     : "发布",
+    "in_review"     : "In Review",
+    "rejected"      : "Rejected",
     "review"        : "Review",
     "presentation_title": "Presentation Title",
     "presentation_status": "Presentation Status",
