@@ -75,7 +75,7 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         case RECEIVE_SELECTION_PLAN: {
             let entity = {...payload.response};
 
-            return {...state, selectionPlan: entity};
+            return {...state, selectionPlan: entity, submissionIsClosed: false};
         }
             break;
         case RECEIVE_SUMMIT: {
@@ -84,7 +84,17 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
             break;
         case RECEIVE_MARKETING_SETTINGS: {
-            return {...state, marketingSettings: payload.response.data};
+            const {data} = payload.response;
+            // set color vars
+            if (typeof document !== 'undefined') {
+                data.forEach(setting => {
+                    if (getComputedStyle(document.documentElement).getPropertyValue(`--${setting.key}`)) {
+                        document.documentElement.style.setProperty(`--${setting.key}`, setting.value);
+                        document.documentElement.style.setProperty(`--${setting.key}50`, `${setting.value}50`);
+                    }
+                });
+            }
+            return {...state, marketingSettings: data};
         }
             break;
         case SELECTION_CLOSED: {

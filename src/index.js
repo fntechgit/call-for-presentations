@@ -18,6 +18,7 @@ import { Provider } from 'react-redux'
 import store, {persistor} from './store';
 import { PersistGate } from 'redux-persist/es/integration/react'
 import 'font-awesome/css/font-awesome.css';
+import './styles/colors.scss';
 import './styles/general.less';
 import 'sweetalert2/dist/sweetalert2.css';
 import 'openstack-uicore-foundation/lib/css/components.css';

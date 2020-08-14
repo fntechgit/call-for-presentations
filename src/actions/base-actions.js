@@ -66,8 +66,11 @@ export const getCurrentSelectionPlanPublic = (summit_id) => (dispatch, getState)
 export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
     dispatch(startLoading());
     return getCurrentSummitPublic(summitSlug)(dispatch, getState)
-        .then(({response}) => getCurrentSelectionPlanPublic(response.id)(dispatch, getState))
-        .then(({response}) => getMarketingSettings(response.summit.id)(dispatch, getState))
+        .then(({response}) => {
+            getMarketingSettings(response.id)(dispatch, getState);
+            return response.id;
+        })
+        .then((summitId) => getCurrentSelectionPlanPublic(summitId)(dispatch, getState))
         .then(() => { dispatch(stopLoading()); });
 }
 
@@ -211,6 +214,7 @@ export const getMarketingSettings = (summitId) => (dispatch, getState) => {
         authErrorHandler
     )(params)(dispatch);
 };
+
 
 export const selectionPlanErrorHandler = (err, res) => (dispatch) => {
     let code = err.status;
