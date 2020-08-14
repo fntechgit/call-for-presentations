@@ -110,7 +110,9 @@ class SpeakerForm extends React.Component {
             other_presentation_links: {title_link: 'Links must start with http or https'}
         };
 
-        validate(entity, rules, errors)
+        validate(entity, rules, errors);
+
+        console.log(errors);
 
         if (Object.keys(errors).length == 0) {
             this.props.onSubmit(this.state.entity);
@@ -163,7 +165,7 @@ class SpeakerForm extends React.Component {
                     </div>
                     <div className="col-md-4">
                         <label> {T.translate("edit_speaker.twitter")} </label>
-                        <Input className="form-control" id="twitter" value={entity.twitter} onChange={this.handleChange} />
+                        <Input className="form-control" id="twitter" value={decodeURIComponent(entity.twitter)} onChange={this.handleChange} />
                     </div>
                     <div className="col-md-4">
                         <label> {T.translate("edit_speaker.irc")} </label>
