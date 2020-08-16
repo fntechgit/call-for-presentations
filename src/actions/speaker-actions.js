@@ -194,11 +194,8 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
     };
 
     if (entity.id) {
-        if(entity.hasOwnProperty("email"))
-            // we do not send on update
-            delete entity.email;
 
-        putRequest(
+        return putRequest(
             createAction(UPDATE_SPEAKER),
             createAction(SPEAKER_SAVED),
             `${window.API_BASE_URL}/api/v1/speakers/${entity.id}`,
@@ -207,7 +204,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
             entity
         )(params)(dispatch)
             .then((payload) => {
-                if (type == 'moderator') {
+                if (type === 'moderator') {
                     success_message.html = T.translate("edit_speaker.moderator_saved");
                     dispatch(assignModeratorToPresentation(payload.response));
                 } else {
@@ -233,7 +230,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
 
     }
 
-    postRequest(
+    return postRequest(
         createAction(UPDATE_SPEAKER),
         createAction(SPEAKER_SAVED),
         `${window.API_BASE_URL}/api/v1/speakers`,
@@ -242,7 +239,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
         entity
     )(params)(dispatch)
         .then((payload) => {
-            if (type == 'moderator') {
+            if (type === 'moderator') {
                 success_message.html = T.translate("edit_speaker.moderator_created");
                 dispatch(assignModeratorToPresentation(payload.response));
             } else {
