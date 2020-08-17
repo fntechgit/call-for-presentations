@@ -89,7 +89,8 @@ class App extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        this.onClickLogin = this.onClickLogin.bind(this)
+        this.onClickLogin = this.onClickLogin.bind(this);
+        this.onClickLogout = this.onClickLogout.bind(this);
     }
 
     componentDidMount() {
@@ -115,6 +116,13 @@ class App extends React.PureComponent {
 
     onClickLogin() {
         doLogin(this.getBackURL());
+    }
+
+    onClickLogout(){
+        if(typeof window !== 'undefined' && this.props.summit) {
+            window.localStorage.setItem('summit_slug', this.props.summit.slug);
+        }
+        initLogOut();
     }
 
     render() {
@@ -169,7 +177,7 @@ class App extends React.PureComponent {
                             </div>
                             <div className="col-md-3 col-md-push-6 col-xs-6">
                                 <LanguageSelect language={language}/>
-                                <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} initLogOut={initLogOut}/>
+                                <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} initLogOut={this.onClickLogout}/>
                             </div>
                             <div className="col-md-6 col-md-pull-3 col-xs-12 title">
                                 <span>{header_title}</span>

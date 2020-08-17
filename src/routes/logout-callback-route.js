@@ -16,26 +16,50 @@ import { withRouter } from 'react-router-dom'
 
 class LogOutCallbackRoute extends React.Component {
 
+
     constructor(props){
         super(props);
-        // control variable to avoid double api call
+
+        this.state = {
+            error: null
+        };
     }
+
     componentWillMount() {
-
-    }
-
-    render() {
         let storedState = window.localStorage.getItem('post_logout_state');
         window.localStorage.removeItem('post_logout_state');
+        console.log(`retrieved state ${storedState}`);
         let { doLogout, location, history } = this.props;
         let query = URI.parseQuery(location.search);
-        if(!query.hasOwnProperty("state"))
-            return (<p>Invalid Method</p>);
-        if(query["state"] != storedState)
-            return (<p>Invalid State</p>);
+
+        if(!query.hasOwnProperty("state")) {
+            this.setState({...this.state, error: 'Missing State.'});
+            return;
+        }
+
+        if(query["state"] !== storedState) {
+            this.setState({...this.state, error: 'Invalid State.'});
+            return;
+        }
 
         doLogout();
+        let slug  = null;
+        if(typeof window !== 'undefined') {
+            slug = window.localStorage.getItem('summit_slug');
+            window.localStorage.removeItem('summit_slug');
+        }
+        if(slug){
+            history.push(`/app/${slug}`);
+            return;
+        }
         history.push("/");
+    }
+
+
+    render() {
+        if(this.state.error != null){
+            return (<p>{this.state.error}</p>)
+        }
         return null;
     }
 }
