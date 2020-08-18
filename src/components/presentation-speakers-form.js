@@ -109,7 +109,6 @@ class PresentationSpeakersForm extends React.Component {
         let {speakerInput} = this.state;
         let eventType = summit.event_types.find(t => t.id == entity.type_id);
         const speaker_subtitle_1 = getMarketingValue('spkmgmt_speaker_subtitle_1');
-        const speaker_subtitle_2 = getMarketingValue('spkmgmt_speaker_subtitle_2');
 
         let canAddSpeakers = (eventType && eventType.max_speakers > entity.speakers.length);
         let canAddModerator = (eventType && eventType.max_moderators && !entity.moderator);
@@ -126,7 +125,6 @@ class PresentationSpeakersForm extends React.Component {
         return (
             <div>
                 <h3>{speaker_subtitle_1 || T.translate("edit_presentation.speaker_included")}</h3>
-                <p>{speaker_subtitle_2 || T.translate("edit_presentation.speaker_important")}</p>
 
                 <hr/>
                 <div className="speakers">
@@ -179,7 +177,8 @@ class PresentationSpeakersForm extends React.Component {
 
                     {canAddParticipant &&
                     <div>
-                        <h3 className="more-speakers">{addMoreParticipantsLabel}</h3>
+                        <br/>
+                        <p className="more-speakers">{addMoreParticipantsLabel}</p>
 
                         <div className="row form-group">
                             <div className="col-md-8">
