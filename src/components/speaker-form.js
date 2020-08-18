@@ -177,11 +177,11 @@ class SpeakerForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-6">
                         <label> {T.translate("edit_speaker.company")} </label>
-                        <Input className="form-control" id="company" value={entity.company}  onChange={this.handleChange} />
+                        <Input className="form-control" id="company" value={entity.company}  onChange={this.handleChange} error={this.hasErrors('company')}/>
                     </div>
                     <div className="col-md-6">
                         <label> {T.translate("edit_speaker.phone_number")} </label>
-                        <Input className="form-control" id="phone_number" value={entity.phone_number} onChange={this.handleChange} />
+                        <Input className="form-control" id="phone_number" value={entity.phone_number} onChange={this.handleChange} error={this.hasErrors('phone_number')}/>
                     </div>
                 </div>
                 <div className="row form-group">
