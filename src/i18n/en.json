@@ -221,7 +221,9 @@
     "request_auth": "Request Permission",
     "auth_requested_success": "Permission requested successfully.",
     "auth_pending": "Permission Request Pending",
-    "auth_pending_text": "You already requested permission to edit, but the speaker has not granted it yet."
+    "auth_pending_text": "You already requested permission to edit, but the speaker has not granted it yet.",
+    "company": "Company",
+    "phone_number": "Phone #"
   },
   "preview_presentation": {
     "preview_presentation": "Preview Your Submission"

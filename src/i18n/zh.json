@@ -214,7 +214,9 @@
     "request_auth": "申请权限",
     "auth_requested_success": "权限申请成功。",
     "auth_pending": "权限申请待定",
-    "auth_pending_text": "您已经提交了申请权限编辑，但是演讲者还未授予权限。"
+    "auth_pending_text": "您已经提交了申请权限编辑，但是演讲者还未授予权限。",
+    "company": "Company",
+    "phone_number": "Phone #"
   },
   "preview_presentation": {
     "preview_presentation": "预览已提交的演讲议题"

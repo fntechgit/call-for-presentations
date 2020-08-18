@@ -45,7 +45,9 @@ export const DEFAULT_ENTITY = {
     funded_travel: false,
     travel_preferences: [],
     organizational_roles: [],
-    org_has_cloud: false
+    org_has_cloud: false,
+    company: '',
+    phone_number: '',
 }
 
 const DEFAULT_STATE = {
