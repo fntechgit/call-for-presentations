@@ -16,9 +16,6 @@ import { Route, Redirect, withRouter } from 'react-router-dom'
 
 class AuthorizedRoute extends React.Component {
 
-    componentWillMount() {
-    }
-
     render() {
         const { component: Component, isLoggedUser, ...rest } = this.props;
         return (

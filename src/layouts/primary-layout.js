@@ -57,9 +57,9 @@ class PrimaryLayout extends React.Component {
 
         if(summit.slug !== match.params.summit_slug) return null;
 
-        if((!speaker || !speaker.id) && location.pathname !== '/app/profile' && !loading) {
+        if((!speaker || !speaker.id) && location.pathname !== `/app/${summit.slug}/profile` && !loading) {
             return (
-                <Redirect exact to={{ pathname: `/app//${summit.slug}/profile` }}  />
+                <Redirect exact to={{ pathname: `/app/${summit.slug}/profile` }}  />
             );
         }
 

@@ -40,6 +40,7 @@ class ProfilePage extends React.Component {
 
     handleSaveSpeakerProfile(entity){
         let{ history, saveSpeakerProfile, summit} = this.props;
+
         saveSpeakerProfile(entity).then(() => {
             if(summit){
                 history.push(`/app/${summit.slug}/presentations`);

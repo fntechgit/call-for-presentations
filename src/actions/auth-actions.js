@@ -58,6 +58,7 @@ export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
 }
 
 export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
+    let { baseState } = getState();
     let code = err.status;
     dispatch(stopLoading());
 
@@ -90,7 +91,9 @@ export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
                 dispatch(showMessage( error_message, initLogOut ));
                 return;
             }
-            history.push('/app/profile');
+
+            const redirectUrl = baseState.summit ? `/app/${baseState.summit.slug}/profile` : '/app/profile';
+            history.push(redirectUrl);
         });
 
     }

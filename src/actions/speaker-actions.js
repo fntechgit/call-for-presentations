@@ -401,7 +401,7 @@ const normalizeEntity = (entity) => {
 
 
 export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
-    let {loggedUserState, presentationState} = getState();
+    let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
 
     dispatch(startLoading());
@@ -465,8 +465,9 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
             dispatch(getSpeakerInfo(null));
         })
         .then((payload) => {
+            const redirectUrl = baseState.summit ? `/app/${baseState.summit.slug}/presentations/` : '/app/start';
             success_message.html = T.translate("edit_profile.profile_saved");
-            dispatch(showMessage(success_message));
+            dispatch(showMessage(success_message, () => history.push(redirectUrl)));
         });
 }
 
