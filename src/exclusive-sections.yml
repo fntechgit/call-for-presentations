@@ -10,6 +10,7 @@ openstack:
   - speaker-travel
   - legal-disclaimer-speakers
   - thank-you-body
+  - presentation-attachment
 
 fntech:
   - fntech-landing
