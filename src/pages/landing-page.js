@@ -46,12 +46,11 @@ class LandingPage extends React.Component {
         var url = window.location.href;
         var arr = url.split("/");
         var domain = arr[0] + "//" + arr[2];
-
         if( !summit || isLoggedUser ) return null;
 
         return (
             <div className="container landing-page-wrapper">
-                <Exclusive name="landing">
+                <Exclusive name="os-landing">
                     <div>
                         <h1 className="title">{T.translate("landing.title", {'summit_name' : summit.name})}</h1>
 

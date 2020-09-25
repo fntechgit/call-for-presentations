@@ -136,7 +136,10 @@ class App extends React.PureComponent {
 
         let header_title = T.translate('landing.call_for_presentations');
         let header_subtitle = '';
-        let summit_logo = 'https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/images-fn-staging/idp-logo.png';
+        var summit_logo = 'https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/images-fn-staging/idp-logo.png';
+        if(window.APP_CLIENT_NAME === 'openstack')
+            summit_logo = 'https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/www-assets-prod/Uploads/arrows.svg';
+
         const mkt_header_title = getMarketingValue('spkmgmt_header_title');
         const mkt_header_logo = getMarketingValue('spkmgmt_header_logo');
 
