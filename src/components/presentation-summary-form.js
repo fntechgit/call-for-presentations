@@ -72,6 +72,7 @@ class PresentationSummaryForm extends React.Component {
 
         mediaupload.file = file;
         mediaupload.private_url = file.preview;
+        mediaupload.filename = file.name;
 
         // update
         entity.media_uploads = entity.media_uploads.map((item, index) => {
