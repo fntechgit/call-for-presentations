@@ -183,7 +183,7 @@
   },
   "edit_speaker": {
     "profile": "Speaker Profile",
-    "title": "Title",
+    "title": "Job Title",
     "country": "Country of Residence",
     "email": "Email",
     "twitter": "Twitter",
@@ -240,7 +240,7 @@
     "profile_saved": "Profile saved successfully!"
   },
   "affiliations": {
-    "title": "Title",
+    "title": "Job Title",
     "organization": "Organization",
     "start_date": "Start Date",
     "end_date": "End Date",
