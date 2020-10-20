@@ -235,7 +235,8 @@ class PresentationSummaryForm extends React.Component {
             if(mediaUpload.length > 0){
                 if(mediaUpload[0].hasOwnProperty('should_delete') && mediaUpload[0].should_delete)
                     return '';
-                return mediaUpload[0].private_url !== '' ?  mediaUpload[0].private_url : mediaUpload[0].public_url ;
+
+                return mediaUpload[0].hasOwnProperty('private_url') && mediaUpload[0].private_url !== '' ?  mediaUpload[0].private_url : mediaUpload[0].public_url ;
             }
         }
         return '';
