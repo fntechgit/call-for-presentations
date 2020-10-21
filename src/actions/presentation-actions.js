@@ -94,30 +94,6 @@ export const savePresentation = (entity, nextStep) => async (dispatch, getState)
             entity
         )(params)(dispatch)
             .then((payload) => {
-
-                let promises = [];
-
-                if (entity.media_uploads.length > 0) {
-                    promises = entity.media_uploads.map( async (mediaUpload) =>
-                    {
-                        if(mediaUpload.hasOwnProperty('should_delete') && mediaUpload.should_delete && mediaUpload.id > 0)
-                            return await dispatch(deleteMediaUpload(entity.id, mediaUpload.id));
-                        if(mediaUpload.hasOwnProperty('file') && mediaUpload.file)
-                            return await dispatch(saveMediaUpload(payload.response, mediaUpload, mediaUpload.file));
-                        // do nothing
-                        return true;
-                    });
-                    return Promise.all(promises).then(() => {
-                            dispatch(stopLoading());
-
-                            return payload;
-                        }
-                    );
-                }
-
-                return payload;
-            })
-            .then((payload) => {
                 dispatch(getPresentation(payload.response.id)).then((payload) => {
                         dispatch(stopLoading());
                         history.push(`/app/${summit.slug}/presentations/${payload.id}/${nextStep}`);
@@ -135,29 +111,42 @@ export const savePresentation = (entity, nextStep) => async (dispatch, getState)
         entity
     )(params)(dispatch)
         .then((payload) => {
-
-            let promises = [];
-
-            if (entity.media_uploads.length > 0) {
-                promises = entity.media_uploads.map( async (mediaUpload) => await dispatch(saveMediaUpload(payload.response, mediaUpload, mediaUpload.file)));
-                return Promise.all(promises).then(() => {
-                        dispatch(stopLoading());
-                        return payload;
-                    }
-                );
-            }
-
-            return payload;
-        })
-        .then((payload) => {
             dispatch(getPresentation(payload.response.id)).then((payload) => {
                     dispatch(stopLoading());
-                    history.push(`/app/${summit.slug}/presentations/${payload.id}/tags`);
+                    history.push(`/app/${summit.slug}/presentations/${payload.id}/uploads`);
                 }
             );
         });
+};
 
-}
+export const saveMediaUploads = (entity) => (dispatch, getState) => {
+    let {baseState} = getState();
+    let {summit} = baseState;
+    let promises = [];
+
+    dispatch(startLoading());
+
+    if (entity.media_uploads.length > 0) {
+        promises = entity.media_uploads.map( async (mediaUpload) =>
+        {
+            if(mediaUpload.hasOwnProperty('should_delete') && mediaUpload.should_delete && mediaUpload.id > 0)
+                return await dispatch(deleteMediaUpload(entity.id, mediaUpload.id));
+            if(mediaUpload.hasOwnProperty('file') && mediaUpload.file)
+                return await dispatch(saveMediaUpload(entity, mediaUpload, mediaUpload.file));
+            // do nothing
+            return true;
+        });
+
+        return Promise.all(promises).then(() => {
+            dispatch(getPresentation(entity.id)).then(() => {
+                    dispatch(stopLoading());
+                    history.push(`/app/${summit.slug}/presentations/${entity.id}/tags`);
+                }
+            );
+
+        });
+    }
+};
 
 const saveMediaUpload = (entity, mediaUpload, file) => (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();

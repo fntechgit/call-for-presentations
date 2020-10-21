@@ -184,6 +184,7 @@ class PresentationSummaryForm extends React.Component {
                             onChange={this.handleChange}
                             placeholder={T.translate("general.placeholders.select_one")}
                             options={event_types_ddl}
+                            disabled={!!entity.id}
                             error={this.hasErrors('type_id')}
                         />
                     </div>

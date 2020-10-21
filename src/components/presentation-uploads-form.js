@@ -185,27 +185,25 @@ class PresentationUploadsForm extends React.Component {
         ev.preventDefault();
 
         var cur_event_type = summit.event_types.find(ev => ev.id === entity.type_id);
-        let allowed_media_upload_types = [];
-        if(cur_event_type){
-            allowed_media_upload_types = cur_event_type.allowed_media_upload_types;
-        }
 
-        for(var mediaUploadType of allowed_media_upload_types){
-            if(mediaUploadType.is_mandatory){
-                // check if user provided file
-                var mediaUpload = this.getMediaUploadByType(entity, mediaUploadType);
-                if(! mediaUpload){
-                    errors[mediaUploadType.name] = 'This field is required.';
-                }
+        if(cur_event_type) {
+            cur_event_type.allowed_media_upload_types.forEach(mediaUploadType => {
+                if(mediaUploadType.is_mandatory){
+                    // check if user provided file
+                    var mediaUpload = this.getMediaUploadByType(entity, mediaUploadType);
+                    if(! mediaUpload){
+                        errors[mediaUploadType.name] = 'This field is required.';
+                    }
 
-                if(this.getMediaUploadFile(entity, mediaUploadType) == null && this.getMediaUploadFilePreview(entity, mediaUploadType) === ''){
-                    errors[mediaUploadType.name] = 'This field is required.';
+                    if(this.getMediaUploadFile(entity, mediaUploadType) == null && this.getMediaUploadFilePreview(entity, mediaUploadType) === ''){
+                        errors[mediaUploadType.name] = 'This field is required.';
+                    }
                 }
-            }
+            });
         }
 
         if (Object.keys(errors).length === 0) {
-            this.props.onSubmit(entity, 'tags');
+            this.props.onSubmit(entity);
         } else {
             this.setState({errors}, () => {
                 if (Object.keys(errors).length > 0) {
@@ -229,10 +227,15 @@ class PresentationUploadsForm extends React.Component {
 
                 { cur_event_type && cur_event_type.allowed_media_upload_types.length > 0 && cur_event_type.allowed_media_upload_types.map((media_type, i) => {
                     const notLastItem = i < cur_event_type.allowed_media_upload_types.length -1;
+                    const allowedExt = media_type.type.allowed_extensions.map((ext) => `.${ext.toLowerCase()}`).join(",");
+
                     return (
                         <div key={media_type.id} className={`row form-group ${notLastItem ? 'border' : ''}`}>
                             <div className="col-md-12">
-                                <label>{media_type.name} ({media_type.type.allowed_extensions.map((ext) => `.${ext.toLowerCase()}`).join(",")}) - Max. Size {media_type.max_size/1024} MB</label>
+                                <label>
+                                    {media_type.name} ({allowedExt}) - Max. Size {media_type.max_size/1024} MB
+                                    {media_type.is_mandatory && <i> - mandatory</i>}
+                                </label>
                                 {
                                     media_type.description !== '' &&
                                     <h4>{media_type.description}</h4>

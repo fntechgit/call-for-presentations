@@ -15,7 +15,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import { RawHTML } from 'openstack-uicore-foundation/lib/components'
-import { savePresentation, completePresentation } from "../actions/presentation-actions";
+import { savePresentation, completePresentation, saveMediaUploads } from "../actions/presentation-actions";
 import { getSpeakerPermission, removeSpeakerFromPresentation, removeModeratorFromPresentation, assignModeratorToPresentation, assignSpeakerToPresentation } from "../actions/speaker-actions";
 import { loadEventCategory } from "../actions/base-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
@@ -61,7 +61,7 @@ class EditPresentationPage extends React.Component {
     }
 
     render() {
-        let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation,
+        let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, saveMediaUploads,
             completePresentation, getSpeakerPermission, loggedSpeaker } = this.props;
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
@@ -107,7 +107,7 @@ class EditPresentationPage extends React.Component {
                         summit={summit}
                         selectionPlan={selectionPlan}
                         errors={errors}
-                        onSubmit={savePresentation}
+                        onSubmit={saveMediaUploads}
                     />
                 </div>
                 }
@@ -173,6 +173,7 @@ export default connect (
     mapStateToProps,
     {
         savePresentation,
+        saveMediaUploads,
         completePresentation,
         loadEventCategory,
         removeSpeakerFromPresentation,
