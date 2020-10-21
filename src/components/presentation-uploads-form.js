@@ -191,7 +191,7 @@ class PresentationUploadsForm extends React.Component {
                 if(mediaUploadType.is_mandatory){
                     // check if user provided file
                     var mediaUpload = this.getMediaUploadByType(entity, mediaUploadType);
-                    if(! mediaUpload){
+                    if(!mediaUpload){
                         errors[mediaUploadType.name] = 'This field is required.';
                     }
 

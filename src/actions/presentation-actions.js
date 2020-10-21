@@ -124,9 +124,9 @@ export const saveMediaUploads = (entity) => (dispatch, getState) => {
     let {summit} = baseState;
     let promises = [];
 
-    dispatch(startLoading());
-
     if (entity.media_uploads.length > 0) {
+        dispatch(startLoading());
+
         promises = entity.media_uploads.map( async (mediaUpload) =>
         {
             if(mediaUpload.hasOwnProperty('should_delete') && mediaUpload.should_delete && mediaUpload.id > 0)
@@ -145,6 +145,12 @@ export const saveMediaUploads = (entity) => (dispatch, getState) => {
             );
 
         });
+    } else {
+        dispatch(getPresentation(entity.id)).then(() => {
+                dispatch(stopLoading());
+                history.push(`/app/${summit.slug}/presentations/${entity.id}/tags`);
+            }
+        );
     }
 };
 
