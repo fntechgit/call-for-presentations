@@ -72,7 +72,7 @@ class PresentationTagsForm extends React.Component {
                 <input type="hidden" id="id" value={entity.id} />
                 <TagManager maxTags={8} allowedTags={groupedTags} value={entity.tags} onTagClick={this.handleTagClick} />
                 <hr/>
-                <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} backStep="summary" />
+                <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} backStep="uploads" />
             </form>
         );
     }
