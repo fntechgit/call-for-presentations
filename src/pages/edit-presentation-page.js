@@ -22,6 +22,7 @@ import PresentationSummaryForm from "../components/presentation-summary-form";
 import PresentationNav from "../components/presentation-nav/index";
 import {NavStepsDefinitions} from "../components/presentation-nav/nav-steps-definition";
 import PresentationTagsForm from "../components/presentation-tags-form"
+import PresentationUploadsForm from "../components/presentation-uploads-form"
 import PresentationSpeakersForm from "../components/presentation-speakers-form";
 import PresentationReviewForm from "../components/presentation-review-form";
 
@@ -76,7 +77,7 @@ class EditPresentationPage extends React.Component {
                 </div>
                 <PresentationNav activeStep={step} progress={entity.progressNum} />
 
-                {step == 'summary' &&
+                {step === 'summary' &&
                 <div className="presentation-form-wrapper">
                     {disclaimer &&
                     <div className="disclaimer">
@@ -97,7 +98,21 @@ class EditPresentationPage extends React.Component {
                 </div>
                 }
 
-                {step == 'tags' &&
+                {step === 'uploads' &&
+                <div className="uploads-form-wrapper">
+                    <PresentationUploadsForm
+                        entity={entity}
+                        presentation={presentation}
+                        step={step}
+                        summit={summit}
+                        selectionPlan={selectionPlan}
+                        errors={errors}
+                        onSubmit={savePresentation}
+                    />
+                </div>
+                }
+
+                {step === 'tags' &&
                 <div className="tag-form-wrapper">
                     <PresentationTagsForm
                         entity={entity}
@@ -110,7 +125,7 @@ class EditPresentationPage extends React.Component {
                 </div>
                 }
 
-                {step == 'speakers' &&
+                {step === 'speakers' &&
                 <div className="speakers-form-wrapper">
                     <PresentationSpeakersForm
                         history={history}
@@ -128,7 +143,7 @@ class EditPresentationPage extends React.Component {
                 </div>
                 }
 
-                {step == 'review' &&
+                {step === 'review' &&
                 <div className="review-form-wrapper">
                     <PresentationReviewForm
                         entity={entity}

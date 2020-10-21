@@ -4,7 +4,7 @@
   background-color: #D3DEEA;
 }
 
-.presentation-form-wrapper, .tag-form-wrapper, .speakers-form-wrapper, .review-form-wrapper {
+.presentation-form-wrapper, .uploads-form-wrapper, .tag-form-wrapper, .speakers-form-wrapper, .review-form-wrapper {
   background-color: white;
   padding: 40px 20px 1px 20px;
   border-top: 1px solid #D3DEEA;
@@ -49,19 +49,40 @@
       z-index: 100;
     }
 
-    .file-box {
-      overflow: hidden;
-      max-height: 110px;
-      height: 110px;
-
-      .remove {
-        right: 0px;
-      }
-    }
   }
 }
 
 
+// UPLOADS
+
+.uploads-form-wrapper {
+  .presentation-uploads-form {
+
+    .form-group {
+      padding-bottom: 20px;
+
+      &.border {
+        border-bottom: 1px solid whitesmoke;
+      }
+
+      label {
+        display: block;
+        margin-top: 10px;
+      }
+
+      .file-box {
+        overflow: hidden;
+        max-height: 110px;
+        height: 110px;
+
+        .remove {
+          right: 0px;
+        }
+      }
+    }
+
+  }
+}
 
 // SUBMIT BUTTONS
 .submit-buttons {

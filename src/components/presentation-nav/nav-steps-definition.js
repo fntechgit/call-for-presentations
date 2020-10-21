@@ -1,7 +1,8 @@
 export const NavStepsDefinitions = [
     {name: 'summary', step: 1},
-    {name: 'tags', step: 2},
-    {name: 'speakers', step: 3},
-    {name: 'review', step: 4}
+    {name: 'uploads', step: 2},
+    {name: 'tags', step: 3},
+    {name: 'speakers', step: 4},
+    {name: 'review', step: 5}
 ];
 

@@ -121,6 +121,7 @@
   },
   "presentation_nav": {
     "summary": "Summary",
+    "uploads": "Uploads",
     "tags": "Tags",
     "speakers": "Speakers",
     "review": "Review"

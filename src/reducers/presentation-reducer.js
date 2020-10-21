@@ -59,10 +59,11 @@ const DEFAULT_STATE = {
     steps:[
         {name: 'NEW', step: 0},
         {name: 'SUMMARY', step: 1},
-        {name: 'TAGS', step: 2},
-        {name: 'SPEAKERS', step: 3},
-        {name: 'REVIEW', step: 4},
-        {name: 'COMPLETE', step: 5}
+        {name: 'UPLOADS', step: 2},
+        {name: 'TAGS', step: 3},
+        {name: 'SPEAKERS', step: 4},
+        {name: 'REVIEW', step: 5},
+        {name: 'COMPLETE', step: 6}
     ],
     errors: {}
 }

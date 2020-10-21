@@ -27,7 +27,7 @@ class PresentationNav extends React.Component {
 
     onStepClick(event, step){
         let {progress} = this.props;
-        let disabled = (progress == 0 && step.step > 1);
+        let disabled = (progress === 0 && step.step > 1);
 
         event.preventDefault();
 
