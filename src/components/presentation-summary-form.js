@@ -171,7 +171,14 @@ class PresentationSummaryForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_presentation.title")} </label>
-                        <Input className="form-control" id="title" value={entity.title} onChange={this.handleChange} error={this.hasErrors('title')} />
+                        <Input
+                            className="form-control"
+                            id="title"
+                            value={entity.title}
+                            onChange={this.handleChange}
+                            error={this.hasErrors('title')}
+                            disabled={!!entity.id}
+                        />
                     </div>
                 </div>
                 <div className="row form-group">
