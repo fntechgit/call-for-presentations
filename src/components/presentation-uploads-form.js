@@ -144,7 +144,7 @@ class PresentationUploadsForm extends React.Component {
             currentMU.push(media_upload);
         }
 
-        this.setState({entity: {...entity, media_uploads: [...currentMU]}});
+        this.setState({entity: {...entity, media_uploads: [...currentMU]}, errors: []});
     }
 
     handleSubmit(ev) {
