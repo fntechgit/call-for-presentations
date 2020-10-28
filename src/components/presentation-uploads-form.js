@@ -14,7 +14,7 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import { Input, TextEditor, UploadInput, Dropdown, RadioList, TextArea, Exclusive } from 'openstack-uicore-foundation/lib/components'
+import { UploadInputV2 } from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 import SubmitButtons from './presentation-submit-buttons'
 import {validate, scrollToError} from '../utils/methods'
@@ -33,6 +33,7 @@ class PresentationUploadsForm extends React.Component {
         this.handleUploadFile = this.handleUploadFile.bind(this);
         this.handleRemoveFile = this.handleRemoveFile.bind(this);
         this.handleFileError = this.handleFileError.bind(this);
+        this.onUploadComplete = this.onUploadComplete.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
 
     }
@@ -100,83 +101,50 @@ class PresentationUploadsForm extends React.Component {
         }
     }
 
-    handleRemoveFile(ev, props) {
+    handleRemoveFile({id, name}) {
+        const {entity} = this.state;
+        let currentMU = [...entity.media_uploads];
 
-        let entity = {...this.state.entity};
-        let { mediaupload } = props;
+        if (!id) { // is new
+            currentMU = currentMU.filter(mu => mu.id);
+        } else {
+            let mediaUpload = currentMU.find(mu => mu.id === id);
 
-        mediaupload.should_delete = true;
-        mediaupload.private_url = '';
-        mediaupload.file = null;
-
-        if(mediaupload.id  > 0 ){
-            entity.media_uploads = entity.media_uploads.map((item, index) => {
-                if (index !== mediaupload.index) {
-                    // This isn't the item we care about - keep it as-is
-                    return item
-                }
-
-                return {
-                    ...item,
-                    ...mediaupload
-                }
-            });
-        }
-        else{
-            // delete it
-            entity.media_uploads=  [...entity.media_uploads.slice(0, mediaupload.index), ...entity.media_uploads.slice(mediaupload.index + 1)];
-        }
-
-        this.setState({entity:entity});
-    }
-
-
-    hasErrors(field) {
-        let {errors} = this.state;
-        if(field in errors) {
-            return errors[field];
-        }
-
-        return '';
-    }
-
-    getMediaUploadFile(entity, mediaType){
-        if(entity.media_uploads.length > 0 ){
-            let mediaUpload = entity.media_uploads.filter(mu => mu.hasOwnProperty('media_upload_type') && mu.media_upload_type.id === mediaType.id);
-            if(mediaUpload.length > 0){
-                return mediaUpload[0].file;
+            if (mediaUpload) {
+                mediaUpload.should_delete = true;
             }
         }
-        return null;
+
+        this.setState({entity: {...entity, media_uploads: [...currentMU]}});
     }
 
-    getMediaUploadFilePreview(entity, mediaType){
-        if(entity.media_uploads.length > 0 ){
-            let mediaUpload = entity.media_uploads.filter(mu => mu.hasOwnProperty('media_upload_type') && mu.media_upload_type.id === mediaType.id);
-            if(mediaUpload.length > 0){
-                if(mediaUpload[0].hasOwnProperty('should_delete') && mediaUpload[0].should_delete)
-                    return '';
-
-                return mediaUpload[0].hasOwnProperty('private_url') && mediaUpload[0].private_url !== '' ?  mediaUpload[0].private_url : mediaUpload[0].public_url ;
-            }
-        }
-        return '';
-    }
-
-    getMediaUploadFileName(entity, mediaType){
-        if(entity.media_uploads.length > 0 ){
-            let mediaUpload = entity.media_uploads.filter(mu => mu.hasOwnProperty('media_upload_type') && mu.media_upload_type.id === mediaType.id);
-            if(mediaUpload.length > 0){
-                return mediaUpload[0].hasOwnProperty('should_delete') && mediaUpload[0].should_delete ? '' : mediaUpload[0].filename;
-            }
-        }
-        return '';
-    }
-
-    getMediaUploadByType(entity, mediaType){
+    getMediaUploadsByType(entity, mediaType) {
         if(entity.media_uploads.length > 0 )
-            return entity.media_uploads.find(mu => mu.hasOwnProperty('media_upload_type') && mu.media_upload_type.id === mediaType.id);
-        return null;
+            return entity.media_uploads.filter(mu => mu.hasOwnProperty('media_upload_type') && mu.media_upload_type.id === mediaType.id);
+        return [];
+    }
+
+    onUploadComplete(response, id, data){
+        const {entity} = this.state;
+        const currentMU = [...entity.media_uploads];
+
+        // we just upload a file, then we need to figure we need to create it
+        let {media_type, media_upload } = data;
+
+        if(response){
+            // new media upload
+            media_upload = {
+                id: 0,
+                media_upload_type : media_type,
+                filepath: `${response.path}${response.name}`,
+                filename: response.name,
+                should_upload: true
+            };
+
+            currentMU.push(media_upload);
+        }
+
+        this.setState({entity: {...entity, media_uploads: [...currentMU]}});
     }
 
     handleSubmit(ev) {
@@ -190,12 +158,8 @@ class PresentationUploadsForm extends React.Component {
             cur_event_type.allowed_media_upload_types.forEach(mediaUploadType => {
                 if(mediaUploadType.is_mandatory){
                     // check if user provided file
-                    var mediaUpload = this.getMediaUploadByType(entity, mediaUploadType);
-                    if(!mediaUpload){
-                        errors[mediaUploadType.name] = 'This field is required.';
-                    }
-
-                    if(this.getMediaUploadFile(entity, mediaUploadType) == null && this.getMediaUploadFilePreview(entity, mediaUploadType) === ''){
+                    var mediaUploads = this.getMediaUploadsByType(entity, mediaUploadType);
+                    if(mediaUploads.length === 0){
                         errors[mediaUploadType.name] = 'This field is required.';
                     }
                 }
@@ -213,6 +177,15 @@ class PresentationUploadsForm extends React.Component {
         }
     }
 
+    hasErrors(field) {
+        let {errors} = this.state;
+        if(field in errors) {
+            return errors[field];
+        }
+
+        return '';
+    }
+
     render() {
         let {entity} = this.state;
         let {summit, presentation, step} = this.props;
@@ -228,6 +201,28 @@ class PresentationUploadsForm extends React.Component {
                 { cur_event_type && cur_event_type.allowed_media_upload_types.length > 0 && cur_event_type.allowed_media_upload_types.map((media_type, i) => {
                     const notLastItem = i < cur_event_type.allowed_media_upload_types.length -1;
                     const allowedExt = media_type.type.allowed_extensions.map((ext) => `.${ext.toLowerCase()}`).join(",");
+                    const mediaUploads = this.getMediaUploadsByType(entity, media_type);
+
+                    const djsConfig = {
+                        paramName: "file", // The name that will be used to transfer the file,
+                        maxFilesize: media_type.max_size / 1024, // MB,
+                        timeout: 1000 * 60 * 10,
+                        chunking: true,
+                        retryChunks: true,
+                        parallelChunkUploads: false,
+                        addRemoveLinks: true,
+                        maxFiles: 1,
+                        acceptedFiles: media_type.type.allowed_extensions.map(ext => `.${ext}`).join(','),
+                        dropzoneSelector: `media_upload_${media_type.id}`
+                    };
+                    const componentConfig = {
+                        showFiletypeIcon: false,
+                        postUrl: `${window.API_BASE_URL}/api/public/v1/files/upload`
+                    };
+                    const data = {
+                        media_type: media_type,
+                        media_upload: mediaUploads,
+                    };
 
                     return (
                         <div key={media_type.id} className={`row form-group ${notLastItem ? 'border' : ''}`}>
@@ -240,20 +235,16 @@ class PresentationUploadsForm extends React.Component {
                                     media_type.description !== '' &&
                                     <h4>{media_type.description}</h4>
                                 }
-                                <UploadInput
-                                    fileName={this.getMediaUploadFileName(entity, media_type)}
-                                    mediatype= {media_type}
-                                    mediaupload={this.getMediaUploadByType(entity, media_type)}
-                                    handleUpload={this.handleUploadFile}
-                                    handleRemove={this.handleRemoveFile}
-                                    handleError={this.handleFileError}
-                                    className="dropzone col-md-6"
-                                    multiple={false}
-                                    maxSize={media_type.max_size * 1024}
+                                <UploadInputV2
+                                    id={`media_upload_${media_type.id}`}
+                                    data={data}
+                                    onUploadComplete={this.onUploadComplete}
+                                    onRemove={this.handleRemoveFile}
+                                    config={componentConfig}
+                                    djsConfig={djsConfig}
+                                    eventHandlers={{removedfile: this.handleRemoveFile}}
+                                    value={mediaUploads}
                                     error={this.hasErrors(media_type.name)}
-                                    value={this.getMediaUploadFilePreview(entity, media_type)}
-                                    file={this.getMediaUploadFile(entity, media_type)}
-                                    accept={media_type.type.allowed_extensions.map((ext) => `.${ext.toLowerCase()}`).join(",")}
                                 />
                             </div>
                         </div>
