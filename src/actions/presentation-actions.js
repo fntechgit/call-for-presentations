@@ -152,7 +152,7 @@ export const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => 
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/media-uploads`,
         mediaUpload,
         authErrorHandler
-    )(params)(dispatch).then(() => dispatch(stopLoading()));
+    )(params)(dispatch).finally(() => dispatch(stopLoading()));
 }
 
 export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getState) => {
@@ -171,7 +171,7 @@ export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getS
         createAction(PRESENTATION_MATERIAL_DELETED)({materialId}),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}/media-uploads/${materialId}`,
         authErrorHandler
-    )(params)(dispatch).then(() => dispatch(stopLoading()));
+    )(params)(dispatch).finally(() => dispatch(stopLoading()));
 };
 
 export const completePresentation = (entity) => (dispatch, getState) => {

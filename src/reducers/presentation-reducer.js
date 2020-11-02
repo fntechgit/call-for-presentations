@@ -139,13 +139,13 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
         break;
         case PRESENTATION_MATERIAL_ATTACHED: {
             let material = {...payload.response};
-            return {...state, entity: {...state.entity, media_uploads: [...state.entity.media_uploads, material] }};
+            return {...state, errors: {}, entity: {...state.entity, media_uploads: [...state.entity.media_uploads, material] }};
         }
         break;
         case PRESENTATION_MATERIAL_DELETED: {
             let {materialId} = payload;
             const media_uploads = state.entity.media_uploads.filter(mu => mu.id !== materialId);
-            return {...state, entity: {...state.entity, media_uploads: media_uploads} };
+            return {...state, errors: {}, entity: {...state.entity, media_uploads: media_uploads} };
         }
         break;
         case RECEIVE_EVENT_CATEGORY: {

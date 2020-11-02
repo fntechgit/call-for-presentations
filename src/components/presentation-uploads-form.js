@@ -30,9 +30,7 @@ class PresentationUploadsForm extends React.Component {
             errors: props.errors
         };
 
-        this.handleUploadFile = this.handleUploadFile.bind(this);
         this.handleRemoveFile = this.handleRemoveFile.bind(this);
-        this.handleFileError = this.handleFileError.bind(this);
         this.onUploadComplete = this.onUploadComplete.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
 
@@ -53,54 +51,6 @@ class PresentationUploadsForm extends React.Component {
         }
     }
 
-    handleUploadFile(file, props) {
-
-        let { errors, entity} = this.state;
-        let {mediatype, mediaupload } = props;
-
-        if(mediaupload == null){
-            // new media upload
-            mediaupload = {
-                id: 0,
-                media_upload_type : mediatype,
-            };
-            // add
-            entity.media_uploads = [...entity.media_uploads, mediaupload];
-        }
-
-        if(mediaupload.hasOwnProperty('should_delete'))
-            delete mediaupload.should_delete;
-
-        mediaupload.file = file;
-        mediaupload.private_url = file.preview;
-        mediaupload.filename = file.name;
-
-        // update
-        entity.media_uploads = entity.media_uploads.map((item, index) => {
-            if (index !== mediaupload.index) {
-                // This isn't the item we care about - keep it as-is
-                return item
-            }
-
-            return {
-                ...item,
-                ...mediaupload
-            }
-        });
-
-        delete errors[mediatype.name];
-
-        this.setState({...this.state, entity, errors});
-    }
-
-    handleFileError(error, props){
-        if(error.length > 0){
-            let file = error[0];
-            let {mediatype } = props;
-            Swal.fire("Validation Error", `File size is greather than allowed ${mediatype.max_size/1024} MB`, "warning");
-        }
-    }
-
     handleRemoveFile({id, name}) {
         const {entity} = this.state;
         if (id) {
@@ -116,7 +66,6 @@ class PresentationUploadsForm extends React.Component {
 
     onUploadComplete(response, id, data){
         const {entity} = this.state;
-        const currentMU = [...entity.media_uploads];
 
         // we just upload a file, then we need to figure we need to create it
         let {media_type, media_upload } = data;
@@ -133,8 +82,6 @@ class PresentationUploadsForm extends React.Component {
 
             this.props.onSaveMU(entity, media_upload);
         }
-
-        this.setState({errors: []});
     }
 
     handleSubmit(ev) {
