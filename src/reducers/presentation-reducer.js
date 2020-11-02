@@ -18,7 +18,8 @@ import
     PRESENTATION_UPDATED,
     PRESENTATION_ADDED,
     PRESENTATION_COMPLETED,
-    PRESENTATION_MATERIAL_ATTACHED
+    PRESENTATION_MATERIAL_ATTACHED,
+    PRESENTATION_MATERIAL_DELETED
 } from '../actions/presentation-actions';
 
 import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
@@ -138,7 +139,13 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
         break;
         case PRESENTATION_MATERIAL_ATTACHED: {
             let material = {...payload.response};
-            return {...state, entity: {...state.entity, material: material, material_preview: '', material_file: null} };
+            return {...state, entity: {...state.entity, media_uploads: [...state.entity.media_uploads, material] }};
+        }
+        break;
+        case PRESENTATION_MATERIAL_DELETED: {
+            let {materialId} = payload;
+            const media_uploads = state.entity.media_uploads.filter(mu => mu.id !== materialId);
+            return {...state, entity: {...state.entity, media_uploads: media_uploads} };
         }
         break;
         case RECEIVE_EVENT_CATEGORY: {

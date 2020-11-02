@@ -15,7 +15,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import { RawHTML } from 'openstack-uicore-foundation/lib/components'
-import { savePresentation, completePresentation, saveMediaUploads } from "../actions/presentation-actions";
+import { savePresentation, completePresentation, saveMediaUpload, deleteMediaUpload } from "../actions/presentation-actions";
 import { getSpeakerPermission, removeSpeakerFromPresentation, removeModeratorFromPresentation, assignModeratorToPresentation, assignSpeakerToPresentation } from "../actions/speaker-actions";
 import { loadEventCategory } from "../actions/base-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
@@ -29,6 +29,7 @@ import PresentationReviewForm from "../components/presentation-review-form";
 import '../styles/edit-presentation-page.less';
 import Presentation from "../model/presentation";
 import {getMarketingValue} from "../components/marketing-setting";
+import history from "../history";
 
 class EditPresentationPage extends React.Component {
 
@@ -61,8 +62,8 @@ class EditPresentationPage extends React.Component {
     }
 
     render() {
-        let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, saveMediaUploads,
-            completePresentation, getSpeakerPermission, loggedSpeaker } = this.props;
+        let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, saveMediaUpload,
+            deleteMediaUpload, completePresentation, getSpeakerPermission, loggedSpeaker } = this.props;
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
         let presentation = new Presentation(entity, summit, selectionPlan, loggedSpeaker);
@@ -107,7 +108,9 @@ class EditPresentationPage extends React.Component {
                         summit={summit}
                         selectionPlan={selectionPlan}
                         errors={errors}
-                        onSubmit={saveMediaUploads}
+                        onSaveMU={saveMediaUpload}
+                        onDeleteMU={deleteMediaUpload}
+                        onSubmit={() => history.push(`/app/${summit.slug}/presentations/${entity.id}/tags`)}
                     />
                 </div>
                 }
@@ -173,7 +176,8 @@ export default connect (
     mapStateToProps,
     {
         savePresentation,
-        saveMediaUploads,
+        saveMediaUpload,
+        deleteMediaUpload,
         completePresentation,
         loadEventCategory,
         removeSpeakerFromPresentation,

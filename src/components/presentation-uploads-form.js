@@ -103,24 +103,14 @@ class PresentationUploadsForm extends React.Component {
 
     handleRemoveFile({id, name}) {
         const {entity} = this.state;
-        let currentMU = [...entity.media_uploads];
-
-        if (!id) { // is new
-            currentMU = currentMU.filter(mu => mu.id);
-        } else {
-            let mediaUpload = currentMU.find(mu => mu.id === id);
-
-            if (mediaUpload) {
-                mediaUpload.should_delete = true;
-            }
+        if (id) {
+            this.props.onDeleteMU(entity.id, id);
         }
-
-        this.setState({entity: {...entity, media_uploads: [...currentMU]}});
     }
 
     getMediaUploadsByType(entity, mediaType) {
         if(entity.media_uploads.length > 0 )
-            return entity.media_uploads.filter(mu => mu.hasOwnProperty('media_upload_type') && mu.media_upload_type.id === mediaType.id);
+            return entity.media_uploads.filter(mu => mu.media_upload_type_id === mediaType.id);
         return [];
     }
 
@@ -135,16 +125,16 @@ class PresentationUploadsForm extends React.Component {
             // new media upload
             media_upload = {
                 id: 0,
-                media_upload_type : media_type,
+                media_upload_type_id : media_type.id,
                 filepath: `${response.path}${response.name}`,
                 filename: response.name,
                 should_upload: true
             };
 
-            currentMU.push(media_upload);
+            this.props.onSaveMU(entity, media_upload);
         }
 
-        this.setState({entity: {...entity, media_uploads: [...currentMU]}, errors: []});
+        this.setState({errors: []});
     }
 
     handleSubmit(ev) {
@@ -233,7 +223,7 @@ class PresentationUploadsForm extends React.Component {
                                 </label>
                                 {
                                     media_type.description !== '' &&
-                                    <h4>{media_type.description}</h4>
+                                    <p>{media_type.description}</p>
                                 }
                                 <UploadInputV2
                                     id={`media_upload_${media_type.id}`}

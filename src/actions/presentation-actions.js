@@ -51,7 +51,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let params = {
         access_token: accessToken,
-        expand: 'track_groups,speakers,presentation_materials,type,media_uploads,media_uploads.media_upload_type'
+        expand: 'track_groups,speakers,presentation_materials,type,media_uploads'
     };
 
     return getRequest(
@@ -119,52 +119,13 @@ export const savePresentation = (entity, nextStep) => async (dispatch, getState)
         });
 };
 
-export const saveMediaUploads = (entity) => async (dispatch, getState) => {
-    let {baseState} = getState();
-    let {summit} = baseState;
-    let promises = [];
 
-    if (entity.media_uploads.length > 0) {
-        dispatch(startLoading());
-
-        const promises_remove = entity.media_uploads.map( mediaUpload => {
-            if(mediaUpload.hasOwnProperty('should_delete') && mediaUpload.should_delete && mediaUpload.id > 0) {
-                return deleteMediaUpload(entity.id, mediaUpload.id)(dispatch, getState);
-            } else {
-                return Promise.resolve();
-            }
-        });
-
-        await Promise.all(promises_remove).then(() => {
-            promises = entity.media_uploads.map( mediaUpload => {
-                if(mediaUpload.hasOwnProperty('filepath') && mediaUpload.filepath) {
-                    return saveMediaUpload(entity, mediaUpload)(dispatch, getState);
-                } else {
-                    return Promise.resolve();
-                }
-            });
-        });
-
-
-        Promise.all([...promises_remove, ...promises]).then(() => {
-            dispatch(getPresentation(entity.id)).then((payload) => {
-                dispatch(stopLoading());
-                history.push(`/app/${summit.slug}/presentations/${entity.id}/tags`);
-            });
-
-        });
-    } else {
-        dispatch(getPresentation(entity.id)).then((payload) => {
-            dispatch(stopLoading());
-            history.push(`/app/${summit.slug}/presentations/${entity.id}/tags`);
-        });
-    }
-};
-
-const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => {
+export const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
     let {summit} = baseState;
+
+    dispatch(startLoading());
 
     let params = {
         access_token: accessToken,
@@ -181,7 +142,7 @@ const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => {
             `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/media-uploads/${mediaUpload.id}`,
             mediaUpload,
             authErrorHandler
-        )(params)(dispatch);
+        )(params)(dispatch).then(() => dispatch(stopLoading()));
 
     }
 
@@ -191,14 +152,15 @@ const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => {
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/media-uploads`,
         mediaUpload,
         authErrorHandler
-    )(params)(dispatch);
+    )(params)(dispatch).then(() => dispatch(stopLoading()));
 }
 
 export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getState) => {
-
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
     let {summit} = baseState;
+
+    dispatch(startLoading());
 
     let params = {
         access_token: accessToken,
@@ -209,7 +171,7 @@ export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getS
         createAction(PRESENTATION_MATERIAL_DELETED)({materialId}),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}/media-uploads/${materialId}`,
         authErrorHandler
-    )(params)(dispatch);
+    )(params)(dispatch).then(() => dispatch(stopLoading()));
 };
 
 export const completePresentation = (entity) => (dispatch, getState) => {
