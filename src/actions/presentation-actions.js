@@ -153,7 +153,9 @@ export const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => 
         mediaUpload,
         authErrorHandler
     )(params)(dispatch).finally(() => dispatch(stopLoading()));
-}
+};
+
+
 
 export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();
@@ -173,6 +175,8 @@ export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getS
         authErrorHandler
     )(params)(dispatch).finally(() => dispatch(stopLoading()));
 };
+
+
 
 export const completePresentation = (entity) => (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();

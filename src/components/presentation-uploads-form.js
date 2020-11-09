@@ -140,27 +140,6 @@ class PresentationUploadsForm extends React.Component {
                     const allowedExt = media_type.type.allowed_extensions.map((ext) => `.${ext.toLowerCase()}`).join(",");
                     const mediaUploads = this.getMediaUploadsByType(entity, media_type);
 
-                    const djsConfig = {
-                        paramName: "file", // The name that will be used to transfer the file,
-                        maxFilesize: media_type.max_size / 1024, // MB,
-                        timeout: 1000 * 60 * 10,
-                        chunking: true,
-                        retryChunks: true,
-                        parallelChunkUploads: false,
-                        addRemoveLinks: true,
-                        maxFiles: 1,
-                        acceptedFiles: media_type.type.allowed_extensions.map(ext => `.${ext}`).join(','),
-                        dropzoneSelector: `media_upload_${media_type.id}`
-                    };
-                    const componentConfig = {
-                        showFiletypeIcon: false,
-                        postUrl: `${window.API_BASE_URL}/api/public/v1/files/upload`
-                    };
-                    const data = {
-                        media_type: media_type,
-                        media_upload: mediaUploads,
-                    };
-
                     return (
                         <div key={media_type.id} className={`row form-group ${notLastItem ? 'border' : ''}`}>
                             <div className="col-md-12">
@@ -174,13 +153,11 @@ class PresentationUploadsForm extends React.Component {
                                 }
                                 <UploadInputV2
                                     id={`media_upload_${media_type.id}`}
-                                    data={data}
                                     onUploadComplete={this.onUploadComplete}
                                     onRemove={this.handleRemoveFile}
-                                    config={componentConfig}
-                                    djsConfig={djsConfig}
-                                    eventHandlers={{removedfile: this.handleRemoveFile}}
                                     value={mediaUploads}
+                                    mediaType={media_type}
+                                    postUrl={`${window.API_BASE_URL}/api/public/v1/files/upload`}
                                     error={this.hasErrors(media_type.name)}
                                 />
                             </div>
