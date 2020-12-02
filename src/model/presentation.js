@@ -14,6 +14,7 @@
 import T from 'i18n-react/dist/i18n-react';
 import {formatEpoch} from "../utils/methods";
 import moment from "moment";
+import {NavStepsDefinitions} from "../components/presentation-nav/nav-steps-definition";
 
 class Presentation {
 
@@ -22,10 +23,23 @@ class Presentation {
         this._selectionPlan = selectionPlan;
         this._user = loggedUser;
         this._summit = summit;
+        this._steps = [
+            {name: 'NEW', step: 0},
+            {name: 'SUMMARY', step: 1},
+            {name: 'UPLOADS', step: 2},
+            {name: 'TAGS', step: 3},
+            {name: 'SPEAKERS', step: 4},
+            {name: 'REVIEW', step: 5},
+            {name: 'COMPLETE', step: 6}
+        ];
 
-        let presentationSelectionPlan = summit.selection_plans.find(sp => sp.id == presentation.selection_plan_id);
+        this._presentation.selectionPlan = summit.selection_plans.find(sp => sp.id === presentation.selection_plan_id);
+        this._presentation.progressNum = this._steps.find(s => s.name === this._presentation.progress).step;
+    }
 
-        this._presentation.selectionPlan = presentationSelectionPlan;
+    updatePresentation(presentation) {
+        this._presentation  = presentation;
+        this._presentation.progressNum = this._steps.find(s => s.name === this._presentation.progress).step;
     }
 
     getStatus() {
@@ -73,10 +87,10 @@ class Presentation {
         let creatorId = this._presentation.creator ? this._presentation.creator.id : this._presentation.creator_id;
         let moderatorId = this._presentation.moderator ? this._presentation.moderator.id : this._presentation.moderator_speaker_id;
 
-        let isCreator = (creatorId == this._user.member.id);
+        let isCreator = (creatorId === this._user.member.id);
         let isSpeaker = speakers.includes(this._user.id);
-        let isModerator = (moderatorId == this._user.id);
-        let belongsToSP = (this._presentation.selection_plan_id == this._selectionPlan.id);
+        let isModerator = (moderatorId === this._user.id);
+        let belongsToSP = (this._presentation.selection_plan_id === this._selectionPlan.id);
 
         return (isCreator || isSpeaker || isModerator) && belongsToSP;
     }
@@ -84,7 +98,7 @@ class Presentation {
     canDelete() {
         if (!this._selectionPlan) return false;
 
-        let belongsToSP = (this._presentation.selection_plan_id == this._selectionPlan.id);
+        let belongsToSP = (this._presentation.selection_plan_id === this._selectionPlan.id);
         return (!this._presentation.is_published && belongsToSP);
     }
 
@@ -93,8 +107,8 @@ class Presentation {
             let progress = this._presentation.progress.toLowerCase();
             let step = 'summary';
 
-            if (progress != 'complete') {
-                step = progress;
+            if (progress !== 'complete') {
+                step = this.getNextStep();
             }
 
             return `/app/${this._summit.slug}/presentations/${this._presentation.id}/${step}`;
@@ -114,6 +128,42 @@ class Presentation {
         } 
         
         return selectionPlanName;
+    }
+
+    getEventType() {
+        if (this._summit && this._presentation.type) {
+            return this._summit.event_types.find(ev => ev.id === this._presentation.type.id);
+        }
+
+        return null;
+    }
+
+    getAllowedMediaUploads() {
+        const eventType = this.getEventType();
+        if (eventType && eventType.allowed_media_upload_types.length > 0) {
+            return eventType.allowed_media_upload_types;
+        }
+
+        return [];
+    }
+
+    getNextStep() {
+        const allowedMediaUploads = this.getAllowedMediaUploads();
+        const steps = allowedMediaUploads.length > 0 ? NavStepsDefinitions : NavStepsDefinitions.filter(s => s.name !== 'uploads');
+        const progressNum = this._presentation.progressNum || 1;
+        const nextStep = steps[steps.findIndex(x => x.step === progressNum) + 1];
+        return nextStep.name;
+    }
+
+    getStepAfter(step) {
+        const allowedMediaUploads = this.getAllowedMediaUploads();
+        const steps = allowedMediaUploads.length > 0 ? NavStepsDefinitions : NavStepsDefinitions.filter(s => s.name !== 'uploads');
+        const nextStep = steps[steps.findIndex(x => x.name === step) + 1];
+        return nextStep.name;
+    }
+
+    getPresentationProgress() {
+        return this._presentation.progressNum;
     }
 
 }

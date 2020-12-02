@@ -60,6 +60,8 @@ class PresentationReviewForm extends React.Component {
             subtitle = T.translate("edit_presentation.review_important");
         }
 
+        if (!entity.id || !track) return null;
+
         return (
             <form className="presentation-review-form">
                 {!presentation.isSubmitted() &&

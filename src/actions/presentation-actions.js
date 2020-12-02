@@ -51,7 +51,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let params = {
         access_token: accessToken,
-        expand: 'track_groups,speakers,presentation_materials,type,media_uploads'
+        expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags'
     };
 
     return getRequest(
@@ -70,7 +70,7 @@ export const resetPresentation = () => (dispatch, getState) => {
     dispatch(createAction(RESET_PRESENTATION)({}));
 };
 
-export const savePresentation = (entity, nextStep) => async (dispatch, getState) => {
+export const savePresentation = (entity, presentation) => async (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
     let {summit} = baseState;
@@ -96,7 +96,7 @@ export const savePresentation = (entity, nextStep) => async (dispatch, getState)
             .then((payload) => {
                 dispatch(getPresentation(payload.response.id)).then((payload) => {
                         dispatch(stopLoading());
-                        history.push(`/app/${summit.slug}/presentations/${payload.id}/${nextStep}`);
+                        history.push(`/app/${summit.slug}/presentations/${payload.id}/${presentation.getNextStep()}`);
                     }
                 );
             });
@@ -113,7 +113,7 @@ export const savePresentation = (entity, nextStep) => async (dispatch, getState)
         .then((payload) => {
             dispatch(getPresentation(payload.response.id)).then((payload) => {
                     dispatch(stopLoading());
-                    history.push(`/app/${summit.slug}/presentations/${payload.id}/uploads`);
+                    history.push(`/app/${summit.slug}/presentations/${payload.id}/${presentation.getNextStep()}`);
                 }
             );
         });

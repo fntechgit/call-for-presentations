@@ -24,9 +24,13 @@ import Presentation from '../model/presentation'
 
 class PresentationLayout extends React.Component {
 
+    constructor(props){
+        super(props);
+        this.presentation = new Presentation(props.entity, props.summit, props.selectionPlan, props.loggedSpeaker);
+    }
+
     componentDidMount() {
         let {presentation_id} = this.props.match.params;
-        let {summit} = this.props;
         if (!presentation_id) {
             this.props.resetPresentation();
             return;
@@ -41,17 +45,17 @@ class PresentationLayout extends React.Component {
         if (newId && oldId !== newId) {
             this.props.getPresentation(newId);
         }
+
+        this.presentation.updatePresentation(newProps.entity);
     }
 
     render(){
-        let { match, entity, summit, selectionPlan, speaker, history, loading, location } = this.props;
+        let { match, entity, speaker, history, loading, location } = this.props;
         let isNew = !match.params.presentation_id;
 
         if (loading || (!isNew && !entity.id)) return null;
 
-        let presentation = new Presentation(entity, summit, selectionPlan, speaker);
-
-        if (!isNew && match.params.presentation_id === entity.id && !presentation.canEdit() && !location.pathname.endsWith('preview') ) {
+        if (!isNew && match.params.presentation_id === entity.id && !this.presentation.canEdit() && !location.pathname.endsWith('preview') ) {
             return(<Redirect to={`${match.url}/preview`} />);
         }
 
@@ -65,7 +69,9 @@ class PresentationLayout extends React.Component {
                 <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} component={EditSpeakerPage}/>
                 <Route strict exact path={`${match.url}/preview`} component={PreviewPresentationPage}/>
                 <Route strict exact path={`${match.url}/thank-you`} component={ThankYouPresentationPage}/>
-                <Route strict exact path={`${match.url}/:step`} component={EditPresentationPage}/>
+                <Route strict exact path={`${match.url}/:step`} render={
+                    props => (<EditPresentationPage {...props} presentation={this.presentation} />)
+                }/>
                 <Route render={props => (<Redirect to={`${match.url}/summary`} />)}/>
             </Switch>
         );

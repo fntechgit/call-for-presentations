@@ -70,9 +70,7 @@ class PresentationSummaryForm extends React.Component {
     }
 
     handleSubmit(ev) {
-
         let {entity, errors} = this.state;
-        let { summit } = this.props;
         ev.preventDefault();
 
         let rules = {
@@ -98,7 +96,7 @@ class PresentationSummaryForm extends React.Component {
         validate(entity, rules, errors);
 
         if (Object.keys(errors).length === 0) {
-            this.props.onSubmit(entity, 'uploads');
+            this.props.onSubmit(entity);
         } else {
             this.setState({errors}, () => {
                 if (Object.keys(errors).length > 0) {

@@ -36,7 +36,6 @@ import {
 export const DEFAULT_ENTITY = {
     id: 0,
     progress: 'NEW',
-    progressNum: 0,
     title: '',
     type_id: 0,
     track_id: 0,
@@ -57,15 +56,6 @@ export const DEFAULT_ENTITY = {
 const DEFAULT_STATE = {
     entity: DEFAULT_ENTITY,
     track: null,
-    steps:[
-        {name: 'NEW', step: 0},
-        {name: 'SUMMARY', step: 1},
-        {name: 'UPLOADS', step: 2},
-        {name: 'TAGS', step: 3},
-        {name: 'SPEAKERS', step: 4},
-        {name: 'REVIEW', step: 5},
-        {name: 'COMPLETE', step: 6}
-    ],
     errors: {}
 }
 
@@ -114,8 +104,6 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
                 entity.type_id = entity.type.id;
             }
 
-            entity.progressNum = state.steps.find(s => s.name == entity.progress).step;
-
             return {...state, entity: {...DEFAULT_ENTITY, ...entity}, errors: {} };
         }
         break;
@@ -123,8 +111,6 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
         case PRESENTATION_COMPLETED:
         case PRESENTATION_UPDATED: {
             let entity = {...payload.response};
-
-            entity.progressNum = state.steps.find(s => s.name == entity.progress).step;
 
             // these come un expanded, we need to use what we had
             delete entity.speakers;

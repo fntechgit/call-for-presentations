@@ -129,14 +129,14 @@ class PresentationUploadsForm extends React.Component {
 
         if (!summit) return(<div/>);
 
-        const cur_event_type = summit.event_types.find(ev => ev.id === entity.type_id);
+        const allowedMediaUploads = presentation.getAllowedMediaUploads();
 
         return (
             <form className="presentation-uploads-form">
                 <input type="hidden" id="id" value={entity.id} />
 
-                { cur_event_type && cur_event_type.allowed_media_upload_types.length > 0 && cur_event_type.allowed_media_upload_types.map((media_type, i) => {
-                    const notLastItem = i < cur_event_type.allowed_media_upload_types.length -1;
+                { allowedMediaUploads.map((media_type, i) => {
+                    const notLastItem = i < allowedMediaUploads.length -1;
                     const allowedExt = media_type.type.allowed_extensions.map((ext) => `.${ext.toLowerCase()}`).join(",");
                     const mediaUploads = this.getMediaUploadsByType(entity, media_type);
 

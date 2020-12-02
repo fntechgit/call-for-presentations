@@ -47,7 +47,7 @@ class PresentationTagsForm extends React.Component {
         let entity = {...this.state.entity};
         ev.preventDefault();
 
-        this.props.onSubmit(entity, 'speakers');
+        this.props.onSubmit(entity);
     }
 
     render() {

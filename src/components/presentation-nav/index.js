@@ -37,13 +37,13 @@ class PresentationNav extends React.Component {
     }
 
     render() {
-
-        let {progress, activeStep} = this.props;
+        let {progress, activeStep, showUploads} = this.props;
+        const steps = showUploads ? NavStepsDefinitions : NavStepsDefinitions.filter(s => s.name !== 'uploads');
 
         return (
             <div className="presentation-nav-wrapper">
                 <ul className="presentation-nav-steps">
-                    { NavStepsDefinitions.map(step => (
+                    { steps.map(step => (
                         <NavStep
                             key={step.name + "-step"}
                             onClick={(e) => this.onStepClick(e, step)}

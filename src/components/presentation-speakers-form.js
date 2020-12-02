@@ -45,7 +45,7 @@ class PresentationSpeakersForm extends React.Component {
         if (!entity.moderator && entity.speakers.length == 0) {
             Swal.fire("Validation error", T.translate("edit_presentation.add_speaker_error"), "warning");
         } else {
-            this.props.onSubmit(this.props.entity, 'review');
+            this.props.onSubmit(this.props.entity);
         }
     }
 
