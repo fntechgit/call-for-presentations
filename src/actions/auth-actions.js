@@ -14,15 +14,12 @@
 import {
     createAction,
     getRequest,
-    showMessage,
     startLoading,
     stopLoading,
     authErrorHandler,
-    initLogOut
+    initLogOut,
+    getUserInfo,
 } from "openstack-uicore-foundation/lib/methods";
-
-import {REQUEST_USER_INFO, RECEIVE_USER_INFO} from 'openstack-uicore-foundation/lib/actions';
-
 
 import history from '../history'
 import T from "i18n-react/dist/i18n-react";
@@ -64,7 +61,6 @@ export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
 
     if (code == 404) {
         // speaker not found
-        //try to get member
 
         Swal.fire({
             title: T.translate("landing.speaker_profile_required"),
@@ -72,32 +68,10 @@ export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
             type: "warning",
         });
 
-        return getRequest(
-            createAction(REQUEST_USER_INFO),
-            createAction(RECEIVE_USER_INFO),
-            `${window.API_BASE_URL}/api/v1/members/me?expand=groups&access_token=${accessToken}`,
-            authErrorHandler
-        )({})(dispatch, getState).then(() => {
-            dispatch(stopLoading());
-
-            let { member } = getState().loggedUserState;
-            if( member == null || member == undefined){
-                let error_message = {
-                    title: 'ERROR',
-                    html: T.translate("errors.user_not_set"),
-                    type: 'error'
-                };
-
-                dispatch(showMessage( error_message, initLogOut ));
-                return;
-            }
-
-            const redirectUrl = baseState.summit ? `/app/${baseState.summit.slug}/profile` : '/app/profile';
-            history.push(redirectUrl);
-        });
-
+        const backUrl = baseState.summit ? `/app/${baseState.summit.slug}/profile` : '/app/profile';
+        //try to get member
+        return getUserInfo('groups', backUrl, history)(dispatch, getState);
     }
     dispatch(authErrorHandler(err, res));
-
 }
 
