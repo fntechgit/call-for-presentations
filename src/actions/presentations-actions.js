@@ -27,20 +27,20 @@ export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
 export const SUMMIT_DOCS_RECEIVED   = 'SUMMIT_DOCS_RECEIVED';
 
 
-export const getAllPresentations = (summitId) => async (dispatch, getState) => {
+export const getAllPresentations = (summitId) => (dispatch, getState) => {
 
-    let { loggedUserState } = getState();
-    let { accessToken } = loggedUserState;
+    const { loggedUserState } = getState();
+    const { accessToken } = loggedUserState;
 
     dispatch(startLoading());
 
-    let created = await dispatch(getCreatorPresentations(summitId, accessToken));
+    const created = dispatch(getCreatorPresentations(summitId, accessToken));
 
-    let speaker = await dispatch(getSpeakerPresentations(summitId, accessToken));
+    const speaker = dispatch(getSpeakerPresentations(summitId, accessToken));
 
-    let moderator = await dispatch(getModeratorPresentations(summitId, accessToken));
+    const moderator = dispatch(getModeratorPresentations(summitId, accessToken));
 
-    let tagGroups = await dispatch(getTagGroups(summitId));
+    const tagGroups = dispatch(getTagGroups(summitId));
 
     return Promise.all([created, speaker, moderator, tagGroups]).then(() => {
             dispatch(stopLoading());
@@ -52,7 +52,7 @@ export const getAllPresentations = (summitId) => async (dispatch, getState) => {
 
 export const getCreatorPresentations = (summitId, accessToken) => (dispatch, getState) => {
 
-    let params = {
+    const params = {
         access_token : accessToken,
         expand: 'type'
     };
