@@ -70,7 +70,7 @@ export const resetPresentation = () => (dispatch, getState) => {
     dispatch(createAction(RESET_PRESENTATION)({}));
 };
 
-export const savePresentation = (entity, nextStep) => async (dispatch, getState) => {
+export const savePresentation = (entity, presentation, nextStep = null) => async (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
     let {summit} = baseState;
@@ -113,7 +113,7 @@ export const savePresentation = (entity, nextStep) => async (dispatch, getState)
         .then((payload) => {
             dispatch(getPresentation(payload.response.id)).then((payload) => {
                     dispatch(stopLoading());
-                    history.push(`/app/${summit.slug}/presentations/${payload.id}/${nextStep}`);
+                    history.push(`/app/${summit.slug}/presentations/${payload.id}/${presentation.getNextStep()}`);
                 }
             );
         });
