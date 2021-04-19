@@ -80,7 +80,8 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
     let normalizedEntity = normalizeEntity(entity);
 
     let params = {
-        access_token: accessToken
+        access_token: accessToken,
+        expand: 'type'
     };
 
     if (entity.id) {
@@ -225,20 +226,17 @@ export const deletePresentation = (presentationId) => (dispatch, getState) => {
 };
 
 const normalizeEntity = (entity) => {
-    let normalizedEntity = {...entity};
+    const normalizedEntity = {...entity};
 
-    let links = normalizedEntity.links.filter(l => l.trim() != '');
-    normalizedEntity.links = links;
-
-    let tags = normalizedEntity.tags.map(t => t.tag);
-    normalizedEntity.tags = tags;
+    normalizedEntity.links = normalizedEntity.links.filter(l => l.trim() != '');
+    normalizedEntity.tags = normalizedEntity.tags.map(t => t.tag);
 
     return normalizedEntity;
 };
 
 
 const presentationErrorHandler = (err, res) => (dispatch, state) => {
-    let code = err.status;
+    const code = err.status;
     dispatch(stopLoading());
 
     let msg = '';

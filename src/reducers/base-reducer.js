@@ -20,7 +20,9 @@ import {
     ERROR_RECEIVE_SUMMIT,
     RECEIVE_SELECTION_PLAN,
     RECEIVE_SUMMIT,
-    RECEIVE_MARKETING_SETTINGS
+    RECEIVE_MARKETING_SETTINGS,
+    SUMMIT_DOCS_RECEIVED,
+    BASE_LOADED
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
@@ -35,7 +37,9 @@ const DEFAULT_STATE = {
     summit: null,
     marketingSettings: null,
     submissionIsClosed: false,
-}
+    allSummitDocs: [],
+    baseLoaded: false,
+};
 
 const baseReducer = (state = DEFAULT_STATE, action) => {
     const { type, payload } = action;
@@ -43,49 +47,44 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
     switch(type){
         case RESET_LOADER:
             return {...state, loading: 0};
-        break;
         case LOGOUT_USER:
             return DEFAULT_STATE;
-        break;
         case START_LOADING:
             return {...state, loading: true};
-        break;
         case STOP_LOADING:
             return {...state, loading: false};
-        break;
+        case BASE_LOADED:
+            const {loaded} = action.payload;
+            return {...state, baseLoaded: loaded};
         case RECEIVE_TAG_GROUPS: {
-            let groups = [...payload.response.data];
+            const groups = [...payload.response.data];
             return {...state, tagGroups: groups};
         }
-        break;
         case RECEIVE_SPEAKER_INFO: {
-            let {response} = action.payload;
+            const {response} = action.payload;
             return {...state, speaker: response};
         }
-        break;
         case PROFILE_PIC_ATTACHED: {
-            let pic_info = {...payload.response};
+            const pic_info = {...payload.response};
             return {...state, speaker: {...state.speaker, pic: pic_info.url} };;
         }
-        break;
         // summit / selection plan
         case CLEAR_SUMMIT:
-            return {...state, selectionPlan: null, summit: null, marketingSettings: null, submissionIsClosed: false};
-            break;
+            return {...state, selectionPlan: null, summit: null, marketingSettings: null, submissionIsClosed: false, allSummitDocs: [], baseLoaded: false};
         case ERROR_RECEIVE_SUMMIT:
             return {...state, selectionPlan: null, summit: null, marketingSettings: null, submissionIsClosed: false};
-            break;
         case RECEIVE_SELECTION_PLAN: {
-            let entity = {...payload.response};
-
+            const entity = {...payload.response};
             return {...state, selectionPlan: entity, submissionIsClosed: false};
         }
-            break;
         case RECEIVE_SUMMIT: {
-            let entity = {...payload.response};
-            return {...state, summit: entity, marketingSettings: null, selectionPlan: null};
+            const entity = {...payload.response};
+            return {...state, summit: entity, marketingSettings: null, selectionPlan: null, allSummitDocs: [], baseLoaded: false};
         }
-            break;
+        case SUMMIT_DOCS_RECEIVED: {
+            const {data} = payload.response;
+            return {...state, allSummitDocs: data};
+        }
         case RECEIVE_MARKETING_SETTINGS: {
             const {data} = payload.response;
             // set color vars
@@ -99,14 +98,11 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
             }
             return {...state, marketingSettings: data};
         }
-            break;
         case SELECTION_CLOSED: {
             return {...state, selectionPlan: null, submissionIsClosed : true};
         }
-            break;
         default:
             return state;
-        break;
     }
 }
 

@@ -51,9 +51,9 @@ class PrimaryLayout extends React.Component {
     }
 
     render(){
-        let { location, speaker, member, summit, loading, match } = this.props;
+        let { location, speaker, member, summit, loading, match, baseLoaded } = this.props;
 
-        if (!summit) return null;
+        if (!summit || !baseLoaded) return null;
 
         if(summit.slug !== match.params.summit_slug) return null;
 
@@ -98,7 +98,8 @@ const mapStateToProps = ({ loggedUserState, baseState }) => ({
     speaker: baseState.speaker,
     summit: baseState.summit,
     selectionPlan: baseState.selectionPlan,
-    loading: baseState.loading
+    loading: baseState.loading,
+    baseLoaded: baseState.baseLoaded
 })
 
 export default connect(

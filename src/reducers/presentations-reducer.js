@@ -11,73 +11,99 @@
  * limitations under the License.
  **/
 
+import store from '../store';
 import { LOGOUT_USER } from 'openstack-uicore-foundation/lib/actions';
-import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED, SUMMIT_DOCS_RECEIVED } from '../actions/presentations-actions';
-import {PRESENTATION_DELETED} from '../actions/presentation-actions'
+import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED, REGROUP_PRESENTATIONS } from '../actions/presentations-actions';
+import {PRESENTATION_ADDED, PRESENTATION_DELETED} from '../actions/presentation-actions'
+import {CLEAR_SUMMIT} from "../actions/base-actions";
 
 const DEFAULT_STATE = {
     presentations_created: [],
     presentations_speaker: [],
     presentations_moderator: [],
+    all_presentations: [],
     summitDocs: [],
 };
 
 const presentationsReducer = (state = DEFAULT_STATE, action) => {
-    const { type, payload } = action
+    const { type, payload } = action;
     switch (type) {
         case LOGOUT_USER: {
             return DEFAULT_STATE;
         }
-        break;
-        case CREATED_RECEIVED: {
-            let presentations = [...payload.response.data];
-
-            return {...state, presentations_created: presentations, summitDocs: []};
+        case CLEAR_SUMMIT: {
+            return DEFAULT_STATE;
         }
-        break;
+        case CREATED_RECEIVED: {
+            const presentations = [...payload.response.data];
+
+            return {...state, presentations_created: presentations};
+        }
         case SPEAKER_RECEIVED: {
             let presentations = [...payload.response.data];
-            let createdIds = state.presentations_created.map(p => p.id);
+            const createdIds = state.presentations_created.map(p => p.id);
 
             presentations = presentations.filter(p => !createdIds.includes(p.id));
 
-            return {...state, presentations_speaker: presentations, summitDocs: []};
+
+            return {...state, presentations_speaker: presentations};
         }
-        break;
         case MODERATOR_RECEIVED: {
             let presentations = [...payload.response.data];
-            let createdIds = state.presentations_created.map(p => p.id);
+            const createdIds = state.presentations_created.map(p => p.id);
 
             presentations = presentations.filter(p => !createdIds.includes(p.id));
 
-            return {...state, presentations_moderator: presentations, summitDocs: []};
+            return {...state, presentations_moderator: presentations};
         }
-        break;
         case PRESENTATION_DELETED: {
-            let {presentationId} = payload;
-            let {presentations_created, presentations_speaker, presentations_moderator} = state;
-            let new_presentations_created = presentations_created.filter(p => p.id != presentationId);
-            let new_presentations_speaker = presentations_speaker.filter(p => p.id != presentationId);
-            let new_presentations_moderator = presentations_moderator.filter(p => p.id != presentationId);
+            const {presentationId} = payload;
+            const {presentations_created, presentations_speaker, presentations_moderator, all_presentations} = state;
+            const new_presentations_created = presentations_created.filter(p => p.id != presentationId);
+            const new_presentations_speaker = presentations_speaker.filter(p => p.id != presentationId);
+            const new_presentations_moderator = presentations_moderator.filter(p => p.id != presentationId);
+            const new_all_presentations = all_presentations.filter(p => p.id != presentationId);
+            const newSummitDocs = getSummitDocs(new_all_presentations, store.getState().baseState.allSummitDocs);
 
             return {
                 ...state,
                 presentations_created: new_presentations_created,
                 presentations_speaker: new_presentations_speaker,
-                presentations_moderator: new_presentations_moderator
+                presentations_moderator: new_presentations_moderator,
+                all_presentations: new_all_presentations,
+                summitDocs: newSummitDocs
             };
         }
-        break;
-        case SUMMIT_DOCS_RECEIVED: {
-            let summitDocs = [...payload.response.data];
+        case PRESENTATION_ADDED: {
+            let entity = {...payload.response};
+            const new_all_presentations = [...state.all_presentations, entity];
+            const summitDocs = getSummitDocs(new_all_presentations, store.getState().baseState.allSummitDocs);
 
-            return {...state, summitDocs};
+            return {...state, new_all_presentations, summitDocs};
         }
-        break;
+        case REGROUP_PRESENTATIONS: {
+            const all_presentations = [...state.presentations_speaker, ...state.presentations_moderator].reduce((result, item) => {
+                if (!result.find(p => p.id === item.id)) {
+                    result.push(item);
+                }
+                return result;
+            }, [...state.presentations_created]);
+
+            const summitDocs = getSummitDocs(all_presentations, store.getState().baseState.allSummitDocs);
+
+            return {...state, all_presentations, summitDocs};
+        }
         default:
             return state;
     }
 
-}
+};
+
+const getSummitDocs = (allPresentations, allSummitDocs) => {
+  const allTypes = [...new Set(allPresentations.map(p => p.type.id))];
+  const filteredDocs = allSummitDocs.filter(doc => doc.show_always || doc.event_types.some(r => allTypes.indexOf(r) >= 0));
+
+  return filteredDocs;
+};
 
 export default presentationsReducer

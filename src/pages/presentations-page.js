@@ -15,7 +15,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
-import { getAllPresentations, getSummitDocs } from '../actions/presentations-actions';
+import { getAllPresentations } from '../actions/presentations-actions';
 import { deletePresentation, resetPresentation } from '../actions/presentation-actions';
 import Presentation from '../model/presentation'
 
@@ -35,10 +35,8 @@ class PresentationsPage extends React.Component {
             history.push(`/app/profile`);
             return;
         }
-        this.props.getAllPresentations(summit.id).then(presentations => {
-            if (presentations.length > 0) {
-                this.props.getSummitDocs(presentations, summit.id);
-            }
+
+        this.props.getAllPresentations(summit.id).then(() => {
             // clear presentation form
             this.props.resetPresentation();
         });
@@ -48,11 +46,7 @@ class PresentationsPage extends React.Component {
         let oldSummit = this.props.summit;
         let newSummit = newProps.summit;
         if (oldSummit.id !== newSummit.id) {
-            this.props.getAllPresentations(newSummit.id).then(presentations => {
-                if (presentations.length > 0) {
-                    this.props.getSummitDocs(presentations, newSummit.id);
-                }
-            });
+            this.props.getAllPresentations(newSummit.id);
         }
     }
 
@@ -150,14 +144,14 @@ class PresentationsPage extends React.Component {
                                     return (
                                         <tr key={'presentation_' + p.id}>
                                             <td>
-                                                <i className="fa fa-file-text-o"></i>
+                                                <i className="fa fa-file-text-o" />
                                                 <a onClick={this.handleEditPresentation.bind(this, presentation)}>{p.title}</a>
                                             </td>
                                             <td>
                                                 {presentation.getStatus()}
                                                 {p.public_comments && p.public_comments.length > 0 &&
                                                     <button className="btn btn-default btn-xs review-btn" onClick={this.handleReviewPresentation.bind(this, p)}>
-                                                        <i className="fa fa-exclamation-triangle blink" aria-hidden="true"></i>
+                                                        <i className="fa fa-exclamation-triangle blink" />
                                                         {T.translate("presentations.review")}
                                                     </button>
                                                 }
@@ -180,7 +174,7 @@ class PresentationsPage extends React.Component {
                         </div>
                         }
 
-                        { presentations_created.length == 0 &&
+                        { presentations_created.length === 0 &&
                         <div className="col-md-12 no-presentations">
                             {T.translate("presentations.no_presentations_created")}
                         </div>
@@ -208,7 +202,7 @@ class PresentationsPage extends React.Component {
                                     return (
                                         <tr key={'presentation_' + p.id}>
                                             <td>
-                                                <i className="fa fa-file-text-o"></i>
+                                                <i className="fa fa-file-text-o" />
                                                 <a onClick={this.handleEditPresentation.bind(this, presentation)}>{p.title}</a>
                                             </td>
                                             <td>
@@ -225,7 +219,7 @@ class PresentationsPage extends React.Component {
                             </table>
                         </div>
                         }
-                        { presentations_speaker.length == 0 &&
+                        { presentations_speaker.length === 0 &&
                         <div className="col-md-12 no-presentations">
                             {T.translate("presentations.no_presentations_speaker")}
                         </div>
@@ -253,7 +247,7 @@ class PresentationsPage extends React.Component {
                                     return (
                                         <tr key={'presentation_' + p.id}>
                                             <td>
-                                                <i className="fa fa-file-text-o"></i>
+                                                <i className="fa fa-file-text-o" />
                                                 <a onClick={this.handleEditPresentation.bind(this, presentation)}>{p.title}</a>
                                             </td>
                                             <td>
@@ -270,7 +264,7 @@ class PresentationsPage extends React.Component {
                             </table>
                         </div>
                         }
-                        { presentations_moderator.length == 0 &&
+                        { presentations_moderator.length === 0 &&
                         <div className="col-md-12 no-presentations">
                             {T.translate("presentations.no_presentations_moderator")}
                         </div>
@@ -299,7 +293,6 @@ export default connect (
     {
         getAllPresentations,
         deletePresentation,
-        getSummitDocs,
         resetPresentation
     }
 )(PresentationsPage);
