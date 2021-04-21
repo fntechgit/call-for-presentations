@@ -70,14 +70,16 @@ class PresentationSummaryForm extends React.Component {
     }
 
     handleSubmit(ev) {
-        let {entity, errors} = this.state;
+        const {summit} = this.props;
+        const {entity, errors} = this.state;
+        const selectedType = summit.event_types.find(ev => ev.id === entity.type_id);
+
         ev.preventDefault();
 
         let rules = {
             title: {required: 'Title is required.'},
-            type_id: {required: 'Format is required.'},
+            type_id:  {required: 'Format is required.'},
             track_id: {required: 'Please select a track.'},
-            level: {required: 'Please select the level.'},
             description: {
                 required: 'Abstract is required.',
                 maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
@@ -91,6 +93,10 @@ class PresentationSummaryForm extends React.Component {
                 maxLength: {value: 1000, msg: 'Value exceeds max limit of 100 characters'}
             },
             links: { links: 'Link is not valid. Links must start with http:// or https://' },
+        };
+
+        if (selectedType && selectedType.allows_level) {
+            rules.level = {required: 'Please select the level.'};
         }
 
         validate(entity, rules, errors);
@@ -116,12 +122,13 @@ class PresentationSummaryForm extends React.Component {
     }
 
     render() {
-        let {entity} = this.state;
-        let {selectionPlan, summit, presentation, step} = this.props;
+        const {entity} = this.state;
+        const {selectionPlan, summit, presentation, step} = this.props;
 
         if (!summit || !selectionPlan) return(<div/>);
 
-        let event_types_ddl = summit.event_types
+        const selectedType = summit.event_types.find(ev => ev.id === entity.type_id);
+        const event_types_ddl = summit.event_types
             .filter(et => et.should_be_available_on_cfp)
             .map(et => {
                 return ({value: et.id, label: et.name, type: et.class_name});
@@ -129,7 +136,7 @@ class PresentationSummaryForm extends React.Component {
 
         let event_types_limits = '';
         for (var event_type of event_types_ddl) {
-            let ev_type_obj = summit.event_types.find(ev => ev.id === event_type.value);
+            const ev_type_obj = summit.event_types.find(ev => ev.id === event_type.value);
             event_types_limits += ev_type_obj.name + ': ' + T.translate("edit_presentation.format_max_speakers") + ' ' + ev_type_obj.max_speakers;
             if (ev_type_obj.max_moderators) {
                 event_types_limits += ', ' + T.translate("edit_presentation.format_max_moderators") + ' ' + ev_type_obj.max_moderators;
@@ -141,7 +148,7 @@ class PresentationSummaryForm extends React.Component {
         event_types_ddl.push({value: 0, label: T.translate("edit_presentation.placeholders.type_id"), type: ''});
 
         // TODO get event level options
-        let level_ddl = [
+        const level_ddl = [
             // empty value
             {label: T.translate("edit_presentation.placeholders.level"), value: ''},
             {label: T.translate("event_level.Beginner"), value: 'Beginner'},
@@ -153,12 +160,12 @@ class PresentationSummaryForm extends React.Component {
         let allowedTrackIds = selectionPlan.track_groups.map(tg => [...tg.tracks]);
         allowedTrackIds = [].concat(...allowedTrackIds);
 
-        let categories = summit.tracks
+        const categories = summit.tracks
             .filter(t => allowedTrackIds.includes(t.id))
             .map(t => ({value: t.id, label: t.name, description: t.description}));
 
 
-        let attending_media_opts = [
+        const attending_media_opts = [
             {label: T.translate("general.yes"), value: 1},
             {label: T.translate("general.no"), value: 0}
         ];
@@ -206,6 +213,7 @@ class PresentationSummaryForm extends React.Component {
                         />
                     </div>
                 </div>
+                {selectedType && selectedType.allows_level &&
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_presentation.level")} </label>
@@ -219,6 +227,7 @@ class PresentationSummaryForm extends React.Component {
                         />
                     </div>
                 </div>
+                }
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_presentation.abstract")} </label>
