@@ -38,11 +38,15 @@ class PresentationSpeakersForm extends React.Component {
     }
 
     handleSubmit(ev) {
-        let entity = {...this.props.entity};
-
+        const entity = {...this.props.entity};
         ev.preventDefault();
 
-        if (!entity.moderator && entity.speakers.length == 0) {
+        const validModerator = !entity.type.use_moderator || !entity.type.is_moderator_mandatory || entity.moderator;
+        const validSpeaker = !entity.type.use_speakers || !entity.type.are_speakers_mandatory || entity.speakers.length > 0;
+
+        if (!validModerator) {
+            Swal.fire("Validation error", T.translate("edit_presentation.add_moderator_error"), "warning");
+        } else if (!validSpeaker) {
             Swal.fire("Validation error", T.translate("edit_presentation.add_speaker_error"), "warning");
         } else {
             this.props.onSubmit(this.props.entity);

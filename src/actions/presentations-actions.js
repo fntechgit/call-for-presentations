@@ -24,7 +24,7 @@ import {getTagGroups} from './base-actions';
 export const CREATED_RECEIVED       = 'CREATED_RECEIVED';
 export const SPEAKER_RECEIVED       = 'SPEAKER_RECEIVED';
 export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
-export const SUMMIT_DOCS_RECEIVED   = 'SUMMIT_DOCS_RECEIVED';
+export const REGROUP_PRESENTATIONS  = 'REGROUP_PRESENTATIONS';
 
 
 export const getAllPresentations = (summitId) => (dispatch, getState) => {
@@ -44,7 +44,7 @@ export const getAllPresentations = (summitId) => (dispatch, getState) => {
 
     return Promise.all([created, speaker, moderator, tagGroups]).then(() => {
             dispatch(stopLoading());
-            return [...created.response.data, ...speaker.response.data, ...moderator.response.data];
+            dispatch(createAction(REGROUP_PRESENTATIONS)({}));
         }
     );
 };
@@ -96,6 +96,7 @@ export const getModeratorPresentations = (summitId, accessToken) => (dispatch, g
     )(params)(dispatch);
 };
 
+/*
 export const getSummitDocs = (presentations, summitId) => (dispatch, getState) => {
 
 
@@ -121,4 +122,4 @@ export const getSummitDocs = (presentations, summitId) => (dispatch, getState) =
             dispatch(stopLoading());
         }
     );
-};
+};*/

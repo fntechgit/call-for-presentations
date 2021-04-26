@@ -51,7 +51,7 @@ class NavMenu extends React.Component {
         return (
             <div id="app_menu" >
                 <div id="app_menu_body">
-                    <p className="user-img" style={{backgroundImage: `url('${user.pic}')`}} ></p>
+                    <p className="user-img" style={{backgroundImage: `url('${user.pic}')`}} />
                     <h3 className="user-name">{user.first_name} {user.last_name}</h3>
                     <ul className="items">
                         { MenuItemsDefinitions.map(it => (

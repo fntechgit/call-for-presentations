@@ -35,8 +35,10 @@ export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
 export const RECEIVE_SELECTION_PLAN         = 'RECEIVE_SELECTION_PLAN';
 export const RECEIVE_MARKETING_SETTINGS     = 'RECEIVE_MARKETING_SETTINGS';
 export const RECEIVE_AVAILABLE_SUMMITS      = 'RECEIVE_AVAILABLE_SUMMITS';
+export const SUMMIT_DOCS_RECEIVED           = 'SUMMIT_DOCS_RECEIVED';
 export const ERROR_RECEIVE_SUMMIT           = 'ERROR_RECEIVE_SUMMIT';
 export const CLEAR_SUMMIT                   = 'CLEAR_SUMMIT';
+export const BASE_LOADED                    = 'BASE_LOADED';
 
 
 export const resetLoading = () => (dispatch, getState) => {
@@ -65,38 +67,19 @@ export const getCurrentSelectionPlanPublic = (summit_id) => (dispatch, getState)
 
 export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
     dispatch(startLoading());
+    dispatch(createAction(BASE_LOADED)({loaded: false}));
     return getCurrentSummitPublic(summitSlug)(dispatch, getState)
         .then(({response}) => {
-            getMarketingSettings(response.id)(dispatch, getState);
-            return response.id;
-        })
-        .then((summitId) => getCurrentSelectionPlanPublic(summitId)(dispatch, getState))
-        .then(() => { dispatch(stopLoading()); });
-}
+            const marketing = getMarketingSettings(response.id)(dispatch, getState);
+            const summitDocs = getAllSummitDocs(response.id)(dispatch, getState);
+            const selPlan = getCurrentSelectionPlanPublic(response.id)(dispatch, getState)
 
-const currentSummitErrorHandler = (err, res) => (dispatch, state) => {
-    let code = err.status;
-    let msg = '';
-
-    dispatch(stopLoading());
-
-    switch (code) {
-        case 404:
-            msg = "";
-            if (err.response.body && err.response.body.message) msg = err.response.body.message;
-            else if (err.response.error && err.response.error.message) msg = err.response.error.message;
-            else msg = err.message;
-            // clear state
-            dispatch(createAction(ERROR_RECEIVE_SUMMIT)({}));
-            Swal.fire("Not Found", msg, "warning");
-            // back selection page
-            history.push('/');
-            break;
-        default:
-            Swal.fire("ERROR", T.translate("errors.server_error"), "error");
-            break
-    }
-}
+            return Promise.all([marketing, selPlan, summitDocs]).then(() => {
+                dispatch(createAction(BASE_LOADED)({loaded: true}));
+                dispatch(stopLoading());
+            });
+        });
+};
 
 export const getCurrentSummitPublic = (id) => (dispatch, getState) => {
 
@@ -216,6 +199,50 @@ export const getMarketingSettings = (summitId) => (dispatch, getState) => {
 };
 
 
+export const getAllSummitDocs = (summitId) => (dispatch, getState) => {
+
+
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
+
+    if (!accessToken) return;
+
+    let params = {
+        access_token : accessToken,
+    };
+
+    return getRequest(
+        null,
+        createAction(SUMMIT_DOCS_RECEIVED),
+        `${window.API_BASE_URL}/api/v1/summits/${summitId}/summit-documents`,
+        authErrorHandler
+    )(params)(dispatch);
+};
+
+const currentSummitErrorHandler = (err, res) => (dispatch, state) => {
+    let code = err.status;
+    let msg = '';
+
+    dispatch(stopLoading());
+
+    switch (code) {
+        case 404:
+            msg = "";
+            if (err.response.body && err.response.body.message) msg = err.response.body.message;
+            else if (err.response.error && err.response.error.message) msg = err.response.error.message;
+            else msg = err.message;
+            // clear state
+            dispatch(createAction(ERROR_RECEIVE_SUMMIT)({}));
+            Swal.fire("Not Found", msg, "warning");
+            // back selection page
+            history.push('/');
+            break;
+        default:
+            Swal.fire("ERROR", T.translate("errors.server_error"), "error");
+            break
+    }
+};
+
 export const selectionPlanErrorHandler = (err, res) => (dispatch) => {
     let code = err.status;
     dispatch(stopLoading());
@@ -251,5 +278,5 @@ export const selectionPlanErrorHandler = (err, res) => (dispatch) => {
         default:
             Swal.fire("ERROR", T.translate("errors.server_error"), "error");
     }
-}
+};
 

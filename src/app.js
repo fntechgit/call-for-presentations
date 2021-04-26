@@ -93,9 +93,6 @@ class App extends React.PureComponent {
         this.onClickLogout = this.onClickLogout.bind(this);
     }
 
-    componentDidMount() {
-    }
-
     getBackURL() {
         let {summit} = this.props;
 

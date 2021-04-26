@@ -114,8 +114,6 @@ class SpeakerForm extends React.Component {
 
         validate(entity, rules, errors);
 
-        console.log(errors);
-
         if (Object.keys(errors).length == 0) {
             this.props.onSubmit(this.state.entity);
         } else {

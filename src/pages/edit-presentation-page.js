@@ -33,7 +33,7 @@ import history from "../history";
 
 class EditPresentationPage extends React.Component {
 
-    componentWillMount() {
+    componentDidMount() {
         let {entity} = this.props;
 
         if (entity.track_id && (!this.props.track || this.props.track.id !== entity.track_id)) {
