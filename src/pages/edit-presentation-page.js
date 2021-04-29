@@ -25,31 +25,28 @@ import PresentationTagsForm from "../components/presentation-tags-form"
 import PresentationUploadsForm from "../components/presentation-uploads-form"
 import PresentationSpeakersForm from "../components/presentation-speakers-form";
 import PresentationReviewForm from "../components/presentation-review-form";
+import {getMarketingValue} from "../components/marketing-setting";
 
 import '../styles/edit-presentation-page.less';
-import Presentation from "../model/presentation";
-import {getMarketingValue} from "../components/marketing-setting";
-import history from "../history";
 
 class EditPresentationPage extends React.Component {
 
     componentDidMount() {
-        let {entity} = this.props;
+        const {entity, track} = this.props;
 
-        if (entity.track_id && (!this.props.track || this.props.track.id !== entity.track_id)) {
+        if (entity.track_id && (!track || track.id !== entity.track_id)) {
             this.props.loadEventCategory();
         }
     }
 
     componentWillReceiveProps(newProps) {
-        let {history, loading, entity} = newProps;
-        let step = newProps.match.params.step;
+        const {history, loading, match, track, entity} = newProps;
 
-        if (!NavStepsDefinitions.map(s => s.name).includes(step)) {
+        if (!NavStepsDefinitions.map(s => s.name).includes(match.params.step)) {
             history.push('summary');
         }
 
-        if (!loading && newProps.entity.track_id && (!newProps.track || newProps.entity.track_id !== newProps.track.id)) {
+        if (!loading && entity.track_id && (!track || entity.track_id !== track.id)) {
             this.props.loadEventCategory();
         }
     }

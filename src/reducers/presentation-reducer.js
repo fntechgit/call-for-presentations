@@ -44,6 +44,7 @@ export const DEFAULT_ENTITY = {
     social_description: '',
     attendees_expected_learnt: '',
     attending_media: 0,
+    will_all_speakers_attend: 0,
     links: ['','','','',''],
     extra_questions: [],
     tags: [],

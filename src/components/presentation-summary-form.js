@@ -170,6 +170,11 @@ class PresentationSummaryForm extends React.Component {
             {label: T.translate("general.no"), value: 0}
         ];
 
+        const speakers_attend_opts = [
+            {label: T.translate("general.yes"), value: 1},
+            {label: T.translate("general.no"), value: 0}
+        ];
+
         return (
             <form className="presentation-summary-form">
                 <input type="hidden" id="id" value={entity.id} />
@@ -258,6 +263,19 @@ class PresentationSummaryForm extends React.Component {
                             options={attending_media_opts}
                             inline
                             error={this.hasErrors('attending_media')}
+                        />
+                    </div>
+                </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label> Sessions for the in-person Summit will only be presented by speakers live in San Jose. Will all Speakers be able to attend the Future Technologies Symposium in-person on November 8, 2021? </label>
+                        <RadioList
+                            id="will_all_speakers_attend"
+                            value={entity.will_all_speakers_attend}
+                            onChange={this.handleChange}
+                            options={speakers_attend_opts}
+                            inline
+                            error={this.hasErrors('will_all_speakers_attend')}
                         />
                     </div>
                 </div>
