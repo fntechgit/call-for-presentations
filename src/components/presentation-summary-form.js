@@ -268,7 +268,7 @@ class PresentationSummaryForm extends React.Component {
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
-                        <label> Sessions for the in-person Summit will only be presented by speakers live in San Jose. Will all Speakers be able to attend the Future Technologies Symposium in-person on November 8, 2021? </label>
+                        <label> Sessions for the in-person Summit will only be presented by speakers live in San Jose. Will you be able to attend the Future Technologies Symposium in-person on November 8, 2021? </label>
                         <RadioList
                             id="will_all_speakers_attend"
                             value={entity.will_all_speakers_attend}
