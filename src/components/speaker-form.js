@@ -277,7 +277,7 @@ class SpeakerForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label>{T.translate("edit_speaker.spoken_languages")}</label><br/>
-                        <LanguageInput id="languages" multi value={entity.languages} onChange={this.handleChange} />
+                        <LanguageInput id="languages" multi value={entity.languages} onChange={this.handleChange} shouldUseId={true}/>
                     </div>
                 </div>
 
