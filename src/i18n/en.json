@@ -164,7 +164,7 @@
     "speaker_note": "Please Note: We have added new questions to the speaker bio form. Please review the bios for all speakers before submitting.",
     "more_speaker": "Please add speaker(s) participating in this presentation. All speakers will receive an email notifying them of this presentation submission.",
     "more_moderator": "Please add a moderator.",
-    "enter_speaker": "Enter the first name, last name or email address of the participant (*)",
+    "enter_speaker": "Enter the first name, last name or email address of the participant",
     "speaker_declaimer": "Participants agree that OpenStack Foundation may record and publish their talks presented during the Open Infrastructure Summit. If you submit a proposal on behalf of a participant, you represent to OpenStack Foundation that you have the authority to submit the proposal on the participants’s behalf and agree to the recording and publication of their presentation.",
     "add_speaker": "Add",
     "max_speakers": "You have reached the maximum of participants.",
