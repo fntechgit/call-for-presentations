@@ -34,7 +34,8 @@ class EditPresentationPage extends React.Component {
     componentDidMount() {
         const {entity, track} = this.props;
 
-        if (entity.track_id && (!track || track.id !== entity.track_id)) {
+        if (entity.track_id && (!track || track.id != entity.track_id)) {
+
             this.props.loadEventCategory();
         }
     }
@@ -46,7 +47,7 @@ class EditPresentationPage extends React.Component {
             history.push('summary');
         }
 
-        if (!loading && entity.track_id && (!track || entity.track_id !== track.id)) {
+        if (!loading && entity.track_id && (!track || entity.track_id != track.id)) {
             this.props.loadEventCategory();
         }
     }
@@ -54,6 +55,7 @@ class EditPresentationPage extends React.Component {
     render() {
         let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, saveMediaUpload,
             deleteMediaUpload, completePresentation, getSpeakerPermission, presentation } = this.props;
+
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
         const allowedMediaUploads = presentation.getAllowedMediaUploads();
