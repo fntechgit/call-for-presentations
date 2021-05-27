@@ -18,15 +18,16 @@ import { Input, TextEditor, Dropdown, RadioList, TextArea } from 'openstack-uico
 import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
 import SubmitButtons from './presentation-submit-buttons'
 import {validate, scrollToError} from '../utils/methods'
-
+import QuestionsInput from '../components/inputs/questions-input'
 
 class PresentationSummaryForm extends React.Component {
+
     constructor(props) {
         super(props);
 
         this.state = {
             entity: {...props.entity},
-            errors: props.errors
+            errors: {}
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -49,9 +50,11 @@ class PresentationSummaryForm extends React.Component {
     }
 
     handleChange(ev) {
+
         let entity = {...this.state.entity};
         let errors = {...this.state.errors};
         let {value, id} = ev.target;
+        id = id.toString();
 
         if (ev.target.type === 'checkbox') {
             value = ev.target.checked;
@@ -70,7 +73,8 @@ class PresentationSummaryForm extends React.Component {
     }
 
     handleSubmit(ev) {
-        const {summit} = this.props;
+
+        const {summit, selectionPlan} = this.props;
         const {entity, errors} = this.state;
         const selectedType = summit.event_types.find(ev => ev.id === entity.type_id);
 
@@ -93,6 +97,12 @@ class PresentationSummaryForm extends React.Component {
                 maxLength: {value: 1000, msg: 'Value exceeds max limit of 100 characters'}
             },
             links: { links: 'Link is not valid. Links must start with http:// or https://' },
+            extra_questions:{
+                required_questions:{
+                    value: selectionPlan.extra_questions,
+                    msg: 'Please complete required Questions.',
+                }
+            }
         };
 
         if (selectedType && selectedType.allows_level) {
@@ -103,13 +113,14 @@ class PresentationSummaryForm extends React.Component {
 
         if (Object.keys(errors).length === 0) {
             this.props.onSubmit(entity);
-        } else {
-            this.setState({errors}, () => {
-                if (Object.keys(errors).length > 0) {
-                    scrollToError();
-                }
-            });
+            return
         }
+
+        this.setState({errors}, () => {
+            if (Object.keys(errors).length > 0) {
+                    scrollToError();
+            }
+        });
     }
 
     hasErrors(field) {
@@ -276,6 +287,18 @@ class PresentationSummaryForm extends React.Component {
                             options={speakers_attend_opts}
                             inline
                             error={this.hasErrors('will_all_speakers_attend')}
+                        />
+                    </div>
+                </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <QuestionsInput
+                            id="extra_questions"
+                            answers={entity.extra_questions}
+                            entity={entity}
+                            questions={selectionPlan.extra_questions}
+                            onChange={this.handleChange}
+                            error={this.hasErrors('extra_questions')}
                         />
                     </div>
                 </div>

@@ -15,7 +15,6 @@ import moment from 'moment-timezone';
 import URI from "urijs";
 import validator from 'validator';
 
-
 export const findElementPos = (obj) => {
     var curtop = -70;
     if (obj.offsetParent) {
@@ -132,6 +131,44 @@ export const validate = (entity, rules, errors) => {
             }
         }
 
+        if(rules[field].hasOwnProperty('required_questions')){
+            let answers = entity[field];
+            let questions = rules[field].required_questions.value;
+            // check questions
+            if(questions.length > 0) {
+                for (var eq of questions) {
+                    if(eq.mandatory){ // only check for mandatory questions ( skip optionals)
+                        // check if the user answered
+                        let findEq = answers.find(q => q.question_id == eq.id);
+                        if(!findEq){
+                            // answer not found
+                            errors[field] = rules[field].required_questions.msg + `( ${eq.label})`;
+                            result = false;
+                            break;
+                        }
+                        let answeredQuestions = false;
+                        // answer found
+                        switch(eq.type) {
+                            case 'TextArea':
+                            case 'Text':
+                            case 'ComboBox':
+                            case 'RadioButtonList':
+                            case 'CheckBoxList':
+                            case 'RadioButton':
+                                answeredQuestions = findEq && findEq.answer != "" ? true : false;
+                                break;
+                            case 'CheckBox':
+                                answeredQuestions = findEq && findEq.answer == "true" ? true : false;
+                                break;
+                        }
+                        if(!answeredQuestions){
+                            errors[field] = rules[field].required_questions.msg+ `( ${eq.label})`;
+                            result = false;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     return result;

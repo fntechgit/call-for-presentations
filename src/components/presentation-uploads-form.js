@@ -85,6 +85,7 @@ class PresentationUploadsForm extends React.Component {
     }
 
     handleSubmit(ev) {
+
         let {entity, errors} = this.state;
         let { summit } = this.props;
         ev.preventDefault();
