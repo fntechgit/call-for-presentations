@@ -89,7 +89,6 @@ class PresentationSummaryForm extends React.Component {
                 maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
             },
             social_description: {
-                required: 'Social summary is required.',
                 maxLength: {value: 100, msg: 'Value exceeds max limit of 100 characters'}
             },
             attendees_expected_learnt: {
