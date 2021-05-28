@@ -174,13 +174,23 @@
     "review_subtitle": "Your presentation is submitted and awaiting review by Track Chairs",
     "permission_denied": "Permission Denied",
     "no_edit": "You are not allowed to edit this presentation",
-    "add_speaker_error": "You need to add at least one speaker to the presentation.",
-    "add_moderator_error": "You need to add a moderator to the presentation.",
     "chair_comments": "Chair Comments",
     "presentation_material": "Presentation Material",
+    "role": "Role",
+    "labels": {
+      "speaker": "Speaker",
+      "moderator": "Moderator"
+    },
     "placeholders": {
       "type_id" : "-- Select One --",
-      "level" : "-- Select One --"
+      "level" : "-- Select One --",
+      "role": "-- Select a Role --"
+    },
+    "errors": {
+      "role": "You must select a Role.",
+      "add_moderator": "You need to add a moderator to the presentation.",
+      "add_speaker": "You need to add at least one speaker to the presentation.",
+      "missing_speaker": "You need to select a participant."
     }
   },
   "edit_speaker": {
