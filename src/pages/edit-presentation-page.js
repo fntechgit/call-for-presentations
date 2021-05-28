@@ -14,7 +14,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
-import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 import { savePresentation, completePresentation, saveMediaUpload, deleteMediaUpload } from "../actions/presentation-actions";
 import { getSpeakerPermission, removeSpeakerFromPresentation, removeModeratorFromPresentation, assignModeratorToPresentation, assignSpeakerToPresentation } from "../actions/speaker-actions";
 import { loadEventCategory } from "../actions/base-actions";
@@ -30,6 +29,10 @@ import {getMarketingValue} from "../components/marketing-setting";
 import '../styles/edit-presentation-page.less';
 
 class EditPresentationPage extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
 
     componentDidMount() {
         const {entity, track} = this.props;
@@ -71,16 +74,9 @@ class EditPresentationPage extends React.Component {
                 <PresentationNav activeStep={step} progress={presentation.getPresentationProgress()} showUploads={allowedMediaUploads.length > 0} />
 
                 {step === 'summary' &&
-                <div className="presentation-form-wrapper">
-                    {disclaimer &&
-                    <div className="disclaimer">
-                        <RawHTML>
-                            {disclaimer}
-                        </RawHTML>
-                    </div>
-                    }
                     <PresentationSummaryForm
                         entity={entity}
+                        disclaimer={disclaimer}
                         presentation={presentation}
                         step={step}
                         summit={summit}
@@ -88,7 +84,6 @@ class EditPresentationPage extends React.Component {
                         errors={errors}
                         onSubmit={entity => savePresentation(entity, presentation, presentation.getNextStep())}
                     />
-                </div>
                 }
 
                 {step === 'uploads' &&

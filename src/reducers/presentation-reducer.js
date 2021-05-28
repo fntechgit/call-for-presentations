@@ -44,7 +44,6 @@ export const DEFAULT_ENTITY = {
     social_description: '',
     attendees_expected_learnt: '',
     attending_media: 0,
-    will_all_speakers_attend: 0,
     links: ['','','','',''],
     extra_questions: [],
     tags: [],
@@ -52,6 +51,7 @@ export const DEFAULT_ENTITY = {
     moderator: null,
     media_uploads:[],
     public_comments: [],
+    disclaimer_accepted:false,
 }
 
 const DEFAULT_STATE = {
@@ -95,6 +95,13 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
                 let length = entity.links.length;
                 entity.links.length = 5;
                 entity.links.fill('', length, 5);
+            }
+
+            if (entity.hasOwnProperty('extra_questions')) {
+                entity.extra_questions = entity.extra_questions.map(q => { return {
+                    question_id: q.question_id,
+                    answer: q.value,
+                }});
             }
 
             if (entity.hasOwnProperty('media_uploads')) {
