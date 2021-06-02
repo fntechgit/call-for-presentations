@@ -142,7 +142,7 @@ export const validate = (entity, rules, errors) => {
                         let findEq = answers.find(q => q.question_id == eq.id);
                         if(!findEq){
                             // answer not found
-                            errors[field] = rules[field].required_questions.msg + `( ${eq.label})`;
+                            errors[field] = rules[field].required_questions.msg;
                             result = false;
                             break;
                         }
@@ -162,7 +162,7 @@ export const validate = (entity, rules, errors) => {
                                 break;
                         }
                         if(!answeredQuestions){
-                            errors[field] = rules[field].required_questions.msg+ `( ${eq.label})`;
+                            errors[field] = rules[field].required_questions.msg;
                             result = false;
                         }
                     }

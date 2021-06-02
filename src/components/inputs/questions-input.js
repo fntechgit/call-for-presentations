@@ -13,7 +13,7 @@
 
 import React from 'react';
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import {Input, Dropdown, RadioList, CheckboxList} from 'openstack-uicore-foundation/lib/components'
+import {Input, Dropdown, RadioList, CheckboxList, RawHTML} from 'openstack-uicore-foundation/lib/components'
 
 export default class QuestionsInput extends React.Component {
 
@@ -74,13 +74,15 @@ export default class QuestionsInput extends React.Component {
     getInput(question, answerValue) {
         let questionValues = question.values;
         let {entity} = this.props;
-
+        let label = question.label;
+        if(question.mandatory){
+            label = `${label}<span>&nbsp;*</span>`;
+        }
         switch (question.type) {
             case 'Text':
-
                 return (
                     <React.Fragment>
-                        <label> {question.label} {question.mandatory ? '*' : ''} </label>
+                        <label><RawHTML>{label}</RawHTML></label>
                         <Input
                             id={question.id}
                             value={answerValue}
@@ -94,7 +96,7 @@ export default class QuestionsInput extends React.Component {
             case 'TextArea':
                 return (
                     <React.Fragment>
-                        <label> {question.label} {question.mandatory ? '*' : ''}</label>
+                        <label><RawHTML>{label}</RawHTML></label>
                         <textarea
                             id={question.id}
                             value={answerValue}
@@ -113,7 +115,9 @@ export default class QuestionsInput extends React.Component {
                                onChange={this.handleChange} className="form-check-input"/>
 
                         <label className="form-check-label" htmlFor={`${entity.id}_${question.id}`}>
-                            {question.label} {question.mandatory ? '*' : ''}
+                            <RawHTML>
+                                {label}
+                            </RawHTML>
                         </label>
                     </div>
                 );
@@ -122,7 +126,7 @@ export default class QuestionsInput extends React.Component {
                 questionValues = questionValues.map(val => ({...val, value: val.id}));
                 return (
                     <React.Fragment>
-                        <label> {question.label} {question.mandatory ? '*' : ''}</label>
+                        <label><RawHTML>{label}</RawHTML></label>
                         <Dropdown
                             id={question.id}
                             value={value}
@@ -136,12 +140,13 @@ export default class QuestionsInput extends React.Component {
                 answerValue = answerValue ? answerValue.split(',').map(ansVal => parseInt(ansVal)) : [];
                 return (
                     <React.Fragment>
-                        <label> {question.label} {question.mandatory ? '*' : ''}</label>
+                        <label><RawHTML>{label}</RawHTML></label>
                         <CheckboxList
                             id={`${entity.id}_${question.id}`}
                             value={answerValue}
                             options={questionValues}
                             onChange={this.handleChange}
+                            html
                         />
                     </React.Fragment>
                 );
@@ -149,13 +154,14 @@ export default class QuestionsInput extends React.Component {
                 questionValues = questionValues.map(val => ({...val, value: val.id}));
                 return (
                     <React.Fragment>
-                        <label> {question.label} {question.mandatory ? '*' : ''}</label>
+                        <label><RawHTML>{label}</RawHTML></label>
                         <RadioList
                             id={`${entity.id}_${question.id}`}
                             value={answerValue}
                             options={questionValues}
                             onChange={this.handleChange}
                             inline
+                            html
                         />
                     </React.Fragment>
                 );
@@ -168,7 +174,7 @@ export default class QuestionsInput extends React.Component {
         let orderedQuestions = questions.sort((a, b) => (a.order > b.order) ? 1 : -1);
         let has_error = ( this.props.hasOwnProperty('error') && error != '' );
         return (
-            <div>
+            <div className="extra-questions">
                 {orderedQuestions.map(q => {
 
                     let answer = answers.find(ans => ans.question_id === q.id);
