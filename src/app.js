@@ -149,9 +149,10 @@ class App extends React.PureComponent {
             if (selectionPlan) {
                 // format MMMM d, YYYY
                 // MMMM : A full textual representation of a month, such as January or March	January through December
-                // d : Day of the month, 2 digits with leading zeros 01 to 31
+                // DD : Day of the month, 2 digits with leading zeros 01 to 31
                 // YYYY : A full numeric representation of a year, 4 digits Examples: 1999 or 2003
-                let end_date = formatEpoch(selectionPlan.submission_end_date, 'MMMM d, YYYY h:mm a');
+                console.log(`${selectionPlan.id} date ${selectionPlan.submission_end_date}`);
+                let end_date = formatEpoch(selectionPlan.submission_end_date, 'MMMM DD, YYYY h:mm a');
                 if(header_title != '')
                     header_title += ': '
                 header_title += `${selectionPlan.name} ${summit.name}`;
