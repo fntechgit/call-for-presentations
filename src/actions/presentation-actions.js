@@ -22,8 +22,6 @@ import {
     showMessage,
     authErrorHandler,
     doLogin,
-    postFile,
-    putFile
 } from "openstack-uicore-foundation/lib/methods";
 import T from "i18n-react/dist/i18n-react";
 import Swal from "sweetalert2";
@@ -51,7 +49,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let params = {
         access_token: accessToken,
-        expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags'
+        expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags, extra_questions'
     };
 
     return getRequest(
@@ -81,7 +79,7 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
 
     let params = {
         access_token: accessToken,
-        expand: 'type'
+        expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags, extra_questions'
     };
 
     if (entity.id) {
@@ -95,11 +93,14 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
             entity
         )(params)(dispatch)
             .then((payload) => {
+
                 dispatch(getPresentation(payload.response.id))
                     .then((payload) => {
                         dispatch(stopLoading());
                         history.push(`/app/${summit.slug}/presentations/${payload.id}/${nextStep}`);
                     });
+            }, (error) => {
+                dispatch(stopLoading());
             });
     }
 
@@ -117,6 +118,8 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
                     history.push(`/app/${summit.slug}/presentations/${payload.id}/${presentation.getNextStep()}`);
                 }
             );
+        }, (error) => {
+            dispatch(stopLoading());
         });
 };
 
@@ -132,7 +135,7 @@ export const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => 
         access_token: accessToken,
     };
 
-    if(mediaUpload.hasOwnProperty('media_upload_type'))
+    if (mediaUpload.hasOwnProperty('media_upload_type'))
         mediaUpload.media_upload_type_id = mediaUpload.media_upload_type.id;
 
     if (mediaUpload.id > 0) {
@@ -157,7 +160,6 @@ export const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => 
 };
 
 
-
 export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
@@ -176,7 +178,6 @@ export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getS
         authErrorHandler
     )(params)(dispatch).finally(() => dispatch(stopLoading()));
 };
-
 
 
 export const completePresentation = (entity) => (dispatch, getState) => {

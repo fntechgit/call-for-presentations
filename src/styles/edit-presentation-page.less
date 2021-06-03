@@ -20,18 +20,45 @@
 // SUMMARY
 
 .presentation-form-wrapper {
+
   .disclaimer {
     padding: 20px;
     background-color: #d3deea4d;
     margin-bottom: 35px;
+    .abc-checkbox{
+      padding-left: 0;
+      label{
+        display: inline !important;
+      }
+    }
   }
 
   .presentation-summary-form {
+
     label {
       display: block;
       margin-top: 10px;
       // to avoid line break
       max-width: 90%;
+    }
+
+    .extra-questions{
+      .abc-checkbox{
+        label{
+          display: block !important;
+        }
+        padding-left: 16px;
+      }
+      label span p:first-child {
+        display: inline;
+      }
+    }
+
+    .abc-checkbox{
+      label{
+        display: inline !important;
+      }
+      padding-left: 0;
     }
 
     textarea {

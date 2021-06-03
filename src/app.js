@@ -130,8 +130,11 @@ class App extends React.PureComponent {
         } = this.props;
 
         let profile_pic = speaker ? speaker.member.pic : (member ? member.pic : '');
+        let header_title = '';
 
-        let header_title = T.translate('landing.call_for_presentations');
+        if(window.APP_CLIENT_NAME === 'openstack')
+            header_title = T.translate('landing.call_for_presentations');
+
         let header_subtitle = '';
         var summit_logo = 'https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/images-fn-staging/idp-logo.png';
         if(window.APP_CLIENT_NAME === 'openstack')
@@ -144,12 +147,22 @@ class App extends React.PureComponent {
             summit_logo = (summit.logo) ? summit.logo : summit_logo;
 
             if (selectionPlan) {
-                let end_date = formatEpoch(selectionPlan.submission_end_date, 'MMM Do h:mm a');
-                header_title += `: ${selectionPlan.name} ${summit.name}`;
+                // format MMMM d, YYYY
+                // MMMM : A full textual representation of a month, such as January or March	January through December
+                // DD : Day of the month, 2 digits with leading zeros 01 to 31
+                // YYYY : A full numeric representation of a year, 4 digits Examples: 1999 or 2003
+                console.log(`${selectionPlan.id} date ${selectionPlan.submission_end_date}`);
+                let end_date = formatEpoch(selectionPlan.submission_end_date, 'MMMM DD, YYYY h:mm a');
+                if(header_title != '')
+                    header_title += ': '
+                header_title += `${selectionPlan.name} ${summit.name}`;
                 header_subtitle = T.translate('landing.subtitle', {'end_date' : end_date, 'when': moment.tz.guess()});
             }
             else if(submissionIsClosed){
-                header_title += `: ${summit.name}`;
+                if(header_title != '')
+                    header_title += ': '
+                header_title += `${summit.name}`;
+
                 header_subtitle = T.translate('landing.closed');
             }
         }

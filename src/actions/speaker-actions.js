@@ -295,15 +295,19 @@ export const assignSpeakerToPresentation = (speaker) => (dispatch, getState) => 
         access_token: accessToken,
     };
 
-    putRequest(
+    dispatch(startLoading());
+
+    return putRequest(
         null,
         createAction(SPEAKER_ASSIGNED)({speaker}),
         `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${presentationId}/speakers/${speaker.id}`,
         null,
         authErrorHandler
-    )(params)(dispatch);
+    )(params)(dispatch).then(() => {
+            dispatch(stopLoading());
+        }
+    );
 }
-
 
 export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState) => {
 
@@ -328,7 +332,6 @@ export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState)
     );
 };
 
-
 export const assignModeratorToPresentation = (moderator) => (dispatch, getState) => {
     let {loggedUserState, presentationState} = getState();
     let {accessToken} = loggedUserState;
@@ -338,13 +341,18 @@ export const assignModeratorToPresentation = (moderator) => (dispatch, getState)
         access_token: accessToken,
     };
 
-    putRequest(
+    dispatch(startLoading());
+
+    return putRequest(
         null,
         createAction(MODERATOR_ASSIGNED)({moderator}),
         `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${presentationId}/moderators/${moderator.id}`,
         null,
         authErrorHandler
-    )(params)(dispatch);
+    )(params)(dispatch).then(() => {
+            dispatch(stopLoading());
+        }
+    );
 }
 
 

@@ -14,7 +14,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
-import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 import { savePresentation, completePresentation, saveMediaUpload, deleteMediaUpload } from "../actions/presentation-actions";
 import { getSpeakerPermission, removeSpeakerFromPresentation, removeModeratorFromPresentation, assignModeratorToPresentation, assignSpeakerToPresentation } from "../actions/speaker-actions";
 import { loadEventCategory } from "../actions/base-actions";
@@ -31,10 +30,15 @@ import '../styles/edit-presentation-page.less';
 
 class EditPresentationPage extends React.Component {
 
+    constructor(props) {
+        super(props);
+    }
+
     componentDidMount() {
         const {entity, track} = this.props;
 
-        if (entity.track_id && (!track || track.id !== entity.track_id)) {
+        if (entity.track_id && (!track || track.id != entity.track_id)) {
+
             this.props.loadEventCategory();
         }
     }
@@ -46,7 +50,7 @@ class EditPresentationPage extends React.Component {
             history.push('summary');
         }
 
-        if (!loading && entity.track_id && (!track || entity.track_id !== track.id)) {
+        if (!loading && entity.track_id && (!track || entity.track_id != track.id)) {
             this.props.loadEventCategory();
         }
     }
@@ -54,6 +58,7 @@ class EditPresentationPage extends React.Component {
     render() {
         let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, saveMediaUpload,
             deleteMediaUpload, completePresentation, getSpeakerPermission, presentation } = this.props;
+
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = this.props.match.params.step;
         const allowedMediaUploads = presentation.getAllowedMediaUploads();
@@ -69,16 +74,9 @@ class EditPresentationPage extends React.Component {
                 <PresentationNav activeStep={step} progress={presentation.getPresentationProgress()} showUploads={allowedMediaUploads.length > 0} />
 
                 {step === 'summary' &&
-                <div className="presentation-form-wrapper">
-                    {disclaimer &&
-                    <div className="disclaimer">
-                        <RawHTML>
-                            {disclaimer}
-                        </RawHTML>
-                    </div>
-                    }
                     <PresentationSummaryForm
                         entity={entity}
+                        disclaimer={disclaimer}
                         presentation={presentation}
                         step={step}
                         summit={summit}
@@ -86,7 +84,6 @@ class EditPresentationPage extends React.Component {
                         errors={errors}
                         onSubmit={entity => savePresentation(entity, presentation, presentation.getNextStep())}
                     />
-                </div>
                 }
 
                 {step === 'uploads' &&

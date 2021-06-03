@@ -53,7 +53,7 @@ export const clearCurrentSummit = () => (dispatch, getState) => {
 export const getCurrentSelectionPlanPublic = (summit_id) => (dispatch, getState) => {
 
     let params = {
-        expand: 'summit,track_groups'
+        expand: 'summit,track_groups,extra_questions,extra_questions.values'
     };
 
     return getRequest(
@@ -168,7 +168,7 @@ export const loadEventCategory = () => (dispatch, getState) => {
     dispatch(startLoading());
 
     let params = {
-        expand       : "allowed_tags,extra_questions",
+        expand       : "allowed_tags",
         access_token : accessToken,
     };
 
