@@ -179,8 +179,13 @@ class PresentationSummaryForm extends React.Component {
 
         const categories = summit.tracks
             .filter(t => allowedTrackIds.includes(t.id))
-            .map(t => ({value: t.id, label: t.name, description: t.description}));
-
+            .map(t => ({value: t.id, label: t.name, description: t.description})).sort(
+                (a, b) => {
+                    if(a.label < b.label) { return -1; }
+                    if(a.label > b.label) { return 1; }
+                    return 0;
+                }
+            );
 
         const attending_media_opts = [
             {label: T.translate("general.yes"), value: 1},
