@@ -49,7 +49,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let params = {
         access_token: accessToken,
-        expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags, extra_questions'
+        expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags, extra_questions, links'
     };
 
     return getRequest(
@@ -79,7 +79,7 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
 
     let params = {
         access_token: accessToken,
-        expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags, extra_questions'
+        expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags, extra_questions, links'
     };
 
     if (entity.id) {
