@@ -87,9 +87,10 @@ export default class CPFSpeakerInput extends React.Component {
 
     isValidNewOption(inputValue, selectValue, selectOptions) {
         var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(inputValue).toLowerCase());
+        let res = re.test(String(inputValue).toLowerCase());
+        console.log(`isValidNewOption value ${inputValue} res ${res}`);
+        return res;
     }
-
 
     render() {
         let {onChange, id, speakers, value, ...rest} = this.props;

@@ -107,20 +107,26 @@ class PresentationSpeakersForm extends React.Component {
         }
 
         if (!isNaN(speaker.id)) {
+            // existing speaker
             if (currentSpeakerType == 'moderator') {
                 onAddModerator(speaker);
             } else {
                 onAddSpeaker(speaker);
             }
             this.setState({...this.state, currentSpeakerType: null, speakerInput: null, error: null});
-        } else if (speaker.value) {
-            history.push(`/app/${summit.slug}/presentations/${entity.id}/speakers/new`, { email: speaker.value, type: speakerType });
-        }
-        else{
-            // speaker not set
-            this.setState({...this.state, error: T.translate("edit_presentation.errors.missing_speaker")});
+            return false;
         }
 
+        if (speaker.value) {
+
+            // new speaker
+            history.push(`/app/${summit.slug}/presentations/${entity.id}/speakers/new`, { email: speaker.value, type: currentSpeakerType });
+            return false;
+        }
+
+        // speaker not set
+        this.setState({...this.state, error: T.translate("edit_presentation.errors.missing_speaker")});
+        return false;
     }
 
     render() {
