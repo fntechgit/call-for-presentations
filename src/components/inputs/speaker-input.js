@@ -107,6 +107,7 @@ export default class CPFSpeakerInput extends React.Component {
                 placeholder="Find speakers or type email to create new"
                 formatCreateLabel={(input) => `Add new speaker with email: "${input}" `}
                 isValidNewOption={this.isValidNewOption}
+                isClearable
                 {...rest}
             />
         );

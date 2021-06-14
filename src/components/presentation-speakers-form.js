@@ -101,6 +101,12 @@ class PresentationSpeakersForm extends React.Component {
         let {history, entity, onAddSpeaker, onAddModerator, summit} = this.props;
         ev.preventDefault();
 
+        if(!speaker){
+            // speaker not set
+            this.setState({...this.state, error: T.translate("edit_presentation.errors.missing_speaker")});
+            return;
+        }
+
         if(!currentSpeakerType){
             this.setState({...this.state, error: T.translate("edit_presentation.errors.role")});
             return;
@@ -131,7 +137,7 @@ class PresentationSpeakersForm extends React.Component {
 
     render() {
         let {summit, entity, presentation, step} = this.props;
-        let {speakerInput, error} = this.state;
+        let {speakerInput, error, speaker} = this.state;
         let eventType = summit.event_types.find(t => t.id == entity.type_id);
         const speaker_subtitle_1 = getMarketingValue('spkmgmt_speaker_subtitle_1');
         let canAddSpeakers = (eventType && eventType.max_speakers > entity.speakers.length);
@@ -141,6 +147,7 @@ class PresentationSpeakersForm extends React.Component {
         if(canAddSpeakers){
             speakerTypes.push({value:'speaker', label: T.translate("edit_presentation.labels.speaker")});
         }
+
         if(canAddModerator){
             speakerTypes.push({value:'moderator', label: T.translate("edit_presentation.labels.moderator")});
         }
@@ -232,6 +239,8 @@ class PresentationSpeakersForm extends React.Component {
                         </div>
                         {error &&
                         <p className="error-label">{error}</p>}
+                        {speaker && isNaN(speaker.id) && (speaker.value)  &&
+                        <p>* Please select a Role and click "Add".</p>}
                     </div>
                     }
 
