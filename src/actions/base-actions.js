@@ -103,7 +103,8 @@ export const getAvailableSummits = () => (dispatch, getState) => {
     const secondsSinceEpoch = Math.round(Date.now() / 1000);
 
     let filters = [
-        `start_date>=${secondsSinceEpoch}`,
+        `submission_begin_date<=${secondsSinceEpoch}`,
+        `submission_end_date>=${secondsSinceEpoch}`,
         'selection_plan_enabled==1'
     ];
 
