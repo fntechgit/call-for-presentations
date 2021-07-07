@@ -209,7 +209,7 @@ class PresentationSummaryForm extends React.Component {
                                    checked={entity.disclaimer_accepted}
                                    onChange={this.handleChange} className="form-check-input"/>
                             <label className="form-check-label" htmlFor="disclaimer_accepted">
-                                I Agree
+                                I Agree *
                             </label>
                         </div>
                         {this.hasErrors('disclaimer_accepted') &&
