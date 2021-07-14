@@ -228,7 +228,6 @@ class PresentationSummaryForm extends React.Component {
                                 value={entity.title}
                                 onChange={this.handleChange}
                                 error={this.hasErrors('title')}
-                                disabled={!!entity.id}
                             />
                         </div>
                     </div>
