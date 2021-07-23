@@ -15,6 +15,12 @@ import moment from 'moment-timezone';
 import URI from "urijs";
 import validator from 'validator';
 
+export const stripHtmlText = (html) => {
+    let tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || "";
+}
+
 export const findElementPos = (obj) => {
     var curtop = -70;
     if (obj.offsetParent) {
@@ -98,7 +104,8 @@ export const validate = (entity, rules, errors) => {
         }
 
         if (rules[field].hasOwnProperty('maxLength')) {
-            if (entity[field].length > 0 && entity[field].length > rules[field].maxLength.value) {
+            let val = stripHtmlText(entity[field]);
+            if (val.length > 0 && val.length > rules[field].maxLength.value) {
                 errors[field] = rules[field].maxLength.msg;
                 result = false;
             }
