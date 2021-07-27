@@ -100,6 +100,11 @@ class PresentationSummaryForm extends React.Component {
                 required_questions: {
                     value: selectionPlan.extra_questions,
                     msg: 'Please complete required Questions.',
+                },
+                maxLength: {
+                    value: 512,
+                    msg: 'Answer exceeds max limit of 512 characters',
+                    field: 'answer',
                 }
             },
         };
