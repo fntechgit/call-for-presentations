@@ -160,6 +160,7 @@ class PresentationUploadsForm extends React.Component {
                                     mediaType={media_type}
                                     postUrl={`${window.API_BASE_URL}/api/public/v1/files/upload`}
                                     error={this.hasErrors(media_type.name)}
+                                    djsConfig={{withCredentials:true}}
                                 />
                             </div>
                         </div>

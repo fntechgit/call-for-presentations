@@ -17,7 +17,6 @@ import {
     startLoading,
     stopLoading,
     authErrorHandler,
-    initLogOut,
     getUserInfo,
 } from "openstack-uicore-foundation/lib/methods";
 
@@ -70,7 +69,7 @@ export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
 
         const backUrl = baseState.summit ? `/app/${baseState.summit.slug}/profile` : '/app/profile';
         //try to get member
-        return getUserInfo('groups', backUrl, history)(dispatch, getState);
+        return getUserInfo('groups','', backUrl, history)(dispatch, getState);
     }
     dispatch(authErrorHandler(err, res));
 }
