@@ -145,7 +145,9 @@ export const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => 
             createAction(PRESENTATION_MATERIAL_ATTACHED),
             `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/media-uploads/${mediaUpload.id}`,
             mediaUpload,
-            authErrorHandler
+            authErrorHandler,
+            {},
+            true
         )(params)(dispatch).then(() => dispatch(stopLoading()));
 
     }
@@ -155,7 +157,9 @@ export const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => 
         createAction(PRESENTATION_MATERIAL_ATTACHED),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/media-uploads`,
         mediaUpload,
-        authErrorHandler
+        authErrorHandler,
+        {},
+        true
     )(params)(dispatch).finally(() => dispatch(stopLoading()));
 };
 
