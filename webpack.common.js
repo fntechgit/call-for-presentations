@@ -2,17 +2,21 @@ const HtmlWebpackPlugin         = require('html-webpack-plugin');
 const { CleanWebpackPlugin }    = require('clean-webpack-plugin');
 const Dotenv                    = require('dotenv-webpack');
 const MiniCssExtractPlugin      = require("mini-css-extract-plugin");
+const webpack                   = require('webpack');
+const dotenv                    = require('dotenv').config({path: __dirname + '/.env'});
 
 module.exports = {
     entry: "./src/index.js",
     plugins: [
-        new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({
-            title: 'Summit Admin',
-            template: './src/index.ejs'
-        }),
         new Dotenv({
             expand: true
+        }),
+        new CleanWebpackPlugin(),
+        new webpack.DefinePlugin({
+            "process.env": dotenv.parsed
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/index.ejs'
         })
     ],
     node: {fs: 'empty'},
