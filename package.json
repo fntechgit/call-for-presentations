@@ -58,7 +58,6 @@
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-rte-ref-fix": "^0.16.2",
     "react-scroll": "^1.7.10",
     "react-select": "^2.1.2",
     "react-tooltip": "^3.11.2",
@@ -76,6 +75,7 @@
     "webpack-cli": "^3.2.1",
     "webpack-dev-server": "^3.1.14",
     "webpack-merge": "^4.2.1",
-    "video.js": "^7.8.2"
+    "video.js": "^7.8.2",
+    "react-rte": "^0.16.3"
   }
 }
