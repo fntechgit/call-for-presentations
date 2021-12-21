@@ -55,6 +55,11 @@ export default class TracksGuidePage extends React.Component {
                 </p>
 
                 <p>
+                    <strong> {T.translate("tracks_guide.hardware_enablement")} </strong><br/>
+                    {T.translate("tracks_guide.hardware_enablement_desc")}
+                </p>
+
+                <p>
                     <strong> {T.translate("tracks_guide.open_dev")} </strong><br/>
                     {T.translate("tracks_guide.open_dev_desc")}
                 </p>
