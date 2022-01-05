@@ -27,7 +27,7 @@ export default class SelectionProcessPage extends React.Component {
                 </p>
                 <p>
                     {T.translate("selection_process.paragraph_2")}
-                    <a href="https://openstackfoundation.formstack.com/forms/openstackberlin2018_programmingcommitteenom">
+                    <a href="https://openinfrafoundation.formstack.com/forms/programmingcommittee2022">
                         {T.translate("selection_process.nomination_form")}
                     </a>.
                 </p>
@@ -43,9 +43,6 @@ export default class SelectionProcessPage extends React.Component {
                 <hr/>
                 <p>
                     {T.translate("selection_process.paragraph_6")}
-                    <a href="https://wiki.openstack.org/wiki/Forum" target="_blank">
-                        {T.translate("selection_process.openstack_wiki")}
-                    </a>.
                 </p>
                 <p>
                     {T.translate("selection_process.provide_feedback")}
@@ -53,7 +50,7 @@ export default class SelectionProcessPage extends React.Component {
                         {T.translate("selection_process.mailing_list")}
                     </a>
                     <RawHTML>
-                        {T.translate("selection_process.contact", {email: '<a href="mailto:summit@openstack.org">summit@openstack.org</a>'})}
+                        {T.translate("selection_process.contact", {email: '<a href="mailto:summit@openinfra.dev">summit@openinfra.dev</a>'})}
                     </RawHTML>
                 </p>
             </div>
