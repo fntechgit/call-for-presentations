@@ -86,7 +86,7 @@ class LandingPage extends React.Component {
                                 </div>
                                 <div className="col-md-6 login-box">
                                     <div className="submit-subtitle"> {T.translate("landing.or_join_us")}</div>
-                                    <a href="https://www.openstack.org/join" className="btn btn-default btn-lg" target="_blank">
+                                    <a href="https://openinfra.dev/join" className="btn btn-default btn-lg" target="_blank">
                                         {T.translate("landing.join_us")}
                                     </a>
                                 </div>
