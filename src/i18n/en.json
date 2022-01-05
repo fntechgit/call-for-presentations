@@ -260,18 +260,17 @@
     "actions": "Actions"
   },
   "selection_process": {
-    "about_title": "About The Open Infrastructure Summit Submission and Selection Process",
-    "paragraph_1": "On average, the OpenStack Foundation receives more than 1,000 submissions for the Summit. Of those, we are only able to select 25-30% for participation. To decide which talks are accepted, we rely on a Programming Committee.",
-    "paragraph_2": "The Open Infrastructure Summit is organized around Tracks, which are focused on specific problem domains in Open Infrastructure, such as '5G, NFV & Edge', 'CI/CD', or 'Private & Hybrid Cloud'. Presentations for each Track are determined by a Programming Committee for each track, which is made up of 3-5 members. The Foundation selects the Programming Committee members from a list of people nominated by the community. The Foundation strives to recruit Programming Committee members from a diverse set of companies, regions and roles across communities (i.e., contributing developers, users and business leaders). To nominate someone for the Summit Programming Committee for a specific Track, please fill out the ",
-    "nomination_form": "nomination form",
+    "about_title": "About The OpenInfra Summit Submission and Selection Process",
+    "paragraph_1": "On average, the OpenInfra Foundation receives more than 1,000 submissions for the OpenInfra Summit, previously known as the OpenStack Summit. Of those, we are only able to select 25-30% for participation. To decide which talks are accepted, we rely on a Programming Committee.",
+    "paragraph_2": "The OpenInfra Summit is organized around Tracks, which are focused on specific problem domains in Open Infrastructure, such as '5G, NFV & Edge', 'CI/CD', or 'Private & Hybrid Cloud'. Presentations for each Track are determined by a Programming Committee for each track, which is made up of 3-5 members. The Foundation selects the Programming Committee members from a list of people nominated by the community. The Foundation strives to recruit Programming Committee members from a diverse set of companies, regions and roles across communities (i.e., contributing developers, users and business leaders). To nominate someone (or yourself) for the Summit Programming Committee for a specific Track, please ",
+    "nomination_form": "fill out the nomination form",
     "paragraph_3": "The Foundation will also extend invitations directly to a small number of highly regarded speakers from past events for each Track, and we expect this content to make up less than 15% of total Summit presentations.",
-    "paragraph_4": "Once the Call for Presentations has concluded, all submissions will be made available for community vote and input. After community voting closes, Programming Committee members will receive their presentations to review and will determine the final selections for their respective Tracks. Community votes are meant to help inform the decision, but are not the only guide. Programming Committee members are expected to exercise judgment in their area of expertise and help ensure diversity of sessions and speakers. Real-world user stories and technical, in-the-trenches experiences are favored over sales pitches.",
-    "paragraph_5": "After the Programming Committee makes their decisions, speakers will be informed by mid July 2019. If you are selected as a speaker (or alternate speaker), you will receive a free code to register for the Shanghai Summit, as well as a set of deadlines and deliverables leading up to the event.",
-    "paragraph_6": "Please note that this process covers the speaking sessions during the Summit, NOT the Forum sessions. You can more about that process on the ",
-    "openstack_wiki": "OpenStack Wiki",
+    "paragraph_4": "Programming Committee members will receive their presentations to review and will determine the final selections for their respective Tracks. Community votes are meant to help inform the decision, but are not the only guide. Programming Committee members are expected to exercise judgment in their area of expertise and help ensure diversity of sessions and speakers. Real-world user stories and technical, in-the-trenches experiences are favored over sales pitches.",
+    "paragraph_5": "After the Programming Committee makes their decisions, speakers will be informed by mid-March 2022. If you are selected as a speaker (or alternate speaker), you will receive a free code to register for the Summit, as well as a set of deadlines and deliverables leading up to the event.",
+    "paragraph_6": "Please note that this process covers the speaking sessions during the Summit, NOT the Forum (that selection process happens later).",    
     "provide_feedback": "Want to provide feedback on this process? Join the discussion on the ",
-    "mailing_list": "openstack-community mailing list",
-    "contact": ", and/or contact the Foundation Summit Team directly {email}"
+    "mailing_list": "OpenInfra Foundation mailing list",
+    "contact": ", and/or contact the Foundation Summit Team directly {email}."
   },
   "tracks_guide": {
     "title": "Summit Tracks",
