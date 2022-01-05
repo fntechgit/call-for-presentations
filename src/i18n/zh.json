@@ -225,7 +225,7 @@
   "thankyou_presentation": {
     "thank_you": "感谢您！",
     "saved": "您的提交已经保存并准备好审核。",
-    "body": "一旦您完成了添加具体信息，一封确认邮件将会发送给您和所有关联的演讲人/主持人。请查看收件箱和垃圾邮件箱是否有一封来自speakersupport@openstack.org的邮件。"
+    "body": "一旦您完成了添加具体信息，一封确认邮件将会发送给您和所有关联的演讲人/主持人。请查看收件箱和垃圾邮件箱是否有一封来自speakersupport@openinfra.dev的邮件。"
   },
   "edit_profile": {
     "profile": "演讲者简介",
