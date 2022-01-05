@@ -243,7 +243,7 @@
   "thankyou_presentation": {
     "thank_you": "Thank you !",
     "saved": "Your submission has been saved and is ready for review.",
-    "body": "Once you've completed adding in the details, a confirmation email will be sent to you and all associated speakers/moderators. Check inbox and junk folders for an email sent from speakersupport@openstack.org."
+    "body": "Once you've completed adding in the details, a confirmation email will be sent to you and all associated speakers/moderators. Check inbox and junk folders for an email sent from speakersupport@openinfra.dev."
   },
   "edit_profile": {
     "profile": "Speaker Profile",
