@@ -81,6 +81,7 @@ window.APP_CLIENT_NAME = process.env['APP_CLIENT_NAME'];
 window.ALLOWED_USER_GROUPS = "";
 window.EXCLUSIVE_SECTIONS = [];
 window.LOGO_URL = process.env['LOGO_URL'];
+window.SHOW_LANGUAGE_SELECTION = !!Number(process.env['SHOW_LANGUAGE_SELECTION']);
 
 if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
     window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
@@ -187,7 +188,9 @@ class App extends React.PureComponent {
                                 </a>
                             </div>
                             <div className="col-md-3 col-md-push-6 col-xs-6">
-                                <LanguageSelect language={language}/>
+                                {window.SHOW_LANGUAGE_SELECTION &&
+                                    <LanguageSelect language={language}/>
+                                }
                                 <AuthButton isLoggedUser={isLoggedUser} picture={profile_pic} initLogOut={this.onClickLogout}/>
                             </div>
                             <div className="col-md-6 col-md-pull-3 col-xs-12 title">
