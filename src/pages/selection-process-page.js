@@ -46,7 +46,7 @@ export default class SelectionProcessPage extends React.Component {
                 </p>
                 <p>
                     {T.translate("selection_process.provide_feedback")}
-                    <a href="http://lists.openstack.org/cgi-bin/mailman/listinfo/community" target="_blank">
+                    <a href="https://lists.openinfra.dev/cgi-bin/mailman/listinfo/foundation" target="_blank">
                         {T.translate("selection_process.mailing_list")}
                     </a>
                     <RawHTML>
