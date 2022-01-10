@@ -82,6 +82,7 @@ window.ALLOWED_USER_GROUPS = "";
 window.EXCLUSIVE_SECTIONS = [];
 window.LOGO_URL = process.env['LOGO_URL'];
 window.SHOW_LANGUAGE_SELECTION = !!Number(process.env['SHOW_LANGUAGE_SELECTION']);
+window.SUPPORT_EMAIL = process.env['SUPPORT_EMAIL'];
 
 if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
     window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
