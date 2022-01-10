@@ -26,6 +26,9 @@ import {
 import T from "i18n-react/dist/i18n-react";
 import Swal from "sweetalert2";
 import history from '../history'
+import {
+    getTagGroups
+} from "./base-actions";
 
 export const RECEIVE_PRESENTATION = 'RECEIVE_PRESENTATION';
 export const REQUEST_PRESENTATION = 'REQUEST_PRESENTATION';
@@ -43,7 +46,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
-    let {summit} = baseState;
+    let {summit, tagGroups} = baseState;
 
     dispatch(startLoading());
 
@@ -58,6 +61,9 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/events/${presentationId}`,
         presentationErrorHandler
     )(params)(dispatch).then((payload) => {
+            if(!tagGroups.length){
+                dispatch(getTagGroups(summit.id));
+            }
             dispatch(stopLoading());
             return payload.response;
         }
