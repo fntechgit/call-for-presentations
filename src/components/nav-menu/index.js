@@ -19,7 +19,7 @@ import MenuItem from './menu-item'
 import MenuItemsDefinitions from './menu-items-definition'
 import '../../styles/menu.less';
 import {connect} from "react-redux";
-import {getPresentation, resetPresentation} from "../../actions/presentation-actions";
+
 
 class NavMenu extends React.Component {
 
@@ -81,7 +81,7 @@ class NavMenu extends React.Component {
                             label="Contact Support"
                             iconClass="fa-envelope"
                             show
-                            onClick={(e) => window.open("mailto:support@fntech.com", '_blank')}
+                            onClick={(e) => window.open(`mailto:${window.SUPPORT_EMAIL}`, '_blank')}
                             active={false}
                         />
                     </ul>
