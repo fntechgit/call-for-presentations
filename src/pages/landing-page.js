@@ -52,8 +52,7 @@ class LandingPage extends React.Component {
             <div className="container landing-page-wrapper">
                 <Exclusive name="os-landing">
                     <div>
-                        <h1 className="title">{T.translate("landing.title", {'summit_name' : summit.name})}</h1>
-
+                        <h1 className="title">{T.translate("landing.title", {'summit_name' : (window.APP_CLIENT_NAME === 'openstack'?`OpenInfra Summit ${summit.name}`: summit.name)})}</h1>
                         <div className="steps-wrapper">
                             <div className="steps-title">{T.translate("landing.steps_title")}</div>
                             <ul className="submit-steps">
