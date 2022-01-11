@@ -349,17 +349,6 @@ class SpeakerForm extends React.Component {
                                     allowOther
                                 />
                             </div>
-                            <div className="col-md-12 org-has-cloud-wrapper">
-                                <label>{T.translate("edit_speaker.opertating_os")}</label>
-                                <RadioList
-                                    id="org_has_cloud"
-                                    inline
-                                    value={entity.org_has_cloud}
-                                    onChange={this.handleChange}
-                                    options={[{value: 1, label: T.translate("general.yes")}, {value: 0, label: T.translate("general.no")}]}
-                                    error={this.hasErrors('org_has_cloud')}
-                                />
-                            </div>
                         </div>
                     </div>
                 </Exclusive>
