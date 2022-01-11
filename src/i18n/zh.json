@@ -205,7 +205,6 @@
     "role": "角色",
     "org_role": "您目前在贵公司的组织角色是什么？ （检查所有适用）:",
     "org_role_other": "请指明您的角色:",
-    "opertating_os": "您的组织是否在运营OpenStack云？",
     "speaker_created": "扬声器创建成功！",
     "speaker_saved": "扬声器保存成功！",
     "moderator_created": "主持人创建成功！",

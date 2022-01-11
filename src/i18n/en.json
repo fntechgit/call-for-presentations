@@ -223,7 +223,6 @@
     "role": "Role",
     "org_role": "What is your current Organizational Role at your company? (check all that apply):",
     "org_role_other": "Please specify your role:",
-    "opertating_os": "Is your organization Operating an OpenStack cloud?",
     "speaker_created": "Speaker created successfully!",
     "speaker_saved": "Speaker saved successfully!",
     "moderator_created": "Moderator created successfully!",
