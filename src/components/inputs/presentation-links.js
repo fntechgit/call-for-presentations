@@ -69,7 +69,7 @@ export default class PresentationLinks extends React.Component {
                     <thead>
                         <tr>
                             <th>{T.translate("edit_speaker.link")}</th>
-                            <th>{T.translate("edit_speaker.title")}</th>
+                            <th>{T.translate("edit_speaker.link_title")}</th>
                         </tr>
                     </thead>
                     <tbody>

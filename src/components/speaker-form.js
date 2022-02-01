@@ -107,7 +107,7 @@ class SpeakerForm extends React.Component {
             last_name: {required: 'Last name is required.'},
             country: { required: 'Please select a Country.'},
             bio: { required: 'Please tell us about yourself.', maxLength: {value: 1000, msg: 'Value exeeded max limit of 1000 characters'}},
-            other_presentation_links: {title_link: 'Links must start with http or https'},
+            other_presentation_links: {title_link: 'Links must start with http or https', title: 'Each link must have title'},
             company: {required: 'Company is required.'},
             phone_number: {required: 'Phone # is required.'},
         };
