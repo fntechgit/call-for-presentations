@@ -287,7 +287,7 @@
     "getting_started_desc": "Beginner-level track to learn the basics about all open infrastructure-related topics.",    
     "hands_on": "Hands-on Workshops",
     "hands_on_desc": "Hands-on Workshops offer a window into training for operators and application developers across different projects. Sessions are typically 90 minutes and require an RSVP and some prep work. Bring your laptop and walk away with the skills you need to become an open source contributor.",
-    "hardware_enablement": "NEW: Hardware Enablement",
+    "hardware_enablement": "Hardware Enablement",
     "hardware_enablement_desc": "Topics include: Software components needed to enable hardware in cloud or edge environments, GPUS, DPUs, FPGAs, sustainability, data center operations, hardware standards (Open19, OCP), data center efficiency, server design, SmartNICs, testing and certification",    
     "open_dev": "Open Development",
     "open_dev_desc": "Topics include: the 4 opens, the future of free and open source software, challenges of open collaboration, open development best practices and tools, open source governance models, diversity and inclusion, mentoring and outreach, community management.",
