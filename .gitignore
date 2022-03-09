@@ -1,6 +1,7 @@
 .env
+.env.*
 dist
 .idea
 node_modules
-.env.dev
+node_modules
 .DS_Store
