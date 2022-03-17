@@ -83,10 +83,10 @@ export const getSpeakerPermission = (presentationId, speakerId, speakerType) => 
 
     let {loggedUserState, profileState, baseState} = getState();
     let {accessToken} = loggedUserState;
-    let {summit} = baseState;
+    let {summit, selectionPlan} = baseState;
 
     if (speakerId == profileState.entity.id) {
-        history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
+        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
         return;
     }
 
@@ -107,7 +107,7 @@ export const getSpeakerPermission = (presentationId, speakerId, speakerType) => 
             dispatch(stopLoading());
 
             if (payload.response.approved) {
-                history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
+                history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
             } else {
                 Swal.fire({
                     title: T.translate("edit_speaker.auth_pending"),
@@ -175,7 +175,7 @@ export const resetSpeakerForm = (email = '') => (dispatch, getState) => {
 export const saveSpeaker = (entity, type) => (dispatch, getState) => {
     let {loggedUserState, presentationState, baseState} = getState();
     let {accessToken} = loggedUserState;
-    let {summit} = baseState;
+    let {summit, selectionPlan} = baseState;
     let presentationId = presentationState.entity.id;
 
     dispatch(startLoading());
@@ -223,7 +223,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
                 dispatch(showMessage(
                     success_message,
                     () => {
-                        history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers`)
+                        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${presentationId}/speakers`)
                     }
                 ));
             });
@@ -257,7 +257,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
             dispatch(showMessage(
                 success_message,
                 () => {
-                    history.push(`/app/${summit.slug}/presentations/${presentationId}/speakers`)
+                    history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${presentationId}/speakers`)
                 }
             ));
         });
@@ -473,7 +473,7 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
             dispatch(getSpeakerInfo(null));
         })
         .then((payload) => {
-            const redirectUrl = baseState.summit ? `/app/${baseState.summit.slug}/presentations/` : '/app/start';
+            const redirectUrl = baseState.summit ? `/app/${baseState.summit.slug}` : '/app/start';
             success_message.html = T.translate("edit_profile.profile_saved");
             dispatch(showMessage(success_message, () => history.push(redirectUrl)));
         });

@@ -12,34 +12,37 @@
  **/
 
 import React from 'react'
-import { Route, Redirect, withRouter } from 'react-router-dom'
+import { Route, Redirect } from 'react-router-dom'
 
 class AuthorizedRoute extends React.Component {
 
+    getBackUrl = () => {
+        const { location } = this.props;
+        let backUrl = location.pathname;
+
+        if(location.search != null){
+            backUrl += location.search
+        }
+
+        if(location.hash != null){
+            backUrl += location.hash
+        }
+
+        return backUrl;
+    };
+
     render() {
-        const { component: Component, isLoggedUser, ...rest } = this.props;
+        const { component: Component, isLoggedUser, computedMatch, Fallback, ...rest } = this.props;
+        const backUrl = this.getBackUrl();
+        const summit_slug = computedMatch.params.summit_slug;
+        const redirectTo = {
+            pathname: `/app/${summit_slug}?BackUrl=${encodeURIComponent(backUrl)}`,
+            state: { from: rest.location }
+        };
+        const FallbackComponent = (props) => Fallback ? <Fallback {...this.props} {...props} /> : <Redirect to={redirectTo} />;
+
         return (
-            <Route {...rest} render={props => {
-                let { location } = this.props;
-                let backUrl = location.pathname;
-                let summit_slug = this.props.computedMatch.params.summit_slug;
-                if(location.search != null){
-                    backUrl += location.search
-                }
-
-                if(location.hash != null){
-                    backUrl += location.hash
-                }
-
-                return isLoggedUser
-                    ? <Component {...props} />
-                    : <Redirect
-                        to={{
-                            pathname: `/app/${summit_slug}?BackUrl=${encodeURIComponent(backUrl)}`,
-                            state: { from: location }
-                        }}
-                    />
-            }} />
+            <Route {...rest} render={props => isLoggedUser ? <Component {...props} /> : FallbackComponent(props)} />
         )
     }
 }

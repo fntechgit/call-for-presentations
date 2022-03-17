@@ -33,7 +33,7 @@ class ProfilePage extends React.Component {
             this.props.getSpeakerInfo(null);
         }
 
-        if (this.props.orgRoles.length == 0) {
+        if (this.props.orgRoles.length === 0) {
             this.props.getOrganizationalRoles();
         }
     }
@@ -43,7 +43,7 @@ class ProfilePage extends React.Component {
 
         saveSpeakerProfile(entity).then(() => {
             if(summit){
-                history.push(`/app/${summit.slug}/presentations`);
+                history.push(`/app/${summit.slug}`);
                 return;
             }
             // if we dont have a summit , the we are at /app/profile path

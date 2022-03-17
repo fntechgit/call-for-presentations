@@ -13,10 +13,7 @@
 
 import React from 'react'
 import { Route} from 'react-router-dom'
-
-import {
-    doLogin,
-} from "openstack-uicore-foundation/lib/methods";
+import { doLogin } from "openstack-uicore-foundation/lib/methods";
 
 class DirectAuthorizedRoute extends React.Component {
 
@@ -29,21 +26,7 @@ class DirectAuthorizedRoute extends React.Component {
     render() {
         const { component: Component, isLoggedUser, ...rest } = this.props;
         return (
-            <Route {...rest} render={props => {
-                let { location } = this.props;
-                let backUrl = location.pathname;
-                let summit_slug = this.props.computedMatch.params.summit_slug;
-                if(location.search != null){
-                    backUrl += location.search
-                }
-
-                if(location.hash != null){
-                    backUrl += location.hash
-                }
-                return isLoggedUser
-                    ? <Component {...props} />
-                    : null;
-            }} />
+            <Route {...rest} render={props => isLoggedUser ? <Component {...props} /> : null} />
         )
     }
 }

@@ -111,9 +111,9 @@ class Presentation {
                 step = this.getNextStep();
             }
 
-            return `/app/${this._summit.slug}/presentations/${this._presentation.id}/${step}`;
+            return `/app/${this._summit.slug}/${this._selectionPlan.id}/presentations/${this._presentation.id}/${step}`;
         } else {
-            return `/app/${this._summit.slug}/presentations/${this._presentation.id}/preview`;
+            return `/app/${this._summit.slug}/${this._selectionPlan.id}/presentations/${this._presentation.id}/preview`;
         }
     }
 

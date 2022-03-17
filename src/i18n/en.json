@@ -3,6 +3,10 @@
     "title": "Select a show to start",
     "not_available_summits": "Submission Process is closed"
   },
+  "plan_selection_page":{
+    "title": "Please choose a selection plan",
+    "no_available_plans": "Submission Process is closed"
+  },
   "landing": {
     "call_for_presentations"  : "Call for Presentations",
     "sign_out"                : "Sign out",

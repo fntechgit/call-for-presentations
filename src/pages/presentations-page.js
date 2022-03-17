@@ -30,30 +30,23 @@ class PresentationsPage extends React.Component {
     }
 
     componentDidMount () {
-        let {summit, loggedSpeaker, history} = this.props;
+        let {summit, selectionPlan, loggedSpeaker, history} = this.props;
         if(loggedSpeaker == null){
             history.push(`/app/profile`);
             return;
         }
 
-        this.props.getAllPresentations(summit.id).then(() => {
+        this.props.getAllPresentations(summit.id, selectionPlan.id).then(() => {
             // clear presentation form
             this.props.resetPresentation();
         });
     }
 
-    componentWillReceiveProps(newProps) {
-        let oldSummit = this.props.summit;
-        let newSummit = newProps.summit;
-        if (oldSummit.id !== newSummit.id) {
-            this.props.getAllPresentations(newSummit.id);
-        }
-    }
-
     handleNewPresentation(ev) {
-        let {history, summit} = this.props;
+        let {history, match} = this.props;
         ev.preventDefault();
-        history.push(`/app/${summit.slug}/presentations/new/summary`);
+
+        history.push(`${match.url}/new/summary`);
     }
 
     handleEditPresentation(presentation, ev) {
@@ -64,10 +57,10 @@ class PresentationsPage extends React.Component {
     }
 
     handleReviewPresentation(presentation, ev) {
-        let {history, summit} = this.props;
+        let {history, match} = this.props;
         ev.preventDefault();
 
-        history.push(`/app/${summit.slug}/presentations/${presentation.id}/preview#comments`);
+        history.push(`${match.url}/${presentation.id}/preview#comments`);
     }
 
     handleDeletePresentation(presentation, ev) {

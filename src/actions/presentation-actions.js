@@ -77,7 +77,7 @@ export const resetPresentation = () => (dispatch, getState) => {
 export const savePresentation = (entity, presentation, nextStep = null) => async (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
-    let {summit} = baseState;
+    let {summit, selectionPlan} = baseState;
 
     dispatch(startLoading());
 
@@ -103,7 +103,7 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
                 dispatch(getPresentation(payload.response.id))
                     .then((payload) => {
                         dispatch(stopLoading());
-                        history.push(`/app/${summit.slug}/presentations/${payload.id}/${nextStep}`);
+                        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${nextStep}`);
                     });
             }, (error) => {
                 dispatch(stopLoading());
@@ -121,7 +121,7 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
         .then((payload) => {
             dispatch(getPresentation(payload.response.id)).then((payload) => {
                     dispatch(stopLoading());
-                    history.push(`/app/${summit.slug}/presentations/${payload.id}/${presentation.getNextStep()}`);
+                    history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${presentation.getNextStep()}`);
                 }
             );
         }, (error) => {
@@ -193,7 +193,7 @@ export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getS
 export const completePresentation = (entity) => (dispatch, getState) => {
     let {loggedUserState, baseState} = getState();
     let {accessToken} = loggedUserState;
-    let {summit} = baseState;
+    let {summit, selectionPlan} = baseState;
 
     dispatch(startLoading());
 
@@ -210,7 +210,7 @@ export const completePresentation = (entity) => (dispatch, getState) => {
     )(params)(dispatch)
         .then((payload) => {
             dispatch(stopLoading());
-            history.push(`/app/${summit.slug}/presentations/${entity.id}/thank-you`);
+            history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${entity.id}/thank-you`);
         });
 }
 
@@ -247,6 +247,8 @@ const normalizeEntity = (entity) => {
 
 
 const presentationErrorHandler = (err, res) => (dispatch, state) => {
+    const {baseState} = state;
+    const {summit, selectionPlan} = baseState || {};
     const code = err.status;
     dispatch(stopLoading());
 
@@ -268,8 +270,8 @@ const presentationErrorHandler = (err, res) => (dispatch, state) => {
             dispatch(showMessage(
                 error_message,
                 () => {
-                    if (state && state.baseState && state.baseState.summit) {
-                        history.push(`/app/${state.baseState.summit.slug}/presentations/`);
+                    if (summit && selectionPlan) {
+                        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/`);
                     }
                 }
             ));

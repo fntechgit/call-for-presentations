@@ -12,26 +12,22 @@
  **/
 import React from 'react'
 import {Redirect, Route} from 'react-router-dom'
+import LandingPage from "../pages/landing-page";
 
 class LandingRoute extends React.Component {
 
     render() {
+        const { location, isLoggedUser, doLogin, computedMatch, ...rest } = this.props;
+        const summit_slug = computedMatch.params.summit_slug;
+        const redirectTo = {pathname: `/app/${summit_slug}`, state: { from: location }};
 
-        const { location, component: Component, isLoggedUser, doLogin, ...rest } = this.props;
-        let summit_slug = this.props.computedMatch.params.summit_slug;
         return (
-
             <Route {...rest} render={props => {
-                return isLoggedUser ? <Redirect
-                    to={{
-                        pathname: `/app/${summit_slug}/presentations`,
-                        state: { from: location }
-                    }}
-                />:
-                 <Component doLogin={doLogin} {...props} />
-            }} />
-        )
+                return isLoggedUser ? <Redirect to={redirectTo} /> : <LandingPage doLogin={doLogin} {...props} />;
+            }}
+            />
+        );
     }
-}
+};
 
 export default LandingRoute;
