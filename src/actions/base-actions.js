@@ -71,21 +71,6 @@ export const getSelectionPlan = (summitId, selectionPlanId) => (dispatch, getSta
     )(params)(dispatch);
 };
 
-export const getCurrentSelectionPlanPublic = (summit_id) => (dispatch, getState) => {
-
-    let params = {
-        expand: 'summit,track_groups,extra_questions,extra_questions.values'
-    };
-
-    return getRequest(
-        null,
-        createAction(RECEIVE_SELECTION_PLAN),
-        `${window.API_BASE_URL}/api/public/v1/summits/${summit_id}/selection-plans/current/submission`,
-        selectionPlanErrorHandler
-    )(params)(dispatch);
-};
-
-
 export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
     dispatch(startLoading());
     dispatch(createAction(BASE_LOADED)({loaded: false}));

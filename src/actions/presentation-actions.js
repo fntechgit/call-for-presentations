@@ -110,6 +110,9 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
             });
     }
 
+    // if new set selection plan
+    normalizedEntity.selection_plan_id = selectionPlan.id;
+
     return postRequest(
         createAction(UPDATE_PRESENTATION),
         createAction(PRESENTATION_ADDED),
