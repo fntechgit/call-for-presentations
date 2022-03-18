@@ -33,23 +33,23 @@ const Header = ({isLoggedUser, speaker, member, summit, selectionPlan, submissio
             // MMMM : A full textual representation of a month, such as January or March	January through December
             // DD : Day of the month, 2 digits with leading zeros 01 to 31
             // YYYY : A full numeric representation of a year, 4 digits Examples: 1999 or 2003
-            let end_date = formatEpoch(
-                selectionPlan.submission_end_date,
-                "MMMM DD, YYYY h:mm a"
-            );
+            const end_date = formatEpoch( selectionPlan.submission_end_date, "MMMM DD, YYYY h:mm a");
+
             if (header_title !== "") header_title += ": ";
             header_title += `${selectionPlan.name} ${summit.name}`;
-            header_subtitle = T.translate("landing.subtitle", {
-                end_date: end_date,
-                when: moment.tz.guess(),
-            });
-        } else {
-            if (header_title !== "") header_title += ": ";
-            header_title += `${summit.name}`;
+
 
             if (submissionIsClosed) {
                 header_subtitle = T.translate("landing.closed");
+            } else {
+                header_subtitle = T.translate("landing.subtitle", {
+                    end_date: end_date,
+                    when: moment.tz.guess(),
+                });
             }
+        } else {
+            if (header_title !== "") header_title += ": ";
+            header_title += `${summit.name}`;
         }
     }
 

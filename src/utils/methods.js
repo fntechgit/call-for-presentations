@@ -50,7 +50,12 @@ export const formatEpoch = (atime, format = 'M/D/YYYY h:mm a') => {
 
 export const nowBetween = (start, end) => {
     const now = moment().valueOf();
-    return now > start && now < end;
+    return now > (start * 1000) && now < (end * 1000);
+}
+
+export const nowAfter = (date) => {
+    const now = moment().valueOf();
+    return now > (date * 1000);
 }
 
 export const objectToQueryString = (obj) => {
