@@ -40,7 +40,7 @@ const PrimaryLayout = ({location, summit, speaker, member, match, selectionPlan,
         if (selectionPlan?.id !== selectionPlanIdParam) {
             getSelectionPlan(summit.id, selectionPlanIdParam);
         }
-    }, [selectionPlan, match]);
+    }, [selectionPlan?.id, selectionPlanIdParam]);
 
     if (!loggedUser || selectionPlan?.id !== selectionPlanIdParam) return null;
 

@@ -19,14 +19,16 @@ import PrimaryLayout from "./primary-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
 
 const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSummit}) => {
-    useEffect(() => {
-        let summitSlug = match.params.summit_slug;
-        if (summitSlug !== summit?.slug) {
-            getAllFromSummit(summitSlug);
-        }
-    }, [summit, match]);
+    const urlSummitSlug = match.params.summit_slug;
+    const summitSlug = summit?.slug;
 
-    if (summit?.slug !== match.params.summit_slug) return null;
+    useEffect(() => {
+        if (urlSummitSlug !== summitSlug) {
+            getAllFromSummit(urlSummitSlug);
+        }
+    }, [summitSlug, urlSummitSlug]);
+
+    if (summitSlug !== urlSummitSlug) return null;
 
     // check if speaker profile exists, if not redirect
     if((!speaker || !speaker.id) && location.pathname !== `/app/${summit.slug}/profile` && !loading) {
@@ -39,7 +41,7 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
         <Switch>
             <Route strict exact path={match.url} component={PlanSelectionPage}/>
             <Route path={`${match.url}/:selection_plan_id(\\d+)`} component={PrimaryLayout}/>
-            <Route render={props => (<Redirect to={`/app/${summit.slug}`}/>)}/>
+            <Route render={() => (<Redirect to={`/app/${summitSlug}`}/>)}/>
         </Switch>
     );
 
