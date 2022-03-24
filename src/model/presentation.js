@@ -43,37 +43,38 @@ class Presentation {
     }
 
     getStatus() {
-        const {is_published, status, selection_status} = this._presentation;
-        const enabled_sel_plans = this._summit.selection_plans.filter(sp => sp.is_enabled);
-        const firstSelPlan = enabled_sel_plans.length > 0 ? enabled_sel_plans[0] : null;
-        const lastSelPlan = enabled_sel_plans.length > 0 ? enabled_sel_plans[enabled_sel_plans.length - 1] : null;
-        const now  = moment.utc().unix();
+        const {is_published, status, selection_status, selectionPlan} = this._presentation;
+        const {selection_begin_date, selection_end_date} = selectionPlan || {};
+        const now = moment.utc().unix();
 
-        if (is_published) {
-            return T.translate("presentations.published");
-        } else {
-            if (!status) {
-                return T.translate("presentations.not_submitted");
-            } else if (firstSelPlan && lastSelPlan) {
-                if (firstSelPlan.selection_begin_date > now) {
-                    return T.translate("presentations.received");
-                } else if (lastSelPlan.selection_end_date < now) {
-                    if (!selection_status || selection_status === 'unaccepted') {
-                        return T.translate("presentations.rejected");
-                    } else {
-                        return `${selection_status[0].toUpperCase()}${selection_status.slice(1)}`;
-                    }
-                } else if (firstSelPlan.selection_begin_date < now) {
-                    return T.translate("presentations.in_review");
-                }
-            } else {
+        if (is_published) return T.translate("presentations.published");
+        if (!status) return T.translate("presentations.not_submitted");
+
+        // check if we have a selection plan and a valid selection period
+        if (selection_begin_date && selection_end_date && selection_begin_date <= selection_end_date ) {
+            if (selection_begin_date > now) {
+                // selection process didnt started yet
                 return T.translate("presentations.received");
             }
+            if (selection_end_date < now) {
+                // selection process ended already
+                if (!selection_status || selection_status === 'unaccepted') {
+                    // presentation is rejected
+                    return T.translate("presentations.rejected");
+                }
+                // send the presentation status with first letter in uppercase
+                return `${selection_status[0].toUpperCase()}${selection_status.slice(1)}`;
+            }
+            if (selection_begin_date < now) {
+                // if selection process didnt started yet
+                return T.translate("presentations.in_review");
+            }
         }
+        return T.translate("presentations.received");
     }
 
     isSubmitted() {
-        return (this._presentation.is_published || this._presentation.status == 'Received');
+        return (this._presentation.is_published || this._presentation.status === 'Received');
     }
 
     canEdit() {
@@ -111,9 +112,9 @@ class Presentation {
                 step = this.getNextStep();
             }
 
-            return `/app/${this._summit.slug}/presentations/${this._presentation.id}/${step}`;
+            return `/app/${this._summit.slug}/${this._selectionPlan.id}/presentations/${this._presentation.id}/${step}`;
         } else {
-            return `/app/${this._summit.slug}/presentations/${this._presentation.id}/preview`;
+            return `/app/${this._summit.slug}/${this._selectionPlan.id}/presentations/${this._presentation.id}/preview`;
         }
     }
 

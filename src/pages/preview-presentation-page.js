@@ -39,10 +39,10 @@ class PreviewPresentationPage extends React.Component {
     }
 
     onDone(ev) {
-        let {history, summit} = this.props;
+        let {history, summit, selectionPlan} = this.props;
         ev.preventDefault();
 
-        history.push(`/app/${summit.slug}/presentations`);
+        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations`);
     }
 
     render() {

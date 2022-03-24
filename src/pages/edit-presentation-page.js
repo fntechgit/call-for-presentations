@@ -56,11 +56,11 @@ class EditPresentationPage extends React.Component {
     }
 
     render() {
-        let { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, saveMediaUpload,
-            deleteMediaUpload, completePresentation, getSpeakerPermission, presentation } = this.props;
+        const { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, saveMediaUpload,
+            deleteMediaUpload, completePresentation, getSpeakerPermission, presentation, match } = this.props;
 
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
-        let step = this.props.match.params.step;
+        let step = match.params.step;
         const allowedMediaUploads = presentation.getAllowedMediaUploads();
         const disclaimer = getMarketingValue('spkmgmt_disclaimer');
 
@@ -97,7 +97,7 @@ class EditPresentationPage extends React.Component {
                         errors={errors}
                         onSaveMU={saveMediaUpload}
                         onDeleteMU={deleteMediaUpload}
-                        onSubmit={() => history.push(`/app/${summit.slug}/presentations/${entity.id}/tags`)}
+                        onSubmit={() => history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${entity.id}/tags`)}
                     />
                 </div>
                 }
@@ -122,6 +122,7 @@ class EditPresentationPage extends React.Component {
                         entity={entity}
                         presentation={presentation}
                         step={step}
+                        match={match}
                         summit={summit}
                         onAddSpeaker={this.props.assignSpeakerToPresentation}
                         onAddModerator={this.props.assignModeratorToPresentation}

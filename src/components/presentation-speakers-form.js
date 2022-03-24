@@ -96,9 +96,8 @@ class PresentationSpeakersForm extends React.Component {
     }
 
     handleAddSpeaker(ev) {
-
-        let {speaker, currentSpeakerType} = this.state;
-        let {history, entity, onAddSpeaker, onAddModerator, summit} = this.props;
+        const {speaker, currentSpeakerType} = this.state;
+        const {history, onAddSpeaker, onAddModerator, match} = this.props;
         ev.preventDefault();
 
         if(!speaker){
@@ -126,7 +125,7 @@ class PresentationSpeakersForm extends React.Component {
         if (speaker.value) {
 
             // new speaker
-            history.push(`/app/${summit.slug}/presentations/${entity.id}/speakers/new`, { email: speaker.value, type: currentSpeakerType });
+            history.push(`${match.url}/new`, { email: speaker.value, type: currentSpeakerType });
             return false;
         }
 

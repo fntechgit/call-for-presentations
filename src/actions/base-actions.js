@@ -38,6 +38,7 @@ export const RECEIVE_AVAILABLE_SUMMITS      = 'RECEIVE_AVAILABLE_SUMMITS';
 export const SUMMIT_DOCS_RECEIVED           = 'SUMMIT_DOCS_RECEIVED';
 export const ERROR_RECEIVE_SUMMIT           = 'ERROR_RECEIVE_SUMMIT';
 export const CLEAR_SUMMIT                   = 'CLEAR_SUMMIT';
+export const CLEAR_SELECTION_PLAN           = 'CLEAR_SELECTION_PLAN';
 export const BASE_LOADED                    = 'BASE_LOADED';
 
 
@@ -49,21 +50,26 @@ export const clearCurrentSummit = () => (dispatch, getState) => {
     dispatch(createAction(CLEAR_SUMMIT)({}));
 };
 
+export const clearSelectionPlan = () => (dispatch) => {
+    dispatch(createAction(CLEAR_SELECTION_PLAN)({}));
+}
 
-export const getCurrentSelectionPlanPublic = (summit_id) => (dispatch, getState) => {
+export const getSelectionPlan = (summitId, selectionPlanId) => (dispatch, getState) => {
+    let { loggedUserState } = getState();
+    let { accessToken }     = loggedUserState;
 
     let params = {
+        access_token : accessToken,
         expand: 'summit,track_groups,extra_questions,extra_questions.values'
     };
 
     return getRequest(
         null,
         createAction(RECEIVE_SELECTION_PLAN),
-        `${window.API_BASE_URL}/api/public/v1/summits/${summit_id}/selection-plans/current/submission`,
+        `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/${selectionPlanId}`,
         selectionPlanErrorHandler
     )(params)(dispatch);
 };
-
 
 export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
     dispatch(startLoading());
@@ -72,9 +78,8 @@ export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
         .then(({response}) => {
             const marketing = getMarketingSettings(response.id)(dispatch, getState);
             const summitDocs = getAllSummitDocs(response.id)(dispatch, getState);
-            const selPlan = getCurrentSelectionPlanPublic(response.id)(dispatch, getState)
 
-            return Promise.all([marketing, selPlan, summitDocs]).then(() => {
+            return Promise.all([marketing, summitDocs]).then(() => {
                 dispatch(createAction(BASE_LOADED)({loaded: true}));
                 dispatch(stopLoading());
             });

@@ -22,10 +22,11 @@ import {
     RECEIVE_SUMMIT,
     RECEIVE_MARKETING_SETTINGS,
     SUMMIT_DOCS_RECEIVED,
-    BASE_LOADED
+    BASE_LOADED, CLEAR_SELECTION_PLAN
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
+import {nowBetween} from "../utils/methods";
 
 
 const DEFAULT_STATE = {
@@ -73,9 +74,12 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
             return {...state, selectionPlan: null, summit: null, marketingSettings: null, submissionIsClosed: false, allSummitDocs: [], baseLoaded: false};
         case ERROR_RECEIVE_SUMMIT:
             return {...state, selectionPlan: null, summit: null, marketingSettings: null, submissionIsClosed: false};
+        case CLEAR_SELECTION_PLAN:
+            return {...state, selectionPlan: null, submissionIsClosed: false, baseLoaded: false};
         case RECEIVE_SELECTION_PLAN: {
             const entity = {...payload.response};
-            return {...state, selectionPlan: entity, submissionIsClosed: false};
+            const submissionIsClosed = !nowBetween(entity.submission_begin_date, entity.submission_end_date);
+            return {...state, selectionPlan: entity, submissionIsClosed};
         }
         case RECEIVE_SUMMIT: {
             const entity = {...payload.response};

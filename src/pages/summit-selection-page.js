@@ -31,7 +31,6 @@ class SummitSelectionPage extends React.Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        this.onSelectedSummit = this.onSelectedSummit.bind(this);
     }
 
     componentDidMount() {
@@ -39,18 +38,14 @@ class SummitSelectionPage extends React.Component {
         this.props.getAvailableSummits();
     }
 
-    onSelectedSummit(slug) {
-        history.push(`/app/${slug}/presentations`);
-    }
-
     handleChange(ev) {
-        let {value} = ev.target;
-        this.onSelectedSummit(value);
+        const {value} = ev.target;
+        history.push(`/app/${value}`);
     }
 
     render() {
-        let {availableSummits, loading} = this.props;
-        let {currentSummit} = this.state;
+        const {availableSummits, loading} = this.props;
+        const {currentSummit} = this.state;
 
         if (availableSummits.length === 0){
             if(!loading)

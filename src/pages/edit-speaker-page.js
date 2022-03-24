@@ -36,16 +36,16 @@ class EditSpeakerPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        let speakerId = newProps.match.params.speaker_id;
-        let {entity, location, history, currentPresentation, loading, summit}   = newProps;
+        const speakerId = newProps.match.params.speaker_id;
+        const {entity, location, loading}   = newProps;
 
         if (!location.state) {
-            history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
+            this.goBackToSpeakers();
         }
 
         if (!speakerId || isNaN(speakerId)) {
             if (!location.state.hasOwnProperty('email')) {
-                history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
+                this.goBackToSpeakers();
             }
         } else if (speakerId != entity.id && !loading){
             this.props.getSpeaker(speakerId);
@@ -53,17 +53,16 @@ class EditSpeakerPage extends React.Component {
     }
 
     componentDidMount () {
-        let speakerId = this.props.match.params.speaker_id;
-
-        let {entity, location, history, currentPresentation, loadedOrgRoles, summit}   = this.props;
+        const speakerId = this.props.match.params.speaker_id;
+        const {entity, location, loadedOrgRoles}   = this.props;
 
         if (!location.state) {
-            history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
+            this.goBackToSpeakers();
         }
 
         if (!speakerId || isNaN(speakerId)) {
             if (!location.state.hasOwnProperty('email')) {
-                history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
+                this.goBackToSpeakers();
             } else {
                 this.props.resetSpeakerForm(location.state.email);
             }
@@ -74,7 +73,11 @@ class EditSpeakerPage extends React.Component {
         if (!loadedOrgRoles) {
             this.props.getOrganizationalRoles();
         }
+    }
 
+    goBackToSpeakers() {
+        const {history, summit, selectionPlan, currentPresentation} = this.props;
+        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${currentPresentation.id}/speakers`);
     }
 
     handleSubmit(speaker) {
@@ -82,8 +85,8 @@ class EditSpeakerPage extends React.Component {
     }
 
     render() {
-        let {entity, orgRoles, loggedMember, errors, speakerPermission, match, currentPresentation, loggedInSpeaker, summit} = this.props;
-        let speakerId = match.params.speaker_id;
+        const {entity, orgRoles, loggedMember, errors, speakerPermission, match, loggedInSpeaker} = this.props;
+        const speakerId = match.params.speaker_id;
 
         if (speakerId && speakerId != loggedInSpeaker.id && speakerPermission && (!speakerPermission.approved || speakerId != speakerPermission.speaker_id) ) {
 
@@ -92,7 +95,7 @@ class EditSpeakerPage extends React.Component {
                 text: T.translate("edit_speaker.auth_required_text"),
                 type: "warning",
             }).then(function(result){
-                history.push(`/app/${summit.slug}/presentations/${currentPresentation.id}/speakers`);
+                this.goBackToSpeakers();
             });
 
             return (<div></div>);
