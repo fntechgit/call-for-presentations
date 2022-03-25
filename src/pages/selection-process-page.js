@@ -42,9 +42,6 @@ export default class SelectionProcessPage extends React.Component {
                 </p>
                 <hr/>
                 <p>
-                    {T.translate("selection_process.paragraph_6")}
-                </p>
-                <p>
                     {T.translate("selection_process.provide_feedback")}
                     <a href="https://lists.openinfra.dev/cgi-bin/mailman/listinfo/foundation" target="_blank">
                         {T.translate("selection_process.mailing_list")}
