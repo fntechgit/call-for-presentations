@@ -34,13 +34,18 @@ class NavMenu extends React.Component {
 
     onMenuItemClick(event, item){
         event.preventDefault();
-        let {summit} = this.props;
+        let {summit, selectionPlan} = this.props;
 
         this.setState({
             activeItem: item.name
         });
 
-        history.push(`/app/${summit.slug}/${item.name}`);
+        let url = `/app/${summit.slug}/${item.name}`;
+
+        if(item.name === 'presentations')
+            url = `/app/${summit.slug}/${selectionPlan.id}/${item.name}`;
+
+        history.push(url);
     }
 
     render() {
@@ -61,7 +66,7 @@ class NavMenu extends React.Component {
                                 iconClass={it.iconClass}
                                 show={it.show ? it.show : exclusiveSections.includes(it.name)}
                                 onClick={(e) => this.onMenuItemClick(e, it)}
-                                active={activeItem == it.name}
+                                active={activeItem === it.name}
                             />
                         ))}
                         {summitDocs.map(doc => (
@@ -95,6 +100,7 @@ class NavMenu extends React.Component {
 const mapStateToProps = ({ presentationsState, baseState }) => ({
     summitDocs: presentationsState.summitDocs,
     summit: baseState.summit,
+    selectionPlan : baseState.selectionPlan,
 })
 
 export default withRouter(connect(
