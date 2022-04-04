@@ -38,7 +38,7 @@ import ProfilePage from "./pages/profile-page";
 import DirectAuthorizedRoute from "./routes/direct-authorized-route";
 import Header from "./components/header";
 import LandingPage from "./pages/landing-page";
-
+import withMarketingSettings from "./components/withMarketingSettings";
 // here is set by default user lang as en
 
 let language = localStorage.getItem("PREFERRED_LANGUAGE");
@@ -183,4 +183,4 @@ export default connect(mapStateToProps, {
   getUserInfo,
   resetLoading,
   getAvailableSummits,
-})(App);
+})(withMarketingSettings(App));

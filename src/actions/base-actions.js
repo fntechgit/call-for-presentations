@@ -41,7 +41,6 @@ export const CLEAR_SUMMIT                   = 'CLEAR_SUMMIT';
 export const CLEAR_SELECTION_PLAN           = 'CLEAR_SELECTION_PLAN';
 export const BASE_LOADED                    = 'BASE_LOADED';
 
-
 export const resetLoading = () => (dispatch, getState) => {
     dispatch(createAction(RESET_LOADER)({}));
 }

@@ -22,7 +22,8 @@ import {
     RECEIVE_SUMMIT,
     RECEIVE_MARKETING_SETTINGS,
     SUMMIT_DOCS_RECEIVED,
-    BASE_LOADED, CLEAR_SELECTION_PLAN
+    BASE_LOADED,
+    CLEAR_SELECTION_PLAN,
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
@@ -83,7 +84,7 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         case RECEIVE_SUMMIT: {
             const entity = {...payload.response};
-            return {...state, summit: entity, marketingSettings: null, selectionPlan: null, allSummitDocs: [], baseLoaded: false};
+            return {...state, summit: entity, marketingSettings: null, selectionPlan: null, allSummitDocs: entity.summit_documents, baseLoaded: false};
         }
         case SUMMIT_DOCS_RECEIVED: {
             const {data} = payload.response;
