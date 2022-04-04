@@ -62,7 +62,7 @@ class EditPresentationPage extends React.Component {
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = match.params.step;
         const allowedMediaUploads = presentation.getAllowedMediaUploads();
-        const disclaimer = getMarketingValue('spkmgmt_disclaimer');
+        const disclaimer = selectionPlan.submission_period_disclaimer || getMarketingValue('spkmgmt_disclaimer');
 
         if (!summit.event_types || !summit.tracks) return null;
 
