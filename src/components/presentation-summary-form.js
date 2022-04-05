@@ -151,7 +151,7 @@ class PresentationSummaryForm extends React.Component {
 
         const selectedType = summit.event_types.find(ev => ev.id === entity.type_id);
         const event_types_ddl = summit.event_types
-            .filter(et => et.should_be_available_on_cfp)
+            .filter(et => selectionPlan.event_types.includes(et.id))
             .map(et => {
                 return ({value: et.id, label: et.name, type: et.class_name});
             });
