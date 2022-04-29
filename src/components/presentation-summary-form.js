@@ -184,10 +184,10 @@ class PresentationSummaryForm extends React.Component {
 
         const categories = summit.tracks
             .filter(t => allowedTrackIds.includes(t.id))
-            .map(t => ({value: t.id, label: t.name, description: t.description})).sort(
+            .map(t => ({value: t.id, label: t.name, description: t.description, order: t.order})).sort(
                 (a, b) => {
-                    if(a.label < b.label) { return -1; }
-                    if(a.label > b.label) { return 1; }
+                    if(a.order < b.order) { return -1; }
+                    if(a.order > b.order) { return 1; }
                     return 0;
                 }
             );
