@@ -50,7 +50,7 @@ class NavMenu extends React.Component {
 
     render() {
 
-        let {user, exclusiveSections, summitDocs} = this.props;
+        let {user, exclusiveSections, summitDocs, selectionPlan} = this.props;
         let {activeItem, open} = this.state;
 
         return (
@@ -59,7 +59,7 @@ class NavMenu extends React.Component {
                     <p className="user-img" style={{backgroundImage: `url('${user.pic}')`}} />
                     <h3 className="user-name">{user.first_name} {user.last_name}</h3>
                     <ul className="items">
-                        { MenuItemsDefinitions.map(it => (
+                        {MenuItemsDefinitions.map(it => (
                             <MenuItem
                                 key={it.name}
                                 name={it.name}
@@ -69,16 +69,16 @@ class NavMenu extends React.Component {
                                 active={activeItem === it.name}
                             />
                         ))}
-                        {summitDocs.map(doc => (
-                            <MenuItem
-                                key={doc.name}
-                                name={doc.name}
-                                label={doc.label}
-                                iconClass="fa-download"
-                                show
-                                onClick={(e) => window.open(doc.file, '_blank')}
-                                active={false}
-                            />
+                        {summitDocs.filter(doc => doc.selection_plan_id === selectionPlan.id || !doc.selection_plan_id).map(doc => (
+                                <MenuItem
+                                    key={doc.name}
+                                    name={doc.name}
+                                    label={doc.label}
+                                    iconClass="fa-download"
+                                    show
+                                    onClick={(e) => window.open(doc.file, '_blank')}
+                                    active={false}
+                                />
                         ))}
                         <MenuItem
                             key="support"
@@ -100,7 +100,7 @@ class NavMenu extends React.Component {
 const mapStateToProps = ({ presentationsState, baseState }) => ({
     summitDocs: presentationsState.summitDocs,
     summit: baseState.summit,
-    selectionPlan : baseState.selectionPlan,
+    selectionPlan: baseState.selectionPlan,
 })
 
 export default withRouter(connect(
