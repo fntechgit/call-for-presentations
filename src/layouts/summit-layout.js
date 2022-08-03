@@ -18,6 +18,7 @@ import {getAllFromSummit} from '../actions/base-actions';
 import PrimaryLayout from "./primary-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
 import ProfilePage from "../pages/profile-page";
+import ClockComponent from '../components/clock';
 
 const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSummit}) => {
     const urlSummitSlug = match.params.summit_slug;
@@ -39,12 +40,15 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
     }
 
     return(
-        <Switch>
-            <Route strict exact path={match.url} component={PlanSelectionPage}/>
-            <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
-            <Route path={`${match.url}/:selection_plan_id(\\d+)`} component={PrimaryLayout}/>
-            <Route render={() => (<Redirect to={`/app/${summitSlug}`}/>)}/>
-        </Switch>
+        <>
+            <ClockComponent active={true} summit={summit} />
+            <Switch>
+                <Route strict exact path={match.url} component={PlanSelectionPage}/>
+                <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
+                <Route path={`${match.url}/:selection_plan_id(\\d+)`} component={PrimaryLayout}/>
+                <Route render={() => (<Redirect to={`/app/${summitSlug}`}/>)}/>
+            </Switch>
+        </>
     );
 
 }

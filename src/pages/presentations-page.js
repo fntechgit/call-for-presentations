@@ -18,7 +18,6 @@ import Swal from "sweetalert2";
 import { getAllPresentations } from '../actions/presentations-actions';
 import { deletePresentation, resetPresentation } from '../actions/presentation-actions';
 import Presentation from '../model/presentation'
-
 import '../styles/presentations-page.less';
 
 class PresentationsPage extends React.Component {
@@ -92,7 +91,8 @@ class PresentationsPage extends React.Component {
             summit,
             submissionIsClosed,
             loggedSpeaker,
-            loading
+            loading,
+            nowUtc,
         } = this.props;
 
         if (loading || summit == null || loggedSpeaker == null) return null;
@@ -141,7 +141,7 @@ class PresentationsPage extends React.Component {
                                                 <a onClick={this.handleEditPresentation.bind(this, presentation)}>{p.title}</a>
                                             </td>
                                             <td>
-                                                {presentation.getStatus()}
+                                                {presentation.getStatus(nowUtc)}
                                                 {p.public_comments && p.public_comments.length > 0 &&
                                                     <button className="btn btn-default btn-xs review-btn" onClick={this.handleReviewPresentation.bind(this, p)}>
                                                         <i className="fa fa-exclamation-triangle blink" />
@@ -199,7 +199,7 @@ class PresentationsPage extends React.Component {
                                                 <a onClick={this.handleEditPresentation.bind(this, presentation)}>{p.title}</a>
                                             </td>
                                             <td>
-                                                {presentation.getStatus()}
+                                                {presentation.getStatus(nowUtc)}
                                             </td>
                                             <td>
                                                 {presentation.getSelectionPlanName()}
@@ -244,7 +244,7 @@ class PresentationsPage extends React.Component {
                                                 <a onClick={this.handleEditPresentation.bind(this, presentation)}>{p.title}</a>
                                             </td>
                                             <td>
-                                                {presentation.getStatus()}
+                                                {presentation.getStatus(nowUtc)}
                                             </td>
                                             <td>
                                                 {presentation.getSelectionPlanName()}
@@ -270,7 +270,7 @@ class PresentationsPage extends React.Component {
     }
 }
 
-const mapStateToProps = ({ presentationsState, baseState }) => ({
+const mapStateToProps = ({ presentationsState, baseState, clockState }) => ({
     selectionPlan : baseState.selectionPlan,
     summit : baseState.summit,
     presentations_created : presentationsState.presentations_created,
@@ -279,6 +279,7 @@ const mapStateToProps = ({ presentationsState, baseState }) => ({
     loggedSpeaker : baseState.speaker,
     loading: baseState.loading,
     submissionIsClosed: baseState.submissionIsClosed,
+    nowUtc: clockState.nowUtc,
 })
 
 export default connect (

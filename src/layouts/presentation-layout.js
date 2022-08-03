@@ -14,7 +14,6 @@
 import React from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import T from "i18n-react/dist/i18n-react";
 import { getPresentation, resetPresentation } from '../actions/presentation-actions'
 import EditPresentationPage from '../pages/edit-presentation-page'
 import PreviewPresentationPage from '../pages/preview-presentation-page'

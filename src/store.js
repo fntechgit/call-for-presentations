@@ -22,7 +22,8 @@ import { loggedUserReducer } from "openstack-uicore-foundation/lib/reducers"
 import thunk from 'redux-thunk';
 import { persistStore, persistCombineReducers } from 'redux-persist'
 import storage from 'redux-persist/es/storage'
-import summitSelectionReducer from "./reducers/summit-selection-reducer"; // default: localStorage if web, AsyncStorage if react-native
+import summitSelectionReducer from "./reducers/summit-selection-reducer";
+import clockReducer from "./reducers/clock-reducer";
 
 const config = {
     key: 'root',
@@ -37,6 +38,7 @@ const reducers = persistCombineReducers(config, {
     profileState: profileReducer,
     presentationState: presentationReducer,
     summitSelectionState: summitSelectionReducer,
+    clockState: clockReducer,
 });
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

@@ -42,21 +42,32 @@ class Presentation {
         this._presentation.progressNum = this._steps.find(s => s.name === this._presentation.progress).step;
     }
 
-    getStatus() {
-        const {is_published, status, selection_status, selectionPlan} = this._presentation;
-        const {selection_begin_date, selection_end_date} = selectionPlan || {};
-        const now = moment.utc().unix();
+    getStatus(nowUtc) {
+      const { is_published, status, selection_status, selectionPlan } = this._presentation;
+        const { selection_begin_date, selection_end_date, submission_lock_down_presentation_status_date } = selectionPlan || {};
 
         if (is_published) return T.translate("presentations.published");
         if (!status) return T.translate("presentations.not_submitted");
 
-        // check if we have a selection plan and a valid selection period
-        if (selection_begin_date && selection_end_date && selection_begin_date <= selection_end_date ) {
-            if (selection_begin_date > now) {
+        if(submission_lock_down_presentation_status_date && submission_lock_down_presentation_status_date > 0){
+            if(submission_lock_down_presentation_status_date > nowUtc){
+                // we are on lock down period
+                return T.translate("presentations.in_review");
+            }
+            if (!selection_status || selection_status === 'unaccepted') {
+                // presentation is rejected
+                return T.translate("presentations.rejected");
+            }
+            // send the presentation status with first letter in uppercase
+            return `${selection_status[0].toUpperCase()}${selection_status.slice(1)}`;
+        }
+        // check if we have a selection plan and a valid selection period ( old logic)
+        else if (selection_begin_date && selection_end_date && selection_begin_date <= selection_end_date ) {
+            if (selection_begin_date > nowUtc) {
                 // selection process didnt started yet
                 return T.translate("presentations.received");
             }
-            if (selection_end_date < now) {
+            if (selection_end_date < nowUtc) {
                 // selection process ended already
                 if (!selection_status || selection_status === 'unaccepted') {
                     // presentation is rejected
@@ -65,7 +76,7 @@ class Presentation {
                 // send the presentation status with first letter in uppercase
                 return `${selection_status[0].toUpperCase()}${selection_status.slice(1)}`;
             }
-            if (selection_begin_date < now) {
+            if (selection_begin_date < nowUtc) {
                 // if selection process didnt started yet
                 return T.translate("presentations.in_review");
             }
