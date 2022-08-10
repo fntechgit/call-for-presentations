@@ -59,7 +59,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
         null,
         createAction(RECEIVE_PRESENTATION),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/events/${presentationId}`,
-        presentationErrorHandler
+      (err, res) => presentationErrorHandler(err, res)(dispatch, getState)
     )(params)(dispatch).then((payload) => {
             if(!tagGroups.length){
                 dispatch(getTagGroups(summit.id));
@@ -124,7 +124,7 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
         .then((payload) => {
             dispatch(getPresentation(payload.response.id)).then((payload) => {
                     dispatch(stopLoading());
-                    history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${presentation.getNextStep()}`);
+                    history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${presentation.getNextStepName()}`);
                 }
             );
         }, (error) => {
@@ -249,8 +249,8 @@ const normalizeEntity = (entity) => {
 };
 
 
-const presentationErrorHandler = (err, res) => (dispatch, state) => {
-    const {baseState} = state;
+const presentationErrorHandler = (err, res) => (dispatch, getState) => {
+    const {baseState} = getState();
     const {summit, selectionPlan} = baseState || {};
     const code = err.status;
     dispatch(stopLoading());

@@ -13,33 +13,43 @@
 
 import T from 'i18n-react/dist/i18n-react';
 import {formatEpoch} from "../utils/methods";
-import moment from "moment";
-import {NavStepsDefinitions} from "../components/presentation-nav/nav-steps-definition";
 
 class Presentation {
 
-    constructor(presentation, summit, selectionPlan, loggedUser){
+    constructor(presentation, summit, selectionPlan, loggedUser, tagGroups){
         this._presentation  = presentation;
         this._selectionPlan = selectionPlan;
         this._user = loggedUser;
         this._summit = summit;
+        this._presentation.selectionPlan = summit.selection_plans.find(sp => sp.id === presentation.selection_plan_id);
+        this._tagGroups = tagGroups;
+
         this._steps = [
-            {name: 'NEW', step: 0},
-            {name: 'SUMMARY', step: 1},
-            {name: 'UPLOADS', step: 2},
-            {name: 'TAGS', step: 3},
-            {name: 'SPEAKERS', step: 4},
-            {name: 'REVIEW', step: 5},
-            {name: 'COMPLETE', step: 6}
+            {name: 'NEW', lcName: 'new', step: 0},
+            {name: 'SUMMARY', lcName: 'summary', step: 1, showInNav: true},
+            {name: 'UPLOADS', lcName: 'uploads', step: 2, showInNav: true},
+            {name: 'TAGS', lcName: 'tags', step: 3, showInNav: true},
+            {name: 'SPEAKERS', lcName: 'speakers', step: 4, showInNav: true},
+            {name: 'REVIEW', lcName: 'review', step: 5, showInNav: true},
+            {name: 'COMPLETE', lcName: 'complete', step: 6}
         ];
 
-        this._presentation.selectionPlan = summit.selection_plans.find(sp => sp.id === presentation.selection_plan_id);
-        this._presentation.progressNum = this._steps.find(s => s.name === this._presentation.progress).step;
+        this.updatePresentation(presentation);
     }
 
     updatePresentation(presentation) {
         this._presentation  = presentation;
-        this._presentation.progressNum = this._steps.find(s => s.name === this._presentation.progress).step;
+        const allowedMediaUploads = this.getAllowedMediaUploads();
+        const groupedTags = this.getAllowedTags();
+
+        this._steps.forEach(stp => {
+            if (stp.name === 'UPLOADS') stp.showInNav = (allowedMediaUploads.length > 0);
+            if (stp.name === 'TAGS') stp.showInNav = (groupedTags.length > 0);
+        });
+
+        const currentStep = this.getCurrentStep();
+
+        this._presentation.progressNum = currentStep.step;
     }
 
     getStatus(nowUtc) {
@@ -116,11 +126,10 @@ class Presentation {
 
     getProgressLink() {
         if (this.canEdit()) {
-            let progress = this._presentation.progress.toLowerCase();
             let step = 'summary';
 
-            if (progress !== 'complete') {
-                step = this.getNextStep();
+            if (this._presentation.progress !== 'COMPLETE') {
+                step = this.getNextStepName();
             }
 
             return `/app/${this._summit.slug}/${this._selectionPlan.id}/presentations/${this._presentation.id}/${step}`;
@@ -159,19 +168,49 @@ class Presentation {
         return [];
     }
 
-    getNextStep() {
-        const allowedMediaUploads = this.getAllowedMediaUploads();
-        const steps = allowedMediaUploads.length > 0 ? NavStepsDefinitions : NavStepsDefinitions.filter(s => s.name !== 'uploads');
-        const progressNum = this._presentation.progressNum || 1;
-        const nextStep = steps[steps.findIndex(x => x.step === progressNum) + 1];
-        return nextStep.name;
+    getAllowedTags() {
+        const track = this._presentation.track;
+        const tagGroups = this._tagGroups;
+        let groupedTags = [];
+
+        if (track && tagGroups.length > 0) {
+            let allowedTags = track.allowed_tags.map(t => ({id: t.id, tag: t.tag}));
+            groupedTags = tagGroups.map(group => {
+                let tags = allowedTags.filter( tag => group.allowed_tags.map(t => t.tag_id).includes(tag.id) );
+                return ({name: group.name, tags: tags});
+            });
+
+            groupedTags = groupedTags.filter(gr => gr.tags.length > 0);
+        }
+
+        return groupedTags;
+    };
+
+    getCurrentStep() {
+        let currentStep = this._steps.find(s => s.name === this._presentation.progress);
+
+        while(!currentStep.showInNav && currentStep.step < (this._steps.length - 1)) {
+            currentStep = this._steps[currentStep.step + 1];
+        }
+
+        return currentStep;
     }
 
-    getStepAfter(step) {
-        const allowedMediaUploads = this.getAllowedMediaUploads();
-        const steps = allowedMediaUploads.length > 0 ? NavStepsDefinitions : NavStepsDefinitions.filter(s => s.name !== 'uploads');
-        const nextStep = steps[steps.findIndex(x => x.name === step) + 1];
-        return nextStep.name;
+    getNextStep() {
+        const progressNum = this._presentation.progressNum || 1;
+        const reviewStep = this._steps.find(stp => stp.name === 'REVIEW');
+        let nextStep = progressNum > 4 ? reviewStep : this._steps[progressNum + 1];
+
+        while(!nextStep.showInNav && nextStep.step < (this._steps.length - 1)) {
+            nextStep = this._steps[nextStep.step + 1];
+        }
+
+        return nextStep;
+    }
+
+    getNextStepName() {
+        const nextStep = this.getNextStep();
+        return nextStep.lcName;
     }
 
     getPresentationProgress() {
