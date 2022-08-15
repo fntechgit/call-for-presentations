@@ -49,7 +49,7 @@ class EditPresentationPage extends React.Component {
             history.push('summary');
         }
 
-        if (!loading && entity.track_id && (!track || entity.track_id != track.id)) {
+        if (!loading && entity.track_id && (!track || entity.track_id !== track.id)) {
             this.props.loadEventCategory();
         }
     }
@@ -87,7 +87,7 @@ class EditPresentationPage extends React.Component {
                         summit={summit}
                         selectionPlan={selectionPlan}
                         errors={errors}
-                        onSubmit={entity => savePresentation(entity, presentation, presentation.getNextStepName())}
+                        onSubmit={entity => savePresentation(entity, presentation, presentation.getNextStepName('SUMMARY'))}
                     />
                 }
 
@@ -102,7 +102,7 @@ class EditPresentationPage extends React.Component {
                         errors={errors}
                         onSaveMU={saveMediaUpload}
                         onDeleteMU={deleteMediaUpload}
-                        onSubmit={() => history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${entity.id}/${presentation.getNextStepName()}`)}
+                        onSubmit={() => history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${entity.id}/${presentation.getStepNameAfter('UPLOADS')}`)}
                     />
                 </div>
                 }

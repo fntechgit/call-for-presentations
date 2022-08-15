@@ -23,6 +23,7 @@ class Presentation {
         this._summit = summit;
         this._presentation.selectionPlan = summit.selection_plans.find(sp => sp.id === presentation.selection_plan_id);
         this._tagGroups = tagGroups;
+        this._track = null;
 
         this._steps = [
             {name: 'NEW', lcName: 'new', step: 0},
@@ -37,14 +38,18 @@ class Presentation {
         this.updatePresentation(presentation);
     }
 
-    updatePresentation(presentation) {
+    updatePresentation(presentation, track = null) {
         this._presentation  = presentation;
         const allowedMediaUploads = this.getAllowedMediaUploads();
         const groupedTags = this.getAllowedTags();
 
+        if (track && this._presentation.track_id === track.id) {
+            this._track = track;
+        }
+
         this._steps.forEach(stp => {
-            if (stp.name === 'UPLOADS') stp.showInNav = (allowedMediaUploads.length > 0);
-            if (stp.name === 'TAGS') stp.showInNav = (groupedTags.length > 0);
+            if (stp.name === 'UPLOADS' && this._presentation.type) stp.showInNav = (allowedMediaUploads.length > 0);
+            if (stp.name === 'TAGS' && this._presentation.track_id) stp.showInNav = (groupedTags.length > 0);
         });
 
         const currentStep = this.getCurrentStep();
@@ -169,7 +174,7 @@ class Presentation {
     }
 
     getAllowedTags() {
-        const track = this._presentation.track;
+        const track = this._track;
         const tagGroups = this._tagGroups;
         let groupedTags = [];
 
@@ -210,6 +215,17 @@ class Presentation {
 
     getNextStepName() {
         const nextStep = this.getNextStep();
+        return nextStep.lcName;
+    }
+
+    getStepNameAfter(stepName) {
+        const stepIdx = this._steps.findIndex(stp => stp.name === stepName);
+        let nextStep = this._steps[stepIdx + 1];
+
+        while(!nextStep.showInNav && nextStep.step < (this._steps.length - 1)) {
+            nextStep = this._steps[nextStep.step + 1];
+        }
+
         return nextStep.lcName;
     }
 

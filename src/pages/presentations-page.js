@@ -93,7 +93,7 @@ class PresentationsPage extends React.Component {
             loggedSpeaker,
             loading,
             nowUtc,
-            tagGroups
+            tagGroups,
         } = this.props;
 
         if (loading || summit == null || loggedSpeaker == null) return null;
