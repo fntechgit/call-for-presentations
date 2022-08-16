@@ -15,7 +15,6 @@ import React from 'react'
 import { withRouter } from 'react-router-dom'
 import history from '../../history'
 import NavStep from './nav-step'
-import {NavStepsDefinitions} from './nav-steps-definition'
 import './presentation-nav.less';
 
 class PresentationNav extends React.Component {
@@ -32,20 +31,19 @@ class PresentationNav extends React.Component {
         event.preventDefault();
 
         if (!disabled) {
-            history.push(step.name);
+            history.push(step.lcName);
         }
     }
 
     render() {
-        let {progress, activeStep, showUploads} = this.props;
-        const steps = showUploads ? NavStepsDefinitions : NavStepsDefinitions.filter(s => s.name !== 'uploads');
+        let {progress, activeStep, steps} = this.props;
 
         return (
             <div className="presentation-nav-wrapper">
                 <ul className="presentation-nav-steps">
                     { steps.map(step => (
                         <NavStep
-                            key={step.name + "-step"}
+                            key={step.lcName + "-step"}
                             onClick={(e) => this.onStepClick(e, step)}
                             step={step}
                             activeStep={activeStep}

@@ -93,6 +93,7 @@ class PresentationsPage extends React.Component {
             loggedSpeaker,
             loading,
             nowUtc,
+            tagGroups,
         } = this.props;
 
         if (loading || summit == null || loggedSpeaker == null) return null;
@@ -132,7 +133,7 @@ class PresentationsPage extends React.Component {
                                 </thead>
                                 <tbody>
                                 { presentations_created.map(p => {
-                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker);
+                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, tagGroups);
 
                                     return (
                                         <tr key={'presentation_' + p.id}>
@@ -190,7 +191,7 @@ class PresentationsPage extends React.Component {
                                 </thead>
                                 <tbody>
                                 { presentations_speaker.map(p => {
-                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker);
+                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, tagGroups);
 
                                     return (
                                         <tr key={'presentation_' + p.id}>
@@ -235,7 +236,7 @@ class PresentationsPage extends React.Component {
                                 </thead>
                                 <tbody>
                                 { presentations_moderator.map(p => {
-                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker);
+                                    let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, tagGroups);
 
                                     return (
                                         <tr key={'presentation_' + p.id}>
@@ -280,6 +281,7 @@ const mapStateToProps = ({ presentationsState, baseState, clockState }) => ({
     loading: baseState.loading,
     submissionIsClosed: baseState.submissionIsClosed,
     nowUtc: clockState.nowUtc,
+    tagGroups: baseState.tagGroups,
 })
 
 export default connect (

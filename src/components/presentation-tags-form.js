@@ -12,7 +12,6 @@
  **/
 
 import React from 'react'
-import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import TagManager from './tag-manager/index'
 import SubmitButtons from "./presentation-submit-buttons";
@@ -52,20 +51,7 @@ class PresentationTagsForm extends React.Component {
 
     render() {
         let {entity} = this.state;
-        let {track, tagGroups, presentation, step} = this.props;
-
-        let groupedTags = [];
-
-        if (track && tagGroups.length > 0) {
-            let allowedTags = track.allowed_tags.map(t => ({id: t.id, tag: t.tag}));
-            groupedTags = tagGroups.map(group => {
-               let tags = allowedTags.filter( tag => group.allowed_tags.map(t => t.tag_id).includes(tag.id) );
-               return ({name: group.name, tags: tags});
-            });
-
-            groupedTags = groupedTags.filter(gr => gr.tags.length > 0);
-        }
-
+        let {presentation, step, groupedTags} = this.props;
 
         return (
             <form className="presentation-tags-form">

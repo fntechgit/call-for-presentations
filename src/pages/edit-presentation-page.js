@@ -19,7 +19,6 @@ import { getSpeakerPermission, removeSpeakerFromPresentation, removeModeratorFro
 import { loadEventCategory } from "../actions/base-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
 import PresentationNav from "../components/presentation-nav/index";
-import {NavStepsDefinitions} from "../components/presentation-nav/nav-steps-definition";
 import PresentationTagsForm from "../components/presentation-tags-form"
 import PresentationUploadsForm from "../components/presentation-uploads-form"
 import PresentationSpeakersForm from "../components/presentation-speakers-form";
@@ -44,25 +43,31 @@ class EditPresentationPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const {history, loading, match, track, entity} = newProps;
+        const {history, loading, match, track, entity, presentation} = newProps;
 
-        if (!NavStepsDefinitions.map(s => s.name).includes(match.params.step)) {
+        if (!presentation._steps.map(s => s.lcName).includes(match.params.step)) {
             history.push('summary');
         }
 
-        if (!loading && entity.track_id && (!track || entity.track_id != track.id)) {
+        if (!loading && entity.track_id && (!track || entity.track_id !== track.id)) {
             this.props.loadEventCategory();
         }
     }
 
+    getNavSteps() {
+      const {presentation} = this.props;
+      return presentation._steps.filter(stp => stp.showInNav);
+    };
+
     render() {
-        const { entity, selectionPlan, summit, tagGroups, errors, track, history, savePresentation, saveMediaUpload,
-            deleteMediaUpload, completePresentation, getSpeakerPermission, presentation, match } = this.props;
+        const { entity, selectionPlan, summit, errors, track, history, savePresentation, saveMediaUpload,
+            deleteMediaUpload, completePresentation, getSpeakerPermission, presentation, match, trackGroups } = this.props;
 
         let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
         let step = match.params.step;
-        const allowedMediaUploads = presentation.getAllowedMediaUploads();
         const disclaimer = selectionPlan.submission_period_disclaimer || getMarketingValue('spkmgmt_disclaimer');
+        const groupedTags = presentation.getAllowedTags(trackGroups);
+        const navSteps = this.getNavSteps();
 
         if (!summit.event_types || !summit.tracks) return null;
 
@@ -71,7 +76,7 @@ class EditPresentationPage extends React.Component {
                 <div className="presentation-header-wrapper">
                     <h2>{title} {T.translate("edit_presentation.presentation")}</h2>
                 </div>
-                <PresentationNav activeStep={step} progress={presentation.getPresentationProgress()} showUploads={allowedMediaUploads.length > 0} />
+                <PresentationNav activeStep={step} progress={presentation.getPresentationProgress()} steps={navSteps} />
 
                 {step === 'summary' &&
                     <PresentationSummaryForm
@@ -82,7 +87,7 @@ class EditPresentationPage extends React.Component {
                         summit={summit}
                         selectionPlan={selectionPlan}
                         errors={errors}
-                        onSubmit={entity => savePresentation(entity, presentation, presentation.getNextStep())}
+                        onSubmit={entity => savePresentation(entity, presentation, presentation.getNextStepName('SUMMARY'))}
                     />
                 }
 
@@ -97,7 +102,7 @@ class EditPresentationPage extends React.Component {
                         errors={errors}
                         onSaveMU={saveMediaUpload}
                         onDeleteMU={deleteMediaUpload}
-                        onSubmit={() => history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${entity.id}/tags`)}
+                        onSubmit={() => history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${entity.id}/${presentation.getStepNameAfter('UPLOADS')}`)}
                     />
                 </div>
                 }
@@ -108,8 +113,7 @@ class EditPresentationPage extends React.Component {
                         entity={entity}
                         presentation={presentation}
                         step={step}
-                        track={track}
-                        tagGroups={tagGroups}
+                        groupedTags={groupedTags}
                         onSubmit={entity => savePresentation(entity, presentation, 'speakers')}
                     />
                 </div>

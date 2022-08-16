@@ -25,7 +25,7 @@ class PresentationLayout extends React.Component {
 
     constructor(props){
         super(props);
-        this.presentation = new Presentation(props.entity, props.summit, props.selectionPlan, props.loggedSpeaker);
+        this.presentation = new Presentation(props.entity, props.summit, props.selectionPlan, props.loggedSpeaker, props.tagGroups, props.track);
     }
 
     componentDidMount() {
@@ -45,7 +45,7 @@ class PresentationLayout extends React.Component {
             this.props.getPresentation(newId);
         }
 
-        this.presentation.updatePresentation(newProps.entity);
+        this.presentation.updatePresentation(newProps.entity, newProps.track);
     }
 
     render(){
@@ -83,6 +83,7 @@ const mapStateToProps = ({ loggedUserState, baseState, presentationState }) => (
     selectionPlan: baseState.selectionPlan,
     summit: baseState.summit,
     loading: baseState.loading,
+    tagGroups: baseState.tagGroups,
     ...presentationState
 })
 
