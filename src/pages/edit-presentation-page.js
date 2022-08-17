@@ -87,7 +87,7 @@ class EditPresentationPage extends React.Component {
                         summit={summit}
                         selectionPlan={selectionPlan}
                         errors={errors}
-                        onSubmit={entity => savePresentation(entity, presentation, presentation.getNextStepName('SUMMARY'))}
+                        onSubmit={entity => savePresentation(entity, presentation, presentation.getStepNameAfter('SUMMARY'))}
                     />
                 }
 

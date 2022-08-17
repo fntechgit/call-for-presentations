@@ -359,7 +359,7 @@ class PresentationSummaryForm extends React.Component {
                         </div>
                     </div>
                     <hr/>
-                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)}/>
+                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} showBack={false} />
                 </form>
             </div>
         );

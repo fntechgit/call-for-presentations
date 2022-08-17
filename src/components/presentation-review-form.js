@@ -65,7 +65,7 @@ class PresentationReviewForm extends React.Component {
         return (
             <form className="presentation-review-form">
                 {!presentation.isSubmitted() &&
-                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} backStep="tags"/>
+                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} />
                 }
 
                 <input type="hidden" id="id" value={entity.id} />
@@ -156,7 +156,7 @@ class PresentationReviewForm extends React.Component {
                 </div>
 
                 <hr/>
-                <SubmitButtons presentation={presentation} onSubmit={this.handleSubmit.bind(this)} step={step} backStep="speakers" />
+                <SubmitButtons presentation={presentation} onSubmit={this.handleSubmit.bind(this)} step={step} />
             </form>
         );
     }

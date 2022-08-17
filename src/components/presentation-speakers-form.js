@@ -254,7 +254,7 @@ class PresentationSpeakersForm extends React.Component {
                     </Exclusive>
 
                     <hr/>
-                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} backStep="tags"/>
+                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} />
                 </form>
 
             </div>

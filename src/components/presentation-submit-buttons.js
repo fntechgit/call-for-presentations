@@ -16,18 +16,17 @@ import T from "i18n-react/dist/i18n-react";
 import history from '../history'
 import {getMarketingValue} from "./marketing-setting";
 
-export default class SubmitButtons extends React.Component {
+class SubmitButtons extends React.Component {
 
     handleBack(ev) {
-        let {backStep} = this.props;
+        let {presentation, step} = this.props;
         ev.preventDefault();
 
-        history.push(backStep);
+        history.push(presentation.getStepNameBefore(step));
     }
 
     render() {
-        let {onSubmit, presentation, step} = this.props;
-        let showBack = this.props.hasOwnProperty('backStep');
+        let {onSubmit, presentation, step, showBack} = this.props;
         let submitButton = '';
         const review_tc_note = getMarketingValue('spkmgmt_review_tc_note');
 
@@ -70,3 +69,8 @@ export default class SubmitButtons extends React.Component {
     }
 }
 
+SubmitButtons.defaultProps = {
+    showBack: true
+};
+
+export default SubmitButtons;

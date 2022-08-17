@@ -168,7 +168,7 @@ class PresentationUploadsForm extends React.Component {
                 })}
 
                 <hr/>
-                <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} backStep="summary" />
+                <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} />
             </form>
         );
     }

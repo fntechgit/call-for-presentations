@@ -28,8 +28,8 @@ class Presentation {
         this._steps = [
             {name: 'NEW', lcName: 'new', step: 0},
             {name: 'SUMMARY', lcName: 'summary', step: 1, showInNav: true},
-            {name: 'UPLOADS', lcName: 'uploads', step: 2, showInNav: true},
-            {name: 'TAGS', lcName: 'tags', step: 3, showInNav: true},
+            {name: 'UPLOADS', lcName: 'uploads', step: 2, showInNav: false},
+            {name: 'TAGS', lcName: 'tags', step: 3, showInNav: false},
             {name: 'SPEAKERS', lcName: 'speakers', step: 4, showInNav: true},
             {name: 'REVIEW', lcName: 'review', step: 5, showInNav: true},
             {name: 'COMPLETE', lcName: 'complete', step: 6}
@@ -224,6 +224,17 @@ class Presentation {
 
         while(!nextStep.showInNav && nextStep.step < (this._steps.length - 1)) {
             nextStep = this._steps[nextStep.step + 1];
+        }
+
+        return nextStep.lcName;
+    }
+
+    getStepNameBefore(stepName) {
+        const stepIdx = this._steps.findIndex(stp => stp.name === stepName.toUpperCase());
+        let nextStep = this._steps[stepIdx - 1];
+
+        while(!nextStep.showInNav && nextStep.step > 0) {
+            nextStep = this._steps[nextStep.step - 1];
         }
 
         return nextStep.lcName;
