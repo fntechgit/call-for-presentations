@@ -156,18 +156,9 @@ class Presentation {
         return selectionPlanName;
     }
 
-    getEventType() {
-        if (this._summit && this._presentation.type) {
-            return this._summit.event_types.find(ev => ev.id === this._presentation.type.id);
-        }
-
-        return null;
-    }
-
     getAllowedMediaUploads() {
-        const eventType = this.getEventType();
-        if (eventType && eventType.allowed_media_upload_types.length > 0) {
-            return eventType.allowed_media_upload_types;
+        if (this._presentation?.type && this._presentation.type.allowed_media_upload_types.length > 0) {
+            return this._presentation.type.allowed_media_upload_types;
         }
 
         return [];

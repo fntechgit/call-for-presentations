@@ -52,7 +52,7 @@ export const getPresentation = (presentationId) => (dispatch, getState) => {
 
     let params = {
         access_token: accessToken,
-        expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags, extra_questions, links'
+        expand: 'track_groups, speakers, presentation_materials, type, type.allowed_media_upload_types, type.allowed_media_upload_types.type, media_uploads, tags, extra_questions, links'
     };
 
     return getRequest(
