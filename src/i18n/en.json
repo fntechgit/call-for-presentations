@@ -107,6 +107,7 @@
     "presentations": "Your Presentations",
     "add_presentation": "Add New Presentation",
     "you_submitted": "Presentations you submitted",
+    "no_presentations": "No presentations submitted.",
     "no_presentations_created": "There are no presentations submitted by you.",
     "other_submitted_speaker": "Presentations others submitted with you as a speaker.",
     "no_presentations_speaker": "There are no presentations submitted by others with you as a speaker.",
@@ -121,7 +122,8 @@
     "review"        : "Review",
     "presentation_title": "Presentation Title",
     "presentation_status": "Presentation Status",
-    "submission_plan": "Submission Plan"
+    "submission_plan": "Submission Plan",
+    "last_edited": "Last Edited"
   },
   "presentation_nav": {
     "summary": "Summary",
