@@ -25,7 +25,14 @@ class PresentationLayout extends React.Component {
 
     constructor(props){
         super(props);
-        this.presentation = new Presentation(props.entity, props.summit, props.selectionPlan, props.loggedSpeaker, props.tagGroups, props.track);
+        this.presentation = new Presentation(
+          props.entity,
+          props.summit,
+          props.selectionPlan,
+          props.loggedSpeaker,
+          props.tagGroups,
+          props.submissionIsClosed
+        );
     }
 
     componentDidMount() {
@@ -54,7 +61,7 @@ class PresentationLayout extends React.Component {
 
         if (loading || (!isNew && !entity.id)) return null;
 
-        if (!isNew && match.params.presentation_id === entity.id && !this.presentation.canEdit() && !location.pathname.endsWith('preview') ) {
+        if (!isNew && match.params.presentation_id == entity.id && !this.presentation.canEdit() && !location.pathname.endsWith('preview') ) {
             return(<Redirect to={`${match.url}/preview`} />);
         }
 
@@ -78,12 +85,14 @@ class PresentationLayout extends React.Component {
 
 }
 
-const mapStateToProps = ({ loggedUserState, baseState, presentationState }) => ({
+const mapStateToProps = ({ baseState, presentationState }) => ({
     speaker: baseState.speaker,
     selectionPlan: baseState.selectionPlan,
     summit: baseState.summit,
     loading: baseState.loading,
     tagGroups: baseState.tagGroups,
+    submissionIsClosed: baseState.submissionIsClosed,
+    loggedSpeaker: baseState.speaker,
     ...presentationState
 })
 

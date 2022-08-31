@@ -61,7 +61,7 @@ const PresentationsTable = ({
           </thead>
           <tbody>
           {presentations.map(p => {
-            let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, tagGroups);
+            let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, tagGroups, submissionIsClosed);
 
             return (
               <tr key={'presentation_' + p.id}>

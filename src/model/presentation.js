@@ -16,7 +16,7 @@ import {formatEpoch} from "../utils/methods";
 
 class Presentation {
 
-    constructor(presentation, summit, selectionPlan, loggedUser, tagGroups){
+    constructor(presentation, summit, selectionPlan, loggedUser, tagGroups, submissionIsClosed){
         this._presentation  = presentation;
         this._selectionPlan = selectionPlan;
         this._user = loggedUser;
@@ -24,6 +24,7 @@ class Presentation {
         this._presentation.selectionPlan = summit.selection_plans.find(sp => sp.id === presentation.selection_plan_id);
         this._tagGroups = tagGroups;
         this._track = null;
+        this._submissionIsClosed = submissionIsClosed;
 
         this._steps = [
             {name: 'NEW', lcName: 'new', step: 0},
@@ -104,7 +105,7 @@ class Presentation {
     }
 
     canEdit() {
-        if (!this._selectionPlan) return false;
+        if (!this._selectionPlan || this._submissionIsClosed) return false;
 
         let speakers = this._presentation.speakers.map(s => {
             if (typeof s == 'object') return s.id;
