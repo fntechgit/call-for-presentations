@@ -26,7 +26,6 @@ export const SPEAKER_RECEIVED       = 'SPEAKER_RECEIVED';
 export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
 export const REGROUP_PRESENTATIONS  = 'REGROUP_PRESENTATIONS';
 
-
 export const getAllPresentations = (summitId, selectionPlanId) => (dispatch, getState) => {
 
     const { loggedUserState } = getState();
@@ -48,7 +47,6 @@ export const getAllPresentations = (summitId, selectionPlanId) => (dispatch, get
         }
     );
 };
-
 
 export const getCreatorPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
 
@@ -79,7 +77,6 @@ export const getSpeakerPresentations = (selectionPlanId, accessToken) => (dispat
         authErrorHandler
     )(params)(dispatch);
 }
-
 
 export const getModeratorPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
 

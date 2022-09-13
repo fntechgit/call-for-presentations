@@ -17,6 +17,7 @@ import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
 import {getAllPresentations} from '../actions/presentations-actions';
 import {deletePresentation, resetPresentation} from '../actions/presentation-actions';
+import { getSelectionPlan } from '../actions/base-actions';
 import '../styles/presentations-page.less';
 import PresentationsTable from "../components/presentations-table";
 
@@ -36,10 +37,14 @@ class PresentationsPage extends React.Component {
       return;
     }
 
-    this.props.getAllPresentations(summit.id, selectionPlan.id).then(() => {
-      // clear presentation form
-      this.props.resetPresentation();
-    });
+    // reload selection plan
+    this.props.getSelectionPlan(summit.id, selectionPlan.id).then(() => {
+      this.props.getAllPresentations(summit.id, selectionPlan.id).then(() => {
+        // clear presentation form
+        this.props.resetPresentation();
+      });
+    })
+
   }
 
   handleNewPresentation(ev) {
@@ -147,6 +152,7 @@ export default connect(
   {
     getAllPresentations,
     deletePresentation,
-    resetPresentation
+    resetPresentation,
+    getSelectionPlan,
   }
 )(PresentationsPage);
