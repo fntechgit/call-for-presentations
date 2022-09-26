@@ -148,6 +148,7 @@ class PresentationUploadsForm extends React.Component {
                                 <label>
                                     {media_type.name} ({allowedExt}) - Max. Size {media_type.max_size/1024} MB
                                     {media_type.is_mandatory && <i> - {media_type.min_uploads_qty} mandatory</i>}
+                                    {maxFiles && <i> - {maxFiles} max. allowed</i>}
                                 </label>
                                 {
                                     media_type.description !== '' &&
