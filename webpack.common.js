@@ -3,23 +3,36 @@ const { CleanWebpackPlugin }    = require('clean-webpack-plugin');
 const Dotenv                    = require('dotenv-webpack');
 const MiniCssExtractPlugin      = require("mini-css-extract-plugin");
 const webpack                   = require('webpack');
-const dotenv                    = require('dotenv').config({path: __dirname + '/.env'});
 
 module.exports = {
     entry: "./src/index.js",
     plugins: [
+        // Work around for Buffer is undefined:
+        // https://github.com/webpack/changelog-v5/issues/10
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+            process: 'process/browser',
+        }),
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            title: 'Call for presentations',
+            template: './src/index.ejs'
+        }),
         new Dotenv({
             expand: true
         }),
-        new CleanWebpackPlugin(),
-        new webpack.DefinePlugin({
-            "process.env": dotenv.parsed
-        }),
-        new HtmlWebpackPlugin({
-            template: './src/index.ejs'
-        })
     ],
-    node: {fs: 'empty'},
+    resolve: {
+        mainFields: ['browser', 'module', 'main'],
+        fallback: {
+            path: require.resolve('path-browserify'),
+            crypto: require.resolve('crypto-browserify'),
+            stream: require.resolve('stream-browserify'),
+            buffer: require.resolve("buffer"),
+            fs: require.resolve('fs'),
+            process: require.resolve("process"),
+        }
+    },
     module: {
         rules: [
             {
@@ -51,6 +64,7 @@ module.exports = {
             },
             {
                 test: /\.less/,
+                exclude: /\.module\.less/,
                 use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"]
             },
             {
@@ -59,12 +73,40 @@ module.exports = {
                 use: [MiniCssExtractPlugin.loader, "css-loader", 'sass-loader']
             },
             {
-                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                use: "url-loader?limit=10000&minetype=application/font-woff&name=fonts/[name].[ext]"
+                test: /\.module.less/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                    },
+                    {
+                        loader: "css-loader",
+                        options: {
+                            sourceMap: true,
+                            modules: true,
+                        }
+                    },
+                    { loader: "less-loader" },
+                ]
             },
             {
-                test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                use: "file-loader?name=fonts/[name].[ext]"
+                test: /\.module.scss/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                    },
+                    {
+                        loader: "css-loader",
+                        options: {
+                            sourceMap: true,
+                            modules: true,
+                        }
+                    },
+                    { loader: "sass-loader" }
+                ]
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf|otf)$/i,
+                type: 'asset/resource',
             },
             {
                 test: /\.jpg|\.png|\.gif$/,
@@ -77,6 +119,13 @@ module.exports = {
             {
                 test: /\.yaml$/,
                 use: 'js-yaml-loader',
+            },
+            // word around for react dnd
+            {
+                test: /\.m?js/,
+                resolve: {
+                    fullySpecified: false
+                }
             }
         ]
     },

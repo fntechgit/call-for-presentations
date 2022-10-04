@@ -14,12 +14,11 @@
 import React from 'react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import SubmitButtons from "./presentation-submit-buttons";
-import { Exclusive } from 'openstack-uicore-foundation/lib/components'
+import { Exclusive, Dropdown } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
 import Swal from "sweetalert2";
 import {getMarketingValue} from "./marketing-setting";
-import {Dropdown} from 'openstack-uicore-foundation/lib/components'
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {

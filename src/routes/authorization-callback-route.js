@@ -13,7 +13,7 @@
 import React from 'react'
 import { connect } from 'react-redux';
 import {getSpeakerInfo } from '../actions/auth-actions';
-import { AbstractAuthorizationCallbackRoute } from "openstack-uicore-foundation/lib/components";
+import AbstractAuthorizationCallbackRoute from "openstack-uicore-foundation/lib/security/abstract-auth-callback-route";
 import { Route, Redirect } from 'react-router-dom';
 
 class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
@@ -36,12 +36,6 @@ class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
     }
 }
 
-const mapStateToProps = ({ loggedUserState }) => ({
-    accessToken: loggedUserState.accessToken,
-    idToken:  loggedUserState.idToken,
-    sessionState: loggedUserState.sessionState,
-})
-
-export default connect(mapStateToProps,{
+export default connect(null,{
     getSpeakerInfo
 })(AuthorizationCallbackRoute)

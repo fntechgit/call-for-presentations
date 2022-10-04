@@ -2,13 +2,12 @@ import React from 'react';
 import LanguageSelect from "./language-select";
 import AuthButton from "./auth-button";
 import {connect} from "react-redux";
-import {formatEpoch, initLogOut} from "openstack-uicore-foundation/lib/methods";
+import {formatEpoch} from "openstack-uicore-foundation/lib/utils/methods";
 import T from "i18n-react";
 import {getMarketingValue} from "./marketing-setting";
 import moment from "moment-timezone";
 
-const Header = ({isLoggedUser, speaker, member, summit, selectionPlan, submissionIsClosed, language}) => {
-    const profile_pic = speaker ? speaker.member.pic : member ? member.pic : "";
+const Header = ({isLoggedUser, summit, selectionPlan, submissionIsClosed, language, profilePic, initLogOut}) => {
     let header_title = "";
     let header_subtitle = "";
     let summit_logo = window.LOGO_URL;
@@ -70,7 +69,7 @@ const Header = ({isLoggedUser, speaker, member, summit, selectionPlan, submissio
                     )}
                     <AuthButton
                         isLoggedUser={isLoggedUser}
-                        picture={profile_pic}
+                        picture={profilePic}
                         initLogOut={onClickLogout}
                     />
                 </div>
@@ -86,8 +85,6 @@ const Header = ({isLoggedUser, speaker, member, summit, selectionPlan, submissio
 
 const mapStateToProps = ({loggedUserState, baseState }) => ({
     isLoggedUser: loggedUserState.isLoggedUser,
-    member: loggedUserState.member,
-    speaker: baseState.speaker,
     summit: baseState.summit,
     submissionIsClosed: baseState.submissionIsClosed,
     selectionPlan: baseState.selectionPlan,

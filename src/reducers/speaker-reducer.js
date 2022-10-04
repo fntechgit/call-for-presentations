@@ -23,7 +23,7 @@ import
     REQUEST_SPEAKER_PERMISSION
 } from '../actions/speaker-actions';
 
-import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
+import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/utils/actions';
 
 export const DEFAULT_ENTITY = {
     id: 0,

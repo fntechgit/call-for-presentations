@@ -17,7 +17,7 @@ import presentationsReducer from './reducers/presentations-reducer'
 import speakerReducer from './reducers/speaker-reducer'
 import profileReducer from './reducers/profile-reducer'
 import presentationReducer from './reducers/presentation-reducer'
-import { loggedUserReducer } from "openstack-uicore-foundation/lib/reducers"
+import { loggedUserReducer } from "openstack-uicore-foundation/lib/security/reducers"
 
 import thunk from 'redux-thunk';
 import { persistStore, persistCombineReducers } from 'redux-persist'
@@ -47,8 +47,6 @@ const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 
 const onRehydrateComplete = () => {
     // repopulate access token on global access variable
-    window.accessToken = store.getState().loggedUserState.accessToken;
-    window.idToken = store.getState().loggedUserState.idToken;
     window.sessionState = store.getState().loggedUserState.sessionState;
 }
 

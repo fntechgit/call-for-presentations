@@ -15,7 +15,7 @@ import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import { UploadInputV2 } from 'openstack-uicore-foundation/lib/components'
-import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
+import {findElementPos} from 'openstack-uicore-foundation/lib/utils/methods'
 import SubmitButtons from './presentation-submit-buttons'
 import {validate, scrollToError} from '../utils/methods'
 import Swal from "sweetalert2";

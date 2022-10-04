@@ -22,7 +22,7 @@ import
     PRESENTATION_MATERIAL_DELETED
 } from '../actions/presentation-actions';
 
-import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
+import { LOGOUT_USER, VALIDATE } from 'openstack-uicore-foundation/lib/utils/actions';
 import { RECEIVE_EVENT_CATEGORY } from '../actions/base-actions';
 import {
     SPEAKER_ASSIGNED,

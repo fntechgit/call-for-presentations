@@ -20,12 +20,11 @@ import {
     startLoading,
     showMessage,
     authErrorHandler,
-    doLogin,
-    initLogOut
-} from "openstack-uicore-foundation/lib/methods";
-
-import history from '../history'
-import { VALIDATE } from 'openstack-uicore-foundation/lib/actions';
+    VALIDATE
+} from "openstack-uicore-foundation/lib/utils/actions";
+import { initLogOut, doLoginBasicLogin} from 'openstack-uicore-foundation/lib/security/methods';
+import history from '../history';
+import {getAccessTokenSafely} from "../utils/methods";
 
 export const SELECTION_CLOSED               = 'SELECTION_CLOSED';
 export const RECEIVE_TAG_GROUPS             = 'RECEIVE_TAG_GROUPS';
@@ -53,11 +52,10 @@ export const clearSelectionPlan = () => (dispatch) => {
     dispatch(createAction(CLEAR_SELECTION_PLAN)({}));
 }
 
-export const getSelectionPlan = (summitId, selectionPlanId) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+export const getSelectionPlan = (summitId, selectionPlanId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-    let params = {
+    const params = {
         access_token : accessToken,
         expand: 'summit,track_groups,extra_questions,extra_questions.values'
     };
@@ -125,12 +123,10 @@ export const getAvailableSummits = () => (dispatch, getState) => {
     )(params)(dispatch).then(() => { dispatch(stopLoading()); });
 }
 
-export const getSummitById = (summitId) => (dispatch, getState) => {
+export const getSummitById = (summitId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
-
-    let params = {
+    const params = {
         access_token : accessToken,
         expand: 'event_types,tracks'
     };
@@ -143,12 +139,10 @@ export const getSummitById = (summitId) => (dispatch, getState) => {
     )(params)(dispatch);
 }
 
-export const getTagGroups = (summitId) => (dispatch, getState) => {
+export const getTagGroups = (summitId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
-
-    let params = {
+    const params = {
         access_token : accessToken,
         expand       : "allowed_tags",
         per_page     : 100,
@@ -163,16 +157,15 @@ export const getTagGroups = (summitId) => (dispatch, getState) => {
     )(params)(dispatch);
 };
 
-export const loadEventCategory = () => (dispatch, getState) => {
-
-    let { loggedUserState, baseState, presentationState } = getState();
-    let { accessToken }     = loggedUserState;
-    let summitId            = baseState.summit.id;
-    let categoryId          = presentationState.entity.track_id;
+export const loadEventCategory = () => async (dispatch, getState) => {
+    const { baseState, presentationState } = getState();
+    const accessToken = await getAccessTokenSafely();
+    const summitId            = baseState.summit.id;
+    const categoryId          = presentationState.entity.track_id;
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         expand       : "allowed_tags",
         access_token : accessToken,
     };
@@ -204,15 +197,12 @@ export const getMarketingSettings = (summitId) => (dispatch, getState) => {
 };
 
 
-export const getAllSummitDocs = (summitId) => (dispatch, getState) => {
-
-
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+export const getAllSummitDocs = (summitId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
     if (!accessToken) return;
 
-    let params = {
+    const params = {
         access_token : accessToken,
     };
 
@@ -265,7 +255,7 @@ export const selectionPlanErrorHandler = (err, res) => (dispatch) => {
             dispatch(showMessage( error_message, initLogOut ));
             break;
         case 401:
-            doLogin(window.location.pathname);
+            doLoginBasicLogin(window.location.pathname);
             break;
         case 404:
             dispatch(createAction(SELECTION_CLOSED)({}));

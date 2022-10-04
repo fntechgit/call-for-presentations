@@ -24,7 +24,7 @@ import
 
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {AFFILIATION_ADDED, AFFILIATION_DELETED, AFFILIATION_SAVED} from '../actions/member-actions'
-import { LOGOUT_USER, RECEIVE_USER_INFO, VALIDATE } from 'openstack-uicore-foundation/lib/actions';
+import { LOGOUT_USER, RECEIVE_USER_INFO, VALIDATE } from 'openstack-uicore-foundation/lib/utils/actions';
 
 export const DEFAULT_ENTITY = {
     id: 0,

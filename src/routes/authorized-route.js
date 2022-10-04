@@ -41,6 +41,8 @@ class AuthorizedRoute extends React.Component {
         };
         const FallbackComponent = (props) => Fallback ? <Fallback {...this.props} {...props} /> : <Redirect to={redirectTo} />;
 
+        console.log('LOGGED', isLoggedUser);
+
         return (
             <Route {...rest} render={props => isLoggedUser ? <Component {...props} /> : FallbackComponent(props)} />
         )
