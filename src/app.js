@@ -92,8 +92,8 @@ class App extends PureComponent {
     props.resetLoading();
   }
 
-  onClickLogin = () => {
-    doLoginBasicLogin(getBackURL());
+  onClickLogin = (backUrl) => {
+    doLoginBasicLogin(backUrl);
   }
 
   render() {

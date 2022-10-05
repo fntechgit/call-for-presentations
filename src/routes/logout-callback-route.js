@@ -12,57 +12,59 @@
  **/
 import URI from "urijs"
 import React from 'react'
-import { withRouter } from 'react-router-dom'
+import {withRouter} from 'react-router-dom'
+import {connect} from "react-redux";
 
 class LogOutCallbackRoute extends React.Component {
 
 
-    constructor(props){
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            error: null
-        };
+    this.state = {
+      error: null
+    };
+  }
+
+  componentWillMount() {
+    const {doLogout, location, history, summit} = this.props;
+    const query = URI.parseQuery(location.search);
+    const storedState = window.localStorage.getItem('post_logout_state');
+
+    window.localStorage.removeItem('post_logout_state');
+
+    if (!query.hasOwnProperty("state")) {
+      this.setState({...this.state, error: 'Missing State.'});
+      return;
     }
 
-    componentWillMount() {
-        let storedState = window.localStorage.getItem('post_logout_state');
-        window.localStorage.removeItem('post_logout_state');
-        console.log(`retrieved state ${storedState}`);
-        let { doLogout, location, history } = this.props;
-        let query = URI.parseQuery(location.search);
-
-        if(!query.hasOwnProperty("state")) {
-            this.setState({...this.state, error: 'Missing State.'});
-            return;
-        }
-
-        if(query["state"] !== storedState) {
-            this.setState({...this.state, error: 'Invalid State.'});
-            return;
-        }
-
-        doLogout();
-        let slug  = null;
-        if(typeof window !== 'undefined') {
-            slug = window.localStorage.getItem('summit_slug');
-            window.localStorage.removeItem('summit_slug');
-        }
-        if(slug){
-            history.push(`/app/${slug}`);
-            return;
-        }
-        history.push("/");
+    if (query["state"] !== storedState) {
+      this.setState({...this.state, error: 'Invalid State.'});
+      return;
     }
 
+    doLogout();
 
-    render() {
-        if(this.state.error != null){
-            return (<p>{this.state.error}</p>)
-        }
-        return null;
+    if (summit?.slug) {
+      history.push(`/app/${summit.slug}`);
+      return;
     }
+
+    history.push("/");
+  }
+
+
+  render() {
+    if (this.state.error != null) {
+      return (<p>{this.state.error}</p>)
+    }
+    return null;
+  }
 }
 
-export default withRouter(LogOutCallbackRoute);
+const mapStateToProps = ({baseState}) => ({
+  summit: baseState.summit,
+})
+
+export default withRouter(connect(mapStateToProps)(LogOutCallbackRoute));
 

@@ -43,11 +43,14 @@ class LandingPage extends React.Component {
     }
 
     render(){
-        let {doLogin, summit, isLoggedUser} = this.props;
-        var url = window.location.href;
-        var arr = url.split("/");
-        var domain = arr[0] + "//" + arr[2];
+        const {doLogin, summit, isLoggedUser} = this.props;
+        const url = window.location.href;
+        const arr = url.split("/");
+        const domain = arr[0] + "//" + arr[2];
+
         if( !summit || isLoggedUser ) return null;
+
+        const backUrl = `/app/${summit.slug}`;
 
         return (
             <div className="container landing-page-wrapper">
@@ -80,7 +83,7 @@ class LandingPage extends React.Component {
                             <div className="row">
                                 <div className="col-md-6 login-box">
                                     <div className="submit-subtitle"> {T.translate("landing.already_member")} </div>
-                                    <button className="btn btn-primary btn-lg" onClick={() => { doLogin(); }}>
+                                    <button className="btn btn-primary btn-lg" onClick={() => { doLogin(backUrl); }}>
                                         {T.translate("landing.log_in")}
                                     </button>
                                 </div>
@@ -110,7 +113,7 @@ class LandingPage extends React.Component {
                         <div className="row">
                             <div className="col-md-6 login-box">
                                 <div className="submit-subtitle"> {T.translate("landing.have_login")} </div>
-                                <button className="btn btn-primary btn-lg" onClick={() => { doLogin(); }}>
+                                <button className="btn btn-primary btn-lg" onClick={() => { doLogin(backUrl); }}>
                                     {T.translate("landing.log_in")}
                                 </button>
                             </div>

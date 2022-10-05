@@ -23,7 +23,8 @@ class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
     }
 
     _callback(backUrl) {
-        if(!backUrl) backUrl = '/app';
+        if (!backUrl) backUrl = '/app';
+
         this.props.getSpeakerInfo(backUrl);
     }
 

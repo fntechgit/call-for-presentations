@@ -29,7 +29,6 @@ import {getAccessTokenSafely} from "../utils/methods";
 export const SELECTION_CLOSED               = 'SELECTION_CLOSED';
 export const RECEIVE_TAG_GROUPS             = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY         = 'RECEIVE_EVENT_CATEGORY';
-export const RESET_LOADER                   = 'RESET_LOADER';
 export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
 export const RECEIVE_SELECTION_PLAN         = 'RECEIVE_SELECTION_PLAN';
 export const RECEIVE_MARKETING_SETTINGS     = 'RECEIVE_MARKETING_SETTINGS';
@@ -39,10 +38,6 @@ export const ERROR_RECEIVE_SUMMIT           = 'ERROR_RECEIVE_SUMMIT';
 export const CLEAR_SUMMIT                   = 'CLEAR_SUMMIT';
 export const CLEAR_SELECTION_PLAN           = 'CLEAR_SELECTION_PLAN';
 export const BASE_LOADED                    = 'BASE_LOADED';
-
-export const resetLoading = () => (dispatch, getState) => {
-    dispatch(createAction(RESET_LOADER)({}));
-}
 
 export const clearCurrentSummit = () => (dispatch, getState) => {
     dispatch(createAction(CLEAR_SUMMIT)({}));
@@ -71,12 +66,10 @@ export const getSelectionPlan = (summitId, selectionPlanId) => async (dispatch) 
 export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
     dispatch(startLoading());
     dispatch(createAction(BASE_LOADED)({loaded: false}));
+
     return getCurrentSummitPublic(summitSlug)(dispatch, getState)
         .then(({response}) => {
-            const marketing = getMarketingSettings(response.id)(dispatch, getState);
-            const summitDocs = getAllSummitDocs(response.id)(dispatch, getState);
-
-            return Promise.all([marketing, summitDocs]).then(() => {
+            return getMarketingSettings(response.id)(dispatch, getState).then(() => {
                 dispatch(createAction(BASE_LOADED)({loaded: true}));
                 dispatch(stopLoading());
             });
@@ -199,8 +192,6 @@ export const getMarketingSettings = (summitId) => (dispatch, getState) => {
 
 export const getAllSummitDocs = (summitId) => async (dispatch) => {
     const accessToken = await getAccessTokenSafely();
-
-    if (!accessToken) return;
 
     const params = {
         access_token : accessToken,

@@ -14,8 +14,7 @@
 import moment from 'moment-timezone';
 import URI from "urijs";
 import validator from 'validator';
-import {getAccessToken} from 'openstack-uicore-foundation/lib/security/methods'
-import { initLogOut} from 'openstack-uicore-foundation/lib/security/methods';
+import {getAccessToken, initLogOut} from 'openstack-uicore-foundation/lib/security/methods'
 
 export const stripHtmlText = (html) => {
     let tmp = document.createElement("DIV");

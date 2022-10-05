@@ -14,13 +14,13 @@
 import React, {useEffect} from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import {getAllFromSummit} from '../actions/base-actions';
+import {getAllFromSummit, getAllSummitDocs} from '../actions/base-actions';
 import PrimaryLayout from "./primary-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
 import ProfilePage from "../pages/profile-page";
 import ClockComponent from '../components/clock';
 
-const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSummit}) => {
+const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSummit, getAllSummitDocs}) => {
     const urlSummitSlug = match.params.summit_slug;
     const summitSlug = summit?.slug;
 
@@ -29,6 +29,12 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
             getAllFromSummit(urlSummitSlug);
         }
     }, [summitSlug, urlSummitSlug]);
+
+    useEffect(() => {
+        if (urlSummitSlug === summitSlug && summit?.id) {
+            getAllSummitDocs(summit.id);
+        }
+    }, [summit?.id]);
 
     if (summitSlug !== urlSummitSlug) return null;
 
@@ -61,4 +67,4 @@ const mapStateToProps = ({ baseState }) => ({
     baseLoaded: baseState.baseLoaded
 })
 
-export default connect(mapStateToProps, {getAllFromSummit})(SummitLayout);
+export default connect(mapStateToProps, {getAllFromSummit, getAllSummitDocs})(SummitLayout);
