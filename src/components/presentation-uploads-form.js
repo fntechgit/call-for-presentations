@@ -140,6 +140,7 @@ class PresentationUploadsForm extends React.Component {
                     const notLastItem = i < allowedMediaUploads.length -1;
                     const allowedExt = media_type.type.allowed_extensions.map((ext) => `.${ext.toLowerCase()}`).join(",");
                     const mediaUploads = this.getMediaUploadsByType(entity, media_type);
+                    const maxFiles = media_type.max_uploads_qty > 0 ? media_type.max_uploads_qty : null;
 
                     return (
                         <div key={media_type.id} className={`row form-group ${notLastItem ? 'border' : ''}`}>
@@ -147,7 +148,7 @@ class PresentationUploadsForm extends React.Component {
                                 <label>
                                     {media_type.name} ({allowedExt}) - Max. Size {media_type.max_size/1024} MB
                                     {media_type.is_mandatory && <i> - {media_type.min_uploads_qty} mandatory</i>}
-                                    {media_type.max_uploads_qty && <i> - {media_type.max_uploads_qty} max. allowed</i>}
+                                    {maxFiles && <i> - {maxFiles} max. allowed</i>}
                                 </label>
                                 {
                                     media_type.description !== '' &&
@@ -162,7 +163,7 @@ class PresentationUploadsForm extends React.Component {
                                     postUrl={`${window.API_BASE_URL}/api/public/v1/files/upload`}
                                     error={this.hasErrors(media_type.name)}
                                     djsConfig={{withCredentials:true}}
-                                    maxFiles={media_type.max_uploads_qty}
+                                    maxFiles={maxFiles}
                                 />
                             </div>
                         </div>
