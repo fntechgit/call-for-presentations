@@ -13,13 +13,11 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import URI from "urijs";
 import T from 'i18n-react/dist/i18n-react';
 import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 import { loadEventCategory } from "../actions/base-actions";
 
 import '../styles/preview-presentation-page.less';
-import {findElementPos} from "openstack-uicore-foundation/lib/methods";
 
 class PreviewPresentationPage extends React.Component {
 

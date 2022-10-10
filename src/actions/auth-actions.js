@@ -17,23 +17,21 @@ import {
     startLoading,
     stopLoading,
     authErrorHandler,
-    getUserInfo,
-} from "openstack-uicore-foundation/lib/methods";
-
+} from "openstack-uicore-foundation/lib/utils/actions";
+import { getUserInfo} from 'openstack-uicore-foundation/lib/security/actions';
 import history from '../history'
 import T from "i18n-react/dist/i18n-react";
 import Swal from "sweetalert2";
+import {getAccessTokenSafely} from "../utils/methods";
 
 export const RECEIVE_SPEAKER_INFO       = 'RECEIVE_SPEAKER_INFO';
 
-export const getSpeakerInfo = (backUrl) => (dispatch, getState) => {
-
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+export const getSpeakerInfo = (backUrl) => async (dispatch, getState) => {
+    const accessToken = await getAccessTokenSafely();
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token : accessToken,
         expand: 'member'
     };

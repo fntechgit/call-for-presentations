@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 
-import { START_LOADING, STOP_LOADING, LOGOUT_USER } from "openstack-uicore-foundation/lib/actions";
+import { LOGOUT_USER } from "openstack-uicore-foundation/lib/utils/actions";
 import {RECEIVE_AVAILABLE_SUMMITS} from "../actions/base-actions";
 
 

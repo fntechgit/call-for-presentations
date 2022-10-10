@@ -17,18 +17,18 @@ import { Route, Redirect } from 'react-router-dom'
 class AuthorizedRoute extends React.Component {
 
     getBackUrl = () => {
-        const { location } = this.props;
-        let backUrl = location.pathname;
+        const { location, backUrl } = this.props;
+        let currentBackUrl = backUrl || location.pathname;
 
         if(location.search != null){
-            backUrl += location.search
+            currentBackUrl += location.search
         }
 
         if(location.hash != null){
-            backUrl += location.hash
+            currentBackUrl += location.hash
         }
 
-        return backUrl;
+        return currentBackUrl;
     };
 
     render() {

@@ -14,7 +14,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
-import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 import { Exclusive } from 'openstack-uicore-foundation/lib/components'
 
 import '../styles/preview-presentation-page.less';

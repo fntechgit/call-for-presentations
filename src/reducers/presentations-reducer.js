@@ -12,7 +12,7 @@
  **/
 
 import store from '../store';
-import { LOGOUT_USER } from 'openstack-uicore-foundation/lib/actions';
+import { LOGOUT_USER } from 'openstack-uicore-foundation/lib/utils/actions';
 import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED, REGROUP_PRESENTATIONS } from '../actions/presentations-actions';
 import {PRESENTATION_ADDED, PRESENTATION_DELETED} from '../actions/presentation-actions'
 import {CLEAR_SUMMIT} from "../actions/base-actions";

@@ -20,17 +20,15 @@ import {
     startLoading,
     showMessage,
     authErrorHandler,
-    doLogin,
-    initLogOut
-} from "openstack-uicore-foundation/lib/methods";
-
-import history from '../history'
-import { VALIDATE } from 'openstack-uicore-foundation/lib/actions';
+    VALIDATE
+} from "openstack-uicore-foundation/lib/utils/actions";
+import { initLogOut, doLoginBasicLogin} from 'openstack-uicore-foundation/lib/security/methods';
+import history from '../history';
+import {getAccessTokenSafely} from "../utils/methods";
 
 export const SELECTION_CLOSED               = 'SELECTION_CLOSED';
 export const RECEIVE_TAG_GROUPS             = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY         = 'RECEIVE_EVENT_CATEGORY';
-export const RESET_LOADER                   = 'RESET_LOADER';
 export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
 export const RECEIVE_SELECTION_PLAN         = 'RECEIVE_SELECTION_PLAN';
 export const RECEIVE_MARKETING_SETTINGS     = 'RECEIVE_MARKETING_SETTINGS';
@@ -41,10 +39,6 @@ export const CLEAR_SUMMIT                   = 'CLEAR_SUMMIT';
 export const CLEAR_SELECTION_PLAN           = 'CLEAR_SELECTION_PLAN';
 export const BASE_LOADED                    = 'BASE_LOADED';
 
-export const resetLoading = () => (dispatch, getState) => {
-    dispatch(createAction(RESET_LOADER)({}));
-}
-
 export const clearCurrentSummit = () => (dispatch, getState) => {
     dispatch(createAction(CLEAR_SUMMIT)({}));
 };
@@ -53,11 +47,10 @@ export const clearSelectionPlan = () => (dispatch) => {
     dispatch(createAction(CLEAR_SELECTION_PLAN)({}));
 }
 
-export const getSelectionPlan = (summitId, selectionPlanId) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+export const getSelectionPlan = (summitId, selectionPlanId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-    let params = {
+    const params = {
         access_token : accessToken,
         expand: 'summit,track_groups,extra_questions,extra_questions.values'
     };
@@ -73,12 +66,10 @@ export const getSelectionPlan = (summitId, selectionPlanId) => (dispatch, getSta
 export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
     dispatch(startLoading());
     dispatch(createAction(BASE_LOADED)({loaded: false}));
+
     return getCurrentSummitPublic(summitSlug)(dispatch, getState)
         .then(({response}) => {
-            const marketing = getMarketingSettings(response.id)(dispatch, getState);
-            const summitDocs = getAllSummitDocs(response.id)(dispatch, getState);
-
-            return Promise.all([marketing, summitDocs]).then(() => {
+            return getMarketingSettings(response.id)(dispatch, getState).then(() => {
                 dispatch(createAction(BASE_LOADED)({loaded: true}));
                 dispatch(stopLoading());
             });
@@ -125,12 +116,10 @@ export const getAvailableSummits = () => (dispatch, getState) => {
     )(params)(dispatch).then(() => { dispatch(stopLoading()); });
 }
 
-export const getSummitById = (summitId) => (dispatch, getState) => {
+export const getSummitById = (summitId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
-
-    let params = {
+    const params = {
         access_token : accessToken,
         expand: 'event_types,tracks'
     };
@@ -143,12 +132,10 @@ export const getSummitById = (summitId) => (dispatch, getState) => {
     )(params)(dispatch);
 }
 
-export const getTagGroups = (summitId) => (dispatch, getState) => {
+export const getTagGroups = (summitId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
-
-    let params = {
+    const params = {
         access_token : accessToken,
         expand       : "allowed_tags",
         per_page     : 100,
@@ -163,16 +150,15 @@ export const getTagGroups = (summitId) => (dispatch, getState) => {
     )(params)(dispatch);
 };
 
-export const loadEventCategory = () => (dispatch, getState) => {
-
-    let { loggedUserState, baseState, presentationState } = getState();
-    let { accessToken }     = loggedUserState;
-    let summitId            = baseState.summit.id;
-    let categoryId          = presentationState.entity.track_id;
+export const loadEventCategory = () => async (dispatch, getState) => {
+    const { baseState, presentationState } = getState();
+    const accessToken = await getAccessTokenSafely();
+    const summitId            = baseState.summit.id;
+    const categoryId          = presentationState.entity.track_id;
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         expand       : "allowed_tags",
         access_token : accessToken,
     };
@@ -204,15 +190,10 @@ export const getMarketingSettings = (summitId) => (dispatch, getState) => {
 };
 
 
-export const getAllSummitDocs = (summitId) => (dispatch, getState) => {
+export const getAllSummitDocs = (summitId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
-
-    if (!accessToken) return;
-
-    let params = {
+    const params = {
         access_token : accessToken,
     };
 
@@ -265,7 +246,7 @@ export const selectionPlanErrorHandler = (err, res) => (dispatch) => {
             dispatch(showMessage( error_message, initLogOut ));
             break;
         case 401:
-            doLogin(window.location.pathname);
+            doLoginBasicLogin(window.location.pathname);
             break;
         case 404:
             dispatch(createAction(SELECTION_CLOSED)({}));

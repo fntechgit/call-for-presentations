@@ -13,14 +13,14 @@
 
 import React from 'react'
 import { Route} from 'react-router-dom'
-import { doLogin } from "openstack-uicore-foundation/lib/methods";
+import {doLoginBasicLogin} from "openstack-uicore-foundation/lib/security/methods";
 
 class DirectAuthorizedRoute extends React.Component {
 
     componentDidMount() {
         const { isLoggedUser} = this.props;
         if(!isLoggedUser)
-            doLogin('/app/profile');
+            doLoginBasicLogin('/app/profile');
     }
 
     render() {

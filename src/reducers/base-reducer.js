@@ -11,9 +11,8 @@
  * limitations under the License.
  **/
 
-import { START_LOADING, STOP_LOADING, LOGOUT_USER } from "openstack-uicore-foundation/lib/actions";
+import { START_LOADING, STOP_LOADING, LOGOUT_USER, RESET_LOADING } from "openstack-uicore-foundation/lib/utils/actions";
 import {
-    RESET_LOADER,
     SELECTION_CLOSED,
     RECEIVE_TAG_GROUPS,
     CLEAR_SUMMIT,
@@ -47,7 +46,7 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
     const { type, payload } = action;
 
     switch(type){
-        case RESET_LOADER:
+        case RESET_LOADING:
             return {...state, loading: 0};
         case LOGOUT_USER:
             return DEFAULT_STATE;

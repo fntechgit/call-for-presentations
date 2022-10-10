@@ -13,7 +13,7 @@
 
 import React from 'react';
 import AsyncCreatableSelect from 'react-select/lib/AsyncCreatable';
-import {querySpeakers} from 'openstack-uicore-foundation/lib/methods';
+import {querySpeakers} from 'openstack-uicore-foundation/lib/utils/query-actions';
 
 
 const optionStyle = {

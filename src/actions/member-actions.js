@@ -12,35 +12,31 @@
  **/
 
 import {
-    getRequest,
     putRequest,
     postRequest,
     deleteRequest,
     createAction,
     stopLoading,
     startLoading,
-    showMessage,
-    showSuccessMessage,
     authErrorHandler
-} from "openstack-uicore-foundation/lib/methods";
-
+} from "openstack-uicore-foundation/lib/utils/actions";
+import {getAccessTokenSafely} from "../utils/methods";
 
 export const AFFILIATION_SAVED        = 'AFFILIATION_SAVED';
 export const AFFILIATION_DELETED      = 'AFFILIATION_DELETED';
 export const AFFILIATION_ADDED        = 'AFFILIATION_ADDED';
 
-export const addAffiliation = (affiliation) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+export const addAffiliation = (affiliation) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token : accessToken,
         expand: 'organization'
     };
 
-    let normalizedEntity = normalizeEntity(affiliation);
+    const normalizedEntity = normalizeEntity(affiliation);
 
     postRequest(
         null,
@@ -55,18 +51,17 @@ export const addAffiliation = (affiliation) => (dispatch, getState) => {
 
 }
 
-export const saveAffiliation = (affiliation) => (dispatch, getState) => {
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
+export const saveAffiliation = (affiliation) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
     dispatch(startLoading());
 
 
-    let params = {
+    const params = {
         access_token : accessToken,
     };
 
-    let normalizedEntity = normalizeEntity(affiliation);
+    const normalizedEntity = normalizeEntity(affiliation);
 
     putRequest(
         null,
@@ -81,12 +76,10 @@ export const saveAffiliation = (affiliation) => (dispatch, getState) => {
 
 }
 
-export const deleteAffiliation = (ownerId, affiliationId) => (dispatch, getState) => {
+export const deleteAffiliation = (ownerId, affiliationId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-    let { loggedUserState } = getState();
-    let { accessToken }     = loggedUserState;
-
-    let params = {
+    const params = {
         access_token : accessToken,
     };
 

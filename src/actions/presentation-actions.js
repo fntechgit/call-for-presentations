@@ -21,14 +21,15 @@ import {
     startLoading,
     showMessage,
     authErrorHandler,
-    doLogin,
-} from "openstack-uicore-foundation/lib/methods";
+} from "openstack-uicore-foundation/lib/utils/actions";
+import { doLoginBasicLogin} from 'openstack-uicore-foundation/lib/security/methods';
 import T from "i18n-react/dist/i18n-react";
 import Swal from "sweetalert2";
 import history from '../history'
 import {
     getTagGroups
 } from "./base-actions";
+import {getAccessTokenSafely} from "../utils/methods";
 
 export const RECEIVE_PRESENTATION = 'RECEIVE_PRESENTATION';
 export const REQUEST_PRESENTATION = 'REQUEST_PRESENTATION';
@@ -42,15 +43,14 @@ export const PRESENTATION_MATERIAL_ATTACHED = 'PRESENTATION_MATERIAL_ATTACHED';
 export const PRESENTATION_MATERIAL_DELETED = 'PRESENTATION_MATERIAL_DELETED';
 
 
-export const getPresentation = (presentationId) => (dispatch, getState) => {
-
-    let {loggedUserState, baseState} = getState();
-    let {accessToken} = loggedUserState;
-    let {summit, tagGroups} = baseState;
+export const getPresentation = (presentationId) => async (dispatch, getState) => {
+    const {baseState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const {summit, tagGroups} = baseState;
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token: accessToken,
         expand: 'track_groups, speakers, presentation_materials, type, type.allowed_media_upload_types, type.allowed_media_upload_types.type, media_uploads, tags, extra_questions, links'
     };
@@ -75,15 +75,15 @@ export const resetPresentation = () => (dispatch, getState) => {
 };
 
 export const savePresentation = (entity, presentation, nextStep = null) => async (dispatch, getState) => {
-    let {loggedUserState, baseState} = getState();
-    let {accessToken} = loggedUserState;
-    let {summit, selectionPlan} = baseState;
+    let {baseState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const {summit, selectionPlan} = baseState;
 
     dispatch(startLoading());
 
-    let normalizedEntity = normalizeEntity(entity);
+    const normalizedEntity = normalizeEntity(entity);
 
-    let params = {
+    const params = {
         access_token: accessToken,
         expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags, extra_questions, links'
     };
@@ -133,14 +133,14 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
 };
 
 
-export const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => {
-    let {loggedUserState, baseState} = getState();
-    let {accessToken} = loggedUserState;
-    let {summit} = baseState;
+export const saveMediaUpload = (entity, mediaUpload) => async (dispatch, getState) => {
+    const {baseState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const {summit} = baseState;
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 
@@ -173,14 +173,14 @@ export const saveMediaUpload = (entity, mediaUpload) => (dispatch, getState) => 
 };
 
 
-export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getState) => {
-    let {loggedUserState, baseState} = getState();
-    let {accessToken} = loggedUserState;
-    let {summit} = baseState;
+export const deleteMediaUpload = (presentationId, materialId) => async (dispatch, getState) => {
+    const {baseState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const {summit} = baseState;
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 
@@ -193,14 +193,14 @@ export const deleteMediaUpload = (presentationId, materialId) => (dispatch, getS
 };
 
 
-export const completePresentation = (entity) => (dispatch, getState) => {
-    let {loggedUserState, baseState} = getState();
-    let {accessToken} = loggedUserState;
-    let {summit, selectionPlan} = baseState;
+export const completePresentation = (entity) => async (dispatch, getState) => {
+    const {baseState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const {summit, selectionPlan} = baseState;
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token: accessToken
     };
 
@@ -218,13 +218,12 @@ export const completePresentation = (entity) => (dispatch, getState) => {
 }
 
 
-export const deletePresentation = (presentationId) => (dispatch, getState) => {
+export const deletePresentation = (presentationId) => async (dispatch, getState) => {
+    const {baseState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const {summit} = baseState;
 
-    let {loggedUserState, baseState} = getState();
-    let {accessToken} = loggedUserState;
-    let {summit} = baseState;
-
-    let params = {
+    const params = {
         access_token: accessToken
     };
 
@@ -262,7 +261,7 @@ const presentationErrorHandler = (err, res) => (dispatch, getState) => {
             Swal.fire("ERROR", T.translate("errors.user_not_authz"), "warning");
             break;
         case 401:
-            doLogin(window.location.pathname);
+            doLoginBasicLogin(window.location.pathname);
             break;
         case 404:
             let error_message = {

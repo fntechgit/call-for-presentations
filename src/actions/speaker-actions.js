@@ -23,13 +23,12 @@ import {
     showMessage,
     showSuccessMessage,
     authErrorHandler,
-    doLogin,
-    initLogOut
-} from "openstack-uicore-foundation/lib/methods";
+} from "openstack-uicore-foundation/lib/utils/actions";
 
 import history from '../history'
 import Swal from "sweetalert2";
 import {getSpeakerInfo} from "./auth-actions";
+import {getAccessTokenSafely} from "../utils/methods";
 
 export const RECEIVE_SPEAKER_PERMISSION = 'RECEIVE_SPEAKER_PERMISSION';
 export const REQUEST_SPEAKER_PERMISSION = 'REQUEST_SPEAKER_PERMISSION';
@@ -55,14 +54,12 @@ export const BIG_PIC_ATTACHED = 'BIG_PIC_ATTACHED';
 export const RECEIVE_ORG_ROLES = 'RECEIVE_ORG_ROLES';
 
 
-export const getSpeaker = (speakerId) => (dispatch, getState) => {
-
-    let {loggedUserState} = getState();
-    let {accessToken} = loggedUserState;
+export const getSpeaker = (speakerId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token: accessToken,
         expand: 'member,presentations'
     };
@@ -79,11 +76,10 @@ export const getSpeaker = (speakerId) => (dispatch, getState) => {
 };
 
 
-export const getSpeakerPermission = (presentationId, speakerId, speakerType) => (dispatch, getState) => {
-
-    let {loggedUserState, profileState, baseState} = getState();
-    let {accessToken} = loggedUserState;
-    let {summit, selectionPlan} = baseState;
+export const getSpeakerPermission = (presentationId, speakerId, speakerType) => async (dispatch, getState) => {
+    const {profileState, baseState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const {summit, selectionPlan} = baseState;
 
     if (speakerId == profileState.entity.id) {
         history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
@@ -92,7 +88,7 @@ export const getSpeakerPermission = (presentationId, speakerId, speakerType) => 
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token: accessToken,
         expand: 'member,presentations'
     };
@@ -142,14 +138,14 @@ export const speakerPermissionErrorHandler = (err, res) => (dispatch) => {
     }
 }
 
-export const requestSpeakerPermission = () => (dispatch, getState) => {
-    let {loggedUserState, speakerState} = getState();
-    let {accessToken} = loggedUserState;
-    let {speakerPermissionRequest} = speakerState;
+export const requestSpeakerPermission = () => async (dispatch, getState) => {
+    const {speakerState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const {speakerPermissionRequest} = speakerState;
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 
@@ -172,22 +168,22 @@ export const resetSpeakerForm = (email = '') => (dispatch, getState) => {
     dispatch(createAction(RESET_SPEAKER_FORM)({email}));
 };
 
-export const saveSpeaker = (entity, type) => (dispatch, getState) => {
-    let {loggedUserState, presentationState, baseState} = getState();
-    let {accessToken} = loggedUserState;
-    let {summit, selectionPlan} = baseState;
-    let presentationId = presentationState.entity.id;
+export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
+    const {presentationState, baseState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const {summit, selectionPlan} = baseState;
+    const presentationId = presentationState.entity.id;
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 
-    let pic_file = entity.pic_file;
-    let normalizedEntity = normalizeEntity(entity);
+    const pic_file = entity.pic_file;
+    const normalizedEntity = normalizeEntity(entity);
 
-    let success_message = {
+    const success_message = {
         title: T.translate("general.done"),
         html: '',
         type: 'success'
@@ -253,7 +249,7 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
                 dispatch(uploadFile(payload.response, pic_file));
             }
         })
-        .then((payload) => {
+        .then(() => {
             dispatch(showMessage(
                 success_message,
                 () => {
@@ -264,15 +260,14 @@ export const saveSpeaker = (entity, type) => (dispatch, getState) => {
 
 }
 
-const uploadFile = (entity, file) => (dispatch, getState) => {
-    let {loggedUserState} = getState();
-    let {accessToken} = loggedUserState;
+const uploadFile = (entity, file) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('file', file);
 
     postRequest(
@@ -286,12 +281,12 @@ const uploadFile = (entity, file) => (dispatch, getState) => {
 }
 
 
-export const assignSpeakerToPresentation = (speaker) => (dispatch, getState) => {
-    let {loggedUserState, presentationState} = getState();
-    let {accessToken} = loggedUserState;
-    let presentationId = presentationState.entity.id;
+export const assignSpeakerToPresentation = (speaker) => async (dispatch, getState) => {
+    const {presentationState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const presentationId = presentationState.entity.id;
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 
@@ -309,13 +304,12 @@ export const assignSpeakerToPresentation = (speaker) => (dispatch, getState) => 
     );
 }
 
-export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState) => {
+export const removeSpeakerFromPresentation = (speakerId) => async (dispatch, getState) => {
+    const {presentationState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const presentationId = presentationState.entity.id;
 
-    let {loggedUserState, presentationState} = getState();
-    let {accessToken} = loggedUserState;
-    let presentationId = presentationState.entity.id;
-
-    let params = {
+    const params = {
         access_token: accessToken
     };
 
@@ -332,12 +326,12 @@ export const removeSpeakerFromPresentation = (speakerId) => (dispatch, getState)
     );
 };
 
-export const assignModeratorToPresentation = (moderator) => (dispatch, getState) => {
-    let {loggedUserState, presentationState} = getState();
-    let {accessToken} = loggedUserState;
-    let presentationId = presentationState.entity.id;
+export const assignModeratorToPresentation = (moderator) => async (dispatch, getState) => {
+    const {presentationState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const presentationId = presentationState.entity.id;
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 
@@ -356,13 +350,13 @@ export const assignModeratorToPresentation = (moderator) => (dispatch, getState)
 }
 
 
-export const removeModeratorFromPresentation = (moderatorId) => (dispatch, getState) => {
+export const removeModeratorFromPresentation = (moderatorId) => async (dispatch, getState) => {
 
-    let {loggedUserState, presentationState} = getState();
-    let {accessToken} = loggedUserState;
-    let presentationId = presentationState.entity.id;
+    const {presentationState} = getState();
+    const accessToken = await getAccessTokenSafely();
+    const presentationId = presentationState.entity.id;
 
-    let params = {
+    const params = {
         access_token: accessToken
     };
 
@@ -408,21 +402,21 @@ const normalizeEntity = (entity) => {
 
 
 
-export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
-    let {loggedUserState, baseState} = getState();
-    let {accessToken} = loggedUserState;
+export const saveSpeakerProfile = (entity) => async (dispatch, getState) => {
+    const {baseState} = getState();
+    const accessToken = await getAccessTokenSafely();
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 
-    let pic_file = entity.pic_file;
-    let big_pic_file = entity.big_pic_file;
-    let normalizedEntity = normalizeEntityProfile(entity);
+    const pic_file = entity.pic_file;
+    const big_pic_file = entity.big_pic_file;
+    const normalizedEntity = normalizeEntityProfile(entity);
 
-    let success_message = {
+    const success_message = {
         title: T.translate("general.done"),
         html: '',
         type: 'success'
@@ -480,14 +474,13 @@ export const saveSpeakerProfile = (entity) => (dispatch, getState) => {
 }
 
 
-const uploadFileProfile = (entity, file) => (dispatch, getState) => {
-    let {loggedUserState} = getState();
-    let {accessToken} = loggedUserState;
+const uploadFileProfile = (entity, file) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('file', file);
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 
@@ -501,14 +494,13 @@ const uploadFileProfile = (entity, file) => (dispatch, getState) => {
     )(params)(dispatch)
 }
 
-const uploadFileBigPhoto = (entity, file) => (dispatch, getState) => {
-    let {loggedUserState} = getState();
-    let {accessToken} = loggedUserState;
+const uploadFileBigPhoto = (entity, file) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('file', file);
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 
@@ -523,13 +515,12 @@ const uploadFileBigPhoto = (entity, file) => (dispatch, getState) => {
 }
 
 
-export const getOrganizationalRoles = () => (dispatch, getState) => {
-    let {loggedUserState} = getState();
-    let {accessToken} = loggedUserState;
+export const getOrganizationalRoles = () => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
     dispatch(startLoading());
 
-    let params = {
+    const params = {
         access_token: accessToken,
     };
 

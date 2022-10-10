@@ -14,10 +14,10 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import {findElementPos} from 'openstack-uicore-foundation/lib/methods'
+import {findElementPos} from 'openstack-uicore-foundation/lib/utils/methods'
 import AffiliationsTable from './affiliationstable'
 import PresentationLinks from "./inputs/presentation-links";
-import { Input, TextEditor, UploadInput, Exclusive, RadioList, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput } from 'openstack-uicore-foundation/lib/components'
+import { Input, TextEditor, UploadInput, Exclusive, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput } from 'openstack-uicore-foundation/lib/components'
 import {validate, scrollToError} from "../utils/methods";
 
 

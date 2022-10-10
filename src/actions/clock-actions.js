@@ -13,7 +13,7 @@
 
 import {
     createAction
-} from "openstack-uicore-foundation/lib/methods";
+} from "openstack-uicore-foundation/lib/utils/actions";
 
 export const UPDATE_CLOCK = 'UPDATE_CLOCK';
 

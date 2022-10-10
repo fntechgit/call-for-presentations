@@ -17,19 +17,18 @@ import {
     stopLoading,
     startLoading,
     authErrorHandler
-} from "openstack-uicore-foundation/lib/methods";
+} from "openstack-uicore-foundation/lib/utils/actions";
 
 import {getTagGroups} from './base-actions';
+import {getAccessTokenSafely} from "../utils/methods";
 
 export const CREATED_RECEIVED       = 'CREATED_RECEIVED';
 export const SPEAKER_RECEIVED       = 'SPEAKER_RECEIVED';
 export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
 export const REGROUP_PRESENTATIONS  = 'REGROUP_PRESENTATIONS';
 
-export const getAllPresentations = (summitId, selectionPlanId) => (dispatch, getState) => {
-
-    const { loggedUserState } = getState();
-    const { accessToken } = loggedUserState;
+export const getAllPresentations = (summitId, selectionPlanId) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
 
     dispatch(startLoading());
 
@@ -94,11 +93,11 @@ export const getModeratorPresentations = (selectionPlanId, accessToken) => (disp
 };
 
 /*
-export const getSummitDocs = (presentations, summitId) => (dispatch, getState) => {
+export const getSummitDocs = (presentations, summitId) => async (dispatch, getState) => {
 
 
-    let { loggedUserState, baseState } = getState();
-    let { accessToken }     = loggedUserState;
+    let { baseState } = getState();
+    const accessToken = await getAccessTokenSafely();
 
     dispatch(startLoading());
 
