@@ -23,7 +23,6 @@ import LogOutCallbackRoute from './routes/logout-callback-route'
 import DefaultRoute from "./routes/default-route";
 import SummitLayout from './layouts/summit-layout';
 import { AjaxLoader } from "openstack-uicore-foundation/lib/components";
-import { getBackURL } from "openstack-uicore-foundation/lib/utils/methods";
 import { resetLoading } from "openstack-uicore-foundation/lib/utils/actions";
 import { doLogout, onUserAuth, getUserInfo} from 'openstack-uicore-foundation/lib/security/actions';
 import { initLogOut, doLoginBasicLogin, getIdToken} from 'openstack-uicore-foundation/lib/security/methods';
@@ -116,7 +115,12 @@ class App extends PureComponent {
       <Router history={history}>
         <div>
           <AjaxLoader show={loading} size={120} />
-          <Header language={language} profilePic={profile_pic} initLogOut={initLogOut} />
+          <Route
+            path={['/auth/logout', '/auth/callback', '/error', '/404', '/app/start', '/app/profile']}
+            children={({ match }) => (
+              <Header language={language} profilePic={profile_pic} initLogOut={initLogOut} waitForApi={!match} />
+            )}
+          />
 
           <Switch>
             <LogOutCallbackRoute path="/auth/logout" doLogout={doLogout} />
