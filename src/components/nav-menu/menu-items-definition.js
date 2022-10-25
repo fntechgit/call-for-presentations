@@ -1,8 +1,8 @@
 const MenuItemsDefinitions = [
-    {name: 'presentations', iconClass: 'fa-chevron-right', show: true},
+    {name: 'presentations', iconClass: 'fa-chevron-right', show: true, throughSelectionPlan: true},
     {name: 'profile', iconClass: 'fa-chevron-right', show: true},
-    {name: 'tracks_guide', iconClass: 'fa-chevron-right'},
-    {name: 'selection_process', iconClass: 'fa-chevron-right'},
+    {name: 'tracks_guide', iconClass: 'fa-chevron-right', throughSelectionPlan: true},
+    {name: 'selection_process', iconClass: 'fa-chevron-right', throughSelectionPlan: true},
 ];
 
 export default MenuItemsDefinitions;

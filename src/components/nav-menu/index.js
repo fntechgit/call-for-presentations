@@ -42,7 +42,7 @@ class NavMenu extends React.Component {
 
         let url = `/app/${summit.slug}/${item.name}`;
 
-        if(item.name === 'presentations')
+        if(item.throughSelectionPlan)
             url = `/app/${summit.slug}/${selectionPlan.id}/${item.name}`;
 
         history.push(url);
