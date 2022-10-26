@@ -15,6 +15,7 @@ import moment from 'moment-timezone';
 import URI from "urijs";
 import validator from 'validator';
 import {getAccessToken, initLogOut} from 'openstack-uicore-foundation/lib/security/methods'
+import defaultColors from './default-colors.json';
 
 export const stripHtmlText = (html) => {
     let tmp = document.createElement("DIV");
@@ -230,4 +231,19 @@ export const getAccessTokenSafely = async () => {
         console.log('log out: ', e);
         initLogOut();
     }
+};
+
+export const setDocumentColors = (data) => {
+    if (typeof document !== 'undefined') {
+        data.forEach(setting => {
+            if (getComputedStyle(document.documentElement).getPropertyValue(`--${setting.key}`)) {
+                document.documentElement.style.setProperty(`--${setting.key}`, setting.value);
+                document.documentElement.style.setProperty(`--${setting.key}50`, `${setting.value}50`);
+            }
+        });
+    }
+};
+
+export const setDefaultColors = () => {
+    setDocumentColors(defaultColors);
 };

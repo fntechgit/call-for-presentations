@@ -7,7 +7,7 @@ import T from "i18n-react";
 import {getMarketingValue} from "./marketing-setting";
 import moment from "moment-timezone";
 
-const Header = ({isLoggedUser, summit, selectionPlan, submissionIsClosed, language, profilePic, initLogOut, waitForApi}) => {
+const Header = ({isLoggedUser, summit, selectionPlan, submissionIsClosed, language, profilePic, initLogOut, waitForApi, loading}) => {
     let header_title = "";
     let header_subtitle = "";
     let summit_logo = window.LOGO_URL;
@@ -55,7 +55,7 @@ const Header = ({isLoggedUser, summit, selectionPlan, submissionIsClosed, langua
     header_title = mkt_header_title ? mkt_header_title : header_title;
     summit_logo = mkt_header_logo ? mkt_header_logo : summit_logo;
 
-    if (waitForApi && !summit) return null;
+    if (waitForApi && loading) return <div className="header" />;
 
     return (
         <div className="header">
@@ -87,6 +87,7 @@ const Header = ({isLoggedUser, summit, selectionPlan, submissionIsClosed, langua
 
 const mapStateToProps = ({loggedUserState, baseState }) => ({
     isLoggedUser: loggedUserState.isLoggedUser,
+    loading: baseState.loading,
     summit: baseState.summit,
     submissionIsClosed: baseState.submissionIsClosed,
     selectionPlan: baseState.selectionPlan,

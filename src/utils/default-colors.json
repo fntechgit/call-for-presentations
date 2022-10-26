@@ -1,0 +1,26 @@
+[
+  {
+    "key": "color_primary",
+    "value": "#FFF"
+  },
+  {
+    "key": "color_primary_contrast",
+    "value": "#396bd0"
+  },
+  {
+    "key": "color_secondary",
+    "value": "#93959e"
+  },
+  {
+    "key": "color_secondary_contrast",
+    "value": "#babdc8"
+  },
+  {
+    "key": "color_text_dark",
+    "value": "#2A4E68"
+  },
+  {
+    "key": "color_text_light",
+    "value": "#ffffff"
+  }
+]
