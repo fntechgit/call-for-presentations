@@ -76,6 +76,19 @@ class PreviewPresentationPage extends React.Component {
                         <label>{T.translate("edit_presentation.attending_media")}</label><br/>
                         {entity.attending_media ? 'Yes' : 'No'}
                     </div>
+                    <div className="item">
+                    <label>{T.translate("edit_presentation.materials")}</label><br/>
+                        <ul>
+                        {entity.media_uploads.map(doc => (
+                                <li key={doc.id}>
+                                    <a id={doc.name + '-material'} onClick={() => window.open(doc.private_url, '_blank')} >
+                                        {`${doc.name} `}
+                                        <i className='fa fa-download' />
+                                    </a>
+                                </li>
+                        ))}
+                        </ul>
+                    </div>
 
                     {entity.moderator &&
                     <div className="main-panel-section confirm-block">
