@@ -36,7 +36,7 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
         }
     }, [summit?.id]);
 
-    if (summitSlug !== urlSummitSlug) return null;
+    if (!summitSlug || summitSlug !== urlSummitSlug) return null;
 
     // check if speaker profile exists, if not redirect
     if((!speaker || !speaker.id) && location.pathname !== `/app/${summit.slug}/profile` && !loading) {

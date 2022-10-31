@@ -31,7 +31,9 @@ export const RECEIVE_TAG_GROUPS             = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY         = 'RECEIVE_EVENT_CATEGORY';
 export const RECEIVE_SUMMIT                 = 'RECEIVE_SUMMIT';
 export const RECEIVE_SELECTION_PLAN         = 'RECEIVE_SELECTION_PLAN';
+export const REQUEST_MARKETING_SETTINGS     = 'REQUEST_MARKETING_SETTINGS';
 export const RECEIVE_MARKETING_SETTINGS     = 'RECEIVE_MARKETING_SETTINGS';
+export const REQUEST_AVAILABLE_SUMMITS      = 'REQUEST_AVAILABLE_SUMMITS';
 export const RECEIVE_AVAILABLE_SUMMITS      = 'RECEIVE_AVAILABLE_SUMMITS';
 export const SUMMIT_DOCS_RECEIVED           = 'SUMMIT_DOCS_RECEIVED';
 export const ERROR_RECEIVE_SUMMIT           = 'ERROR_RECEIVE_SUMMIT';
@@ -109,10 +111,10 @@ export const getAvailableSummits = () => (dispatch, getState) => {
     };
 
     return getRequest(
-        null,
-        createAction(RECEIVE_AVAILABLE_SUMMITS),
-        `${window.API_BASE_URL}/api/public/v1/summits/all`,
-        authErrorHandler
+      createAction(REQUEST_AVAILABLE_SUMMITS),
+      createAction(RECEIVE_AVAILABLE_SUMMITS),
+      `${window.API_BASE_URL}/api/public/v1/summits/all`,
+      authErrorHandler
     )(params)(dispatch).then(() => { dispatch(stopLoading()); });
 }
 
@@ -182,10 +184,10 @@ export const getMarketingSettings = (summitId) => (dispatch, getState) => {
     };
 
     return getRequest(
-        null,
-        createAction(RECEIVE_MARKETING_SETTINGS),
-        `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
-        authErrorHandler
+      createAction(REQUEST_MARKETING_SETTINGS),
+      createAction(RECEIVE_MARKETING_SETTINGS),
+      `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
+      authErrorHandler
     )(params)(dispatch);
 };
 

@@ -23,10 +23,12 @@ import {
     SUMMIT_DOCS_RECEIVED,
     BASE_LOADED,
     CLEAR_SELECTION_PLAN,
+    REQUEST_MARKETING_SETTINGS,
+    REQUEST_AVAILABLE_SUMMITS,
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
-import {nowBetween} from "../utils/methods";
+import {nowBetween, setDefaultColors, setDocumentColors} from "../utils/methods";
 
 
 const DEFAULT_STATE = {
@@ -89,17 +91,15 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
             const {data} = payload.response;
             return {...state, allSummitDocs: data};
         }
+        case REQUEST_AVAILABLE_SUMMITS:
+        case REQUEST_MARKETING_SETTINGS: {
+            setDefaultColors();
+            return {...state, marketingSettings: null};
+        }
         case RECEIVE_MARKETING_SETTINGS: {
             const {data} = payload.response;
             // set color vars
-            if (typeof document !== 'undefined') {
-                data.forEach(setting => {
-                    if (getComputedStyle(document.documentElement).getPropertyValue(`--${setting.key}`)) {
-                        document.documentElement.style.setProperty(`--${setting.key}`, setting.value);
-                        document.documentElement.style.setProperty(`--${setting.key}50`, `${setting.value}50`);
-                    }
-                });
-            }
+            setDocumentColors(data);
             return {...state, marketingSettings: data};
         }
         case SELECTION_CLOSED: {
