@@ -87,7 +87,7 @@ class EditPresentationPage extends React.Component {
                         summit={summit}
                         selectionPlan={selectionPlan}
                         errors={errors}
-                        onSubmit={entity => savePresentation(entity, presentation, presentation.getStepNameAfter('SUMMARY'))}
+                        onSubmit={entity => savePresentation(entity, presentation, 'SUMMARY')}
                     />
                 }
 
@@ -114,7 +114,7 @@ class EditPresentationPage extends React.Component {
                         presentation={presentation}
                         step={step}
                         groupedTags={groupedTags}
-                        onSubmit={entity => savePresentation(entity, presentation, 'speakers')}
+                        onSubmit={entity => savePresentation(entity, presentation, 'TAGS')}
                     />
                 </div>
                 }
@@ -132,7 +132,7 @@ class EditPresentationPage extends React.Component {
                         onAddModerator={this.props.assignModeratorToPresentation}
                         onRemoveSpeaker={this.props.removeSpeakerFromPresentation}
                         onRemoveModerator={this.props.removeModeratorFromPresentation}
-                        onSubmit={entity => savePresentation(entity, presentation, 'review')}
+                        onSubmit={entity => savePresentation(entity, presentation, 'SPEAKERS')}
                         onSpeakerEdit={getSpeakerPermission}
                     />
                 </div>

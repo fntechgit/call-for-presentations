@@ -41,12 +41,13 @@ class Presentation {
 
     updatePresentation(presentation, track = null) {
         this._presentation  = presentation;
-        const allowedMediaUploads = this.getAllowedMediaUploads();
-        const groupedTags = this.getAllowedTags();
 
         if (track && this._presentation.track_id === track.id) {
             this._track = track;
         }
+
+        const allowedMediaUploads = this.getAllowedMediaUploads();
+        const groupedTags = this.getAllowedTags();
 
         this._steps.forEach(stp => {
             if (stp.name === 'UPLOADS' && this._presentation.type) stp.showInNav = (allowedMediaUploads.length > 0);
