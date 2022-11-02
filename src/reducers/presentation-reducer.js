@@ -108,8 +108,12 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
                 entity.media_uploads = entity.media_uploads.map((item, index) => ({...item, index: index}));
             }
 
-            if(entity.type) {
+            if (entity.type) {
                 entity.type_id = entity.type.id;
+            }
+
+            if (entity.track) {
+                entity.track_id = entity.track.id;
             }
 
             return {...state, entity: {...DEFAULT_ENTITY, ...entity}, errors: {} };

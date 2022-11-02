@@ -52,7 +52,7 @@ export const getPresentation = (presentationId) => async (dispatch, getState) =>
 
     const params = {
         access_token: accessToken,
-        expand: 'track_groups, speakers, presentation_materials, type, type.allowed_media_upload_types, type.allowed_media_upload_types.type, media_uploads, tags, extra_questions, links'
+        expand: 'track_groups, speakers, track, track.allowed_tags, presentation_materials, type, type.allowed_media_upload_types, type.allowed_media_upload_types.type, media_uploads, tags, extra_questions, links'
     };
 
     return getRequest(
@@ -74,7 +74,7 @@ export const resetPresentation = () => (dispatch, getState) => {
     dispatch(createAction(RESET_PRESENTATION)({}));
 };
 
-export const savePresentation = (entity, presentation, nextStep = null) => async (dispatch, getState) => {
+export const savePresentation = (entity, presentation, currentStep = null) => async (dispatch, getState) => {
     let {baseState} = getState();
     const accessToken = await getAccessTokenSafely();
     const {summit, selectionPlan} = baseState;
@@ -92,17 +92,19 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
 
         return putRequest(
             createAction(UPDATE_PRESENTATION),
-            createAction(PRESENTATION_UPDATED),
+                createAction(PRESENTATION_UPDATED),
             `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}`,
             normalizedEntity,
             authErrorHandler,
             entity
         )(params)(dispatch)
-            .then((payload) => {
+            .then(({response}) => {
 
-                dispatch(getPresentation(payload.response.id))
+                dispatch(getPresentation(response.id))
                     .then((payload) => {
                         dispatch(stopLoading());
+                        presentation.updatePresentation({...payload, track_id: payload.track.id}, payload.track);
+                        const nextStep = presentation.getStepNameAfter(currentStep);
                         history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${nextStep}`);
                     });
             }, (error) => {
@@ -121,10 +123,12 @@ export const savePresentation = (entity, presentation, nextStep = null) => async
         authErrorHandler,
         entity
     )(params)(dispatch)
-        .then((payload) => {
-            dispatch(getPresentation(payload.response.id)).then((payload) => {
+        .then(({response}) => {
+                dispatch(getPresentation(response.id)).then((payload) => {
                     dispatch(stopLoading());
-                    history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${presentation.getNextStepName()}`);
+                    presentation.updatePresentation({...payload, track_id: payload.track.id}, payload.track);
+                    const nextStep = presentation.getStepNameAfter(currentStep);
+                    history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${nextStep}`);
                 }
             );
         }, (error) => {
