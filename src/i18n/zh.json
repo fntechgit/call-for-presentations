@@ -141,7 +141,7 @@
     "general_topic": "本议题属于哪个专题?",
     "level": "选择会议的技术级别",
     "abstract": "摘要（1000字符以内）",
-    "social_summary": "社会实践总结（100字符以内）",
+    "social_summary": "社会实践总结（280字符以内）",
     "social_summary_desc": "用于社交分享和YouTube描述",
     "expected_learn": "与会者应该学习什么?",
     "attending_media": "您有时间出席媒体交流活动吗？",
