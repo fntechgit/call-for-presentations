@@ -154,7 +154,7 @@
     "general_topic": "What is the general topic of the presentation? *",
     "level": "Select the technical level of your presentation content *",
     "abstract": "Abstract (1000 chars) *",
-    "social_summary": "Social Summary (100 chars)",
+    "social_summary": "Social Summary (280 chars)",
     "social_summary_desc": "Used for social sharing and YouTube description.",
     "expected_learn": "What should attendees expect to learn? (1000 chars) *",
     "attending_media": "Are you available to discuss the topic of this presentation with attending media?",
