@@ -22,6 +22,7 @@ import {
 import {getTagGroups} from './base-actions';
 import {getAccessTokenSafely} from "../utils/methods";
 
+export const DUMMY_ACTION           = 'DUMMY_ACTION';
 export const CREATED_RECEIVED       = 'CREATED_RECEIVED';
 export const SPEAKER_RECEIVED       = 'SPEAKER_RECEIVED';
 export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
@@ -56,10 +57,12 @@ export const getCreatorPresentations = (selectionPlanId, accessToken) => (dispat
 
     return getRequest(
         null,
-        createAction(CREATED_RECEIVED),
+        createAction(DUMMY_ACTION),
         `${window.API_BASE_URL}/api/v1/speakers/me/presentations/creator/selection-plans/${selectionPlanId}`,
         authErrorHandler
-    )(params)(dispatch);
+    )(params)(dispatch).then(({response}) => {
+        dispatch(createAction(CREATED_RECEIVED)({response, selectionPlanId}));
+    });
 }
 
 export const getSpeakerPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {

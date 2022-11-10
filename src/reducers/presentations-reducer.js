@@ -37,6 +37,8 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
         case CREATED_RECEIVED: {
             const presentations = [...payload.response.data];
 
+            console.log(payload);
+
             return {...state, presentations_created: presentations};
         }
         case SPEAKER_RECEIVED: {

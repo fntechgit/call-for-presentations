@@ -98,8 +98,7 @@ class PresentationsPage extends React.Component {
             </div>
             <div className="col-md-6 text-right add-pres-wrapper">
               {!submissionIsClosed && selectionPlan && selectionPlan.allow_new_presentations &&
-              <button className="btn btn-success add-presentation-btn"
-                      onClick={this.handleNewPresentation}>
+              <button className="btn btn-success add-presentation-btn" onClick={this.handleNewPresentation}>
                 {T.translate("presentations.add_presentation")}
               </button>
               }
