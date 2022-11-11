@@ -69,7 +69,7 @@ class NavMenu extends React.Component {
                                 active={activeItem === it.name}
                             />
                         ))}
-                        {summitDocs.filter(doc => doc.selection_plan_id === selectionPlan.id || !doc.selection_plan_id).map(doc => (
+                        {summitDocs?.map(doc => (
                                 <MenuItem
                                     key={doc.name}
                                     name={doc.name}

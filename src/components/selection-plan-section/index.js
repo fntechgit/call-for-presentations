@@ -12,13 +12,13 @@ import '../../styles/presentations-page.less';
 const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ...props }) => {
 
   useEffect(() => {
-    props.getSelectionPlan(summit.id, selectionPlan.id).then(() => {
-      props.getAllPresentations(summit.id, selectionPlan.id).then(() => {
-        // clear presentation form
-        props.resetPresentation();
-      });
-    })
-  }, []);
+    console.log('USE EFFECT SEL PLAN SEC', selectionPlan.id);
+
+    props.getAllPresentations(summit.id, selectionPlan.id).then(() => {
+      // clear presentation form
+      props.resetPresentation();
+    });
+  }, [summit?.id, selectionPlan?.id]);
 
   const handleNewPresentation = (ev) => {
     const {history, match} = props;
@@ -40,7 +40,7 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ..
       confirmButtonText: T.translate("general.yes_delete")
     }).then(function (result) {
       if (result.value) {
-        deletePresentation(presentation.id);
+        deletePresentation(selectionPlan.id, presentation.id);
       }
     });
   };
@@ -55,6 +55,10 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ..
   } = props;
 
   if (loading || summit == null || loggedSpeaker == null) return null;
+
+  const thisPlanCreated = presentations_created.find(sp => sp.selectionPlanId === selectionPlan.id)?.presentations || [];
+  const thisPlanSpeaker = presentations_speaker.find(sp => sp.selectionPlanId === selectionPlan.id)?.presentations || [];
+  const thisPlanModerator = presentations_moderator.find(sp => sp.selectionPlanId === selectionPlan.id)?.presentations || [];
 
   return (
     <div className="page-wrap" id="presentations-page">
@@ -75,7 +79,7 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ..
       <div className="body">
         <PresentationsTable
           title={T.translate("presentations.you_submitted")}
-          presentations={presentations_created}
+          presentations={thisPlanCreated}
           onDelete={handleDeletePresentation}
           canEdit
           history={history}
@@ -83,13 +87,13 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ..
         />
         <PresentationsTable
           title={T.translate("presentations.other_submitted_speaker")}
-          presentations={presentations_speaker}
+          presentations={thisPlanSpeaker}
           history={history}
           match={match}
         />
         <PresentationsTable
           title={T.translate("presentations.other_submitted_moderator")}
-          presentations={presentations_moderator}
+          presentations={thisPlanModerator}
           history={history}
           match={match}
         />

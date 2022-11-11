@@ -16,6 +16,7 @@ import { LOGOUT_USER } from 'openstack-uicore-foundation/lib/utils/actions';
 import { CREATED_RECEIVED, SPEAKER_RECEIVED, MODERATOR_RECEIVED, REGROUP_PRESENTATIONS } from '../actions/presentations-actions';
 import {PRESENTATION_ADDED, PRESENTATION_DELETED} from '../actions/presentation-actions'
 import {CLEAR_SUMMIT} from "../actions/base-actions";
+import {updateOrAdd} from "../utils/methods";
 
 const DEFAULT_STATE = {
     presentations_created: [],
@@ -35,36 +36,51 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
             return DEFAULT_STATE;
         }
         case CREATED_RECEIVED: {
-            const presentations = [...payload.response.data];
+            const {presentations_created} = state;
+            const {response, selectionPlanId} = payload;
+            const presentations = response.data;
 
-            console.log(payload);
+            updateOrAdd(presentations_created, {selectionPlanId, presentations}, 'selectionPlanId');
 
-            return {...state, presentations_created: presentations};
+            return {...state, presentations_created};
         }
         case SPEAKER_RECEIVED: {
-            let presentations = [...payload.response.data];
-            const createdIds = state.presentations_created.map(p => p.id);
+            const {presentations_speaker} = state;
+            const {response, selectionPlanId} = payload;
+            let presentations = response.data;
+            const createdIds = state.presentations_created.find(sp => sp.selectionPlanId === selectionPlanId)?.presentations.map(p => p.id) || [];
 
             presentations = presentations.filter(p => !createdIds.includes(p.id));
 
+            updateOrAdd(presentations_speaker, {selectionPlanId, presentations}, 'selectionPlanId');
 
-            return {...state, presentations_speaker: presentations};
+            return {...state, presentations_speaker};
         }
         case MODERATOR_RECEIVED: {
-            let presentations = [...payload.response.data];
-            const createdIds = state.presentations_created.map(p => p.id);
+            const {presentations_moderator} = state;
+            const {response, selectionPlanId} = payload;
+            let presentations = response.data;
+            const createdIds = state.presentations_created.find(sp => sp.selectionPlanId === selectionPlanId)?.presentations.map(p => p.id) || [];
 
             presentations = presentations.filter(p => !createdIds.includes(p.id));
 
-            return {...state, presentations_moderator: presentations};
+            updateOrAdd(presentations_moderator, {selectionPlanId, presentations}, 'selectionPlanId');
+
+            return {...state, presentations_moderator};
         }
         case PRESENTATION_DELETED: {
-            const {presentationId} = payload;
+            const {presentationId, selectionPlanId} = payload;
             const {presentations_created, presentations_speaker, presentations_moderator, all_presentations} = state;
-            const new_presentations_created = presentations_created.filter(p => p.id != presentationId);
-            const new_presentations_speaker = presentations_speaker.filter(p => p.id != presentationId);
-            const new_presentations_moderator = presentations_moderator.filter(p => p.id != presentationId);
-            const new_all_presentations = all_presentations.filter(p => p.id != presentationId);
+            const new_presentations_created = presentations_created
+              .find(sp => sp.selectionPlanId === selectionPlanId).presentations
+              .filter(p => p.id !== presentationId);
+            const new_presentations_speaker = presentations_speaker
+              .find(sp => sp.selectionPlanId === selectionPlanId).presentations
+              .filter(p => p.id !== presentationId);
+            const new_presentations_moderator = presentations_moderator
+              .find(sp => sp.selectionPlanId === selectionPlanId).presentations
+              .filter(p => p.id !== presentationId);
+            const new_all_presentations = all_presentations.filter(p => p.id !== presentationId);
             const newSummitDocs = getSummitDocs(new_all_presentations, store.getState().baseState.allSummitDocs);
 
             return {
@@ -84,12 +100,16 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
             return {...state, new_all_presentations, summitDocs};
         }
         case REGROUP_PRESENTATIONS: {
-            const all_presentations = [...state.presentations_speaker, ...state.presentations_moderator].reduce((result, item) => {
+            const allCreated = state.presentations_created.reduce((res, item) => [...res, ...item.presentations], []);
+            const allSpeaker = state.presentations_speaker.reduce((res, item) => [...res, ...item.presentations], []);
+            const allModerator = state.presentations_moderator.reduce((res, item) => [...res, ...item.presentations], []);
+
+            const all_presentations = [...allSpeaker, ...allModerator].reduce((result, item) => {
                 if (!result.find(p => p.id === item.id)) {
                     result.push(item);
                 }
                 return result;
-            }, [...state.presentations_created]);
+            }, [...allCreated]);
 
             const summitDocs = getSummitDocs(all_presentations, store.getState().baseState.allSummitDocs);
 

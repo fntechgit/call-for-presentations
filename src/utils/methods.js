@@ -247,3 +247,15 @@ export const setDocumentColors = (data) => {
 export const setDefaultColors = () => {
     setDocumentColors(defaultColors);
 };
+
+
+export const updateOrAdd = (collection, newItem, idKey) => {
+    const itemFound = collection.find(item => item[idKey] === newItem[idKey]);
+    if (!itemFound) {
+        collection.push(newItem);
+    } else {
+        Object.keys(newItem).forEach(key => {
+            itemFound[key] = newItem[key];
+        });
+    }
+}

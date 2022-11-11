@@ -110,6 +110,9 @@ class App extends PureComponent {
       profile_pic = jwt.payload.picture;
     }
 
+    console.log('RE RENDER APP');
+
+
     return (
       <Router history={history}>
         <div>

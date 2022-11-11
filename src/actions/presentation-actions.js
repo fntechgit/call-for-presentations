@@ -222,7 +222,7 @@ export const completePresentation = (entity) => async (dispatch, getState) => {
 }
 
 
-export const deletePresentation = (presentationId) => async (dispatch, getState) => {
+export const deletePresentation = (selectionPlanId, presentationId) => async (dispatch, getState) => {
     const {baseState} = getState();
     const accessToken = await getAccessTokenSafely();
     const {summit} = baseState;
@@ -233,7 +233,7 @@ export const deletePresentation = (presentationId) => async (dispatch, getState)
 
     return deleteRequest(
         null,
-        createAction(PRESENTATION_DELETED)({presentationId}),
+        createAction(PRESENTATION_DELETED)({selectionPlanId, presentationId}),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}`,
         authErrorHandler
     )(params)(dispatch).then(() => {

@@ -21,7 +21,7 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, history, loading}) => {
     return summit.selection_plans.filter(sp => sp.is_enabled);
   };
 
-  if (loading || summit == null || loggedSpeaker == null) return null;
+  if (summit == null || loggedSpeaker == null) return null;
 
   if (!loggedSpeaker) {
     history.push(`/app/profile`);
@@ -32,7 +32,7 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, history, loading}) => {
 
   return (
     <div>
-      {plansToShow.map(sp => <SelectionPlanSection selectionPlan={sp} />)}
+      {plansToShow.map(sp => <SelectionPlanSection key={`selection-plan-section-${sp.id}`} selectionPlan={sp} />)}
     </div>
   );
 };

@@ -28,7 +28,7 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
         if (urlSummitSlug !== summitSlug) {
             getAllFromSummit(urlSummitSlug);
         }
-    }, [summitSlug, urlSummitSlug]);
+    }, [urlSummitSlug]);
 
     useEffect(() => {
         if (urlSummitSlug === summitSlug && summit?.id) {
@@ -44,6 +44,9 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
             <Redirect exact to={{ pathname: `/app/${summit.slug}/profile` }}  />
         );
     }
+
+    console.log('RE RENDER SUMMIT LAYOUT');
+
 
     return(
         <>
@@ -62,9 +65,7 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
 const mapStateToProps = ({ baseState }) => ({
     speaker: baseState.speaker,
     summit: baseState.summit,
-    selectionPlan: baseState.selectionPlan,
     loading: baseState.loading,
-    baseLoaded: baseState.baseLoaded
 })
 
 export default connect(mapStateToProps, {getAllFromSummit, getAllSummitDocs})(SummitLayout);

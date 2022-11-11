@@ -35,7 +35,9 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
     }
   };
 
-  if (!loggedUser) return null;
+  if (summit == null || loggedUser == null) return null;
+
+  console.log('RE RENDER ALL PLANS LAYOUT');
 
   return (
     <div className="primary-layout container-fluid">

@@ -26,11 +26,11 @@ const PrimaryLayout = ({location, summit, speaker, member, match, selectionPlan,
   const loggedUser = (speaker && speaker.id) ? speaker : member;
   const selectionPlanIdParam = parseInt(match.params.selection_plan_id);
 
-  useEffect(() => {
+ /* useEffect(() => {
     if (selectionPlan?.id !== selectionPlanIdParam) {
       getSelectionPlan(summit.id, selectionPlanIdParam);
     }
-  }, [selectionPlan?.id, selectionPlanIdParam]);
+  }, [selectionPlan?.id, selectionPlanIdParam]);*/
 
   if (!loggedUser || selectionPlan?.id !== selectionPlanIdParam) return null;
 
