@@ -40,7 +40,7 @@ class SummitSelectionPage extends React.Component {
 
     handleChange(ev) {
         const {value} = ev.target;
-        history.push(`/app/${value}`);
+        history.push(`/app/${value}/all-plans`);
     }
 
     render() {

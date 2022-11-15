@@ -76,13 +76,13 @@ export const getSpeaker = (speakerId) => async (dispatch) => {
 };
 
 
-export const getSpeakerPermission = (presentationId, speakerId, speakerType) => async (dispatch, getState) => {
+export const getSpeakerPermission = (selectionPlanId, presentationId, speakerId, speakerType) => async (dispatch, getState) => {
     const {profileState, baseState} = getState();
     const accessToken = await getAccessTokenSafely();
-    const {summit, selectionPlan} = baseState;
+    const {summit} = baseState;
 
     if (speakerId == profileState.entity.id) {
-        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
+        history.push(`/app/${summit.slug}/all-plans/${selectionPlanId}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
         return;
     }
 
@@ -103,7 +103,7 @@ export const getSpeakerPermission = (presentationId, speakerId, speakerType) => 
             dispatch(stopLoading());
 
             if (payload.response.approved) {
-                history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
+                history.push(`/app/${summit.slug}/all-plans/${selectionPlanId}/presentations/${presentationId}/speakers/${speakerId}`, {type: speakerType});
             } else {
                 Swal.fire({
                     title: T.translate("edit_speaker.auth_pending"),
@@ -171,8 +171,8 @@ export const resetSpeakerForm = (email = '') => (dispatch, getState) => {
 export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
     const {presentationState, baseState} = getState();
     const accessToken = await getAccessTokenSafely();
-    const {summit, selectionPlan} = baseState;
-    const presentationId = presentationState.entity.id;
+    const {summit} = baseState;
+    const {id: presentationId, selection_plan_id: selectionPlanId} = presentationState.entity;
 
     dispatch(startLoading());
 
@@ -219,7 +219,7 @@ export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
                 dispatch(showMessage(
                     success_message,
                     () => {
-                        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${presentationId}/speakers`)
+                        history.push(`/app/${summit.slug}/all-plans/${selectionPlanId}/presentations/${presentationId}/speakers`)
                     }
                 ));
             });
@@ -253,7 +253,7 @@ export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
             dispatch(showMessage(
                 success_message,
                 () => {
-                    history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${presentationId}/speakers`)
+                    history.push(`/app/${summit.slug}/all-plans/${selectionPlanId}/presentations/${presentationId}/speakers`)
                 }
             ));
         });

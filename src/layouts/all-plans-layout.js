@@ -37,8 +37,6 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
 
   if (summit == null || loggedUser == null) return null;
 
-  console.log('RE RENDER ALL PLANS LAYOUT');
-
   return (
     <div className="primary-layout container-fluid">
       <div className="row">
@@ -49,7 +47,8 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
           <main id="page-wrap">
             <Switch>
               <Route strict exact path={match.url} component={AllSelectionPlansPage}/>
-              <Route path={`${match.url}/:selection_plan_id(\\d+)`} component={PrimaryLayout}/>
+              <Route strict exact path={`${match.url}/:selection_plan_id(\\d+)`} component={AllSelectionPlansPage}/>
+              <Route path={`${match.url}/:selection_plan_id(\\d+)/presentations`} component={PrimaryLayout}/>
               <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`}/>)}/>
             </Switch>
           </main>

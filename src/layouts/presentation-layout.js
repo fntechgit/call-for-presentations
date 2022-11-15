@@ -30,8 +30,7 @@ class PresentationLayout extends React.Component {
           props.summit,
           props.selectionPlan,
           props.loggedSpeaker,
-          props.tagGroups,
-          props.submissionIsClosed
+          props.tagGroups
         );
     }
 
@@ -56,7 +55,7 @@ class PresentationLayout extends React.Component {
     }
 
     render(){
-        let { match, entity, speaker, history, loading, location } = this.props;
+        let { match, entity, speaker, history, loading, location, selectionPlan } = this.props;
         let isNew = !match.params.presentation_id;
 
         if (loading || (!isNew && !entity.id)) return null;
@@ -71,12 +70,12 @@ class PresentationLayout extends React.Component {
 
         return(
             <Switch>
-                <Route strict exact path={`${match.url}/speakers/new`} component={EditSpeakerPage}/>
-                <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} component={EditSpeakerPage}/>
-                <Route strict exact path={`${match.url}/preview`} component={PreviewPresentationPage}/>
-                <Route strict exact path={`${match.url}/thank-you`} component={ThankYouPresentationPage}/>
+                <Route strict exact path={`${match.url}/speakers/new`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
+                <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
+                <Route strict exact path={`${match.url}/preview`} render={(props) => <PreviewPresentationPage {...props} selectionPlan={selectionPlan}/>}/>
+                <Route strict exact path={`${match.url}/thank-you`} render={(props) => <ThankYouPresentationPage {...props} selectionPlan={selectionPlan}/>}/>
                 <Route strict exact path={`${match.url}/:step`} render={
-                    props => (<EditPresentationPage {...props} presentation={this.presentation} />)
+                    props => (<EditPresentationPage {...props} presentation={this.presentation} selectionPlan={selectionPlan} />)
                 }/>
                 <Route render={props => (<Redirect to={`${match.url}/summary`} />)}/>
             </Switch>
@@ -87,11 +86,9 @@ class PresentationLayout extends React.Component {
 
 const mapStateToProps = ({ baseState, presentationState }) => ({
     speaker: baseState.speaker,
-    selectionPlan: baseState.selectionPlan,
     summit: baseState.summit,
     loading: baseState.loading,
     tagGroups: baseState.tagGroups,
-    submissionIsClosed: baseState.submissionIsClosed,
     loggedSpeaker: baseState.speaker,
     ...presentationState
 })

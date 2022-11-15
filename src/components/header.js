@@ -1,18 +1,21 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import LanguageSelect from "./language-select";
 import AuthButton from "./auth-button";
 import {connect} from "react-redux";
-import {formatEpoch} from "openstack-uicore-foundation/lib/utils/methods";
 import T from "i18n-react";
-import {getMarketingValue} from "./marketing-setting";
+import {formatEpoch} from "openstack-uicore-foundation/lib/utils/methods";
 import moment from "moment-timezone";
+import {getMarketingValue} from "./marketing-setting";
+import {nowBetween} from "../utils/methods";
 
-const Header = ({isLoggedUser, summit, selectionPlan, submissionIsClosed, language, profilePic, initLogOut, waitForApi, loading}) => {
+const Header = ({isLoggedUser, summit, language, profilePic, initLogOut, waitForApi, loading, selectionPlan}) => {
     let header_title = "";
     let header_subtitle = "";
-    let summit_logo = window.LOGO_URL;
+    let summit_logo = summit?.logo ? summit.logo : window.LOGO_URL;
     const mkt_header_title = getMarketingValue("spkmgmt_header_title");
     const mkt_header_logo = getMarketingValue("spkmgmt_header_logo");
+    const submissionIsClosed = !nowBetween(selectionPlan?.submission_begin_date, selectionPlan?.submission_end_date);
+    const logoLink = summit ? `/app/${summit.slug}/all-plans` : '/app';
 
     const onClickLogout = () => {
         if (typeof window !== "undefined" && summit) {
@@ -24,32 +27,24 @@ const Header = ({isLoggedUser, summit, selectionPlan, submissionIsClosed, langua
     if (window.APP_CLIENT_NAME === "openstack")
         header_title = T.translate("landing.call_for_presentations");
 
-    if (summit) {
-        summit_logo = summit.logo ? summit.logo : summit_logo;
+    if (selectionPlan) {
+        const end_date = formatEpoch( selectionPlan.submission_end_date, "MMMM DD, YYYY h:mm a");
 
-        if (selectionPlan) {
-            // format MMMM d, YYYY
-            // MMMM : A full textual representation of a month, such as January or March	January through December
-            // DD : Day of the month, 2 digits with leading zeros 01 to 31
-            // YYYY : A full numeric representation of a year, 4 digits Examples: 1999 or 2003
-            const end_date = formatEpoch( selectionPlan.submission_end_date, "MMMM DD, YYYY h:mm a");
-
-            if (header_title !== "") header_title += ": ";
-            header_title += `${selectionPlan.name} ${summit.name}`;
+        if (header_title !== "") header_title += ": ";
+        header_title += `${selectionPlan.name} ${summit.name}`;
 
 
-            if (submissionIsClosed) {
-                header_subtitle = T.translate("landing.closed");
-            } else {
-                header_subtitle = T.translate("landing.subtitle", {
-                    end_date: end_date,
-                    when: moment.tz.guess(),
-                });
-            }
+        if (submissionIsClosed) {
+            header_subtitle = T.translate("landing.closed");
         } else {
-            if (header_title !== "") header_title += ": ";
-            header_title += `${summit.name}`;
+            header_subtitle = T.translate("landing.subtitle", {
+                end_date: end_date,
+                when: moment.tz.guess(),
+            });
         }
+    } else if (summit) {
+        if (header_title !== "") header_title += ": ";
+        header_title += `${summit.name}`;
     }
 
     header_title = mkt_header_title ? mkt_header_title : header_title;
@@ -61,7 +56,7 @@ const Header = ({isLoggedUser, summit, selectionPlan, submissionIsClosed, langua
         <div className="header">
             <div className="header-title row">
                 <div className="col-md-3 col-xs-6 text-left">
-                    <a href="/">
+                    <a href={logoLink}>
                         <img alt="logo" className="header-logo" src={summit_logo} />
                     </a>
                 </div>
@@ -89,8 +84,6 @@ const mapStateToProps = ({loggedUserState, baseState }) => ({
     isLoggedUser: loggedUserState.isLoggedUser,
     loading: baseState.loading,
     summit: baseState.summit,
-    submissionIsClosed: baseState.submissionIsClosed,
-    selectionPlan: baseState.selectionPlan,
 });
 
 export default connect(mapStateToProps)(Header);

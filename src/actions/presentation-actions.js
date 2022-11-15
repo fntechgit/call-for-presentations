@@ -77,7 +77,7 @@ export const resetPresentation = () => (dispatch, getState) => {
 export const savePresentation = (entity, presentation, currentStep = null) => async (dispatch, getState) => {
     let {baseState} = getState();
     const accessToken = await getAccessTokenSafely();
-    const {summit, selectionPlan} = baseState;
+    const {summit} = baseState;
 
     dispatch(startLoading());
 
@@ -105,7 +105,7 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
                         dispatch(stopLoading());
                         presentation.updatePresentation({...payload, track_id: payload.track.id}, payload.track);
                         const nextStep = presentation.getStepNameAfter(currentStep);
-                        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${nextStep}`);
+                        history.push(`/app/${summit.slug}/all-plans/${payload.selection_plan_id}/presentations/${payload.id}/${nextStep}`);
                     });
             }, (error) => {
                 dispatch(stopLoading());
@@ -113,7 +113,7 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
     }
 
     // if new set selection plan
-    normalizedEntity.selection_plan_id = selectionPlan.id;
+    normalizedEntity.selection_plan_id = presentation.selectionPlan.id;
 
     return postRequest(
         createAction(UPDATE_PRESENTATION),
@@ -128,7 +128,7 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
                     dispatch(stopLoading());
                     presentation.updatePresentation({...payload, track_id: payload.track.id}, payload.track);
                     const nextStep = presentation.getStepNameAfter(currentStep);
-                    history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${nextStep}`);
+                    history.push(`/app/${summit.slug}/all-plans/${payload.selection_plan_id}/presentations/${payload.id}/${nextStep}`);
                 }
             );
         }, (error) => {
@@ -200,7 +200,7 @@ export const deleteMediaUpload = (presentationId, materialId) => async (dispatch
 export const completePresentation = (entity) => async (dispatch, getState) => {
     const {baseState} = getState();
     const accessToken = await getAccessTokenSafely();
-    const {summit, selectionPlan} = baseState;
+    const {summit} = baseState;
 
     dispatch(startLoading());
 
@@ -217,7 +217,7 @@ export const completePresentation = (entity) => async (dispatch, getState) => {
     )(params)(dispatch)
         .then((payload) => {
             dispatch(stopLoading());
-            history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${entity.id}/thank-you`);
+            history.push(`/app/${summit.slug}/all-plans/${payload.selection_plan_id}/presentations/${entity.id}/thank-you`);
         });
 }
 
@@ -254,7 +254,7 @@ const normalizeEntity = (entity) => {
 
 const presentationErrorHandler = (err, res) => (dispatch, getState) => {
     const {baseState} = getState();
-    const {summit, selectionPlan} = baseState || {};
+    const {summit} = baseState || {};
     const code = err.status;
     dispatch(stopLoading());
 
@@ -276,8 +276,8 @@ const presentationErrorHandler = (err, res) => (dispatch, getState) => {
             dispatch(showMessage(
                 error_message,
                 () => {
-                    if (summit && selectionPlan) {
-                        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/`);
+                    if (summit) {
+                        history.push(`/app/${summit.slug}/all-plans`);
                     }
                 }
             ));

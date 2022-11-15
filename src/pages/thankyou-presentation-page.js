@@ -72,7 +72,6 @@ class ThankYouPresentationPage extends React.Component {
 }
 
 const mapStateToProps = ({ baseState, presentationState }) => ({
-    selectionPlan : baseState.selectionPlan,
     summit:baseState.summit,
     ...presentationState
 })

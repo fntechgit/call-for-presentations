@@ -45,7 +45,7 @@ const PlanSelectionPage = ({summit, loading, match, clearSelectionPlan}) => {
 
     const onChange = (ev) => {
         const {value} = ev.target;
-        history.push(`${match.url}/${value}/presentations`);
+        history.push(`/app/${summit.slug}/all-plans/${value}`);
     };
 
     const planOpts = availablePlans.map(sp => ({...sp, value: sp.id, label: sp.name}));

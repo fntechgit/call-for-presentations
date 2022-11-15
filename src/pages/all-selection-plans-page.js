@@ -13,12 +13,22 @@
 
 import React from 'react';
 import {connect} from 'react-redux';
+import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, history, loading}) => {
+const AllSelectionPlansPage = ({summit, loggedSpeaker, loading, match}) => {
 
   const getAvailablePlans = () => {
-    return summit.selection_plans.filter(sp => sp.is_enabled);
+    const selectionPlanIdParam = parseInt(match?.params?.selection_plan_id) || null;
+    let allPlans = [];
+
+    if (selectionPlanIdParam) {
+      allPlans = summit.selection_plans.filter(sp => sp.id === selectionPlanIdParam);
+    } else {
+      allPlans = summit.selection_plans.filter(sp => sp.is_enabled);
+    }
+
+    return allPlans.sort((a,b) => a.submission_begin_date - b.submission_begin_date);
   };
 
   if (summit == null || loggedSpeaker == null) return null;
@@ -32,7 +42,7 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, history, loading}) => {
 
   return (
     <div>
-      {plansToShow.map(sp => <SelectionPlanSection key={`selection-plan-section-${sp.id}`} selectionPlan={sp} />)}
+      {plansToShow.map(sp => <SelectionPlanSection key={`selection-plan-section-${sp.id}`} selectionPlan={sp} history={history} match={match} />)}
     </div>
   );
 };

@@ -12,11 +12,11 @@
  **/
 
 import T from 'i18n-react/dist/i18n-react';
-import {formatEpoch} from "../utils/methods";
+import {formatEpoch, nowBetween} from "../utils/methods";
 
 class Presentation {
 
-    constructor(presentation, summit, selectionPlan, loggedUser, tagGroups, submissionIsClosed){
+    constructor(presentation, summit, selectionPlan, loggedUser, tagGroups){
         this._presentation  = presentation;
         this._selectionPlan = selectionPlan;
         this._user = loggedUser;
@@ -24,7 +24,7 @@ class Presentation {
         this._presentation.selectionPlan = summit.selection_plans.find(sp => sp.id === presentation.selection_plan_id);
         this._tagGroups = tagGroups;
         this._track = null;
-        this._submissionIsClosed = submissionIsClosed;
+        this._submissionIsClosed = selectionPlan ? !nowBetween(selectionPlan.submission_begin_date, selectionPlan.submission_end_date) : true;
 
         this._steps = [
             {name: 'NEW', lcName: 'new', step: 0},
@@ -139,9 +139,9 @@ class Presentation {
                 step = this.getNextStepName();
             }
 
-            return `/app/${this._summit.slug}/${this._selectionPlan.id}/presentations/${this._presentation.id}/${step}`;
+            return `/app/${this._summit.slug}/all-plans/${this._selectionPlan.id}/presentations/${this._presentation.id}/${step}`;
         } else {
-            return `/app/${this._summit.slug}/${this._selectionPlan.id}/presentations/${this._presentation.id}/preview`;
+            return `/app/${this._summit.slug}/all-plans/${this._selectionPlan.id}/presentations/${this._presentation.id}/preview`;
         }
     }
 

@@ -45,17 +45,14 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
         );
     }
 
-    console.log('RE RENDER SUMMIT LAYOUT');
-
-
     return(
         <>
             <ClockComponent active={true} summit={summit} />
             <Switch>
-                <Route strict exact path={match.url} component={PlanSelectionPage}/>
+                <Route strict exact path={`${match.url}/select-plan`} component={PlanSelectionPage}/>
                 <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
                 <Route path={`${match.url}/all-plans`} component={AllPlansLayout}/>
-                <Route render={() => (<Redirect to={`/app/${summitSlug}`}/>)}/>
+                <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`}/>)}/>
             </Switch>
         </>
     );

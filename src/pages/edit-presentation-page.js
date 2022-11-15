@@ -11,12 +11,23 @@
  * limitations under the License.
  **/
 
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useContext, useEffect} from 'react';
+import {connect} from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
-import { savePresentation, completePresentation, saveMediaUpload, deleteMediaUpload } from "../actions/presentation-actions";
-import { getSpeakerPermission, removeSpeakerFromPresentation, removeModeratorFromPresentation, assignModeratorToPresentation, assignSpeakerToPresentation } from "../actions/speaker-actions";
-import { loadEventCategory } from "../actions/base-actions";
+import {
+  savePresentation,
+  completePresentation,
+  saveMediaUpload,
+  deleteMediaUpload
+} from "../actions/presentation-actions";
+import {
+  getSpeakerPermission,
+  removeSpeakerFromPresentation,
+  removeModeratorFromPresentation,
+  assignModeratorToPresentation,
+  assignSpeakerToPresentation
+} from "../actions/speaker-actions";
+import {loadEventCategory} from "../actions/base-actions";
 import PresentationSummaryForm from "../components/presentation-summary-form";
 import PresentationNav from "../components/presentation-nav/index";
 import PresentationTagsForm from "../components/presentation-tags-form"
@@ -26,156 +37,154 @@ import PresentationReviewForm from "../components/presentation-review-form";
 import {getMarketingValue} from "../components/marketing-setting";
 
 import '../styles/edit-presentation-page.less';
+import {SelectionPlanContext} from "../components/SelectionPlanContext";
 
-class EditPresentationPage extends React.Component {
+const EditPresentationPage = ({entity, track, presentation, selectionPlan, summit, match, ...props}) => {
+  const {setSelectionPlanCtx} = useContext(SelectionPlanContext);
 
-    constructor(props) {
-        super(props);
+  useEffect(() => {
+    if (entity.track_id && (!track || track.id !== entity.track_id)) {
+      props.loadEventCategory();
     }
+  }, [entity?.track_id, track?.id]);
 
-    componentDidMount() {
-        const {entity, track} = this.props;
-
-        if (entity.track_id && (!track || track.id != entity.track_id)) {
-
-            this.props.loadEventCategory();
-        }
+  useEffect(() => {
+    if (!presentation._steps.map(s => s.lcName).includes(match.params.step)) {
+      history.push('summary');
     }
+  }, [match.params.step]);
 
-    componentWillReceiveProps(newProps) {
-        const {history, loading, match, track, entity, presentation} = newProps;
+  useEffect(() => {
+    setSelectionPlanCtx(selectionPlan);
+    return () => { setSelectionPlanCtx(null) }
+  }, [selectionPlan?.id])
 
-        if (!presentation._steps.map(s => s.lcName).includes(match.params.step)) {
-            history.push('summary');
-        }
 
-        if (!loading && entity.track_id && (!track || entity.track_id !== track.id)) {
-            this.props.loadEventCategory();
-        }
-    }
+  const getNavSteps = () => {
+    return presentation._steps.filter(stp => stp.showInNav);
+  };
 
-    getNavSteps() {
-      const {presentation} = this.props;
-      return presentation._steps.filter(stp => stp.showInNav);
-    };
+  const {
+    errors,
+    history,
+    savePresentation,
+    saveMediaUpload,
+    deleteMediaUpload,
+    completePresentation,
+    getSpeakerPermission,
+    trackGroups
+  } = props;
+  const title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
+  const step = match.params.step;
+  const disclaimer = selectionPlan.submission_period_disclaimer || getMarketingValue('spkmgmt_disclaimer');
+  const groupedTags = presentation.getAllowedTags(trackGroups);
+  const navSteps = getNavSteps();
 
-    render() {
-        const { entity, selectionPlan, summit, errors, track, history, savePresentation, saveMediaUpload,
-            deleteMediaUpload, completePresentation, getSpeakerPermission, presentation, match, trackGroups } = this.props;
+  if (!summit.event_types || !summit.tracks) return null;
 
-        let title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
-        let step = match.params.step;
-        const disclaimer = selectionPlan.submission_period_disclaimer || getMarketingValue('spkmgmt_disclaimer');
-        const groupedTags = presentation.getAllowedTags(trackGroups);
-        const navSteps = this.getNavSteps();
+  return (
+    <div className="page-wrap" id="edit-presentation-page">
+      <div className="presentation-header-wrapper">
+        <h2>{title} {T.translate("edit_presentation.presentation")}</h2>
+      </div>
+      <PresentationNav activeStep={step} progress={presentation.getPresentationProgress()} steps={navSteps}/>
 
-        if (!summit.event_types || !summit.tracks) return null;
+      {step === 'summary' &&
+      <PresentationSummaryForm
+        entity={entity}
+        disclaimer={disclaimer}
+        presentation={presentation}
+        step={step}
+        summit={summit}
+        selectionPlan={selectionPlan}
+        errors={errors}
+        onSubmit={entity => savePresentation(entity, presentation, 'SUMMARY')}
+      />
+      }
 
-        return (
-            <div className="page-wrap" id="edit-presentation-page">
-                <div className="presentation-header-wrapper">
-                    <h2>{title} {T.translate("edit_presentation.presentation")}</h2>
-                </div>
-                <PresentationNav activeStep={step} progress={presentation.getPresentationProgress()} steps={navSteps} />
+      {step === 'uploads' &&
+      <div className="uploads-form-wrapper">
+        <PresentationUploadsForm
+          entity={entity}
+          presentation={presentation}
+          step={step}
+          summit={summit}
+          selectionPlan={selectionPlan}
+          errors={errors}
+          onSaveMU={saveMediaUpload}
+          onDeleteMU={deleteMediaUpload}
+          onSubmit={() => history.push(`/app/${summit.slug}/all-plans/${selectionPlan.id}/presentations/${entity.id}/${presentation.getStepNameAfter('UPLOADS')}`)}
+        />
+      </div>
+      }
 
-                {step === 'summary' &&
-                    <PresentationSummaryForm
-                        entity={entity}
-                        disclaimer={disclaimer}
-                        presentation={presentation}
-                        step={step}
-                        summit={summit}
-                        selectionPlan={selectionPlan}
-                        errors={errors}
-                        onSubmit={entity => savePresentation(entity, presentation, 'SUMMARY')}
-                    />
-                }
+      {step === 'tags' &&
+      <div className="tag-form-wrapper">
+        <PresentationTagsForm
+          entity={entity}
+          presentation={presentation}
+          step={step}
+          groupedTags={groupedTags}
+          onSubmit={entity => savePresentation(entity, presentation, 'TAGS')}
+        />
+      </div>
+      }
 
-                {step === 'uploads' &&
-                <div className="uploads-form-wrapper">
-                    <PresentationUploadsForm
-                        entity={entity}
-                        presentation={presentation}
-                        step={step}
-                        summit={summit}
-                        selectionPlan={selectionPlan}
-                        errors={errors}
-                        onSaveMU={saveMediaUpload}
-                        onDeleteMU={deleteMediaUpload}
-                        onSubmit={() => history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${entity.id}/${presentation.getStepNameAfter('UPLOADS')}`)}
-                    />
-                </div>
-                }
+      {step === 'speakers' &&
+      <div className="speakers-form-wrapper">
+        <PresentationSpeakersForm
+          history={history}
+          entity={entity}
+          presentation={presentation}
+          step={step}
+          match={match}
+          summit={summit}
+          onAddSpeaker={props.assignSpeakerToPresentation}
+          onAddModerator={props.assignModeratorToPresentation}
+          onRemoveSpeaker={props.removeSpeakerFromPresentation}
+          onRemoveModerator={props.removeModeratorFromPresentation}
+          onSubmit={entity => savePresentation(entity, presentation, 'SPEAKERS')}
+          onSpeakerEdit={getSpeakerPermission}
+        />
+      </div>
+      }
 
-                {step === 'tags' &&
-                <div className="tag-form-wrapper">
-                    <PresentationTagsForm
-                        entity={entity}
-                        presentation={presentation}
-                        step={step}
-                        groupedTags={groupedTags}
-                        onSubmit={entity => savePresentation(entity, presentation, 'TAGS')}
-                    />
-                </div>
-                }
+      {step === 'review' &&
+      <div className="review-form-wrapper">
+        <PresentationReviewForm
+          entity={entity}
+          presentation={presentation}
+          track={track}
+          step={step}
+          onSubmit={completePresentation}
+        />
+      </div>
+      }
 
-                {step === 'speakers' &&
-                <div className="speakers-form-wrapper">
-                    <PresentationSpeakersForm
-                        history={history}
-                        entity={entity}
-                        presentation={presentation}
-                        step={step}
-                        match={match}
-                        summit={summit}
-                        onAddSpeaker={this.props.assignSpeakerToPresentation}
-                        onAddModerator={this.props.assignModeratorToPresentation}
-                        onRemoveSpeaker={this.props.removeSpeakerFromPresentation}
-                        onRemoveModerator={this.props.removeModeratorFromPresentation}
-                        onSubmit={entity => savePresentation(entity, presentation, 'SPEAKERS')}
-                        onSpeakerEdit={getSpeakerPermission}
-                    />
-                </div>
-                }
-
-                {step === 'review' &&
-                <div className="review-form-wrapper">
-                    <PresentationReviewForm
-                        entity={entity}
-                        presentation={presentation}
-                        track={track}
-                        step={step}
-                        onSubmit={completePresentation}
-                    />
-                </div>
-                }
-
-            </div>
-        );
-    }
+    </div>
+  );
 }
 
-const mapStateToProps = ({ baseState, presentationState }) => ({
-    selectionPlan : baseState.selectionPlan,
-    summit : baseState.summit,
-    tagGroups: baseState.tagGroups,
-    loading : baseState.loading,
-    loggedSpeaker : baseState.speaker,
-     ...presentationState
+const mapStateToProps = ({baseState, presentationState}) => ({
+  summit: baseState.summit,
+  tagGroups: baseState.tagGroups,
+  loading: baseState.loading,
+  loggedSpeaker: baseState.speaker,
+  ...presentationState
 })
 
-export default connect (
-    mapStateToProps,
-    {
-        savePresentation,
-        saveMediaUpload,
-        deleteMediaUpload,
-        completePresentation,
-        loadEventCategory,
-        removeSpeakerFromPresentation,
-        removeModeratorFromPresentation,
-        assignModeratorToPresentation,
-        assignSpeakerToPresentation,
-        getSpeakerPermission
-    }
+export default connect(
+  mapStateToProps,
+  {
+    savePresentation,
+    saveMediaUpload,
+    deleteMediaUpload,
+    completePresentation,
+    loadEventCategory,
+    removeSpeakerFromPresentation,
+    removeModeratorFromPresentation,
+    assignModeratorToPresentation,
+    assignSpeakerToPresentation,
+    getSpeakerPermission
+  }
 )(EditPresentationPage);

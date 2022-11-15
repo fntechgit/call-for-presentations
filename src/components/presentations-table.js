@@ -25,7 +25,6 @@ const PresentationsTable = ({
                               loggedSpeaker,
                               tagGroups,
                               nowUtc,
-                              submissionIsClosed,
                               onDelete,
                               canEdit = false,
                               history,
@@ -61,7 +60,7 @@ const PresentationsTable = ({
           </thead>
           <tbody>
           {presentations.map(p => {
-            let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, tagGroups, submissionIsClosed);
+            let presentation = new Presentation(p, summit, selectionPlan, loggedSpeaker, tagGroups);
 
             return (
               <tr key={'presentation_' + p.id}>
@@ -87,7 +86,7 @@ const PresentationsTable = ({
                 </td>
                 {canEdit &&
                 <td className="text-right pres-actions">
-                  {!submissionIsClosed && presentation.canDelete() &&
+                  {!presentation.submissionIsClosed && presentation.canDelete() &&
                   <button className="btn btn-danger btn-xs" onClick={ev => onDelete(ev, p)}>
                     {T.translate("general.delete")}
                   </button>
@@ -113,10 +112,8 @@ const PresentationsTable = ({
 }
 
 const mapStateToProps = ({baseState, clockState}) => ({
-  selectionPlan: baseState.selectionPlan,
   summit: baseState.summit,
   loggedSpeaker: baseState.speaker,
-  submissionIsClosed: baseState.submissionIsClosed,
   nowUtc: clockState.nowUtc,
   tagGroups: baseState.tagGroups,
 })
