@@ -13,22 +13,19 @@
 
 import { START_LOADING, STOP_LOADING, LOGOUT_USER, RESET_LOADING } from "openstack-uicore-foundation/lib/utils/actions";
 import {
-    SELECTION_CLOSED,
     RECEIVE_TAG_GROUPS,
     CLEAR_SUMMIT,
     ERROR_RECEIVE_SUMMIT,
-    RECEIVE_SELECTION_PLAN,
     RECEIVE_SUMMIT,
     RECEIVE_MARKETING_SETTINGS,
     SUMMIT_DOCS_RECEIVED,
     BASE_LOADED,
-    CLEAR_SELECTION_PLAN,
     REQUEST_MARKETING_SETTINGS,
     REQUEST_AVAILABLE_SUMMITS,
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
-import {nowBetween, setDefaultColors, setDocumentColors} from "../utils/methods";
+import {setDefaultColors, setDocumentColors} from "../utils/methods";
 
 
 const DEFAULT_STATE = {
@@ -36,11 +33,10 @@ const DEFAULT_STATE = {
     loading: false,
     countries: [],
     speaker: null,
-    selectionPlan: null,
     summit: null,
     marketingSettings: null,
     submissionIsClosed: false,
-    allSummitDocs: [],
+    globalSummitDocs: [],
     baseLoaded: false,
 };
 
@@ -73,23 +69,20 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         // summit / selection plan
         case CLEAR_SUMMIT:
-            return {...state, selectionPlan: null, summit: null, marketingSettings: null, submissionIsClosed: false, allSummitDocs: [], baseLoaded: false};
+            return {...state, summit: null, marketingSettings: null, submissionIsClosed: false, globalSummitDocs: [], baseLoaded: false};
         case ERROR_RECEIVE_SUMMIT:
-            return {...state, selectionPlan: null, summit: null, marketingSettings: null, submissionIsClosed: false};
-        case CLEAR_SELECTION_PLAN:
-            return {...state, selectionPlan: null, submissionIsClosed: false, baseLoaded: false};
-        case RECEIVE_SELECTION_PLAN: {
-            const entity = {...payload.response};
-            const submissionIsClosed = !nowBetween(entity.submission_begin_date, entity.submission_end_date);
-            return {...state, selectionPlan: entity, submissionIsClosed};
-        }
+            return {...state, summit: null, marketingSettings: null, submissionIsClosed: false};
         case RECEIVE_SUMMIT: {
-            const entity = {...payload.response};
-            return {...state, summit: entity, marketingSettings: null, selectionPlan: null, allSummitDocs: entity.summit_documents, baseLoaded: false};
+            const entity = payload.response;
+            const globalSummitDocs = entity.summit_documents.filter(sd => !sd.selection_plan_id);
+
+            return {...state, summit: entity, marketingSettings: null, globalSummitDocs, baseLoaded: false};
         }
         case SUMMIT_DOCS_RECEIVED: {
             const {data} = payload.response;
-            return {...state, allSummitDocs: data};
+            const globalSummitDocs = data.filter(sd => !sd.selection_plan_id);
+
+            return {...state, globalSummitDocs};
         }
         case REQUEST_AVAILABLE_SUMMITS:
         case REQUEST_MARKETING_SETTINGS: {
@@ -101,9 +94,6 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
             // set color vars
             setDocumentColors(data);
             return {...state, marketingSettings: data};
-        }
-        case SELECTION_CLOSED: {
-            return {...state, selectionPlan: null, submissionIsClosed : true};
         }
         default:
             return state;

@@ -12,87 +12,89 @@
  **/
 
 import {
-    getRequest,
-    createAction,
-    stopLoading,
-    startLoading,
-    authErrorHandler
+  getRequest,
+  createAction,
+  stopLoading,
+  startLoading,
+  authErrorHandler
 } from "openstack-uicore-foundation/lib/utils/actions";
 
 import {getTagGroups} from './base-actions';
 import {getAccessTokenSafely} from "../utils/methods";
 
-export const DUMMY_ACTION           = 'DUMMY_ACTION';
-export const CREATED_RECEIVED       = 'CREATED_RECEIVED';
-export const SPEAKER_RECEIVED       = 'SPEAKER_RECEIVED';
-export const MODERATOR_RECEIVED     = 'MODERATOR_RECEIVED';
-export const REGROUP_PRESENTATIONS  = 'REGROUP_PRESENTATIONS';
+export const DUMMY_ACTION = 'DUMMY_ACTION';
+export const CREATED_RECEIVED = 'CREATED_RECEIVED';
+export const SPEAKER_RECEIVED = 'SPEAKER_RECEIVED';
+export const MODERATOR_RECEIVED = 'MODERATOR_RECEIVED';
+export const REGROUP_PRESENTATIONS = 'REGROUP_PRESENTATIONS';
 
 export const getAllPresentations = (summitId, selectionPlanId) => async (dispatch) => {
-    const accessToken = await getAccessTokenSafely();
+  const accessToken = await getAccessTokenSafely();
 
-    dispatch(startLoading());
+  dispatch(startLoading());
 
-    const created = dispatch(getCreatorPresentations(selectionPlanId, accessToken));
+  const created = dispatch(getCreatorPresentations(selectionPlanId, accessToken));
 
-    const speaker = dispatch(getSpeakerPresentations(selectionPlanId, accessToken));
+  const speaker = dispatch(getSpeakerPresentations(selectionPlanId, accessToken));
 
-    const moderator = dispatch(getModeratorPresentations(selectionPlanId, accessToken));
+  const moderator = dispatch(getModeratorPresentations(selectionPlanId, accessToken));
 
-    const tagGroups = dispatch(getTagGroups(summitId));
-
-    return Promise.all([created, speaker, moderator, tagGroups]).then(() => {
-            dispatch(stopLoading());
-            dispatch(createAction(REGROUP_PRESENTATIONS)({}));
-        }
-    );
+  return Promise.all([created, speaker, moderator]).then(() => {
+      dispatch(createAction(REGROUP_PRESENTATIONS)({selectionPlanId}));
+      dispatch(stopLoading());
+    }
+  );
 };
 
 export const getCreatorPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
 
-    const params = {
-        access_token : accessToken,
-        expand: 'type'
-    };
+  const params = {
+    access_token: accessToken,
+    expand: 'type'
+  };
 
-    return getRequest(
-        null,
-        createAction(DUMMY_ACTION),
-        `${window.API_BASE_URL}/api/v1/speakers/me/presentations/creator/selection-plans/${selectionPlanId}`,
-        authErrorHandler
-    )(params)(dispatch).then(({response}) => {
-        dispatch(createAction(CREATED_RECEIVED)({response, selectionPlanId}));
-    });
+  return getRequest(
+    null,
+    createAction(DUMMY_ACTION),
+    `${window.API_BASE_URL}/api/v1/speakers/me/presentations/creator/selection-plans/${selectionPlanId}`,
+    authErrorHandler
+  )(params)(dispatch).then(({response}) => {
+    dispatch(createAction(CREATED_RECEIVED)({response, selectionPlanId}));
+  });
 }
 
 export const getSpeakerPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
 
-    let params = {
-        access_token : accessToken,
-        expand: 'type'
-    };
+  let params = {
+    access_token: accessToken,
+    expand: 'type'
+  };
 
-    return getRequest(
-        null,
-        createAction(SPEAKER_RECEIVED),
-        `${window.API_BASE_URL}/api/v1/speakers/me/presentations/speaker/selection-plans/${selectionPlanId}`,
-        authErrorHandler
-    )(params)(dispatch);
+  return getRequest(
+    null,
+    createAction(DUMMY_ACTION),
+    `${window.API_BASE_URL}/api/v1/speakers/me/presentations/speaker/selection-plans/${selectionPlanId}`,
+    authErrorHandler
+  )(params)(dispatch).then(({response}) => {
+    dispatch(createAction(SPEAKER_RECEIVED)({response, selectionPlanId}));
+  });
 }
 
 export const getModeratorPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
 
-    let params = {
-        access_token : accessToken,
-        expand: 'type'
-    };
+  let params = {
+    access_token: accessToken,
+    expand: 'type'
+  };
 
-    return getRequest(
-        null,
-        createAction(MODERATOR_RECEIVED),
-        `${window.API_BASE_URL}/api/v1/speakers/me/presentations/moderator/selection-plans/${selectionPlanId}`,
-        authErrorHandler
-    )(params)(dispatch);
+  return getRequest(
+    null,
+    createAction(DUMMY_ACTION),
+    `${window.API_BASE_URL}/api/v1/speakers/me/presentations/moderator/selection-plans/${selectionPlanId}`,
+    authErrorHandler
+  )(params)(dispatch).then(({response}) => {
+    dispatch(createAction(MODERATOR_RECEIVED)({response, selectionPlanId}));
+  });
 };
 
 /*

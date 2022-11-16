@@ -49,9 +49,8 @@ class NavMenu extends React.Component {
     }
 
     render() {
-
-        let {user, exclusiveSections, summitDocs} = this.props;
-        let {activeItem} = this.state;
+        const {user, exclusiveSections, globalSummitDocs} = this.props;
+        const {activeItem} = this.state;
 
         return (
             <div id="app_menu" >
@@ -69,7 +68,7 @@ class NavMenu extends React.Component {
                                 active={activeItem === it.name}
                             />
                         ))}
-                        {summitDocs?.map(doc => (
+                        {globalSummitDocs?.map(doc => (
                                 <MenuItem
                                     key={doc.name}
                                     name={doc.name}
@@ -97,8 +96,8 @@ class NavMenu extends React.Component {
 
 }
 
-const mapStateToProps = ({ presentationsState, baseState }) => ({
-    summitDocs: presentationsState.summitDocs,
+const mapStateToProps = ({ baseState }) => ({
+    globalSummitDocs: baseState.globalSummitDocs,
     summit: baseState.summit,
 })
 

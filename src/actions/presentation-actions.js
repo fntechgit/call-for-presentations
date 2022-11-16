@@ -61,9 +61,6 @@ export const getPresentation = (presentationId) => async (dispatch, getState) =>
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/events/${presentationId}`,
       (err, res) => presentationErrorHandler(err, res)(dispatch, getState)
     )(params)(dispatch).then((payload) => {
-            if(!tagGroups.length){
-                dispatch(getTagGroups(summit.id));
-            }
             dispatch(stopLoading());
             return payload.response;
         }

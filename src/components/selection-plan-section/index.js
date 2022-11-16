@@ -1,23 +1,25 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
 import {getAllPresentations} from '../../actions/presentations-actions';
 import {deletePresentation, resetPresentation} from '../../actions/presentation-actions';
-import { getSelectionPlan } from '../../actions/base-actions';
 import PresentationsTable from "../../components/presentations-table";
-import './selection-plan-section.less';
+import SummitDocsSection from "../../components/summit-docs-section";
 import {formatEpoch} from "openstack-uicore-foundation/lib/utils/methods";
 import moment from "moment-timezone";
 import {nowBetween} from "../../utils/methods";
+import './selection-plan-section.less';
 
 
-const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ...props }) => {
+const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded, loading, ...props }) => {
+  const [dataPulled, setDataPulled] = useState(false);
 
   useEffect(() => {
     props.getAllPresentations(summit.id, selectionPlan.id).then(() => {
       // clear presentation form
       props.resetPresentation();
+      setDataPulled(true);
     });
   }, [summit?.id, selectionPlan?.id]);
 
@@ -31,7 +33,7 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ..
     let title = '';
     let subtitle = '';
 
-    const end_date = formatEpoch( selectionPlan.submission_end_date, "MMMM DD, YYYY h:mm a");
+    const end_date = formatEpoch(selectionPlan.submission_end_date, "MMMM DD, YYYY h:mm a");
 
     if (title !== "") title += ": ";
     title += selectionPlan.name;
@@ -69,21 +71,17 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ..
     });
   };
 
-  const {
-    presentations_created,
-    presentations_speaker,
-    presentations_moderator,
-    match,
-    history
-  } = props;
+  if (!dataPulled) return null;
 
-  if (loading || summit == null || selectionPlan == null || loggedSpeaker == null) return null;
+  const { collections, match, history } = props;
 
-  const thisPlanCreated = presentations_created.find(sp => sp.selectionPlanId === selectionPlan.id)?.presentations || [];
-  const thisPlanSpeaker = presentations_speaker.find(sp => sp.selectionPlanId === selectionPlan.id)?.presentations || [];
-  const thisPlanModerator = presentations_moderator.find(sp => sp.selectionPlanId === selectionPlan.id)?.presentations || [];
+  const thisPlan = collections.find(col => col.selectionPlan.id === selectionPlan.id);
+  const {presentationsCreated, presentationsSpeaker, presentationsModerator, summitDocs} = thisPlan;
   const submissionIsClosed = !nowBetween(selectionPlan.submission_begin_date, selectionPlan.submission_end_date);
   const {title, subtitle} = getTitle(submissionIsClosed);
+  const canAddNew = !submissionIsClosed && selectionPlan && selectionPlan.allow_new_presentations;
+
+  console.log('RENDER THIS PLAN', selectionPlan.id, summitDocs);
 
   return (
     <div className="page-wrap" id="selection-plan-section">
@@ -94,7 +92,7 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ..
             <span>{subtitle}</span>
           </div>
           <div className="col-md-4 text-right add-pres-wrapper">
-            {!submissionIsClosed && selectionPlan && selectionPlan.allow_new_presentations &&
+            {canAddNew &&
             <button className="btn btn-success add-presentation-btn" onClick={handleNewPresentation}>
               {T.translate("presentations.add_presentation")}
             </button>
@@ -105,7 +103,7 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ..
       <div className="body">
         <PresentationsTable
           title={T.translate("presentations.you_submitted")}
-          presentations={thisPlanCreated}
+          presentations={presentationsCreated}
           selectionPlan={selectionPlan}
           onDelete={handleDeletePresentation}
           canEdit
@@ -114,18 +112,19 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ..
         />
         <PresentationsTable
           title={T.translate("presentations.other_submitted_speaker")}
-          presentations={thisPlanSpeaker}
+          presentations={presentationsSpeaker}
           selectionPlan={selectionPlan}
           history={history}
           match={match}
         />
         <PresentationsTable
           title={T.translate("presentations.other_submitted_moderator")}
-          presentations={thisPlanModerator}
+          presentations={presentationsModerator}
           selectionPlan={selectionPlan}
           history={history}
           match={match}
         />
+        <SummitDocsSection summitDocs={summitDocs} />
       </div>
 
     </div>
@@ -134,9 +133,7 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, loading, ..
 
 const mapStateToProps = ({presentationsState, baseState}) => ({
   summit: baseState.summit,
-  presentations_created: presentationsState.presentations_created,
-  presentations_speaker: presentationsState.presentations_speaker,
-  presentations_moderator: presentationsState.presentations_moderator,
+  collections: presentationsState.collections,
   loggedSpeaker: baseState.speaker,
   loading: baseState.loading,
 })
@@ -147,6 +144,5 @@ export default connect(
     getAllPresentations,
     deletePresentation,
     resetPresentation,
-    getSelectionPlan,
   }
 )(SelectionPlanSection);
