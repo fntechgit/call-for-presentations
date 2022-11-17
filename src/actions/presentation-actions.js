@@ -212,9 +212,9 @@ export const completePresentation = (entity) => async (dispatch, getState) => {
         entity,
         authErrorHandler
     )(params)(dispatch)
-        .then((payload) => {
+        .then(({response}) => {
             dispatch(stopLoading());
-            history.push(`/app/${summit.slug}/all-plans/${payload.selection_plan_id}/presentations/${entity.id}/thank-you`);
+            history.push(`/app/${summit.slug}/all-plans/${response.selection_plan_id}/presentations/${entity.id}/thank-you`);
         });
 }
 
