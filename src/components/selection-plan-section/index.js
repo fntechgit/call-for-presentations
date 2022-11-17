@@ -81,8 +81,6 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
   const {title, subtitle} = getTitle(submissionIsClosed);
   const canAddNew = !submissionIsClosed && selectionPlan && selectionPlan.allow_new_presentations;
 
-  console.log('RENDER THIS PLAN', selectionPlan.id, summitDocs);
-
   return (
     <div className="page-wrap" id="selection-plan-section">
       <div className="header">

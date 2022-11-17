@@ -14,7 +14,7 @@
 import React, {useEffect, useRef} from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import {getAllFromSummit, getAllSummitDocs} from '../actions/base-actions';
+import {getAllFromSummit, getAllSummitDocs, getTagGroups} from '../actions/base-actions';
 import AllPlansLayout from "./all-plans-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
 import ProfilePage from "../pages/profile-page";
@@ -28,7 +28,9 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
     // get summit data on every refresh
     useEffect(() => {
         firstRender.current = false;
-        getAllFromSummit(urlSummitSlug);
+        getAllFromSummit(urlSummitSlug).then(summit => {
+            getTagGroups(summit.id);
+        });
     }, []);
 
     if (summitSlug !== urlSummitSlug || !baseLoaded || firstRender.current) return null;

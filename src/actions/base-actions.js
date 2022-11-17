@@ -45,12 +45,10 @@ export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
 
     return getCurrentSummitPublic(summitSlug)(dispatch, getState)
         .then(({response}) => {
-            const tagGroups = dispatch(getTagGroups(response.id));
-            const marketing = dispatch(getMarketingSettings(response.id));
-
-            return Promise.all([tagGroups, marketing]).then(() => {
+            return dispatch(getMarketingSettings(response.id)).then(() => {
                 dispatch(createAction(BASE_LOADED)({loaded: true}));
                 dispatch(stopLoading());
+                return response;
             });
         });
 };
