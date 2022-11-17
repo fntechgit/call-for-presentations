@@ -110,7 +110,7 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
     }
 
     // if new set selection plan
-    normalizedEntity.selection_plan_id = presentation.selectionPlan.id;
+    normalizedEntity.selection_plan_id = presentation._selectionPlan.id;
 
     return postRequest(
         createAction(UPDATE_PRESENTATION),

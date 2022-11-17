@@ -83,7 +83,8 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
     case PRESENTATION_DELETED: {
       const {presentationId, selectionPlanId} = payload;
       const {collections, allSummitDocs} = state;
-      const stateData = collections.find(col => col.selectionPlan.id === selectionPlanId);
+      const collectionsCopy = [...collections]
+      const stateData = collectionsCopy.find(col => col.selectionPlan.id === selectionPlanId);
 
       stateData.presentationsCreated = stateData.presentationsCreated.filter(p => p.id !== presentationId);
       stateData.presentationsSpeaker = stateData.presentationsSpeaker.filter(p => p.id !== presentationId);
@@ -94,31 +95,34 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
       stateData.summitDocs = getSummitDocs(selectionPlanId, allPresentationTypes, allSummitDocs);
       stateData.allPresentationTypes = allPresentationTypes;
 
-      return {...state, collections};
+
+      return {...state, collections: collectionsCopy};
     }
     case PRESENTATION_ADDED: {
       const {collections, allSummitDocs} = state;
+      const collectionsCopy = [...collections]
       const entity = payload.response;
-      const stateData = collections.find(col => col.selectionPlan.id === entity.selection_plan_id);
+      const stateData = collectionsCopy.find(col => col.selectionPlan.id === entity.selection_plan_id);
 
       if (!stateData.allPresentationTypes.includes(entity.type.id)) {
         stateData.allPresentationTypes.push(entity.type.id);
         stateData.summitDocs = getSummitDocs(entity.selection_plan_id, stateData.allPresentationTypes, allSummitDocs);
       }
 
-      return {...state, collections};
+      return {...state, collections: collectionsCopy};
     }
     case REGROUP_PRESENTATIONS: {
       const {collections, allSummitDocs} = state;
+      const collectionsCopy = [...collections]
       const {selectionPlanId} = payload;
-      const stateData = collections.find(col => col.selectionPlan.id === selectionPlanId);
+      const stateData = collectionsCopy.find(col => col.selectionPlan.id === selectionPlanId);
 
       const allPresentationTypes = getAllTypes(stateData);
 
       stateData.summitDocs = getSummitDocs(selectionPlanId, allPresentationTypes, allSummitDocs);
       stateData.allPresentationTypes = allPresentationTypes;
 
-      return {...state, collections};
+      return {...state, collections: collectionsCopy};
     }
     default:
       return state;

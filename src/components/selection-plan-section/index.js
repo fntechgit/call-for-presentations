@@ -30,14 +30,9 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
   }
 
   const getTitle = (submissionIsClosed) => {
-    let title = '';
-    let subtitle = '';
-
     const end_date = formatEpoch(selectionPlan.submission_end_date, "MMMM DD, YYYY h:mm a");
-
-    if (title !== "") title += ": ";
-    title += selectionPlan.name;
-
+    const title = selectionPlan.name;
+    let subtitle = '';
 
     if (submissionIsClosed) {
       subtitle = T.translate("landing.closed");
@@ -47,8 +42,6 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
         when: moment.tz.guess(),
       });
       }
-
-
     return {title, subtitle};
   }
 
