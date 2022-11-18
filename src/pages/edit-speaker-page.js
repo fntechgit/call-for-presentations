@@ -119,7 +119,6 @@ class EditSpeakerPage extends React.Component {
 
 const mapStateToProps = ({ baseState, speakerState, presentationState, profileState }) => ({
     loading : baseState.loading,
-    selectionPlan : baseState.selectionPlan,
     summit : baseState.summit,
     currentPresentation: presentationState.entity,
     loggedInSpeaker: profileState.entity,

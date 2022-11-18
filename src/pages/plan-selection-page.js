@@ -16,20 +16,15 @@ import {Dropdown} from 'openstack-uicore-foundation/lib/components'
 import history from "../history";
 import {connect} from "react-redux";
 import T from "i18n-react";
-import {clearSelectionPlan} from '../actions/base-actions';
 import {nowAfter} from "../utils/methods";
 
 import '../styles/plan-selection-page.less';
 
-const PlanSelectionPage = ({summit, loading, match, clearSelectionPlan}) => {
+const PlanSelectionPage = ({summit, loading}) => {
     const selPlans = summit?.selection_plans || [];
     const availablePlans = selPlans.filter(sp => {
         return sp.is_enabled && nowAfter(sp.submission_begin_date);
     });
-
-    useEffect(() => {
-        clearSelectionPlan();
-    }, [])
 
     if (loading) return null;
 
@@ -45,7 +40,7 @@ const PlanSelectionPage = ({summit, loading, match, clearSelectionPlan}) => {
 
     const onChange = (ev) => {
         const {value} = ev.target;
-        history.push(`${match.url}/${value}/presentations`);
+        history.push(`/app/${summit.slug}/all-plans/${value}`);
     };
 
     const planOpts = availablePlans.map(sp => ({...sp, value: sp.id, label: sp.name}));
@@ -77,4 +72,4 @@ const mapStateToProps = ({baseState}) => ({
 })
 
 
-export default connect(mapStateToProps, {clearSelectionPlan})(PlanSelectionPage)
+export default connect(mapStateToProps)(PlanSelectionPage)

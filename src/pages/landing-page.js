@@ -17,7 +17,7 @@ import T from "i18n-react/dist/i18n-react";
 import SelectionProcessPage from "./selection-process-page";
 import TracksGuidePage from "./tracks-guide-page";
 import { Exclusive } from 'openstack-uicore-foundation/lib/components'
-import { getAllFromSummit, clearSelectionPlan } from '../actions/base-actions';
+import { getAllFromSummit } from '../actions/base-actions';
 import { connect } from 'react-redux'
 
 class LandingPage extends React.Component {
@@ -28,7 +28,6 @@ class LandingPage extends React.Component {
 
         if (!isLoggedUser && summitSlug) {
             this.props.getAllFromSummit(summitSlug);
-            this.props.clearSelectionPlan();
         }
     }
 
@@ -140,12 +139,6 @@ const mapStateToProps = ({ loggedUserState, baseState }) => ({
     summit: baseState.summit,
 });
 
-export default connect(
-    mapStateToProps,
-    {
-        getAllFromSummit,
-        clearSelectionPlan
-    }
-)(LandingPage);
+export default connect(mapStateToProps, {getAllFromSummit})(LandingPage);
 
 

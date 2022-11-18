@@ -120,10 +120,12 @@
     "rejected"      : "Rejected",
     "received"      : "Received",
     "review"        : "Review",
+    "accepted"      : "Accepted",
     "presentation_title": "Presentation Title",
     "presentation_status": "Presentation Status",
     "submission_plan": "Submission Plan",
-    "last_edited": "Last Edited"
+    "last_edited": "Last Edited",
+    "links_and_materials": "Links & Materials"
   },
   "presentation_nav": {
     "summary": "Summary",

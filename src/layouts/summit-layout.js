@@ -11,32 +11,29 @@
  * limitations under the License.
  **/
 
-import React, {useEffect} from 'react'
+import React, {useEffect, useRef} from 'react'
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import {getAllFromSummit, getAllSummitDocs} from '../actions/base-actions';
-import PrimaryLayout from "./primary-layout";
+import {getAllFromSummit, getAllSummitDocs, getTagGroups} from '../actions/base-actions';
+import AllPlansLayout from "./all-plans-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
 import ProfilePage from "../pages/profile-page";
 import ClockComponent from '../components/clock';
 
-const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSummit, getAllSummitDocs}) => {
+const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSummit, baseLoaded}) => {
     const urlSummitSlug = match.params.summit_slug;
     const summitSlug = summit?.slug;
+    const firstRender = useRef(true);
 
+    // get summit data on every refresh
     useEffect(() => {
-        if (urlSummitSlug !== summitSlug) {
-            getAllFromSummit(urlSummitSlug);
-        }
-    }, [summitSlug, urlSummitSlug]);
+        firstRender.current = false;
+        getAllFromSummit(urlSummitSlug).then(summit => {
+            getTagGroups(summit.id);
+        });
+    }, []);
 
-    useEffect(() => {
-        if (urlSummitSlug === summitSlug && summit?.id) {
-            getAllSummitDocs(summit.id);
-        }
-    }, [summit?.id]);
-
-    if (!summitSlug || summitSlug !== urlSummitSlug) return null;
+    if (summitSlug !== urlSummitSlug || !baseLoaded || firstRender.current) return null;
 
     // check if speaker profile exists, if not redirect
     if((!speaker || !speaker.id) && location.pathname !== `/app/${summit.slug}/profile` && !loading) {
@@ -49,10 +46,10 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
         <>
             <ClockComponent active={true} summit={summit} />
             <Switch>
-                <Route strict exact path={match.url} component={PlanSelectionPage}/>
+                <Route strict exact path={`${match.url}/select-plan`} component={PlanSelectionPage}/>
                 <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
-                <Route path={`${match.url}/:selection_plan_id(\\d+)`} component={PrimaryLayout}/>
-                <Route render={() => (<Redirect to={`/app/${summitSlug}`}/>)}/>
+                <Route path={`${match.url}/all-plans`} component={AllPlansLayout}/>
+                <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`}/>)}/>
             </Switch>
         </>
     );
@@ -62,9 +59,8 @@ const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSumm
 const mapStateToProps = ({ baseState }) => ({
     speaker: baseState.speaker,
     summit: baseState.summit,
-    selectionPlan: baseState.selectionPlan,
     loading: baseState.loading,
-    baseLoaded: baseState.baseLoaded
+    baseLoaded: baseState.baseLoaded,
 })
 
 export default connect(mapStateToProps, {getAllFromSummit, getAllSummitDocs})(SummitLayout);

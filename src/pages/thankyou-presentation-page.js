@@ -39,8 +39,6 @@ class ThankYouPresentationPage extends React.Component {
     }
 
     render() {
-        let { entity, selectionPlan, errors, track, history } = this.props;
-
         return (
             <div className="page-wrap" id="thankyou-presentation-page">
                 <div className="presentation-header-wrapper">
@@ -72,7 +70,6 @@ class ThankYouPresentationPage extends React.Component {
 }
 
 const mapStateToProps = ({ baseState, presentationState }) => ({
-    selectionPlan : baseState.selectionPlan,
     summit:baseState.summit,
     ...presentationState
 })

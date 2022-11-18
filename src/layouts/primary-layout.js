@@ -11,72 +11,56 @@
  * limitations under the License.
  **/
 
-import React, {useEffect} from 'react'
-import { connect } from 'react-redux';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import NavMenu from '../components/nav-menu/index'
-import PresentationsPage from '../pages/presentations-page'
+import React, {useState, useLayoutEffect} from 'react'
+import {connect} from 'react-redux';
+import {Switch, Route, Redirect} from 'react-router-dom';
 import ProfilePage from '../pages/profile-page'
 import SelectionProcessPage from '../pages/selection-process-page'
 import TracksGuidePage from '../pages/tracks-guide-page'
 import PresentationLayout from './presentation-layout'
-import {getSelectionPlan} from "../actions/base-actions";
 
-const PrimaryLayout = ({location, summit, speaker, member, match, selectionPlan, getSelectionPlan}) => {
-    const loggedUser = (speaker && speaker.id) ? speaker : member;
-    const selectionPlanIdParam = parseInt(match.params.selection_plan_id);
+const PrimaryLayout = ({location, summit, speaker, member, match}) => {
+  const loggedUser = (speaker && speaker.id) ? speaker : member;
+  const selectionPlanIdParam = parseInt(match.params.selection_plan_id);
+  const [selectionPlan, setSelectionPlan] = useState(null);
 
-    const getActiveMenu = () => {
-        if (location.pathname.includes('presentations')) {
-            return 'presentations';
-        }
+  useLayoutEffect(() => {
+    if (selectionPlanIdParam) {
+      const selPlan = summit.selection_plans.find(sp => sp.id === selectionPlanIdParam);
+      setSelectionPlan(selPlan);
+    }
+  }, [selectionPlanIdParam]);
 
-        if (location.pathname.includes('profile')) {
-            return 'profile';
-        }
-    };
+  if (!loggedUser || !selectionPlanIdParam || !selectionPlan) return null;
 
-    useEffect(() => {
-        if (selectionPlan?.id !== selectionPlanIdParam) {
-            getSelectionPlan(summit.id, selectionPlanIdParam);
-        }
-    }, [selectionPlan?.id, selectionPlanIdParam]);
-
-    if (!loggedUser || selectionPlan?.id !== selectionPlanIdParam) return null;
-
-    return (
-        <div className="primary-layout container-fluid">
-            <div className="row">
-                <div className="col-md-3">
-                    <NavMenu user={loggedUser} active={getActiveMenu()} exclusiveSections={window.EXCLUSIVE_SECTIONS}/>
-                </div>
-                <div className="col-md-9">
-                    <main id="page-wrap">
-                        <Switch>
-                            <Route strict exact path={`${match.url}/presentations`} component={PresentationsPage}/>
-                            <Route path={`${match.url}/presentations/new`} component={PresentationLayout}/>
-                            <Route path={`${match.url}/presentations/:presentation_id(\\d+)`} component={PresentationLayout}/>
-                            <Route exact path={`${match.url}/profile`} component={ProfilePage}/>
-                            <Route exact path={`${match.url}/selection_process`} component={SelectionProcessPage}/>
-                            <Route exact path={`${match.url}/tracks_guide`} component={TracksGuidePage}/>
-                            <Route render={props => (<Redirect to={`${match.url}/presentations`}/>)}/>
-                        </Switch>
-                    </main>
-                </div>
-            </div>
-        </div>
-    );
+  return (
+    <>
+      <Switch>
+        <Route
+          path={`${match.url}/new`}
+          render={(props) => <PresentationLayout selectionPlan={selectionPlan} {...props}/>}
+        />
+        <Route
+          path={`${match.url}/:presentation_id(\\d+)`}
+          render={(props) => <PresentationLayout selectionPlan={selectionPlan} {...props}/>}
+        />
+        <Route exact path={`${match.url}/profile`} component={ProfilePage}/>
+        <Route exact path={`${match.url}/selection_process`} component={SelectionProcessPage}/>
+        <Route exact path={`${match.url}/tracks_guide`} component={TracksGuidePage}/>
+        <Route render={props => (<Redirect to={`/app/${summit.slug}/all-plans/${selectionPlanIdParam}`}/>)}/>
+      </Switch>
+    </>
+  );
 
 }
 
-const mapStateToProps = ({ loggedUserState, baseState }) => ({
-    member: loggedUserState.member,
-    speaker: baseState.speaker,
-    summit: baseState.summit,
-    selectionPlan: baseState.selectionPlan,
-    loading: baseState.loading,
+const mapStateToProps = ({loggedUserState, baseState}) => ({
+  member: loggedUserState.member,
+  speaker: baseState.speaker,
+  summit: baseState.summit,
+  loading: baseState.loading,
 });
 
-export default connect(mapStateToProps, {getSelectionPlan})(PrimaryLayout)
+export default connect(mapStateToProps, null)(PrimaryLayout)
 
 

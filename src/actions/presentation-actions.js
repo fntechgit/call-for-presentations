@@ -61,9 +61,6 @@ export const getPresentation = (presentationId) => async (dispatch, getState) =>
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/events/${presentationId}`,
       (err, res) => presentationErrorHandler(err, res)(dispatch, getState)
     )(params)(dispatch).then((payload) => {
-            if(!tagGroups.length){
-                dispatch(getTagGroups(summit.id));
-            }
             dispatch(stopLoading());
             return payload.response;
         }
@@ -77,7 +74,7 @@ export const resetPresentation = () => (dispatch, getState) => {
 export const savePresentation = (entity, presentation, currentStep = null) => async (dispatch, getState) => {
     let {baseState} = getState();
     const accessToken = await getAccessTokenSafely();
-    const {summit, selectionPlan} = baseState;
+    const {summit} = baseState;
 
     dispatch(startLoading());
 
@@ -105,7 +102,7 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
                         dispatch(stopLoading());
                         presentation.updatePresentation({...payload, track_id: payload.track.id}, payload.track);
                         const nextStep = presentation.getStepNameAfter(currentStep);
-                        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${nextStep}`);
+                        history.push(`/app/${summit.slug}/all-plans/${payload.selection_plan_id}/presentations/${payload.id}/${nextStep}`);
                     });
             }, (error) => {
                 dispatch(stopLoading());
@@ -113,7 +110,7 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
     }
 
     // if new set selection plan
-    normalizedEntity.selection_plan_id = selectionPlan.id;
+    normalizedEntity.selection_plan_id = presentation._selectionPlan.id;
 
     return postRequest(
         createAction(UPDATE_PRESENTATION),
@@ -128,7 +125,7 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
                     dispatch(stopLoading());
                     presentation.updatePresentation({...payload, track_id: payload.track.id}, payload.track);
                     const nextStep = presentation.getStepNameAfter(currentStep);
-                    history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${payload.id}/${nextStep}`);
+                    history.push(`/app/${summit.slug}/all-plans/${payload.selection_plan_id}/presentations/${payload.id}/${nextStep}`);
                 }
             );
         }, (error) => {
@@ -200,7 +197,7 @@ export const deleteMediaUpload = (presentationId, materialId) => async (dispatch
 export const completePresentation = (entity) => async (dispatch, getState) => {
     const {baseState} = getState();
     const accessToken = await getAccessTokenSafely();
-    const {summit, selectionPlan} = baseState;
+    const {summit} = baseState;
 
     dispatch(startLoading());
 
@@ -215,14 +212,14 @@ export const completePresentation = (entity) => async (dispatch, getState) => {
         entity,
         authErrorHandler
     )(params)(dispatch)
-        .then((payload) => {
+        .then(({response}) => {
             dispatch(stopLoading());
-            history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${entity.id}/thank-you`);
+            history.push(`/app/${summit.slug}/all-plans/${response.selection_plan_id}/presentations/${entity.id}/thank-you`);
         });
 }
 
 
-export const deletePresentation = (presentationId) => async (dispatch, getState) => {
+export const deletePresentation = (selectionPlanId, presentationId) => async (dispatch, getState) => {
     const {baseState} = getState();
     const accessToken = await getAccessTokenSafely();
     const {summit} = baseState;
@@ -233,7 +230,7 @@ export const deletePresentation = (presentationId) => async (dispatch, getState)
 
     return deleteRequest(
         null,
-        createAction(PRESENTATION_DELETED)({presentationId}),
+        createAction(PRESENTATION_DELETED)({selectionPlanId, presentationId}),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}`,
         authErrorHandler
     )(params)(dispatch).then(() => {
@@ -254,7 +251,7 @@ const normalizeEntity = (entity) => {
 
 const presentationErrorHandler = (err, res) => (dispatch, getState) => {
     const {baseState} = getState();
-    const {summit, selectionPlan} = baseState || {};
+    const {summit} = baseState || {};
     const code = err.status;
     dispatch(stopLoading());
 
@@ -276,8 +273,8 @@ const presentationErrorHandler = (err, res) => (dispatch, getState) => {
             dispatch(showMessage(
                 error_message,
                 () => {
-                    if (summit && selectionPlan) {
-                        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/`);
+                    if (summit) {
+                        history.push(`/app/${summit.slug}/all-plans`);
                     }
                 }
             ));
