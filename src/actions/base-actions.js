@@ -22,6 +22,7 @@ import {
 } from "openstack-uicore-foundation/lib/utils/actions";
 import history from '../history';
 import {getAccessTokenSafely} from "../utils/methods";
+import {DUMMY_ACTION} from "./presentations-actions";
 
 export const RECEIVE_TAG_GROUPS             = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY         = 'RECEIVE_EVENT_CATEGORY';
@@ -53,18 +54,22 @@ export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
         });
 };
 
-export const getCurrentSummitPublic = (id) => (dispatch) => {
-
+export const getCurrentSummitPublic = (id) => (dispatch, getState) => {
+    const {loggedUserState} = getState();
+    const {member} = loggedUserState;
     let params = {
         expand: 'event_types,event_types.allowed_media_upload_types,event_types.allowed_media_upload_types.type,tracks,selection_plans, selection_plans.track_groups,selection_plans.extra_questions,selection_plans.extra_questions.values'
     };
 
     return getRequest(
         null,
-        createAction(RECEIVE_SUMMIT),
+        createAction(DUMMY_ACTION),
         `${window.API_BASE_URL}/api/public/v1/summits/all/${id}`,
         currentSummitErrorHandler
-    )(params)(dispatch);
+    )(params)(dispatch).then(payload => {
+        dispatch(createAction(RECEIVE_SUMMIT)({...payload, member}));
+        return payload;
+    });
 }
 
 export const getAvailableSummits = () => (dispatch, getState) => {
