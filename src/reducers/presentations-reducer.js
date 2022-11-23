@@ -40,7 +40,7 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
     case RECEIVE_SUMMIT: {
       const {response: summit, member} = payload;
       const allSummitDocs = summit.summit_documents;
-      const availablePlans = filterAvailablePlans(summit.selection_plans, member.id);
+      const availablePlans = filterAvailablePlans(summit.selection_plans, member?.id);
       const collections = availablePlans.map(sp => {
         return ({
           selectionPlan: sp,

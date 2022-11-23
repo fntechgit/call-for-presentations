@@ -26,7 +26,7 @@ import {getAccessTokenSafely} from "../utils/methods";
 
 export const RECEIVE_SPEAKER_INFO       = 'RECEIVE_SPEAKER_INFO';
 
-export const getSpeakerInfo = (backUrl) => async (dispatch, getState) => {
+export const getSpeakerInfo = () => async (dispatch, getState) => {
     const accessToken = await getAccessTokenSafely();
 
     dispatch(startLoading());
@@ -42,12 +42,7 @@ export const getSpeakerInfo = (backUrl) => async (dispatch, getState) => {
         `${window.API_BASE_URL}/api/v1/speakers/me`,
         speakerErrorHandler
     )(params)(dispatch, getState).then(() => {
-
         dispatch(stopLoading());
-
-        if (backUrl) {
-            history.push(backUrl);
-        }
     });
 }
 

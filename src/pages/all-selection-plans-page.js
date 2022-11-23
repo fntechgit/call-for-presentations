@@ -21,7 +21,7 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, member, match}) => {
 
   const getAvailablePlans = () => {
     const selectionPlanIdParam = parseInt(match?.params?.selection_plan_id) || null;
-    let allPlans = filterAvailablePlans(summit.selection_plans, member.id);
+    let allPlans = filterAvailablePlans(summit.selection_plans, member?.id);
 
     if (selectionPlanIdParam) {
       allPlans = allPlans.filter(sp => sp.id === selectionPlanIdParam);

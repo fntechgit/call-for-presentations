@@ -12,9 +12,11 @@
  **/
 import React from 'react'
 import { connect } from 'react-redux';
+import history from '../history'
 import {getSpeakerInfo } from '../actions/auth-actions';
 import AbstractAuthorizationCallbackRoute from "openstack-uicore-foundation/lib/security/abstract-auth-callback-route";
 import { Route, Redirect } from 'react-router-dom';
+import { getUserInfo } from "openstack-uicore-foundation/lib/security/actions";
 
 class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
 
@@ -25,7 +27,9 @@ class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
     _callback(backUrl) {
         if (!backUrl) backUrl = '/app';
 
-        this.props.getSpeakerInfo(backUrl);
+        this.props.getSpeakerInfo().then(() => {
+            this.props.getUserInfo('groups','', backUrl, history);
+        });
     }
 
     _redirect2Error(error){
@@ -38,5 +42,6 @@ class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
 }
 
 export default connect(null,{
-    getSpeakerInfo
+    getSpeakerInfo,
+    getUserInfo
 })(AuthorizationCallbackRoute)
