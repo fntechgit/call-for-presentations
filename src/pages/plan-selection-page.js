@@ -16,15 +16,13 @@ import {Dropdown} from 'openstack-uicore-foundation/lib/components'
 import history from "../history";
 import {connect} from "react-redux";
 import T from "i18n-react";
-import {nowAfter} from "../utils/methods";
+import {filterAvailablePlans, nowAfter} from "../utils/methods";
 
 import '../styles/plan-selection-page.less';
 
-const PlanSelectionPage = ({summit, loading}) => {
+const PlanSelectionPage = ({summit, loading, member}) => {
     const selPlans = summit?.selection_plans || [];
-    const availablePlans = selPlans.filter(sp => {
-        return sp.is_enabled && nowAfter(sp.submission_begin_date);
-    });
+    const availablePlans = filterAvailablePlans(selPlans, member.id);
 
     if (loading) return null;
 
@@ -66,9 +64,10 @@ const PlanSelectionPage = ({summit, loading}) => {
     );
 }
 
-const mapStateToProps = ({baseState}) => ({
+const mapStateToProps = ({baseState, loggedUserState}) => ({
     loading: baseState.loading,
     summit: baseState.summit,
+    member: loggedUserState.member,
 })
 
 

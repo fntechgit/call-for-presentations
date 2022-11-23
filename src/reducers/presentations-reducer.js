@@ -20,10 +20,12 @@ import {
 } from '../actions/presentations-actions';
 import {PRESENTATION_ADDED, PRESENTATION_DELETED} from '../actions/presentation-actions'
 import {CLEAR_SUMMIT, RECEIVE_SUMMIT} from "../actions/base-actions";
+import {filterAvailablePlans} from "../utils/methods";
 
 const DEFAULT_STATE = {
   allSummitDocs: [],
-  collections: []
+  collections: [],
+  speaker: null,
 };
 
 const presentationsReducer = (state = DEFAULT_STATE, action) => {
@@ -36,9 +38,10 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
       return DEFAULT_STATE;
     }
     case RECEIVE_SUMMIT: {
-      const summit = payload.response;
+      const {response: summit, member} = payload;
       const allSummitDocs = summit.summit_documents;
-      const collections = summit.selection_plans.filter(sp => sp.is_enabled).map(sp => {
+      const availablePlans = filterAvailablePlans(summit.selection_plans, member.id);
+      const collections = availablePlans.map(sp => {
         return ({
           selectionPlan: sp,
           presentationsCreated: [],
