@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 
-import {LOGOUT_USER} from 'openstack-uicore-foundation/lib/utils/actions';
+import {LOGOUT_USER} from 'openstack-uicore-foundation/lib/security/actions';
 import {
   CREATED_RECEIVED,
   SPEAKER_RECEIVED,
