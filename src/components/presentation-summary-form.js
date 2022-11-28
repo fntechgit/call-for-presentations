@@ -88,13 +88,6 @@ class PresentationSummaryForm extends React.Component {
                 required: 'Abstract is required.',
                 maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
             },
-            social_description: {
-                maxLength: {value: 280, msg: 'Value exceeds max limit of 280 characters'}
-            },
-            attendees_expected_learnt: {
-                required: 'This field is required.',
-                maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
-            },
             links: {links: 'Link is not valid. Links must start with http:// or https://'},
             extra_questions: {
                 required_questions: {
@@ -116,8 +109,19 @@ class PresentationSummaryForm extends React.Component {
             }}
         }
 
-        if (selectedType && selectedType.allows_level) {
+        if (this.isQuestionEnabled('level')) {
             rules.level = {required: 'Please select the level.'};
+        }
+
+        if (this.isQuestionEnabled('social_description')) {
+            rules.social_description = {maxLength: {value: 280, msg: 'Value exceeds max limit of 280 characters'}};
+        }
+
+        if (this.isQuestionEnabled('attendees_expected_learnt')) {
+            rules.attendees_expected_learnt = {
+                required: 'This field is required.',
+                maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
+            };
         }
 
         validate(entity, rules, errors);
@@ -141,6 +145,11 @@ class PresentationSummaryForm extends React.Component {
         }
 
         return '';
+    }
+
+    isQuestionEnabled(question_id) {
+        const {selectionPlan} = this.props;
+        return selectionPlan.allowed_presentation_questions.includes(question_id);
     }
 
     render() {
@@ -263,7 +272,7 @@ class PresentationSummaryForm extends React.Component {
                             />
                         </div>
                     </div>
-                    {selectedType && selectedType.allows_level &&
+                    {this.isQuestionEnabled('level') &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.level")} </label>
@@ -286,6 +295,7 @@ class PresentationSummaryForm extends React.Component {
                         </div>
                     </div>
                     <hr/>
+                    {this.isQuestionEnabled('social_description') &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <p>{T.translate("edit_presentation.social_summary_desc")}</p>
@@ -294,6 +304,8 @@ class PresentationSummaryForm extends React.Component {
                                       onChange={this.handleChange} error={this.hasErrors('social_description')}/>
                         </div>
                     </div>
+                    }
+                    {this.isQuestionEnabled('attendees_expected_learnt') &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.expected_learn")} </label>
@@ -302,19 +314,22 @@ class PresentationSummaryForm extends React.Component {
                                         error={this.hasErrors('attendees_expected_learnt')}/>
                         </div>
                     </div>
+                    }
+                    {this.isQuestionEnabled('attending_media') &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.attending_media")} </label>
                             <RadioList
-                                id="attending_media"
-                                value={entity.attending_media}
-                                onChange={this.handleChange}
-                                options={attending_media_opts}
-                                inline
-                                error={this.hasErrors('attending_media')}
+                              id="attending_media"
+                              value={entity.attending_media}
+                              onChange={this.handleChange}
+                              options={attending_media_opts}
+                              inline
+                              error={this.hasErrors('attending_media')}
                             />
                         </div>
                     </div>
+                    }
                     <div className="row form-group">
                         <div className="col-md-12">
                             <QuestionsInput
