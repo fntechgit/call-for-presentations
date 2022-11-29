@@ -78,7 +78,7 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
 
     dispatch(startLoading());
 
-    const normalizedEntity = normalizeEntity(entity);
+    const normalizedEntity = normalizeEntity(entity, presentation._selectionPlan);
 
     const params = {
         access_token: accessToken,
@@ -239,11 +239,27 @@ export const deletePresentation = (selectionPlanId, presentationId) => async (di
     );
 };
 
-const normalizeEntity = (entity) => {
+const normalizeEntity = (entity, selectionPlan) => {
     const normalizedEntity = {...entity};
 
     normalizedEntity.links = normalizedEntity.links.filter(l => l.trim() != '');
     normalizedEntity.tags = normalizedEntity.tags.map(t => t.tag);
+
+    if (!selectionPlan.allowed_presentation_questions.includes('level')) {
+        delete(normalizedEntity.level);
+    }
+
+    if (!selectionPlan.allowed_presentation_questions.includes('social_description')) {
+        delete(normalizedEntity.social_description);
+    }
+
+    if (!selectionPlan.allowed_presentation_questions.includes('attendees_expected_learnt')) {
+        delete(normalizedEntity.attendees_expected_learnt);
+    }
+
+    if (!selectionPlan.allowed_presentation_questions.includes('attending_media')) {
+        delete(normalizedEntity.attending_media);
+    }
 
     return normalizedEntity;
 };
