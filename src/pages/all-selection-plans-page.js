@@ -15,13 +15,12 @@ import React from 'react';
 import {connect} from 'react-redux';
 import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
-import {filterAvailablePlans} from '../utils/methods';
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, member, match}) => {
+const AllSelectionPlansPage = ({summit, loggedSpeaker, match}) => {
 
   const getAvailablePlans = () => {
     const selectionPlanIdParam = parseInt(match?.params?.selection_plan_id) || null;
-    let allPlans = filterAvailablePlans(summit.selection_plans, member?.id);
+    let allPlans = summit.selection_plans
 
     if (selectionPlanIdParam) {
       allPlans = allPlans.filter(sp => sp.id === selectionPlanIdParam);
@@ -46,11 +45,10 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, member, match}) => {
   );
 };
 
-const mapStateToProps = ({baseState, loggedUserState}) => ({
+const mapStateToProps = ({baseState}) => ({
   summit: baseState.summit,
   loggedSpeaker: baseState.speaker,
   loading: baseState.loading,
-  member: loggedUserState.member
 });
 
 export default connect(mapStateToProps)(AllSelectionPlansPage);

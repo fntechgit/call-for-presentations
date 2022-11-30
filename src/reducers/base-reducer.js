@@ -23,6 +23,7 @@ import {
     BASE_LOADED,
     REQUEST_MARKETING_SETTINGS,
     REQUEST_AVAILABLE_SUMMITS,
+    RECEIVE_ALLOWED_SELECTION_PLANS,
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
@@ -39,6 +40,7 @@ const DEFAULT_STATE = {
     submissionIsClosed: false,
     globalSummitDocs: [],
     baseLoaded: false,
+    allowedSelectionPlans: [],
 };
 
 const baseReducer = (state = DEFAULT_STATE, action) => {
@@ -95,6 +97,10 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
             // set color vars
             setDocumentColors(data);
             return {...state, marketingSettings: data};
+        }
+        case RECEIVE_ALLOWED_SELECTION_PLANS: {
+            const {data} = payload.response;
+            return {...state, summit: {...state.summit, selection_plans: data}};
         }
         default:
             return state;

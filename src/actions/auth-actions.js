@@ -66,4 +66,3 @@ export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
     }
     dispatch(authErrorHandler(err, res));
 }
-

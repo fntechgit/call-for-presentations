@@ -11,18 +11,16 @@
  * limitations under the License.
  **/
 
-import React, {useEffect} from "react";
+import React from "react";
 import {Dropdown} from 'openstack-uicore-foundation/lib/components'
 import history from "../history";
 import {connect} from "react-redux";
 import T from "i18n-react";
-import {filterAvailablePlans, nowAfter} from "../utils/methods";
 
 import '../styles/plan-selection-page.less';
 
-const PlanSelectionPage = ({summit, loading, member}) => {
-    const selPlans = summit?.selection_plans || [];
-    const availablePlans = filterAvailablePlans(selPlans, member.id);
+const PlanSelectionPage = ({summit, loading}) => {
+    const availablePlans = summit?.selection_plans || [];
 
     if (loading) return null;
 
@@ -64,10 +62,9 @@ const PlanSelectionPage = ({summit, loading, member}) => {
     );
 }
 
-const mapStateToProps = ({baseState, loggedUserState}) => ({
+const mapStateToProps = ({baseState}) => ({
     loading: baseState.loading,
     summit: baseState.summit,
-    member: loggedUserState.member,
 })
 
 

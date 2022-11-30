@@ -248,9 +248,9 @@ export const setDefaultColors = () => {
     setDocumentColors(defaultColors);
 };
 
-export const filterAvailablePlans = (plans, member_id) => {
+export const filterAvailablePlans = (plans, member) => {
     return plans.filter(sp => {
-        const memberHasAccess = sp.allowed_members?.length > 0 && member_id ? sp.allowed_members.includes(member_id) : true;
+        const memberHasAccess = sp.allowed_members?.length > 0 && member?.email ? sp.allowed_members.includes(member_id) : true;
         return sp.is_enabled && memberHasAccess;
     });
 }
