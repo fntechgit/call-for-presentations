@@ -247,10 +247,3 @@ export const setDocumentColors = (data) => {
 export const setDefaultColors = () => {
     setDocumentColors(defaultColors);
 };
-
-export const filterAvailablePlans = (plans, member) => {
-    return plans.filter(sp => {
-        const memberHasAccess = sp.allowed_members?.length > 0 && member?.email ? sp.allowed_members.includes(member_id) : true;
-        return sp.is_enabled && memberHasAccess;
-    });
-}
