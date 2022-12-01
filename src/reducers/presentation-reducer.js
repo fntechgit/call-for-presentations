@@ -14,7 +14,6 @@ import
 {
     RECEIVE_PRESENTATION,
     RESET_PRESENTATION,
-    UPDATE_PRESENTATION,
     PRESENTATION_UPDATED,
     PRESENTATION_ADDED,
     PRESENTATION_COMPLETED,
@@ -72,16 +71,9 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
                 return {...state,  entity: {...DEFAULT_ENTITY}, errors: {} };
             }
         }
-        break;
         case RESET_PRESENTATION: {
             return DEFAULT_STATE;
         }
-        break;
-        case UPDATE_PRESENTATION: {
-            let entity = {...payload};
-            return {...state, entity: {...state.entity, ...entity}, errors: {} };
-        }
-        break;
         case RECEIVE_PRESENTATION: {
             let entity = {...payload.response};
 
@@ -119,61 +111,45 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
 
             return {...state, entity: {...DEFAULT_ENTITY, ...entity}, errors: {} };
         }
-        break;
         case PRESENTATION_ADDED:
         case PRESENTATION_COMPLETED:
         case PRESENTATION_UPDATED: {
             let entity = {...payload.response};
-
-            // these come un expanded, we need to use what we had
-            delete entity.speakers;
-            delete entity.links;
-            delete entity.tags;
-            delete entity.extra_questions;
-
             let tmp_entity = {...state.entity, ...entity};
 
             return {...state, entity: tmp_entity };
         }
-        break;
         case PRESENTATION_MATERIAL_ATTACHED: {
             let material = {...payload.response};
             return {...state, errors: {}, entity: {...state.entity, media_uploads: [...state.entity.media_uploads, material] }};
         }
-        break;
         case PRESENTATION_MATERIAL_DELETED: {
             let {materialId} = payload;
             const media_uploads = state.entity.media_uploads.filter(mu => mu.id !== materialId);
             return {...state, errors: {}, entity: {...state.entity, media_uploads: media_uploads} };
         }
-        break;
         case RECEIVE_EVENT_CATEGORY: {
             let entity = {...payload.response};
             return {...state, track: {...entity}};
         }
-        break;
         case SPEAKER_ASSIGNED: {
             let {speaker} = payload;
             let speakers = state.entity.speakers.filter(s => s.id != speaker.id);
             return {...state, entity: {...state.entity, speakers: [...speakers, speaker]}};
         }
-        break;
         case SPEAKER_REMOVED: {
             let {speakerId} = payload;
             let speakers = state.entity.speakers.filter(s => s.id != speakerId);
             return {...state, entity: {...state.entity, speakers: speakers}};
         }
-        break;
         case MODERATOR_ASSIGNED: {
             let {moderator} = payload;
             return {...state, entity: {...state.entity, moderator: moderator}};
         }
-        break;
         case MODERATOR_REMOVED: {
             let {moderatorId} = payload;
             return {...state, entity: {...state.entity, moderator: null}};
         }
-        break;
         case VALIDATE: {
             return {...state,  errors: payload.errors };
         }

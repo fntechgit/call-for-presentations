@@ -67,8 +67,10 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
   if (!dataPulled) return null;
 
   const { collections, match, history } = props;
-
   const thisPlan = collections.find(col => col.selectionPlan.id === selectionPlan.id);
+
+  if (!thisPlan) return null;
+
   const {presentationsCreated, presentationsSpeaker, presentationsModerator, summitDocs} = thisPlan;
   const submissionIsClosed = !nowBetween(selectionPlan.submission_begin_date, selectionPlan.submission_end_date);
   const {title, subtitle} = getTitle(submissionIsClosed);
