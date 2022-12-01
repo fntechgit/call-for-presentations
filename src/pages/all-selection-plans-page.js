@@ -11,12 +11,19 @@
  * limitations under the License.
  **/
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
 
 const AllSelectionPlansPage = ({summit, loggedSpeaker, match}) => {
+  const [plansToShow, setPlansToShow] = useState([]);
+  const selectionPlansIds = summit.selection_plans.map(sp => sp.id);
+
+  useEffect(() => {
+    const availablePlans = getAvailablePlans();
+    setPlansToShow(availablePlans);
+  }, [selectionPlansIds])
 
   const getAvailablePlans = () => {
     const selectionPlanIdParam = parseInt(match?.params?.selection_plan_id) || null;
@@ -29,14 +36,12 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match}) => {
     return allPlans.sort((a,b) => a.submission_begin_date - b.submission_begin_date);
   };
 
-  if (summit == null || loggedSpeaker == null) return null;
+  if ( !summit || !loggedSpeaker ) return null;
 
   if (!loggedSpeaker) {
     history.push(`/app/profile`);
     return;
   }
-
-  const plansToShow = getAvailablePlans();
 
   return (
     <div>

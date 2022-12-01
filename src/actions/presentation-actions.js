@@ -27,6 +27,7 @@ import T from "i18n-react/dist/i18n-react";
 import Swal from "sweetalert2";
 import history from '../history'
 import {
+    getAllowedSelectionPlans,
     getTagGroups
 } from "./base-actions";
 import {getAccessTokenSafely} from "../utils/methods";
@@ -60,7 +61,7 @@ export const getPresentation = (presentationId) => async (dispatch, getState) =>
         createAction(RECEIVE_PRESENTATION),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/events/${presentationId}`,
       (err, res) => presentationErrorHandler(err, res)(dispatch, getState)
-    )(params)(dispatch).then((payload) => {
+    )(params)(dispatch, getState).then((payload) => {
             dispatch(stopLoading());
             return payload.response;
         }
@@ -92,9 +93,9 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
                 createAction(PRESENTATION_UPDATED),
             `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}`,
             normalizedEntity,
-            authErrorHandler,
+          presentationErrorHandler,
             entity
-        )(params)(dispatch)
+        )(params)(dispatch, getState)
             .then(({response}) => {
 
                 dispatch(getPresentation(response.id))
@@ -117,9 +118,9 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
         createAction(PRESENTATION_ADDED),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations`,
         normalizedEntity,
-        authErrorHandler,
+        presentationErrorHandler,
         entity
-    )(params)(dispatch)
+    )(params)(dispatch, getState)
         .then(({response}) => {
                 dispatch(getPresentation(response.id)).then((payload) => {
                     dispatch(stopLoading());
@@ -210,8 +211,8 @@ export const completePresentation = (entity) => async (dispatch, getState) => {
         createAction(PRESENTATION_COMPLETED),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${entity.id}/completed`,
         entity,
-        authErrorHandler
-    )(params)(dispatch)
+        presentationErrorHandler
+    )(params)(dispatch, getState)
         .then(({response}) => {
             dispatch(stopLoading());
             history.push(`/app/${summit.slug}/all-plans/${response.selection_plan_id}/presentations/${entity.id}/thank-you`);
@@ -232,8 +233,8 @@ export const deletePresentation = (selectionPlanId, presentationId) => async (di
         null,
         createAction(PRESENTATION_DELETED)({selectionPlanId, presentationId}),
         `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}`,
-        authErrorHandler
-    )(params)(dispatch).then(() => {
+        presentationErrorHandler
+    )(params)(dispatch, getState).then(() => {
             dispatch(stopLoading());
         }
     );
@@ -275,13 +276,29 @@ const presentationErrorHandler = (err, res) => (dispatch, getState) => {
 
     switch (code) {
         case 403:
-            Swal.fire("ERROR", T.translate("errors.user_not_authz"), "warning");
+            const error_message_auth = {
+                title: "Access Error",
+                html: "Your account can't access this presentation.",
+                type: 'warning'
+            };
+
+            dispatch(showMessage(
+              error_message_auth,
+              () => {
+                  if (summit) {
+                      history.push(`/app/${summit.slug}/all-plans`);
+                      dispatch(getAllowedSelectionPlans(summit.id))
+                  } else {
+                      history.push(`/app/start`);
+                  }
+              }
+            ));
             break;
         case 401:
             doLoginBasicLogin(window.location.pathname);
             break;
         case 404:
-            let error_message = {
+            const error_message = {
                 title: T.translate("errors.not_found"),
                 html: (err.response.body.message) ? err.response.body.message : err.message,
                 type: 'warning'
