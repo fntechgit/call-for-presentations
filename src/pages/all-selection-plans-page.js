@@ -11,17 +11,23 @@
  * limitations under the License.
  **/
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
-import {filterAvailablePlans} from '../utils/methods';
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, member, match}) => {
+const AllSelectionPlansPage = ({summit, loggedSpeaker, match}) => {
+  const [plansToShow, setPlansToShow] = useState([]);
+  const selectionPlansIds = summit.selection_plans.map(sp => sp.id);
+
+  useEffect(() => {
+    const availablePlans = getAvailablePlans();
+    setPlansToShow(availablePlans);
+  }, [selectionPlansIds])
 
   const getAvailablePlans = () => {
     const selectionPlanIdParam = parseInt(match?.params?.selection_plan_id) || null;
-    let allPlans = filterAvailablePlans(summit.selection_plans, member?.id);
+    let allPlans = summit.selection_plans
 
     if (selectionPlanIdParam) {
       allPlans = allPlans.filter(sp => sp.id === selectionPlanIdParam);
@@ -30,14 +36,12 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, member, match}) => {
     return allPlans.sort((a,b) => a.submission_begin_date - b.submission_begin_date);
   };
 
-  if (summit == null || loggedSpeaker == null) return null;
+  if ( !summit || !loggedSpeaker ) return null;
 
   if (!loggedSpeaker) {
     history.push(`/app/profile`);
     return;
   }
-
-  const plansToShow = getAvailablePlans();
 
   return (
     <div>
@@ -46,11 +50,10 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, member, match}) => {
   );
 };
 
-const mapStateToProps = ({baseState, loggedUserState}) => ({
+const mapStateToProps = ({baseState}) => ({
   summit: baseState.summit,
   loggedSpeaker: baseState.speaker,
   loading: baseState.loading,
-  member: loggedUserState.member
 });
 
 export default connect(mapStateToProps)(AllSelectionPlansPage);

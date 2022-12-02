@@ -188,8 +188,11 @@ class PresentationSummaryForm extends React.Component {
             {label: 'N/A', value: 'N/A'}
         ];
 
-        let allowedTrackIds = selectionPlan.track_groups.map(tg => [...tg.tracks]);
-        allowedTrackIds = [].concat(...allowedTrackIds);
+        const allAllowedTrackIds = selectionPlan.track_groups.reduce((res,item) => {
+            return [...res, ...item.tracks];
+        }, []);
+
+        const allowedTrackIds = [...new Set(allAllowedTrackIds)];
 
         const categories = summit.tracks
             .filter(t => allowedTrackIds.includes(t.id))

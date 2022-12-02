@@ -11,15 +11,12 @@
  * limitations under the License.
  **/
 
-import React, {useEffect} from 'react'
+import React from 'react'
 import {connect} from 'react-redux';
 import {Switch, Route, Redirect} from 'react-router-dom';
 import {getAllFromSummit, getAllSummitDocs} from '../actions/base-actions';
 import PrimaryLayout from "./primary-layout";
-import PlanSelectionPage from "../pages/plan-selection-page";
-import ProfilePage from "../pages/profile-page";
 import AllSelectionPlansPage from "../pages/all-selection-plans-page";
-import ClockComponent from '../components/clock';
 import NavMenu from "../components/nav-menu";
 
 const AllPlansLayout = ({summit, location, match, speaker, member}) => {
@@ -49,7 +46,7 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
               <Route strict exact path={match.url} component={AllSelectionPlansPage}/>
               <Route strict exact path={`${match.url}/:selection_plan_id(\\d+)`} component={AllSelectionPlansPage}/>
               <Route path={`${match.url}/:selection_plan_id(\\d+)/presentations`} component={PrimaryLayout}/>
-              <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`}/>)}/>
+              <Route render={() => (<Redirect to={`/app/${summit.slug}/all-plans`}/>)}/>
             </Switch>
           </main>
         </div>

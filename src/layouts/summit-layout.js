@@ -11,56 +11,62 @@
  * limitations under the License.
  **/
 
-import React, {useEffect, useRef} from 'react'
-import { connect } from 'react-redux';
-import { Switch, Route, Redirect } from 'react-router-dom';
-import {getAllFromSummit, getAllSummitDocs, getTagGroups} from '../actions/base-actions';
+import React, {useEffect, useState} from 'react'
+import {connect} from 'react-redux';
+import {Switch, Route, Redirect} from 'react-router-dom';
+import {getAllFromSummit, getAllSummitDocs, getTagGroups, getAllowedSelectionPlans} from '../actions/base-actions';
 import AllPlansLayout from "./all-plans-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
 import ProfilePage from "../pages/profile-page";
 import ClockComponent from '../components/clock';
 
-const SummitLayout = ({summit, loading, match, speaker, location, getAllFromSummit, baseLoaded}) => {
-    const urlSummitSlug = match.params.summit_slug;
-    const summitSlug = summit?.slug;
-    const firstRender = useRef(true);
+const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ...props}) => {
+  const urlSummitSlug = match.params.summit_slug;
+  const summitSlug = summit?.slug;
+  const [dataLoaded, setDataLoaded] = useState(false);
 
-    // get summit data on every refresh
-    useEffect(() => {
-        firstRender.current = false;
-        getAllFromSummit(urlSummitSlug).then(summit => {
-            getTagGroups(summit.id);
-        });
-    }, []);
+  // get summit data on every refresh
+  useEffect(() => {
+    props.getAllFromSummit(urlSummitSlug).then(async (summit) => {
+      await props.getTagGroups(summit.id);
+      await props.getAllowedSelectionPlans(summit.id);
+      setDataLoaded(true);
+    });
+  }, []);
 
-    if (summitSlug !== urlSummitSlug || !baseLoaded || firstRender.current) return null;
+  if (summitSlug !== urlSummitSlug || !baseLoaded || !dataLoaded) return null;
 
-    // check if speaker profile exists, if not redirect
-    if((!speaker || !speaker.id) && location.pathname !== `/app/${summit.slug}/profile` && !loading) {
-        return (
-            <Redirect exact to={{ pathname: `/app/${summit.slug}/profile` }}  />
-        );
-    }
-
-    return(
-        <>
-            <ClockComponent active={true} summit={summit} />
-            <Switch>
-                <Route strict exact path={`${match.url}/select-plan`} component={PlanSelectionPage}/>
-                <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
-                <Route path={`${match.url}/all-plans`} component={AllPlansLayout}/>
-                <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`}/>)}/>
-            </Switch>
-        </>
+  // check if speaker profile exists, if not redirect
+  if ((!speaker || !speaker.id) && location.pathname !== `/app/${summit.slug}/profile` && !loading) {
+    return (
+      <Redirect exact to={{pathname: `/app/${summit.slug}/profile`}}/>
     );
+  }
+
+  return (
+    <>
+      <ClockComponent active={true} summit={summit}/>
+      <Switch>
+        <Route strict exact path={`${match.url}/select-plan`} component={PlanSelectionPage}/>
+        <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
+        <Route path={`${match.url}/all-plans`} component={AllPlansLayout}/>
+        <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`}/>)}/>
+      </Switch>
+    </>
+  );
 
 }
 
-const mapStateToProps = ({ baseState }) => ({
-    speaker: baseState.speaker,
-    summit: baseState.summit,
-    loading: baseState.loading,
-    baseLoaded: baseState.baseLoaded,
+const mapStateToProps = ({baseState}) => ({
+  speaker: baseState.speaker,
+  summit: baseState.summit,
+  loading: baseState.loading,
+  baseLoaded: baseState.baseLoaded,
 })
 
-export default connect(mapStateToProps, {getAllFromSummit, getAllSummitDocs})(SummitLayout);
+export default connect(mapStateToProps, {
+  getAllFromSummit,
+  getAllSummitDocs,
+  getTagGroups,
+  getAllowedSelectionPlans
+})(SummitLayout);
