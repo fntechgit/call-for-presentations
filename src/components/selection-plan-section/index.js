@@ -25,8 +25,14 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
 
   const handleNewPresentation = (ev) => {
     const {history, match} = props;
+    const {params} = match;
+    const {selection_plan_id} = params;
+    let url = match.url;
+    const segments = [];
+    if (!selection_plan_id)
+      url = `${url}/${selectionPlan.id}`;
     ev.preventDefault();
-    history.push(`${match.url}/${selectionPlan.id}/presentations/new/summary`);
+    history.push(`${url}/presentations/new/summary`);
   }
 
   const getTitle = (submissionIsClosed) => {
@@ -47,7 +53,7 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
 
   const handleDeletePresentation = (ev, presentation) => {
     const {deletePresentation} = props;
-
+    debugger;
     ev.preventDefault();
 
     Swal.fire({
