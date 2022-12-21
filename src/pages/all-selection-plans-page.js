@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 
-import React, {useEffect, useState} from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
@@ -20,9 +20,11 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match}) => {
   const [plansToShow, setPlansToShow] = useState([]);
   const selectionPlansIds = summit.selection_plans.map(sp => sp.id);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const availablePlans = getAvailablePlans();
-    setPlansToShow(availablePlans);
+    if (availablePlans.length > 0) {
+      setPlansToShow(availablePlans);
+    }
   }, [selectionPlansIds])
 
   const getAvailablePlans = () => {
@@ -41,6 +43,12 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match}) => {
   if (!loggedSpeaker) {
     history.push(`/app/profile`);
     return;
+  }
+
+  if (plansToShow.length === 0) {
+    return (
+      <div className="small-page-wrap">You cannot submit a presentation for this event at this time</div>
+    );
   }
 
   return (
