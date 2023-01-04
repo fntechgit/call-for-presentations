@@ -64,7 +64,7 @@ class PresentationSummaryForm extends React.Component {
             delete (errors[id]);
             id = 'links';
             value = [...entity.links];
-            value[ev.target.dataset.key] = ev.target.value;
+            value[ev.target.dataset.key] = ev.target.value.trim();
         }
 
         delete (errors[id]);
