@@ -80,15 +80,16 @@ class Presentation {
     if (!status) return T.translate("presentations.not_submitted");
 
     if (submissionComplete) {
-      if (selectionEnded) {
+      if (lockStatus) {
+        return T.translate("presentations.in_review");
+      } else if (selectionEnded) {
         return submissionAccepted ? T.translate("presentations.accepted") : T.translate("presentations.rejected")
-      } else if (submissionClosed || selectionOpen || lockStatus) {
+      } else if (submissionClosed || selectionOpen) {
         return T.translate("presentations.in_review");
       } else {
         return T.translate("presentations.received");
       }
     }
-
   }
 
   isSubmitted() {
