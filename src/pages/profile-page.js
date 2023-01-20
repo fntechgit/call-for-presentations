@@ -24,10 +24,8 @@ import '../styles/profile-page.less';
 const ProfilePage = (props) => {
 
     useEffect(() => {
-        if (!props.speaker) {
-            props.getSpeakerInfo(null);
-        }
-    }, [props.speaker]);
+        props.getSpeakerInfo(null);
+    }, []);
 
     useEffect(() => {
         if (props.orgRoles.length === 0) {
@@ -63,7 +61,7 @@ const ProfilePage = (props) => {
             <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile")}</h3>
             <hr/>
             <SpeakerForm
-                entity={speaker}
+                entity={props.entity}
                 errors={errors}
                 member={loggedMember}
                 orgRoles={orgRoles}
