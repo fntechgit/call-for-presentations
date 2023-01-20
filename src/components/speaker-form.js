@@ -96,8 +96,9 @@ class SpeakerForm extends React.Component {
     }
 
     handleSubmit(ev) {
-        let {entity, errors} = this.state;
-        let linksOk = true;
+        const {entity} = this.state;
+        const errors = {};
+
         ev.preventDefault();
 
         let rules = {
@@ -114,7 +115,7 @@ class SpeakerForm extends React.Component {
 
         validate(entity, rules, errors);
 
-        if (Object.keys(errors).length == 0) {
+        if (Object.keys(errors).length === 0) {
             this.props.onSubmit(this.state.entity);
         } else {
             this.setState({errors}, () => {

@@ -11,38 +11,35 @@
  * limitations under the License.
  **/
 
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useEffect} from 'react';
+import {connect} from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
 import SpeakerForm from '../components/speaker-form'
-import { saveSpeakerProfile, getOrganizationalRoles } from "../actions/speaker-actions";
-import { getSpeakerInfo } from "../actions/auth-actions";
+import {saveSpeakerProfile, getOrganizationalRoles} from "../actions/speaker-actions";
+import {getSpeakerInfo} from "../actions/auth-actions";
 
 import '../styles/profile-page.less';
 
-class ProfilePage extends React.Component {
+const ProfilePage = (props) => {
 
-    constructor(props){
-        super(props);
-        this.handleSaveSpeakerProfile = this.handleSaveSpeakerProfile.bind(this);
-    }
-
-    componentWillMount () {
-        if (!this.props.speaker) {
-            this.props.getSpeakerInfo(null);
+    useEffect(() => {
+        if (!props.speaker) {
+            props.getSpeakerInfo(null);
         }
+    }, [props.speaker]);
 
-        if (this.props.orgRoles.length === 0) {
-            this.props.getOrganizationalRoles();
+    useEffect(() => {
+        if (props.orgRoles.length === 0) {
+            props.getOrganizationalRoles();
         }
-    }
+    }, [props.orgRoles]);
 
-    handleSaveSpeakerProfile(entity){
-        let{ history, saveSpeakerProfile, summit} = this.props;
+    const handleSaveSpeakerProfile = (entity) => {
+        const {history, summit} = props;
 
-        saveSpeakerProfile(entity).then(() => {
-            if(summit){
+        props.saveSpeakerProfile(entity).then(() => {
+            if (summit) {
                 history.push(`/app/${summit.slug}`);
                 return;
             }
@@ -51,43 +48,41 @@ class ProfilePage extends React.Component {
         });
     }
 
-    render() {
-        let {entity, orgRoles, loggedMember, errors, loading} = this.props;
+    const {speaker, orgRoles, loggedMember, errors, loading} = props;
 
-        if (!entity.id && !loading && !errors) {
-            Swal.fire({
-                title: T.translate("edit_profile.important"),
-                text: T.translate("edit_profile.fill_speaker_details"),
-                type: "warning"
-            });
-        }
-
-        return (
-            <div className="page-wrap" id="profile-page">
-                <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile")}</h3>
-                <hr/>
-                <SpeakerForm
-                    entity={entity}
-                    errors={errors}
-                    member={loggedMember}
-                    orgRoles={orgRoles}
-                    onSubmit={this.handleSaveSpeakerProfile}
-                    showAffiliations
-                />
-            </div>
-        );
+    if (!speaker.id && !loading && !errors) {
+        Swal.fire({
+            title: T.translate("edit_profile.important"),
+            text: T.translate("edit_profile.fill_speaker_details"),
+            type: "warning"
+        });
     }
+
+    return (
+        <div className="page-wrap" id="profile-page">
+            <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile")}</h3>
+            <hr/>
+            <SpeakerForm
+                entity={speaker}
+                errors={errors}
+                member={loggedMember}
+                orgRoles={orgRoles}
+                onSubmit={handleSaveSpeakerProfile}
+                showAffiliations
+            />
+        </div>
+    );
 }
 
-const mapStateToProps = ({ profileState, loggedUserState, baseState }) => ({
-    summit : baseState.summit,
+const mapStateToProps = ({profileState, loggedUserState, baseState}) => ({
+    summit: baseState.summit,
     loggedMember: loggedUserState.member,
     speaker: baseState.speaker,
     loading: baseState.loading,
     ...profileState
 })
 
-export default connect (
+export default connect(
     mapStateToProps,
     {
         saveSpeakerProfile,
