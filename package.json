@@ -33,9 +33,10 @@
     "css-loader": "^6.7.1",
     "dotenv-webpack": "^7.1.0",
     "dropzone": "5.7.2",
-    "final-form": "^4.20.7",
+    "eslint": "^7.32.0 || ^8.2.0",
     "file-loader": "^6.2.0",
     "file-saver": "^2.0.2",
+    "final-form": "^4.20.7",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "html-webpack-plugin": "^5.5.0",
@@ -95,6 +96,11 @@
     "webpack-merge": "^5.8.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-arrow-functions": "^7.16.7"
+    "@babel/plugin-transform-arrow-functions": "^7.16.7",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0"
   }
 }
