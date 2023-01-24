@@ -48,7 +48,7 @@ const ProfilePage = (props) => {
 
     const {speaker, orgRoles, loggedMember, errors, loading} = props;
 
-    if (!speaker.id && !loading && !errors) {
+    if (!speaker?.id && !loading && !errors) {
         Swal.fire({
             title: T.translate("edit_profile.important"),
             text: T.translate("edit_profile.fill_speaker_details"),

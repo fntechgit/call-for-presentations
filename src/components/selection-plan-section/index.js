@@ -80,7 +80,9 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
   const {presentationsCreated, presentationsSpeaker, presentationsModerator, summitDocs} = thisPlan;
   const submissionIsClosed = !nowBetween(selectionPlan.submission_begin_date, selectionPlan.submission_end_date);
   const {title, subtitle} = getTitle(submissionIsClosed);
-  const canAddNew = !submissionIsClosed && selectionPlan && selectionPlan.allow_new_presentations;
+  const submittedCount = presentationsCreated.length + presentationsSpeaker.length + presentationsModerator.length;
+  const maxReached = submittedCount >= selectionPlan?.max_submission_allowed_per_user;
+  const canAddNew = !submissionIsClosed && selectionPlan?.allow_new_presentations && !maxReached;
 
   return (
     <div className="page-wrap" id="selection-plan-section">
@@ -95,6 +97,9 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
             <button className="btn btn-success add-presentation-btn" onClick={handleNewPresentation}>
               {T.translate("presentations.add_presentation")}
             </button>
+            }
+            {maxReached &&
+            <p>Max submissions ({selectionPlan?.max_submission_allowed_per_user}) reached.</p>
             }
           </div>
         </div>
