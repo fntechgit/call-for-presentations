@@ -11,17 +11,18 @@
  * limitations under the License.
  **/
 
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useLayoutEffect, useState, useMemo} from 'react';
 import {connect} from 'react-redux';
 import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
 
 const AllSelectionPlansPage = ({summit, loggedSpeaker, match}) => {
   const [plansToShow, setPlansToShow] = useState([]);
-  const selectionPlansIds = summit.selection_plans.map(sp => sp.id);
+  const selectionPlansIds = summit.selection_plans.map(sp => sp.id).join();
 
   useLayoutEffect(() => {
     const availablePlans = getAvailablePlans();
+
     if (availablePlans.length > 0) {
       setPlansToShow(availablePlans);
     }
@@ -29,7 +30,7 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match}) => {
 
   const getAvailablePlans = () => {
     const selectionPlanIdParam = parseInt(match?.params?.selection_plan_id) || null;
-    let allPlans = summit.selection_plans
+    let allPlans = summit.selection_plans;
 
     if (selectionPlanIdParam) {
       allPlans = allPlans.filter(sp => sp.id === selectionPlanIdParam);

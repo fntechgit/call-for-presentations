@@ -50,6 +50,10 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ..
         <Route strict exact path={`${match.url}/select-plan`} component={PlanSelectionPage}/>
         <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
         <Route path={`${match.url}/all-plans`} component={AllPlansLayout}/>
+        <Route
+            path={`${match.url}/:selection_plan_id(\\d+)/presentations`}
+            render={props => (<Redirect to={`/app/${summitSlug}/all-plans/${props.match.params.selection_plan_id}`}/>)}
+        />
         <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`}/>)}/>
       </Switch>
     </>
