@@ -14,10 +14,10 @@
 import React from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import {Input, TextEditor, Dropdown, RadioList, TextArea, RawHTML} from 'openstack-uicore-foundation/lib/components'
+import {Dropdown, Input, RadioList, RawHTML, TextArea, TextEditor} from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/utils/methods'
 import SubmitButtons from './presentation-submit-buttons'
-import {validate, scrollToError} from '../utils/methods'
+import {scrollToError, validate} from '../utils/methods'
 import QuestionsInput from '../components/inputs/questions-input'
 
 class PresentationSummaryForm extends React.Component {
@@ -73,10 +73,8 @@ class PresentationSummaryForm extends React.Component {
     }
 
     handleSubmit(ev) {
-
-        const {summit, selectionPlan, disclaimer} = this.props;
+        const {selectionPlan, disclaimer} = this.props;
         const {entity, errors} = this.state;
-        const selectedType = summit.event_types.find(ev => ev.id === entity.type_id);
 
         ev.preventDefault();
 
@@ -84,11 +82,6 @@ class PresentationSummaryForm extends React.Component {
             title: {required: 'Title is required.'},
             type_id: {required: 'Format is required.'},
             track_id: {required: 'Please select a track.'},
-            description: {
-                required: 'Abstract is required.',
-                maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
-            },
-            links: {links: 'Link is not valid. Links must start with http:// or https://'},
             extra_questions: {
                 required_questions: {
                     value: selectionPlan.extra_questions,
@@ -102,11 +95,13 @@ class PresentationSummaryForm extends React.Component {
             },
         };
 
-        if(disclaimer){
+        if (disclaimer) {
             // add the rule
-            rules = {...rules , disclaimer_accepted:{
-                required: 'This field is required.',
-            }}
+            rules = {
+                ...rules, disclaimer_accepted: {
+                    required: 'This field is required.',
+                }
+            }
         }
 
         if (this.isQuestionEnabled('level')) {
@@ -122,6 +117,17 @@ class PresentationSummaryForm extends React.Component {
                 required: 'This field is required.',
                 maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
             };
+        }
+
+        if (this.isQuestionEnabled('description')) {
+            rules.description = {
+                required: 'Abstract is required.',
+                maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
+            };
+        }
+
+        if (this.isQuestionEnabled('links')) {
+            rules.links = {links: 'Link is not valid. Links must start with http:// or https://'};
         }
 
         validate(entity, rules, errors);
@@ -158,7 +164,6 @@ class PresentationSummaryForm extends React.Component {
 
         if (!summit || !selectionPlan) return (<div/>);
 
-        const selectedType = summit.event_types.find(ev => ev.id === entity.type_id);
         const event_types_ddl = summit.event_types
             .filter(et => selectionPlan.event_types.includes(et.id))
             .map(et => {
@@ -188,7 +193,7 @@ class PresentationSummaryForm extends React.Component {
             {label: 'N/A', value: 'N/A'}
         ];
 
-        const allAllowedTrackIds = selectionPlan.track_groups.reduce((res,item) => {
+        const allAllowedTrackIds = selectionPlan.track_groups.reduce((res, item) => {
             return [...res, ...item.tracks];
         }, []);
 
@@ -198,8 +203,12 @@ class PresentationSummaryForm extends React.Component {
             .filter(t => allowedTrackIds.includes(t.id))
             .map(t => ({value: t.id, label: t.name, description: t.description, order: t.order})).sort(
                 (a, b) => {
-                    if(a.order < b.order) { return -1; }
-                    if(a.order > b.order) { return 1; }
+                    if (a.order < b.order) {
+                        return -1;
+                    }
+                    if (a.order > b.order) {
+                        return 1;
+                    }
                     return 0;
                 }
             );
@@ -230,7 +239,7 @@ class PresentationSummaryForm extends React.Component {
                             </label>
                         </div>
                         {this.hasErrors('disclaimer_accepted') &&
-                        <p className="error-label">{this.hasErrors('disclaimer_accepted')}</p>
+                            <p className="error-label">{this.hasErrors('disclaimer_accepted')}</p>
                         }
                     </div>
                 }
@@ -276,20 +285,21 @@ class PresentationSummaryForm extends React.Component {
                         </div>
                     </div>
                     {this.isQuestionEnabled('level') &&
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <label> {T.translate("edit_presentation.level")} </label>
-                            <Dropdown
-                                id="level"
-                                value={entity.level}
-                                onChange={this.handleChange}
-                                placeholder={T.translate("general.placeholders.select_one")}
-                                options={level_ddl}
-                                error={this.hasErrors('level')}
-                            />
+                        <div className="row form-group">
+                            <div className="col-md-12">
+                                <label> {T.translate("edit_presentation.level")} </label>
+                                <Dropdown
+                                    id="level"
+                                    value={entity.level}
+                                    onChange={this.handleChange}
+                                    placeholder={T.translate("general.placeholders.select_one")}
+                                    options={level_ddl}
+                                    error={this.hasErrors('level')}
+                                />
+                            </div>
                         </div>
-                    </div>
                     }
+                    {this.isQuestionEnabled('description') &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.abstract")} </label>
@@ -297,41 +307,42 @@ class PresentationSummaryForm extends React.Component {
                                         onChange={this.handleChange} error={this.hasErrors('description')}/>
                         </div>
                     </div>
+                    }
                     <hr/>
                     {this.isQuestionEnabled('social_description') &&
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <p>{T.translate("edit_presentation.social_summary_desc")}</p>
-                            <label> {T.translate("edit_presentation.social_summary")} </label>
-                            <TextArea id="social_description" value={entity.social_description}
-                                      onChange={this.handleChange} error={this.hasErrors('social_description')}/>
+                        <div className="row form-group">
+                            <div className="col-md-12">
+                                <p>{T.translate("edit_presentation.social_summary_desc")}</p>
+                                <label> {T.translate("edit_presentation.social_summary")} </label>
+                                <TextArea id="social_description" value={entity.social_description}
+                                          onChange={this.handleChange} error={this.hasErrors('social_description')}/>
+                            </div>
                         </div>
-                    </div>
                     }
                     {this.isQuestionEnabled('attendees_expected_learnt') &&
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <label> {T.translate("edit_presentation.expected_learn")} </label>
-                            <TextEditor id="attendees_expected_learnt" className="editor"
-                                        value={entity.attendees_expected_learnt} onChange={this.handleChange}
-                                        error={this.hasErrors('attendees_expected_learnt')}/>
+                        <div className="row form-group">
+                            <div className="col-md-12">
+                                <label> {T.translate("edit_presentation.expected_learn")} </label>
+                                <TextEditor id="attendees_expected_learnt" className="editor"
+                                            value={entity.attendees_expected_learnt} onChange={this.handleChange}
+                                            error={this.hasErrors('attendees_expected_learnt')}/>
+                            </div>
                         </div>
-                    </div>
                     }
                     {this.isQuestionEnabled('attending_media') &&
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <label> {T.translate("edit_presentation.attending_media")} </label>
-                            <RadioList
-                              id="attending_media"
-                              value={entity.attending_media}
-                              onChange={this.handleChange}
-                              options={attending_media_opts}
-                              inline
-                              error={this.hasErrors('attending_media')}
-                            />
+                        <div className="row form-group">
+                            <div className="col-md-12">
+                                <label> {T.translate("edit_presentation.attending_media")} </label>
+                                <RadioList
+                                    id="attending_media"
+                                    value={entity.attending_media}
+                                    onChange={this.handleChange}
+                                    options={attending_media_opts}
+                                    inline
+                                    error={this.hasErrors('attending_media')}
+                                />
+                            </div>
                         </div>
-                    </div>
                     }
                     <div className="row form-group">
                         <div className="col-md-12">
@@ -345,39 +356,44 @@ class PresentationSummaryForm extends React.Component {
                             />
                         </div>
                     </div>
+                    {this.isQuestionEnabled('links') &&
+                        <>
+                            <hr/>
+                            <div className="row form-group">
+                                <div className="col-md-12">
+                                    <p>{T.translate("edit_presentation.links")} </p>
+                                </div>
+                                <div className="col-md-12">
+                                    <label> #1 </label>
+                                    <Input className="form-control" id="link_0" data-key="0" value={entity.links[0]}
+                                           onChange={this.handleChange} error={this.hasErrors('link_0')}/>
+                                </div>
+                                <div className="col-md-12">
+                                    <label> #2 </label>
+                                    <Input className="form-control" id="link_1" data-key="1" value={entity.links[1]}
+                                           onChange={this.handleChange} error={this.hasErrors('link_1')}/>
+                                </div>
+                                <div className="col-md-12">
+                                    <label> #3 </label>
+                                    <Input className="form-control" id="link_2" data-key="2" value={entity.links[2]}
+                                           onChange={this.handleChange} error={this.hasErrors('link_2')}/>
+                                </div>
+                                <div className="col-md-12">
+                                    <label> #4 </label>
+                                    <Input className="form-control" id="link_3" data-key="3" value={entity.links[3]}
+                                           onChange={this.handleChange} error={this.hasErrors('link_3')}/>
+                                </div>
+                                <div className="col-md-12">
+                                    <label> #5 </label>
+                                    <Input className="form-control" id="link_4" data-key="4" value={entity.links[4]}
+                                           onChange={this.handleChange} error={this.hasErrors('link_4')}/>
+                                </div>
+                            </div>
+                        </>
+                    }
                     <hr/>
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <p>{T.translate("edit_presentation.links")} </p>
-                        </div>
-                        <div className="col-md-12">
-                            <label> #1 </label>
-                            <Input className="form-control" id="link_0" data-key="0" value={entity.links[0]}
-                                   onChange={this.handleChange} error={this.hasErrors('link_0')}/>
-                        </div>
-                        <div className="col-md-12">
-                            <label> #2 </label>
-                            <Input className="form-control" id="link_1" data-key="1" value={entity.links[1]}
-                                   onChange={this.handleChange} error={this.hasErrors('link_1')}/>
-                        </div>
-                        <div className="col-md-12">
-                            <label> #3 </label>
-                            <Input className="form-control" id="link_2" data-key="2" value={entity.links[2]}
-                                   onChange={this.handleChange} error={this.hasErrors('link_2')}/>
-                        </div>
-                        <div className="col-md-12">
-                            <label> #4 </label>
-                            <Input className="form-control" id="link_3" data-key="3" value={entity.links[3]}
-                                   onChange={this.handleChange} error={this.hasErrors('link_3')}/>
-                        </div>
-                        <div className="col-md-12">
-                            <label> #5 </label>
-                            <Input className="form-control" id="link_4" data-key="4" value={entity.links[4]}
-                                   onChange={this.handleChange} error={this.hasErrors('link_4')}/>
-                        </div>
-                    </div>
-                    <hr/>
-                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} showBack={false} />
+                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)}
+                                   showBack={false}/>
                 </form>
             </div>
         );

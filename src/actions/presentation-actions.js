@@ -237,25 +237,17 @@ export const deletePresentation = (selectionPlanId, presentationId) => async (di
 
 const normalizeEntity = (entity, selectionPlan) => {
   const normalizedEntity = {...entity};
+  const optionalQuestions = ['level', 'social_description', 'attendees_expected_learnt', 'attending_media', 'description', 'links'];
+
 
   normalizedEntity.links = normalizedEntity.links.filter(l => l.trim() != '');
   normalizedEntity.tags = normalizedEntity.tags.map(t => t.tag);
 
-  if (!selectionPlan.allowed_presentation_questions.includes('level')) {
-    delete (normalizedEntity.level);
-  }
-
-  if (!selectionPlan.allowed_presentation_questions.includes('social_description')) {
-    delete (normalizedEntity.social_description);
-  }
-
-  if (!selectionPlan.allowed_presentation_questions.includes('attendees_expected_learnt')) {
-    delete (normalizedEntity.attendees_expected_learnt);
-  }
-
-  if (!selectionPlan.allowed_presentation_questions.includes('attending_media')) {
-    delete (normalizedEntity.attending_media);
-  }
+  optionalQuestions.forEach(q => {
+    if (!selectionPlan.allowed_presentation_questions.includes(q)) {
+      delete (normalizedEntity[q]);
+    }
+  });
 
   return normalizedEntity;
 };
