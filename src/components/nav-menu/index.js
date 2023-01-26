@@ -11,88 +11,79 @@
  * limitations under the License.
  **/
 
-import React from 'react'
-import T from 'i18n-react/dist/i18n-react'
+import React, {useState} from 'react'
 import { withRouter } from 'react-router-dom'
 import history from '../../history'
 import MenuItem from './menu-item'
 import MenuItemsDefinitions from './menu-items-definition'
 import '../../styles/menu.less';
 import {connect} from "react-redux";
+import {getMarketingValue} from "../marketing-setting";
 
 
-class NavMenu extends React.Component {
+const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) => {
+    const [activeItem, setActiveItem] = useState(active);
 
-    constructor (props) {
-        super(props);
-
-        this.state = {
-            open: false,
-            activeItem: props.active
-        }
-    }
-
-    onMenuItemClick(event, item){
+    const onMenuItemClick = (event, item) => {
         event.preventDefault();
-        let {summit} = this.props;
-
-        this.setState({
-            activeItem: item.name
-        });
+        setActiveItem(item.name);
 
         let url = `/app/${summit.slug}/${item.name}`;
 
-        if(item.throughSelectionPlan)
-            url = `/app/${summit.slug}/all-plans`;
-
         history.push(url);
+    };
+
+    const shouldShowItem = (item) => {
+        if (item.show) return item.show;
+        else if (item.showIf) {
+            return item.showIf();
+        }
+
+        return exclusiveSections.includes(item.name);
     }
 
-    render() {
-        const {user, exclusiveSections, globalSummitDocs} = this.props;
-        const {activeItem} = this.state;
+    const hideMyBio = getMarketingValue('CFP_HIDE_MY_BIO');
 
-        return (
-            <div id="app_menu" >
-                <div id="app_menu_body">
-                    <p className="user-img" style={{backgroundImage: `url('${user.pic}')`}} />
-                    <h3 className="user-name">{user.first_name} {user.last_name}</h3>
-                    <ul className="items">
-                        {MenuItemsDefinitions.map(it => (
-                            <MenuItem
-                                key={it.name}
-                                name={it.name}
-                                iconClass={it.iconClass}
-                                show={it.show ? it.show : exclusiveSections.includes(it.name)}
-                                onClick={(e) => this.onMenuItemClick(e, it)}
-                                active={activeItem === it.name}
-                            />
-                        ))}
-                        {globalSummitDocs?.map(doc => (
-                                <MenuItem
-                                    key={doc.name}
-                                    name={doc.name}
-                                    label={doc.label}
-                                    iconClass="fa-download"
-                                    show
-                                    onClick={(e) => window.open(doc.file, '_blank')}
-                                    active={false}
-                                />
-                        ))}
+    return (
+        <div id="app_menu" >
+            <div id="app_menu_body">
+                <p className="user-img" style={{backgroundImage: `url('${user.pic}')`}} />
+                <h3 className="user-name">{user.first_name} {user.last_name}</h3>
+                <ul className="items">
+                    {MenuItemsDefinitions.map(it => (
                         <MenuItem
-                            key="support"
-                            name="support"
-                            label="Contact Support"
-                            iconClass="fa-envelope"
+                            key={it.name}
+                            name={it.name}
+                            iconClass={it.iconClass}
+                            show={shouldShowItem(it)}
+                            onClick={(e) => onMenuItemClick(e, it)}
+                            active={activeItem === it.name}
+                        />
+                    ))}
+                    {globalSummitDocs?.map(doc => (
+                        <MenuItem
+                            key={doc.name}
+                            name={doc.name}
+                            label={doc.label}
+                            iconClass="fa-download"
                             show
-                            onClick={(e) => window.open(`mailto:${window.SUPPORT_EMAIL}`, '_blank')}
+                            onClick={(e) => window.open(doc.file, '_blank')}
                             active={false}
                         />
-                    </ul>
-                </div>
+                    ))}
+                    <MenuItem
+                        key="support"
+                        name="support"
+                        label="Contact Support"
+                        iconClass="fa-envelope"
+                        show
+                        onClick={(e) => window.open(`mailto:${window.SUPPORT_EMAIL}`, '_blank')}
+                        active={false}
+                    />
+                </ul>
             </div>
-        );
-    }
+        </div>
+    );
 
 }
 
