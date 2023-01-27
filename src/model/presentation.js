@@ -75,7 +75,7 @@ class Presentation {
     const selectionOpen = selection_begin_date > nowUtc && selection_end_date < nowUtc;
     const submissionComplete = status === 'Received';
     const lockStatus = submission_lock_down_presentation_status_date && submission_lock_down_presentation_status_date > nowUtc;
-    const submissionAccepted = ['Accepted', 'Alternate'].includes(selection_status);
+    const submissionAccepted = ['accepted', 'alternate'].includes(selection_status);
 
     if (!status) return T.translate("presentations.not_submitted");
 
