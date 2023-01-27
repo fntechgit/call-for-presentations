@@ -53,7 +53,6 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
 
   const handleDeletePresentation = (ev, presentation) => {
     const {deletePresentation} = props;
-    debugger;
     ev.preventDefault();
 
     Swal.fire({

@@ -14,12 +14,12 @@
 import React, {PureComponent} from "react";
 import {Switch, Route, Router} from 'react-router-dom'
 import T from "i18n-react";
-import {merge} from "lodash";
 import history from "./history";
 import {connect} from "react-redux";
 import AuthorizedRoute from './routes/authorized-route'
 import AuthorizationCallbackRoute from "./routes/authorization-callback-route"
 import LogOutCallbackRoute from './routes/logout-callback-route'
+import LogInCallbackRoute from './routes/login-callback-route'
 import DefaultRoute from "./routes/default-route";
 import SummitLayout from './layouts/summit-layout';
 import {AjaxLoader} from "openstack-uicore-foundation/lib/components";
@@ -35,6 +35,7 @@ import DirectAuthorizedRoute from "./routes/direct-authorized-route";
 import Header from "./components/header";
 import LandingPage from "./pages/landing-page";
 import {SelectionPlanContext} from "./components/SelectionPlanContext";
+import URI from "urijs";
 
 // here is set by default user lang as en
 let language = localStorage.getItem("PREFERRED_LANGUAGE");
@@ -96,7 +97,12 @@ class App extends PureComponent {
   }
 
   onClickLogin = (backUrl) => {
-    doLoginBasicLogin(backUrl);
+
+    let url = URI('/auth/login');
+    if(backUrl)
+      url = url.query({'BackUrl':backUrl});
+
+    location.replace(url.toString());
   }
 
   setSelectionPlanCtx = (value) => {
@@ -134,6 +140,7 @@ class App extends PureComponent {
             />
 
             <Switch>
+              <LogInCallbackRoute path="/auth/login" doLogin={doLoginBasicLogin}/>
               <LogOutCallbackRoute path="/auth/logout" doLogout={doLogout}/>
               <AuthorizationCallbackRoute
                 onUserAuth={onUserAuth}

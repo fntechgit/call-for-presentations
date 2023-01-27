@@ -21,7 +21,6 @@ import NavMenu from "../components/nav-menu";
 
 const AllPlansLayout = ({summit, location, match, speaker, member}) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
-
   const getActiveMenu = () => {
     if (location.pathname.includes('presentations')) {
       return 'presentations';

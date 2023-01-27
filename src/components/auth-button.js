@@ -17,7 +17,7 @@ import T from 'i18n-react/dist/i18n-react'
 export default class AuthButton extends React.Component {
 
     render() {
-        let {isLoggedUser, initLogOut, picture} = this.props;
+        let {isLoggedUser, initLogOut} = this.props;
 
         if (isLoggedUser) {
             return (
