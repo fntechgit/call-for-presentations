@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import {
@@ -39,8 +39,10 @@ import {getMarketingValue} from "../components/marketing-setting";
 import '../styles/edit-presentation-page.less';
 import {SelectionPlanContext} from "../components/SelectionPlanContext";
 
-const EditPresentationPage = ({entity, track, presentation, selectionPlan, summit, match, ...props}) => {
+const EditPresentationPage = ({entity, track, presentation, selectionPlan, summit, match, selectionPlans, ...props}) => {
   const {setSelectionPlanCtx} = useContext(SelectionPlanContext);
+
+  const [selectionPlanSettings, setSelectionPlanSettings] = useState(null);
 
   useEffect(() => {
     if (entity.track_id && (!track || track.id !== entity.track_id)) {
@@ -56,6 +58,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
 
   useEffect(() => {
     setSelectionPlanCtx(selectionPlan);
+    setSelectionPlanSettings(selectionPlans.find(e => e.selection_plan_id === selectionPlan.id)?.marketingSettings);
     return () => { setSelectionPlanCtx(null) }
   }, [selectionPlan?.id])
 
@@ -87,7 +90,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
       <div className="presentation-header-wrapper">
         <h2>{title} {T.translate("edit_presentation.presentation")}</h2>
       </div>
-      <PresentationNav activeStep={step} progress={presentation.getPresentationProgress()} steps={navSteps}/>
+      <PresentationNav activeStep={step} progress={presentation.getPresentationProgress()} steps={navSteps} selectionPlanSettings={selectionPlanSettings} />
 
       {step === 'summary' &&
       <PresentationSummaryForm
@@ -97,6 +100,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
         step={step}
         summit={summit}
         selectionPlan={selectionPlan}
+        selectionPlanSettings={selectionPlanSettings}
         errors={errors}
         onSubmit={entity => savePresentation(entity, presentation, 'SUMMARY')}
       />
@@ -110,6 +114,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
           step={step}
           summit={summit}
           selectionPlan={selectionPlan}
+          selectionPlanSettings={selectionPlanSettings}
           errors={errors}
           onSaveMU={saveMediaUpload}
           onDeleteMU={deleteMediaUpload}
@@ -139,6 +144,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
           step={step}
           match={match}
           summit={summit}
+          selectionPlanSettings={selectionPlanSettings}
           onAddSpeaker={props.assignSpeakerToPresentation}
           onAddModerator={props.assignModeratorToPresentation}
           onRemoveSpeaker={props.removeSpeakerFromPresentation}
@@ -157,6 +163,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
           track={track}
           step={step}
           onSubmit={completePresentation}
+          selectionPlanSettings={selectionPlanSettings}
         />
       </div>
       }
@@ -165,11 +172,12 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
   );
 }
 
-const mapStateToProps = ({baseState, presentationState}) => ({
+const mapStateToProps = ({baseState, presentationState, selectionPlanState}) => ({
   summit: baseState.summit,
   tagGroups: baseState.tagGroups,
   loading: baseState.loading,
   loggedSpeaker: baseState.speaker,
+  selectionPlans: selectionPlanState.selection_plans,
   ...presentationState
 })
 
@@ -185,6 +193,6 @@ export default connect(
     removeModeratorFromPresentation,
     assignModeratorToPresentation,
     assignSpeakerToPresentation,
-    getSpeakerPermission
+    getSpeakerPermission,
   }
 )(EditPresentationPage);

@@ -21,7 +21,7 @@ import {scrollToError, validate} from '../utils/methods'
 import QuestionsInput from '../components/inputs/questions-input'
 
 const PresentationSummaryForm = (props) => {
-    const {selectionPlan, summit, presentation, step, disclaimer} = props;
+    const {selectionPlan, selectionPlanSettings, summit, presentation, step, disclaimer} = props;
     const [entity, setEntity] = useState({...props.entity});
     const [errors, setErrors] = useState({});
     const errorsLength = Object.keys(errors).length;
@@ -253,7 +253,7 @@ const PresentationSummaryForm = (props) => {
                 <input type="hidden" id="id" value={entity.id}/>
                 <div className="row form-group">
                     <div className="col-md-12">
-                        <label> {T.translate("edit_presentation.title")} </label>
+                        <label> {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_TITLE_LABEL || T.translate("edit_presentation.title")} </label>
                         <Input
                             className="form-control"
                             id="title"
@@ -308,7 +308,7 @@ const PresentationSummaryForm = (props) => {
                 {isQuestionEnabled('description') &&
                     <div className="row form-group">
                         <div className="col-md-12">
-                            <label> {T.translate("edit_presentation.abstract")} </label>
+                            <label> {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_ABSTRACT_LABEL || T.translate("edit_presentation.abstract")} </label>
                             <TextEditor id="description" className="editor" value={entity.description}
                                         onChange={handleChange} error={hasErrors('description')}/>
                         </div>
@@ -318,7 +318,7 @@ const PresentationSummaryForm = (props) => {
                 {isQuestionEnabled('social_description') &&
                     <div className="row form-group">
                         <div className="col-md-12">
-                            <p>{T.translate("edit_presentation.social_summary_desc")}</p>
+                            <p>{selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_SOCIAL_SUMMARY_LABEL || T.translate("edit_presentation.social_summary_desc")}</p>
                             <label> {T.translate("edit_presentation.social_summary")} </label>
                             <TextArea id="social_description" value={entity.social_description}
                                       onChange={handleChange} error={hasErrors('social_description')}/>
@@ -367,7 +367,7 @@ const PresentationSummaryForm = (props) => {
                         <hr/>
                         <div className="row form-group">
                             <div className="col-md-12">
-                                <p>{T.translate("edit_presentation.links")} </p>
+                                <p>{selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_LINKS_LABEL || T.translate("edit_presentation.links")} </p>
                             </div>
                             <div className="col-md-12">
                                 <label> #1 </label>
