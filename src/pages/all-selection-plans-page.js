@@ -16,9 +16,7 @@ import {connect} from 'react-redux';
 import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
 
-import { getSelectionPlanSettings } from '../actions/base-actions';
-
-const AllSelectionPlansPage = ({summit, loggedSpeaker, match, getSelectionPlanSettings, selectionPlansSettings}) => {
+const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSettings}) => {
   const [plansToShow, setPlansToShow] = useState([]);
   const selectionPlansIds = summit.selection_plans.map(sp => sp.id).join();
 
@@ -26,14 +24,7 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, getSelectionPlanSe
     const availablePlans = getAvailablePlans();
 
     if (availablePlans.length > 0) {
-      setPlansToShow(availablePlans);
-
-      const selectionPlanMarketingSettings = [];
-      availablePlans.forEach(plan => {
-        selectionPlanMarketingSettings.push(getSelectionPlanSettings(summit.id, plan.id));
-      })
-      
-      Promise.all(selectionPlanMarketingSettings);  
+      setPlansToShow(availablePlans);      
     }
   }, [selectionPlansIds])
 
@@ -68,11 +59,11 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, getSelectionPlanSe
   );
 };
 
-const mapStateToProps = ({baseState, selectionPlanState}) => ({
+const mapStateToProps = ({baseState}) => ({
   summit: baseState.summit,
   loggedSpeaker: baseState.speaker,
   loading: baseState.loading,
-  selectionPlansSettings: selectionPlanState.selection_plans,
+  selectionPlansSettings: baseState.selectionPlansSettings
 });
 
-export default connect(mapStateToProps, {getSelectionPlanSettings})(AllSelectionPlansPage);
+export default connect(mapStateToProps, {})(AllSelectionPlansPage);

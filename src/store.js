@@ -24,7 +24,6 @@ import { persistStore, persistCombineReducers } from 'redux-persist'
 import storage from 'redux-persist/es/storage'
 import summitSelectionReducer from "./reducers/summit-selection-reducer";
 import clockReducer from "./reducers/clock-reducer";
-import selectionPlanReducer from './reducers/selection-plan-reducer';
 
 const config = {
     key: 'root',
@@ -39,7 +38,6 @@ const reducers = persistCombineReducers(config, {
     profileState: profileReducer,
     presentationState: presentationReducer,
     summitSelectionState: summitSelectionReducer,
-    selectionPlanState: selectionPlanReducer,
     clockState: clockReducer,
 });
 

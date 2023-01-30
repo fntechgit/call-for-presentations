@@ -172,12 +172,12 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
   );
 }
 
-const mapStateToProps = ({baseState, presentationState, selectionPlanState}) => ({
+const mapStateToProps = ({baseState, presentationState}) => ({
   summit: baseState.summit,
   tagGroups: baseState.tagGroups,
   loading: baseState.loading,
   loggedSpeaker: baseState.speaker,
-  selectionPlans: selectionPlanState.selection_plans,
+  selectionPlans: baseState.selectionPlansSettings,
   ...presentationState
 })
 

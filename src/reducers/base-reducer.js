@@ -27,7 +27,7 @@ import {
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
-import {setDefaultColors, setDocumentColors} from "../utils/methods";
+import {setDefaultColors, setDocumentColors, formatSelectionPlanSettings} from "../utils/methods";
 
 
 const DEFAULT_STATE = {
@@ -37,6 +37,7 @@ const DEFAULT_STATE = {
     speaker: null,
     summit: null,
     marketingSettings: null,
+    selectionPlansSettings: null,
     submissionIsClosed: false,
     globalSummitDocs: [],
     baseLoaded: false,
@@ -89,14 +90,15 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         case REQUEST_AVAILABLE_SUMMITS:
         case REQUEST_MARKETING_SETTINGS: {
-            setDefaultColors();
+            setDefaultColors();            
             return {...state, marketingSettings: null};
         }
         case RECEIVE_MARKETING_SETTINGS: {
             const {data} = payload.response;
             // set color vars
             setDocumentColors(data);
-            return {...state, marketingSettings: data};
+            const selectionPlansSettings = formatSelectionPlanSettings(data);
+            return {...state, marketingSettings: data, selectionPlansSettings: selectionPlansSettings};
         }
         case RECEIVE_ALLOWED_SELECTION_PLANS: {
             const {data} = payload.response;
