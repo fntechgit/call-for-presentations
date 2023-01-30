@@ -245,25 +245,14 @@ export const setDocumentColors = (data) => {
 };
 
 export const formatSelectionPlanSettings = (data) => {
-    let selectionPlanSettings = [];
+    let selectionPlanSettings = {};
     // format selection plan settings
-    data.map((setting) => {
-        if(setting.selection_plan_id) {
-            const mkt_setting = { selection_plan_id: setting.selection_plan_id, marketingSettings: {[setting.key]: setting.value} }
-            selectionPlanSettings = [...selectionPlanSettings, mkt_setting];
+    data.forEach(setting => {
+        if(!selectionPlanSettings.hasOwnProperty(setting.selection_plan_id)){
+            selectionPlanSettings[setting.selection_plan_id] = {}
         }
+        selectionPlanSettings[setting.selection_plan_id] = {...selectionPlanSettings[setting.selection_plan_id], [setting.key]: setting.value}
     });
-    // reduce it to an array grouped by selection plan id
-    selectionPlanSettings = selectionPlanSettings.reduce((acc, curr) => {
-        let found = acc.find(item => item.selection_plan_id === curr.selection_plan_id);
-        if (found) {
-          found = { selection_plan_id: found.selection_plan_id, marketingSettings: {...found.marketingSettings, ...curr.marketingSettings} }
-          acc = [...acc.filter(e => e.selection_plan_id !== found.selection_plan_id), found];
-        } else {
-          acc.push(curr);
-        }
-        return acc;
-      }, []);    
     return selectionPlanSettings;
 }
 

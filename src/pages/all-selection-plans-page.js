@@ -54,7 +54,7 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSett
 
   return (
     <div>
-      {plansToShow.map(sp => <SelectionPlanSection key={`selection-plan-section-${sp.id}`} selectionPlan={sp} selectionPlanSettings={selectionPlansSettings.find(plan => plan.selection_plan_id === sp.id)?.marketingSettings} history={history} match={match} />)}
+      {plansToShow.map(sp => <SelectionPlanSection key={`selection-plan-section-${sp.id}`} selectionPlan={sp} selectionPlanSettings={selectionPlansSettings[sp.id]} history={history} match={match} />)}
     </div>
   );
 };

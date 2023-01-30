@@ -58,7 +58,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
 
   useEffect(() => {
     setSelectionPlanCtx(selectionPlan);
-    setSelectionPlanSettings(selectionPlans.find(e => e.selection_plan_id === selectionPlan.id)?.marketingSettings);
+    setSelectionPlanSettings(selectionPlans[selectionPlan.id]);
     return () => { setSelectionPlanCtx(null) }
   }, [selectionPlan?.id])
 
