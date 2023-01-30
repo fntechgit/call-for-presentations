@@ -318,8 +318,8 @@ const PresentationSummaryForm = (props) => {
                 {isQuestionEnabled('social_description') &&
                     <div className="row form-group">
                         <div className="col-md-12">
-                            <p>{selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_SOCIAL_SUMMARY_LABEL || T.translate("edit_presentation.social_summary_desc")}</p>
-                            <label> {T.translate("edit_presentation.social_summary")} </label>
+                            <p>{T.translate("edit_presentation.social_summary_desc")}</p>
+                            <label> {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_SOCIAL_SUMMARY_LABEL || T.translate("edit_presentation.social_summary")} </label>
                             <TextArea id="social_description" value={entity.social_description}
                                       onChange={handleChange} error={hasErrors('social_description')}/>
                         </div>

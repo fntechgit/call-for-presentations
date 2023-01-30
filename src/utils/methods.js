@@ -248,10 +248,12 @@ export const formatSelectionPlanSettings = (data) => {
     let selectionPlanSettings = {};
     // format selection plan settings
     data.forEach(setting => {
-        if(!selectionPlanSettings.hasOwnProperty(setting.selection_plan_id)){
-            selectionPlanSettings[setting.selection_plan_id] = {}
+        if(setting.selection_plan_id) {            
+            if(!selectionPlanSettings.hasOwnProperty(setting.selection_plan_id)){
+                selectionPlanSettings[setting.selection_plan_id] = {}
+            }
+            selectionPlanSettings[setting.selection_plan_id] = {...selectionPlanSettings[setting.selection_plan_id], [setting.key]: setting.value}
         }
-        selectionPlanSettings[setting.selection_plan_id] = {...selectionPlanSettings[setting.selection_plan_id], [setting.key]: setting.value}
     });
     return selectionPlanSettings;
 }

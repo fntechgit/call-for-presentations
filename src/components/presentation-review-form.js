@@ -54,7 +54,7 @@ class PresentationReviewForm extends React.Component {
 
         if (presentation.isSubmitted()) {
             title = review_title || T.translate("edit_presentation.review_title");
-            subtitle = review_subtitle || T.translate("edit_presentation.review_subtitle");
+            subtitle = review_subtitle || T.translate("edit_presentation.review_subtitle", {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`});
         } else {
             title = T.translate("edit_presentation.confirm_title");
             subtitle = T.translate("edit_presentation.review_important");
@@ -65,7 +65,7 @@ class PresentationReviewForm extends React.Component {
         return (
             <form className="presentation-review-form">
                 {!presentation.isSubmitted() &&
-                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} />
+                    <SubmitButtons presentation={presentation} selectionPlanSettings={selectionPlanSettings} step={step} onSubmit={this.handleSubmit.bind(this)} />
                 }
 
                 <input type="hidden" id="id" value={entity.id} />
@@ -100,7 +100,7 @@ class PresentationReviewForm extends React.Component {
                 </div>
                 <div className="item">
                     <label>{T.translate("edit_presentation.presentation_material", 
-                        {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || 'Presentation'}`})}
+                        {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`})}
                     </label>
                     <br/>
                     {entity.slides.map(f => <a href={f.link}>{f.name}</a>)}
@@ -159,7 +159,7 @@ class PresentationReviewForm extends React.Component {
                 </div>
 
                 <hr/>
-                <SubmitButtons presentation={presentation} onSubmit={this.handleSubmit.bind(this)} step={step} />
+                <SubmitButtons presentation={presentation} selectionPlanSettings={selectionPlanSettings} onSubmit={this.handleSubmit.bind(this)} step={step} />
             </form>
         );
     }

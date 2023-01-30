@@ -91,7 +91,7 @@ export default class CPFSpeakerInput extends React.Component {
     }
 
     render() {
-        let {onChange, placeholder, id, speakers, value, ...rest} = this.props;
+        let {onChange, placeholder, selectionPlanSettings, id, speakers, value, ...rest} = this.props;
 
         return (
             <AsyncCreatableSelect
@@ -103,7 +103,7 @@ export default class CPFSpeakerInput extends React.Component {
                 filterOptions={this.filterOptions}
                 isMulti={false}
                 placeholder={placeholder}
-                formatCreateLabel={(input) => `Add new speaker with email: "${input}" `}
+                formatCreateLabel={(input) => `Add new ${selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'speaker'} with email: "${input}" `}
                 isValidNewOption={this.isValidNewOption}
                 isClearable
                 {...rest}

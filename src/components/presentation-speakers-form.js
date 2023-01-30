@@ -209,6 +209,7 @@ class PresentationSpeakersForm extends React.Component {
                                 <label> {T.translate("edit_presentation.enter_speaker")} </label>
                                 <CPFSpeakerInput
                                     id="speaker"
+                                    selectionPlanSettings={selectionPlanSettings}
                                     value={speakerInput}
                                     speakers={entity.speakers}
                                     placeholder={T.translate("edit_presentation.placeholders.speakers", 

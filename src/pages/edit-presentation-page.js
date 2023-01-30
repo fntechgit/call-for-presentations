@@ -58,7 +58,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
 
   useEffect(() => {
     setSelectionPlanCtx(selectionPlan);
-    setSelectionPlanSettings(selectionPlans[selectionPlan.id]);
+    setSelectionPlanSettings(selectionPlans[selectionPlan.id] || {});
     return () => { setSelectionPlanCtx(null) }
   }, [selectionPlan?.id])
 
@@ -88,7 +88,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
   return (
     <div className="page-wrap" id="edit-presentation-page">
       <div className="presentation-header-wrapper">
-        <h2>{title} {T.translate("edit_presentation.presentation")}</h2>
+        <h2>{title} {`${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`}</h2>
       </div>
       <PresentationNav activeStep={step} progress={presentation.getPresentationProgress()} steps={navSteps} selectionPlanSettings={selectionPlanSettings} />
 
@@ -128,6 +128,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
         <PresentationTagsForm
           entity={entity}
           presentation={presentation}
+          selectionPlanSettings={selectionPlanSettings}
           step={step}
           groupedTags={groupedTags}
           onSubmit={entity => savePresentation(entity, presentation, 'TAGS')}

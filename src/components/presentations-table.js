@@ -52,8 +52,10 @@ const PresentationsTable = ({
         <table className="table">
           <thead>
           <tr>
-            <th>{T.translate("presentations.presentation_title", {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || 'Presentation'}`})}</th>
-            <th>{T.translate("presentations.presentation_status", {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || 'Presentation'}`})}</th>
+            <th>{T.translate("presentations.presentation_title", 
+              {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`})}</th>
+            <th>{T.translate("presentations.presentation_status", 
+              {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`})}</th>
             <th>{T.translate("presentations.submission_plan")}</th>
             <th>{canEdit ? T.translate("presentations.last_edited") : <>&nbsp;</>}</th>
             <th>&nbsp;</th>

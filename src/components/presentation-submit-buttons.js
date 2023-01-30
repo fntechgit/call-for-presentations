@@ -26,7 +26,7 @@ class SubmitButtons extends React.Component {
     }
 
     render() {
-        let {onSubmit, presentation, step, showBack} = this.props;
+        let {onSubmit, selectionPlanSettings, presentation, step, showBack} = this.props;
         let submitButton = '';
         const review_tc_note = getMarketingValue('spkmgmt_review_tc_note');
 
@@ -34,7 +34,7 @@ class SubmitButtons extends React.Component {
             if (presentation.isSubmitted()) {
                 submitButton =
                     <button disabled className="btn btn-default pull-right" >
-                        {review_tc_note || T.translate("general.already_submitted")} &nbsp;
+                        {review_tc_note || T.translate("general.already_submitted", {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`})} &nbsp;
                     </button>;
             } else {
                 submitButton = <button onClick={onSubmit} className="btn btn-primary btn-save pull-right" >
