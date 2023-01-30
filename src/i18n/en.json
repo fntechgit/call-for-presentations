@@ -97,6 +97,7 @@
     }
   },
   "menu": {
+    "all-plans": "Submissions",
     "presentations": "Submissions",
     "profile": "My Bio",
     "tracks_guide": "Categories & Tracks",
