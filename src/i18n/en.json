@@ -147,6 +147,7 @@
   },
   "edit_presentation": {
     "presentation": "Presentation",
+    "presentations": "Presentations",
     "step": "Step",
     "of": "of",
     "title": "Proposed Presentation Title *",

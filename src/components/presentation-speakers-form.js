@@ -212,7 +212,9 @@ class PresentationSpeakersForm extends React.Component {
                                     value={speakerInput}
                                     speakers={entity.speakers}
                                     placeholder={T.translate("edit_presentation.placeholders.speakers", 
-                                        {speakers: `${selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || 'speakers'}`})}
+                                        {speakers: `${selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || 
+                                            T.translate('edit_presentation.speakers').toLowerCase()}`
+                                        })}
                                     onChange={this.handleChangeSpeaker}
                                 />
                             </div>

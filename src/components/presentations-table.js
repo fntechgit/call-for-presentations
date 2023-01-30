@@ -105,7 +105,7 @@ const PresentationsTable = ({
 
       {presentations.length === 0 &&
       <div className="col-md-12 no-presentations">
-        {T.translate("presentations.no_presentations", {presentations: `${selectionPlanSettings?.CFP_PRESENTATIONS_PLURAL_LABEL || 'Presentations'}`})}
+        {T.translate("presentations.no_presentations", {presentations: `${selectionPlanSettings?.CFP_PRESENTATIONS_PLURAL_LABEL || T.translate("edit_presentations.presentations")}`})}
       </div>
       }
     </div>
