@@ -42,14 +42,15 @@ class LandingPage extends React.Component {
     }
 
     render(){
-        const {doLogin, summit, isLoggedUser} = this.props;
+        let {doLogin, summit, isLoggedUser, backUrl} = this.props;
         const url = window.location.href;
         const arr = url.split("/");
         const domain = arr[0] + "//" + arr[2];
 
         if( !summit || isLoggedUser ) return null;
 
-        const backUrl = `/app/${summit.slug}`;
+        if(!backUrl)
+            backUrl = `/app/${summit.slug}`;
 
         return (
             <div className="container landing-page-wrapper">

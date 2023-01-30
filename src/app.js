@@ -97,7 +97,7 @@ class App extends PureComponent {
   }
 
   onClickLogin = (backUrl) => {
-
+    debugger;
     let url = URI('/auth/login');
     if(backUrl)
       url = url.query({'BackUrl':backUrl});

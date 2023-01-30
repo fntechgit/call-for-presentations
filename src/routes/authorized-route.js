@@ -39,7 +39,7 @@ class AuthorizedRoute extends React.Component {
             pathname: `/app/${summit_slug}?BackUrl=${encodeURIComponent(backUrl)}`,
             state: { from: rest.location }
         };
-        const FallbackComponent = (props) => Fallback ? <Fallback {...this.props} {...props} /> : <Redirect to={redirectTo} />;
+        const FallbackComponent = (props) => Fallback ? <Fallback {...this.props} {...props} backUrl={backUrl}/> : <Redirect to={redirectTo} />;
 
         return (
             <Route {...rest} render={props => isLoggedUser ? <Component {...props} /> : FallbackComponent(props)} />
