@@ -18,7 +18,7 @@ export default class NavStep extends React.Component {
 
 
     render() {
-        let {step, onClick, activeStep, progress } = this.props;
+        let {step, onClick, activeStep, progress, selectionPlanSettings } = this.props;
         let active = (activeStep === step.lcName);
         let disabled = (progress === 0 && step.step > 1);
         let future = (!active && progress < step.step);
@@ -44,7 +44,10 @@ export default class NavStep extends React.Component {
         return (
             <li className={step_class}>
                 <a id={'step-' + step.lcName} className={"presentation-step" + step_class} onClick={onClick} >
-                    {T.translate('presentation_nav.' + step.lcName)}
+                    {step.lcName === "speakers" && selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL ?
+                        selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL :
+                        T.translate('presentation_nav.' + step.lcName)
+                    }
                     <i className={"navigation-icon fa" + icon_class}></i>
                 </a>
             </li>

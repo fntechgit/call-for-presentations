@@ -85,8 +85,10 @@ class EditSpeakerPage extends React.Component {
     }
 
     render() {
-        const {entity, orgRoles, loggedMember, errors, speakerPermission, match, loggedInSpeaker} = this.props;
+        const {entity, orgRoles, selectionPlan, selectionPlansSettings, loggedMember, errors, speakerPermission, match, loggedInSpeaker} = this.props;
         const speakerId = match.params.speaker_id;
+
+        const selectionPlanSettings = selectionPlansSettings[selectionPlan?.id] || {};
 
         if (speakerId && speakerId != loggedInSpeaker.id && speakerPermission && (!speakerPermission.approved || speakerId != speakerPermission.speaker_id) ) {
 
@@ -103,7 +105,8 @@ class EditSpeakerPage extends React.Component {
 
         return (
             <div className="page-wrap" id="edit-speaker-page">
-                <h3>{T.translate("general.edit")} {T.translate("edit_speaker.profile")}</h3>
+                <h3>{T.translate("general.edit")} {T.translate("edit_speaker.profile", 
+                    {speaker: selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_speaker.speaker")})}</h3>
                 <hr/>
                 <SpeakerForm
                     entity={entity}
@@ -120,6 +123,7 @@ class EditSpeakerPage extends React.Component {
 const mapStateToProps = ({ baseState, speakerState, presentationState, profileState }) => ({
     loading : baseState.loading,
     summit : baseState.summit,
+    selectionPlansSettings: baseState.selectionPlansSettings,
     currentPresentation: presentationState.entity,
     loggedInSpeaker: profileState.entity,
     ...speakerState

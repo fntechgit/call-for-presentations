@@ -134,16 +134,15 @@ class PresentationSpeakersForm extends React.Component {
     }
 
     render() {
-        let {summit, entity, presentation, step} = this.props;
+        let {summit, selectionPlanSettings, entity, presentation, step} = this.props;
         let {speakerInput, error, speaker} = this.state;
-        let eventType = summit.event_types.find(t => t.id == entity.type_id);
-        const speaker_subtitle_1 = getMarketingValue('spkmgmt_speaker_subtitle_1');
+        let eventType = summit.event_types.find(t => t.id == entity.type_id);        
         let canAddSpeakers = (eventType && eventType.max_speakers > entity.speakers.length);
         let canAddModerator = (eventType && eventType.max_moderators && !entity.moderator);
 
         let speakerTypes = [];
         if(canAddSpeakers){
-            speakerTypes.push({value:'speaker', label: T.translate("edit_presentation.labels.speaker")});
+            speakerTypes.push({value:'speaker', label: selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.labels.speaker")});
         }
 
         if(canAddModerator){
@@ -152,7 +151,7 @@ class PresentationSpeakersForm extends React.Component {
 
         return (
             <div>
-                <h3>{speaker_subtitle_1 || T.translate("edit_presentation.speaker_included")}</h3>
+                <h3>{selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.speaker_included")}</h3>
 
                 <hr/>
                 <div className="speakers">
@@ -186,7 +185,7 @@ class PresentationSpeakersForm extends React.Component {
                                 <a href="#" onClick={this.handleSpeakerClick.bind(this, s.id, 'speaker')}>{s.first_name} {s.last_name}</a>
                             </div>
                             <div className="col-md-4">
-                                {T.translate("edit_presentation.speaker")}
+                                {selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker")}
                             </div>
                             <div className="col-md-4">
                                 <button className="btn btn-primary btn-xs" onClick={this.handleEditSpeaker.bind(this, s.id, 'speaker')}>
@@ -210,8 +209,13 @@ class PresentationSpeakersForm extends React.Component {
                                 <label> {T.translate("edit_presentation.enter_speaker")} </label>
                                 <CPFSpeakerInput
                                     id="speaker"
+                                    selectionPlanSettings={selectionPlanSettings}
                                     value={speakerInput}
                                     speakers={entity.speakers}
+                                    placeholder={T.translate("edit_presentation.placeholders.speakers", 
+                                        {speakers: `${selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || 
+                                            T.translate('edit_presentation.speakers').toLowerCase()}`
+                                        })}
                                     onChange={this.handleChangeSpeaker}
                                 />
                             </div>

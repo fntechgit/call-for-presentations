@@ -12,7 +12,7 @@ import {nowBetween} from "../../utils/methods";
 import './selection-plan-section.less';
 
 
-const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded, loading, ...props }) => {
+const SelectionPlanSection = ({summit, selectionPlan, selectionPlanSettings, loggedSpeaker, baseLoaded, loading, ...props }) => {
   const [dataPulled, setDataPulled] = useState(false);
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
           <div className="col-md-4 text-right add-pres-wrapper">
             {canAddNew &&
             <button className="btn btn-success add-presentation-btn" onClick={handleNewPresentation}>
-              {T.translate("presentations.add_presentation")}
+              {T.translate("presentations.add_presentation", {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentations.presentation")}`})}
             </button>
             }
             {maxReached &&
@@ -105,25 +105,31 @@ const SelectionPlanSection = ({summit, selectionPlan, loggedSpeaker, baseLoaded,
       </div>
       <div className="body">
         <PresentationsTable
-          title={T.translate("presentations.you_submitted")}
+          title={T.translate("presentations.you_submitted", {presentations: `${selectionPlanSettings?.CFP_PRESENTATIONS_PLURAL_LABEL || T.translate("edit_presentations.presentations")}`})}
           presentations={presentationsCreated}
           selectionPlan={selectionPlan}
+          selectionPlanSettings={selectionPlanSettings}
           onDelete={handleDeletePresentation}
           canEdit
           history={history}
           match={match}
         />
         <PresentationsTable
-          title={T.translate("presentations.other_submitted_speaker")}
+          title={T.translate("presentations.other_submitted_speaker", {
+            presentations: `${selectionPlanSettings?.CFP_PRESENTATIONS_PLURAL_LABEL || T.translate("edit_presentations.presentations")}`,
+            speaker: `${selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'Speaker'}`
+          })}
           presentations={presentationsSpeaker}
           selectionPlan={selectionPlan}
+          selectionPlanSettings={selectionPlanSettings}
           history={history}
           match={match}
         />
         <PresentationsTable
-          title={T.translate("presentations.other_submitted_moderator")}
+          title={T.translate("presentations.other_submitted_moderator", {presentations: `${selectionPlanSettings?.CFP_PRESENTATIONS_PLURAL_LABEL || 'Presentations'}`})}
           presentations={presentationsModerator}
           selectionPlan={selectionPlan}
+          selectionPlanSettings={selectionPlanSettings}
           history={history}
           match={match}
         />

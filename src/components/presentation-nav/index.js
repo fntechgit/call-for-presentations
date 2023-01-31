@@ -36,7 +36,7 @@ class PresentationNav extends React.Component {
     }
 
     render() {
-        let {progress, activeStep, steps} = this.props;
+        let {progress, selectionPlanSettings, activeStep, steps} = this.props;
 
         return (
             <div className="presentation-nav-wrapper">
@@ -48,6 +48,7 @@ class PresentationNav extends React.Component {
                             step={step}
                             activeStep={activeStep}
                             progress={progress}
+                            selectionPlanSettings={selectionPlanSettings}
                         />
                     ))}
                 </ul>

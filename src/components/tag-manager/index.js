@@ -43,7 +43,7 @@ class TagManager extends React.Component {
     }
 
     render() {
-        let {maxTags, allowedTags, value}  = this.props;
+        let {maxTags, selectionPlanSettings, allowedTags, value}  = this.props;
         let tagCount   = value.length;
         let canSelect  = tagCount < maxTags;
 
@@ -53,7 +53,8 @@ class TagManager extends React.Component {
                     <div className="col-lg-12">
                         {canSelect &&
                         <div className="alert alert-info">
-                            {T.translate("edit_presentation.tag_max")}
+                            {T.translate("edit_presentation.tag_max", 
+                            {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentations")}`})}
                         </div>
                         }
                         {!canSelect &&

@@ -51,12 +51,12 @@ class PresentationTagsForm extends React.Component {
 
     render() {
         let {entity} = this.state;
-        let {presentation, step, groupedTags} = this.props;
+        let {presentation, step, groupedTags, selectionPlanSettings} = this.props;
 
         return (
             <form className="presentation-tags-form">
                 <input type="hidden" id="id" value={entity.id} />
-                <TagManager maxTags={8} allowedTags={groupedTags} value={entity.tags} onTagClick={this.handleTagClick} />
+                <TagManager maxTags={8} selectionPlanSettings={selectionPlanSettings} allowedTags={groupedTags} value={entity.tags} onTagClick={this.handleTagClick} />
                 <hr/>
                 <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} />
             </form>

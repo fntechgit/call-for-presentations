@@ -46,7 +46,7 @@ class PresentationReviewForm extends React.Component {
     }
 
     render() {
-        let {entity, track, presentation, step} = this.props;
+        let {entity, track, presentation, step, selectionPlanSettings} = this.props;
         let title = '';
         let subtitle = '';
         const review_title = getMarketingValue('spkmgmt_review_title');
@@ -54,7 +54,7 @@ class PresentationReviewForm extends React.Component {
 
         if (presentation.isSubmitted()) {
             title = review_title || T.translate("edit_presentation.review_title");
-            subtitle = review_subtitle || T.translate("edit_presentation.review_subtitle");
+            subtitle = review_subtitle || T.translate("edit_presentation.review_subtitle", {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`});
         } else {
             title = T.translate("edit_presentation.confirm_title");
             subtitle = T.translate("edit_presentation.review_important");
@@ -65,7 +65,7 @@ class PresentationReviewForm extends React.Component {
         return (
             <form className="presentation-review-form">
                 {!presentation.isSubmitted() &&
-                    <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} />
+                    <SubmitButtons presentation={presentation} selectionPlanSettings={selectionPlanSettings} step={step} onSubmit={this.handleSubmit.bind(this)} />
                 }
 
                 <input type="hidden" id="id" value={entity.id} />
@@ -74,11 +74,11 @@ class PresentationReviewForm extends React.Component {
                 <h3>{subtitle}</h3>
                 <hr/>
                 <div className="item">
-                    <label>{T.translate("edit_presentation.title")}</label><br/>
+                    <label>{selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_TITLE_LABEL || T.translate("edit_presentation.title")}</label><br/>
                     {entity.title}
                 </div>
                 <div className="item">
-                    <label>{T.translate("edit_presentation.abstract")}</label><br/>
+                    <label>{selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_ABSTRACT_LABEL || T.translate("edit_presentation.abstract")}</label><br/>
                     {entity.description &&
                     <RawHTML>{entity.description}</RawHTML>
                     }
@@ -99,7 +99,10 @@ class PresentationReviewForm extends React.Component {
                     {entity.attending_media ? 'Yes' : 'No'}
                 </div>
                 <div className="item">
-                    <label>{T.translate("edit_presentation.presentation_material")}</label><br/>
+                    <label>{T.translate("edit_presentation.presentation_material", 
+                        {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`})}
+                    </label>
+                    <br/>
                     {entity.slides.map(f => <a href={f.link}>{f.name}</a>)}
                 </div>
 
@@ -132,14 +135,14 @@ class PresentationReviewForm extends React.Component {
 
                 <div className="main-panel-section confirm-block">
                     <hr/>
-                    <label>Speakers</label>
+                    <label>{selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || T.translate("edit_presentation.speakers")}</label>
                     { entity.speakers.map(s => (
                         <div className="row" key={'speaker_review_'+s.id}>
                             <div className="col-lg-2">
                                 <p className="user-img" style={{ backgroundImage: `url('${s.pic}')` }}></p>
                             </div>
                             <div className="col-lg-10">
-                                <label>Speaker</label>
+                                <label>{selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker")}</label>
                                 <div className="confirm-item">
                                     {s.first_name} {s.last_name}<br/>
                                     {s.title}
@@ -156,7 +159,7 @@ class PresentationReviewForm extends React.Component {
                 </div>
 
                 <hr/>
-                <SubmitButtons presentation={presentation} onSubmit={this.handleSubmit.bind(this)} step={step} />
+                <SubmitButtons presentation={presentation} selectionPlanSettings={selectionPlanSettings} onSubmit={this.handleSubmit.bind(this)} step={step} />
             </form>
         );
     }

@@ -22,6 +22,7 @@ const PresentationsTable = ({
                               presentations,
                               summit,
                               selectionPlan,
+                              selectionPlanSettings,
                               loggedSpeaker,
                               tagGroups,
                               nowUtc,
@@ -51,8 +52,10 @@ const PresentationsTable = ({
         <table className="table">
           <thead>
           <tr>
-            <th>{T.translate("presentations.presentation_title")}</th>
-            <th>{T.translate("presentations.presentation_status")}</th>
+            <th>{T.translate("presentations.presentation_title", 
+              {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`})}</th>
+            <th>{T.translate("presentations.presentation_status", 
+              {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`})}</th>
             <th>{T.translate("presentations.submission_plan")}</th>
             <th>{canEdit ? T.translate("presentations.last_edited") : <>&nbsp;</>}</th>
             <th>&nbsp;</th>
@@ -104,7 +107,7 @@ const PresentationsTable = ({
 
       {presentations.length === 0 &&
       <div className="col-md-12 no-presentations">
-        {T.translate("presentations.no_presentations")}
+        {T.translate("presentations.no_presentations", {presentations: `${selectionPlanSettings?.CFP_PRESENTATIONS_PLURAL_LABEL || T.translate("edit_presentations.presentations")}`})}
       </div>
       }
     </div>
