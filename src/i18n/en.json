@@ -206,7 +206,8 @@
     }
   },
   "edit_speaker": {
-    "profile": "Speaker Profile",
+    "profile": "{speaker} Profile",
+    "speaker": "Speaker",
     "title": "Job Title",
     "country": "Country of Residence",
     "email": "Email",
