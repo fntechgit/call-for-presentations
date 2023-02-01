@@ -97,12 +97,11 @@ class App extends PureComponent {
   }
 
   onClickLogin = (backUrl) => {
-    debugger;
     let url = URI('/auth/login');
     if(backUrl)
       url = url.query({'BackUrl':backUrl});
 
-    location.replace(url.toString());
+    history.push(url.toString());
   }
 
   setSelectionPlanCtx = (value) => {
