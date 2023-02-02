@@ -114,7 +114,7 @@
     "no_presentations_speaker": "There are no presentations submitted by others with you as a {speaker}.",
     "other_submitted_moderator": "{presentations} others submitted with you as a moderator.",
     "no_presentations_moderator": "There are no presentations submitted by others with you as a moderator.",
-    "remove_warning": "You are deleting presentation ",
+    "remove_warning": "You are deleting {presentation} ",
     "not_submitted" : "Not Submitted",
     "published"     : "Published",
     "in_review"     : "In Review",
@@ -201,8 +201,8 @@
     },
     "errors": {
       "role": "You must select a Role.",
-      "add_moderator": "You need to add a moderator to the presentation.",
-      "add_speaker": "You need to add at least one speaker to the presentation.",
+      "add_moderator": "You need to add a moderator to the {presentation}.",
+      "add_speaker": "You need to add at least one {speaker} to the {presentation}.",
       "missing_speaker": "You need to select a participant."
     }
   },

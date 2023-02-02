@@ -57,7 +57,9 @@ const SelectionPlanSection = ({summit, selectionPlan, selectionPlanSettings, log
 
     Swal.fire({
       title: T.translate("general.are_you_sure"),
-      text: T.translate("presentations.remove_warning") + ' ' + presentation.title,
+      text: T.translate("presentations.remove_warning", {
+        presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()
+      }) + ' ' + presentation.title,
       type: "warning",
       showCancelButton: true,
       confirmButtonColor: "#DD6B55",
