@@ -78,7 +78,7 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
 
   const params = {
     access_token: accessToken,
-    expand: 'track_groups, speakers, presentation_materials, type, media_uploads, tags, extra_questions, links'
+    expand: 'track_groups, speakers, track, track.allowed_tags, presentation_materials, type, type.allowed_media_upload_types, type.allowed_media_upload_types.type, media_uploads, tags, extra_questions, links'
   };
 
   if (entity.id) {

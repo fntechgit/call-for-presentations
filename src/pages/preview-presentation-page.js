@@ -25,7 +25,7 @@ class PreviewPresentationPage extends React.Component {
         super(props);
 
         this.onDone = this.onDone.bind(this);
-
+        this.isQuestionEnabled = this.isQuestionEnabled.bind(this);
     }
 
     componentWillReceiveProps(newProps) {
@@ -43,9 +43,15 @@ class PreviewPresentationPage extends React.Component {
         history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations`);
     }
 
-    render() {
-        let { entity, selectionPlan, errors, track, history } = this.props;
+    isQuestionEnabled(question_id) {
+        const {selectionPlan} = this.props;
+        return selectionPlan.allowed_presentation_questions.includes(question_id);
+    }
 
+    render() {
+        let { entity, selectionPlan, track } = this.props;
+
+        let selectionPlanSettings = this.props.selectionPlansSettings[selectionPlan.id] || {};
         return (
             <div className="page-wrap" id="preview-presentation-page">
                 <div className="presentation-header-wrapper">
@@ -57,25 +63,31 @@ class PreviewPresentationPage extends React.Component {
                         <label>{T.translate("edit_presentation.title")}</label><br/>
                         {entity.title}
                     </div>
+                    {this.isQuestionEnabled('description') &&
                     <div className="item">
                         <label>{T.translate("edit_presentation.abstract")}</label><br/>
                         <RawHTML>{entity.description}</RawHTML>
                     </div>
+                    }
                     <hr/>
+                    {this.isQuestionEnabled('level') &&
                     <div className="item">
                         <label>{T.translate("edit_presentation.level")}</label><br/>
                         {T.translate("event_level." + entity.level)}
                     </div>
+                    }
                     {track &&
                     <div className="item">
                         <label>{T.translate("edit_presentation.general_topic")}</label><br/>
                         <RawHTML>{track.name}</RawHTML>
                     </div>
                     }
+                    {this.isQuestionEnabled('attending_media') &&
                     <div className="item">
                         <label>{T.translate("edit_presentation.attending_media")}</label><br/>
                         {entity.attending_media ? 'Yes' : 'No'}
                     </div>
+                    }
                     <div className="item">
                     <label>{T.translate("edit_presentation.materials")}</label><br/>
                         <ul>
@@ -116,14 +128,14 @@ class PreviewPresentationPage extends React.Component {
                         </div>
                     </div>
                     }
-
+                    {entity.speakers.length > 0 &&
                     <div className="main-panel-section confirm-block">
                         <hr/>
-                        <label>Speakers</label>
-                        { entity.speakers.map(s => (
-                            <div className="row" key={'speaker_review_'+s.id}>
+                        <label>{selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || T.translate("edit_presentation.speakers")}</label>
+                        {entity.speakers.map(s => (
+                            <div className="row" key={'speaker_review_' + s.id}>
                                 <div className="col-lg-2">
-                                    <p className="user-img" style={{ backgroundImage: `url(${s.pic})` }}></p>
+                                    <p className="user-img" style={{backgroundImage: `url(${s.pic})`}}></p>
                                 </div>
                                 <div className="col-lg-10">
                                     <label>Speaker</label>
@@ -131,7 +143,7 @@ class PreviewPresentationPage extends React.Component {
                                         {s.first_name} {s.last_name}<br/>
                                         {s.title}
                                     </div>
-                                    { s.bio &&
+                                    {s.bio &&
                                     <div>
                                         <label>Bio</label>
                                         <div className="confirm-item">
@@ -143,6 +155,7 @@ class PreviewPresentationPage extends React.Component {
                             </div>
                         ))}
                     </div>
+                    }
 
                     {entity.public_comments && entity.public_comments.length > 0 &&
                     <div>
@@ -177,6 +190,7 @@ class PreviewPresentationPage extends React.Component {
 const mapStateToProps = ({ baseState, presentationState }) => ({
     summit: baseState.summit,
     loading : baseState.loading,
+    selectionPlansSettings: baseState.selectionPlansSettings,
     ...presentationState
 })
 

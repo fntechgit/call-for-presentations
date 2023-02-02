@@ -189,6 +189,7 @@
     "role": "Role",
     "materials": "Materials",
     "speakers": "Speakers",
+    "additional_questions": "Extra Questions",
     "labels": {
       "speaker": "Speaker",
       "moderator": "Moderator"

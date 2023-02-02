@@ -159,12 +159,13 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
       {step === 'review' &&
       <div className="review-form-wrapper">
         <PresentationReviewForm
-          entity={entity}
-          presentation={presentation}
-          track={track}
-          step={step}
-          onSubmit={completePresentation}
-          selectionPlanSettings={selectionPlanSettings}
+            selectionPlan={selectionPlan}
+            entity={entity}
+            presentation={presentation}
+            track={track}
+            step={step}
+            onSubmit={completePresentation}
+            selectionPlanSettings={selectionPlanSettings}
         />
       </div>
       }

@@ -24,6 +24,12 @@ class PresentationReviewForm extends React.Component {
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleBack = this.handleBack.bind(this);
+        this.isQuestionEnabled = this.isQuestionEnabled.bind(this);
+    }
+
+    isQuestionEnabled(question_id) {
+        const {selectionPlan} = this.props;
+        return selectionPlan.allowed_presentation_questions.includes(question_id);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -46,7 +52,7 @@ class PresentationReviewForm extends React.Component {
     }
 
     render() {
-        let {entity, track, presentation, step, selectionPlanSettings} = this.props;
+        let {entity, track, presentation, step, selectionPlanSettings, selectionPlan} = this.props;
         let title = '';
         let subtitle = '';
         const review_title = getMarketingValue('spkmgmt_review_title');
@@ -61,7 +67,7 @@ class PresentationReviewForm extends React.Component {
         }
 
         if (!entity.id || !track) return null;
-
+        console.log(entity, presentation);
         return (
             <form className="presentation-review-form">
                 {!presentation.isSubmitted() &&
@@ -69,43 +75,83 @@ class PresentationReviewForm extends React.Component {
                 }
 
                 <input type="hidden" id="id" value={entity.id} />
-
                 <h1>{title}</h1>
+
                 <h3>{subtitle}</h3>
                 <hr/>
                 <div className="item">
                     <label>{selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_TITLE_LABEL || T.translate("edit_presentation.title")}</label><br/>
                     {entity.title}
                 </div>
+                {this.isQuestionEnabled('description') &&
                 <div className="item">
                     <label>{selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_ABSTRACT_LABEL || T.translate("edit_presentation.abstract")}</label><br/>
                     {entity.description &&
                     <RawHTML>{entity.description}</RawHTML>
                     }
                 </div>
+                }
                 <hr/>
+                { this.isQuestionEnabled('level') &&
                 <div className="item">
                     <label>{T.translate("edit_presentation.level")}</label><br/>
                     {T.translate("event_level." + entity.level)}
                 </div>
+                }
                 <div className="item">
                     <label>{T.translate("edit_presentation.general_topic")}</label><br/>
                     {track.name &&
                     <RawHTML>{track.name}</RawHTML>
                     }
                 </div>
+                {this.isQuestionEnabled('attending_media') &&
                 <div className="item">
                     <label>{T.translate("edit_presentation.attending_media")}</label><br/>
                     {entity.attending_media ? 'Yes' : 'No'}
                 </div>
+                }
+                { entity.extra_questions.length > 0 &&
                 <div className="item">
-                    <label>{T.translate("edit_presentation.presentation_material", 
-                        {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`})}
-                    </label>
-                    <br/>
-                    {entity.slides.map(f => <a href={f.link}>{f.name}</a>)}
+                <label>{T.translate("edit_presentation.additional_questions")}</label>
+                    <ul className="list-container">
+                        {
+                            selectionPlan.extra_questions.sort((a, b) => a.order - b.order).map(q => {
+                                let a = entity.extra_questions.find( a => a.question_id == q.id);
+                                if(!a) return null;
+                                return (<li><label><RawHTML>{q.label}</RawHTML></label>&nbsp;{a.answer}</li>)
+                            })
+                        }
+                    </ul>
                 </div>
+                }
+                { (entity.slides.length > 0 || entity.media_uploads.length > 0) &&
+                    <div className="item">
+                        <label>{T.translate("edit_presentation.presentation_material",
+                            {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`})}
+                        </label>
+                        <br/>
+                        {
+                            entity.media_uploads.length > 0 &&
+                            <ul className="list-container">
+                                {
+                                    entity.media_uploads.map(mu => <li><a target="_blank"
+                                                                          href={mu.private_url || mu.public_url}>{mu.name}</a>
+                                    </li>)
+                                }
+                            </ul>
+                        }
+                        {
+                            entity.slides.length > 0 &&
+                            <ul className="list-container">
+                                {
+                                    entity.slides.map(f => <li><a target="_blank" href={f.link}>{f.name}</a></li>)
+                                }
+                            </ul>
+                        }
 
+
+                    </div>
+                }
 
                 {entity.moderator &&
                 <div className="main-panel-section confirm-block">
@@ -132,14 +178,14 @@ class PresentationReviewForm extends React.Component {
                 </div>
                 }
 
-
+                {entity.speakers.length > 0 &&
                 <div className="main-panel-section confirm-block">
                     <hr/>
                     <label>{selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || T.translate("edit_presentation.speakers")}</label>
-                    { entity.speakers.map(s => (
-                        <div className="row" key={'speaker_review_'+s.id}>
+                    {entity.speakers.map(s => (
+                        <div className="row" key={'speaker_review_' + s.id}>
                             <div className="col-lg-2">
-                                <p className="user-img" style={{ backgroundImage: `url('${s.pic}')` }}></p>
+                                <p className="user-img" style={{backgroundImage: `url('${s.pic}')`}}></p>
                             </div>
                             <div className="col-lg-10">
                                 <label>{selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker")}</label>
@@ -157,6 +203,7 @@ class PresentationReviewForm extends React.Component {
                         </div>
                     ))}
                 </div>
+                }
 
                 <hr/>
                 <SubmitButtons presentation={presentation} selectionPlanSettings={selectionPlanSettings} onSubmit={this.handleSubmit.bind(this)} step={step} />

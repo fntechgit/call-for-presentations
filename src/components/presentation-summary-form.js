@@ -15,7 +15,6 @@ import React, {useState, useEffect} from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import {Dropdown, Input, RadioList, RawHTML, TextArea, TextEditor} from 'openstack-uicore-foundation/lib/components'
-import {findElementPos} from 'openstack-uicore-foundation/lib/utils/methods'
 import SubmitButtons from './presentation-submit-buttons'
 import {scrollToError, validate} from '../utils/methods'
 import QuestionsInput from '../components/inputs/questions-input'
@@ -166,7 +165,6 @@ const PresentationSummaryForm = (props) => {
         const {selectionPlan} = props;
         return selectionPlan.allowed_presentation_questions.includes(question_id);
     }
-
 
     if (!summit || !selectionPlan) return (<div/>);
 
