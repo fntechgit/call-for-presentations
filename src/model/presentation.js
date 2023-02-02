@@ -48,10 +48,12 @@ class Presentation {
 
     const allowedMediaUploads = this.getAllowedMediaUploads();
     const groupedTags = this.getAllowedTags();
+    const showSpeakers = this._presentation.type?.use_speakers && this._presentation.type?.max_speakers > 0;
 
     this._steps.forEach(stp => {
       if (stp.name === 'UPLOADS' && this._presentation.type) stp.showInNav = (allowedMediaUploads.length > 0);
       if (stp.name === 'TAGS' && this._presentation.track_id) stp.showInNav = (groupedTags.length > 0);
+      if (stp.name === 'SPEAKERS' && this._presentation.type) stp.showInNav = showSpeakers;
     });
 
     const currentStep = this.getCurrentStep();
