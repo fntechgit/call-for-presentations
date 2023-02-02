@@ -153,7 +153,7 @@
     "of": "of",
     "title": "Proposed Presentation Title *",
     "format": "Select the format *",
-    "format_max_speakers": "Max Speakers",
+    "format_max_speakers": "Max {speakers}",
     "format_max_moderators": "Max Moderators",
     "general_topic": "What is the general topic of the presentation? *",
     "level": "Select the technical level of your presentation content *",
