@@ -228,6 +228,7 @@ export const deletePresentation = (selectionPlanId, presentationId) => async (di
     null,
     createAction(PRESENTATION_DELETED)({selectionPlanId, presentationId}),
     `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}`,
+    null,
     presentationErrorHandler
   )(params)(dispatch, getState).then(() => {
       dispatch(stopLoading());

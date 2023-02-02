@@ -54,9 +54,12 @@ class PresentationSpeakersForm extends React.Component {
         const validSpeaker = !entity.type.use_speakers || !entity.type.are_speakers_mandatory || entity.speakers.length > 0;
 
         if (!validModerator) {
-            Swal.fire("Validation error", T.translate("edit_presentation.errors.add_moderator"), "warning");
+            Swal.fire("Validation error", T.translate("edit_presentation.errors.add_moderator", 
+            { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()}), "warning");
         } else if (!validSpeaker) {
-            Swal.fire("Validation error", T.translate("edit_presentation.errors.add_speaker"), "warning");
+            Swal.fire("Validation error", T.translate("edit_presentation.errors.add_speaker", 
+            { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase(),
+             speaker: selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker").toLowerCase()}), "warning");
         } else {
             this.props.onSubmit(this.props.entity);
         }
@@ -151,7 +154,8 @@ class PresentationSpeakersForm extends React.Component {
 
         return (
             <div>
-                <h3>{selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.speaker_included")}</h3>
+                <h3>{T.translate("edit_presentation.speaker_included", 
+                    { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")})}</h3>
 
                 <hr/>
                 <div className="speakers">
