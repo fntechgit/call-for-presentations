@@ -151,7 +151,8 @@ class PresentationSpeakersForm extends React.Component {
 
         return (
             <div>
-                <h3>{selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.speaker_included")}</h3>
+                <h3>{T.translate("edit_presentation.speaker_included", 
+                    { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")})}</h3>
 
                 <hr/>
                 <div className="speakers">

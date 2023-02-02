@@ -280,7 +280,8 @@ const PresentationSummaryForm = (props) => {
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
-                        <label> {T.translate("edit_presentation.general_topic")} </label>
+                        <label> {T.translate("edit_presentation.general_topic", 
+                        { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
                         <RadioList
                             id="track_id"
                             value={entity.track_id}
@@ -293,7 +294,8 @@ const PresentationSummaryForm = (props) => {
                 {isQuestionEnabled('level') &&
                     <div className="row form-group">
                         <div className="col-md-12">
-                            <label> {T.translate("edit_presentation.level")} </label>
+                            <label> {T.translate("edit_presentation.level", 
+                            { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
                             <Dropdown
                                 id="level"
                                 value={entity.level}
@@ -338,7 +340,8 @@ const PresentationSummaryForm = (props) => {
                 {isQuestionEnabled('attending_media') &&
                     <div className="row form-group">
                         <div className="col-md-12">
-                            <label> {T.translate("edit_presentation.attending_media")} </label>
+                            <label> {T.translate("edit_presentation.attending_media", 
+                            { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
                             <RadioList
                                 id="attending_media"
                                 value={entity.attending_media}
