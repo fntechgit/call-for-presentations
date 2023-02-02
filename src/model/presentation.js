@@ -31,7 +31,7 @@ class Presentation {
       {name: 'SUMMARY', lcName: 'summary', step: 1, showInNav: true},
       {name: 'UPLOADS', lcName: 'uploads', step: 2, showInNav: false},
       {name: 'TAGS', lcName: 'tags', step: 3, showInNav: false},
-      {name: 'SPEAKERS', lcName: 'speakers', step: 4, showInNav: true},
+      {name: 'SPEAKERS', lcName: 'speakers', step: 4, showInNav: false},
       {name: 'REVIEW', lcName: 'review', step: 5, showInNav: true},
       {name: 'COMPLETE', lcName: 'complete', step: 6}
     ];
@@ -48,7 +48,8 @@ class Presentation {
 
     const allowedMediaUploads = this.getAllowedMediaUploads();
     const groupedTags = this.getAllowedTags();
-    const showSpeakers = this._presentation.type?.use_speakers && this._presentation.type?.max_speakers > 0;
+    const showSpeakers = (this._presentation.type?.use_speakers && this._presentation.type?.max_speakers > 0) ||
+                         (this._presentation.type?.use_moderator && this._presentation.type?.max_moderators > 0);
 
     this._steps.forEach(stp => {
       if (stp.name === 'UPLOADS' && this._presentation.type) stp.showInNav = (allowedMediaUploads.length > 0);
