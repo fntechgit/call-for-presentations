@@ -60,45 +60,37 @@ class Presentation {
     }
 
     getStatus(nowUtc) {
-      const { is_published, status, selection_status, selectionPlan } = this._presentation;
-        const { selection_begin_date, selection_end_date, submission_lock_down_presentation_status_date } = selectionPlan || {};
+        const {is_published, status, selection_status, selectionPlan} = this._presentation;
+        const {
+            submission_begin_date,
+            submission_end_date,
+            selection_begin_date,
+            selection_end_date,
+            submission_lock_down_presentation_status_date
+        } = selectionPlan || {};
 
-        if (is_published) return T.translate("presentations.published");
+        const submissionOpen = submission_begin_date < nowUtc && submission_end_date > nowUtc;
+        const submissionClosed = !submissionOpen;
+        const selectionEnded = selection_end_date && selection_end_date < nowUtc;
+        const selectionOpen = selection_begin_date > nowUtc && selection_end_date < nowUtc;
+        const submissionComplete = ['Received','Accepted'].includes(status);
+        const lockStatus = submission_lock_down_presentation_status_date && submission_lock_down_presentation_status_date > nowUtc;
+        const submissionAccepted = ['accepted', 'alternate'].includes(selection_status) || is_published;
+
         if (!status) return T.translate("presentations.not_submitted");
 
-        if(submission_lock_down_presentation_status_date && submission_lock_down_presentation_status_date > 0){
-            if(submission_lock_down_presentation_status_date > nowUtc){
-                // we are on lock down period
+        if (submissionComplete) {
+            if (lockStatus) {
                 return T.translate("presentations.in_review");
             }
-            if (!selection_status || selection_status === 'unaccepted') {
-                // presentation is rejected
-                return T.translate("presentations.rejected");
-            }
-            // send the presentation status with first letter in uppercase
-            return `${selection_status[0].toUpperCase()}${selection_status.slice(1)}`;
-        }
-        // check if we have a selection plan and a valid selection period ( old logic)
-        else if (selection_begin_date && selection_end_date && selection_begin_date <= selection_end_date ) {
-            if (selection_begin_date > nowUtc) {
-                // selection process didnt started yet
+            else if (selectionEnded) {
+                return submissionAccepted ? T.translate("presentations.accepted") : T.translate("presentations.rejected")
+            } else if (submissionClosed || selectionOpen) {
+                return T.translate("presentations.in_review");
+            } else {
                 return T.translate("presentations.received");
             }
-            if (selection_end_date < nowUtc) {
-                // selection process ended already
-                if (!selection_status || selection_status === 'unaccepted') {
-                    // presentation is rejected
-                    return T.translate("presentations.rejected");
-                }
-                // send the presentation status with first letter in uppercase
-                return `${selection_status[0].toUpperCase()}${selection_status.slice(1)}`;
-            }
-            if (selection_begin_date < nowUtc) {
-                // if selection process didnt started yet
-                return T.translate("presentations.in_review");
-            }
         }
-        return T.translate("presentations.received");
     }
 
     isSubmitted() {
