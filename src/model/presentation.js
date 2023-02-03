@@ -14,6 +14,12 @@
 import T from 'i18n-react/dist/i18n-react';
 import {formatEpoch, nowBetween} from "../utils/methods";
 
+const SelectionStatus_Accepted = 'accepted';
+const SelectionStatus_Alternate = 'alternate';
+const SelectionStatus_Rejected = 'unaccepted';
+const Status_Received = 'Received';
+const Status_Accepted = 'Accepted';
+
 class Presentation {
 
   constructor(presentation, summit, selectionPlan, loggedUser, tagGroups) {
@@ -62,7 +68,12 @@ class Presentation {
     this._presentation.progressNum = currentStep.step;
   }
 
+  /**
+   * @param nowUtc
+   * @returns {React.ReactNode}
+   */
   getStatus(nowUtc) {
+
     const {is_published, status, selection_status, selectionPlan} = this._presentation;
     const {
       submission_begin_date,
@@ -72,27 +83,52 @@ class Presentation {
       submission_lock_down_presentation_status_date
     } = selectionPlan || {};
 
-    const submissionOpen = submission_begin_date < nowUtc && submission_end_date > nowUtc;
+    /**
+     * Published - Presentation is published
+     * Not Submitted - the submission period is open or closed, the submission is started, but not complete.
+     * Received  - the submission is complete and the submission period is open
+     * In Review - the submission is complete, submission period is closed, track chairs is open or the
+     *             submission_lock_down_presentation_status_date is greater than now.
+     * Rejected - the submission is complete, the track chairs is closed, submission is closed, and the presentation is
+     *            not in alternate or accepted on teams list.
+     * Accepted - the submission is complete, the track chair is closed, submission is closed, and the presentation is
+     *            in alternate or accepted on teams list.
+     **/
+
+    // submission ( CFP )
+    // check submission period
+    const submissionOpen = nowUtc >= submission_begin_date && nowUtc <= submission_end_date;
     const submissionClosed = !submissionOpen;
-    const selectionEnded = selection_end_date && selection_end_date < nowUtc;
-    const selectionOpen = selection_begin_date > nowUtc && selection_end_date < nowUtc;
-    const submissionComplete = status === 'Received';
-    const lockStatus = submission_lock_down_presentation_status_date && submission_lock_down_presentation_status_date > nowUtc;
-    const submissionAccepted = ['accepted', 'alternate'].includes(selection_status);
+    // selection ( track chairs )
+    // check selection period
+    const selectionOpen = nowUtc >= selection_begin_date && nowUtc <= selection_end_date ;
+    const selectionEnded = !selectionOpen;
+
+    // if the presentation is published the Accepted status is returned
+    const submissionComplete = [Status_Accepted, Status_Received].includes(status);
+    const lockDownPeriod = submission_lock_down_presentation_status_date && submission_lock_down_presentation_status_date > nowUtc;
+
+    const submissionAccepted = [SelectionStatus_Alternate, SelectionStatus_Accepted].includes(selection_status);
 
     if (!status) return T.translate("presentations.not_submitted");
 
     if (submissionComplete) {
-      if (lockStatus) {
+      // is lock down period is enabled then short-circuit everything
+      if (lockDownPeriod || (submissionClosed && selectionOpen)) {
         return T.translate("presentations.in_review");
-      } else if (selectionEnded) {
+      }
+      else if(is_published) {
+        return T.translate('presentations.published')
+      }
+      else if (selectionEnded) {
         return submissionAccepted ? T.translate("presentations.accepted") : T.translate("presentations.rejected")
-      } else if (submissionClosed || selectionOpen) {
-        return T.translate("presentations.in_review");
-      } else {
+      }
+      else {
         return T.translate("presentations.received");
       }
     }
+    // default state
+    return T.translate("presentations.not_submitted");
   }
 
   isSubmitted() {
