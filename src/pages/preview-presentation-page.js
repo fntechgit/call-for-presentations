@@ -37,10 +37,10 @@ class PreviewPresentationPage extends React.Component {
     }
 
     onDone(ev) {
-        let {history, summit, selectionPlan} = this.props;
+        let {history, summit} = this.props;
         ev.preventDefault();
 
-        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations`);
+        history.push(`/app/${summit.slug}/all-plans`);
     }
 
     isQuestionEnabled(question_id) {
