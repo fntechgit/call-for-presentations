@@ -35,7 +35,7 @@ class ThankYouPresentationPage extends React.Component {
         let {history, summit, selectionPlan} = this.props;
         ev.preventDefault();
 
-        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations`);
+        history.push(`/app/${summit.slug}/all-plans`);
     }
 
     render() {
