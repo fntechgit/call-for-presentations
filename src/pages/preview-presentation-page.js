@@ -16,6 +16,7 @@ import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 import { loadEventCategory } from "../actions/base-actions";
+import {getSubmissionsPath} from "../utils/methods";
 
 import '../styles/preview-presentation-page.less';
 
@@ -29,7 +30,7 @@ class PreviewPresentationPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        let {history, loading} = newProps;
+        let {loading} = newProps;
 
         if (!loading && newProps.entity.track_id && (!newProps.track || newProps.entity.track_id != newProps.track.id)) {
             this.props.loadEventCategory();
@@ -37,10 +38,12 @@ class PreviewPresentationPage extends React.Component {
     }
 
     onDone(ev) {
-        let {history, summit} = this.props;
         ev.preventDefault();
+        
+        const {history, summit} = this.props;
+        const submissionsPath = getSubmissionsPath();
 
-        history.push(`/app/${summit.slug}/all-plans`);
+        history.push(`/app/${summit.slug}/${submissionsPath}`);
     }
 
     isQuestionEnabled(question_id) {
@@ -49,9 +52,9 @@ class PreviewPresentationPage extends React.Component {
     }
 
     render() {
-        let { entity, selectionPlan, track } = this.props;
-
-        let selectionPlanSettings = this.props.selectionPlansSettings[selectionPlan.id] || {};
+        const { entity, selectionPlan, track } = this.props;
+        const selectionPlanSettings = this.props.selectionPlansSettings[selectionPlan.id] || {};
+        
         return (
             <div className="page-wrap" id="preview-presentation-page">
                 <div className="presentation-header-wrapper">

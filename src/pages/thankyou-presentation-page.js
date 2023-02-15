@@ -15,6 +15,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import { Exclusive } from 'openstack-uicore-foundation/lib/components'
+import {getSubmissionsPath} from "../utils/methods";
 
 import '../styles/preview-presentation-page.less';
 
@@ -22,20 +23,16 @@ class ThankYouPresentationPage extends React.Component {
 
     constructor(props){
         super(props);
-
         this.onDone = this.onDone.bind(this);
-
-    }
-
-    componentWillReceiveProps(newProps) {
-
     }
 
     onDone(ev) {
-        let {history, summit, selectionPlan} = this.props;
         ev.preventDefault();
-
-        history.push(`/app/${summit.slug}/all-plans`);
+    
+        const {history, summit} = this.props;
+        const submissionsPath = getSubmissionsPath();
+    
+        history.push(`/app/${summit.slug}/${submissionsPath}`);
     }
 
     render() {

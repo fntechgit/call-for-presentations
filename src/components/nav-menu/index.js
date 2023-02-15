@@ -19,6 +19,7 @@ import MenuItemsDefinitions from './menu-items-definition'
 import '../../styles/menu.less';
 import {connect} from "react-redux";
 import {getMarketingValue} from "../marketing-setting";
+import {getSubmissionsPath} from "../../utils/methods";
 
 
 const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) => {
@@ -27,8 +28,11 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
     const onMenuItemClick = (event, item) => {
         event.preventDefault();
         setActiveItem(item.name);
+    
+        const submissionsPath = getSubmissionsPath();
+        const path = item.name === 'all-plans' ? submissionsPath : item.name;
 
-        let url = `/app/${summit.slug}/${item.name}`;
+        const url = `/app/${summit.slug}/${path}`;
 
         history.push(url);
     };
@@ -41,8 +45,6 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
 
         return exclusiveSections.includes(item.name);
     }
-
-    const hideMyBio = getMarketingValue('CFP_HIDE_MY_BIO');
 
     return (
         <div id="app_menu" >

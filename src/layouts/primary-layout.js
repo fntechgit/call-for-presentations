@@ -19,7 +19,7 @@ import SelectionProcessPage from '../pages/selection-process-page'
 import TracksGuidePage from '../pages/tracks-guide-page'
 import PresentationLayout from './presentation-layout'
 
-const PrimaryLayout = ({location, summit, speaker, member, match}) => {
+const PrimaryLayout = ({summit, speaker, member, match}) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
   const selectionPlanIdParam = parseInt(match.params.selection_plan_id);
   const [selectionPlan, setSelectionPlan] = useState(null);
