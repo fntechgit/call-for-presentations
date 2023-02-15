@@ -14,6 +14,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
+import Swal from "sweetalert2";
 import {
   savePresentation,
   completePresentation,
@@ -84,6 +85,11 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
   const navSteps = getNavSteps();
 
   if (!summit.event_types || !summit.tracks) return null;
+
+  if (selectionPlanSettings?.CFP_PRESENTATION_EDITION_CUSTOM_MESSAGE) Swal.fire({
+    html: selectionPlanSettings.CFP_PRESENTATION_EDITION_CUSTOM_MESSAGE,
+    type: "info",
+  })
 
   return (
     <div className="page-wrap" id="edit-presentation-page">
