@@ -37,7 +37,7 @@ export const PRESENTATION_DELETED = 'PRESENTATION_DELETED';
 export const PRESENTATION_COMPLETED = 'PRESENTATION_COMPLETED';
 export const PRESENTATION_MATERIAL_ATTACHED = 'PRESENTATION_MATERIAL_ATTACHED';
 export const PRESENTATION_MATERIAL_DELETED = 'PRESENTATION_MATERIAL_DELETED';
-
+export const PRESENTATION_SET_SHOW_INFO_POPUP = 'PRESENTATION_SET_SHOW_INFO_POPUP';
 
 export const getPresentation = (presentationId) => async (dispatch, getState) => {
   const {baseState} = getState();
@@ -319,5 +319,6 @@ const presentationErrorHandler = (err, res) => (dispatch, getState) => {
   }
 };
 
-
-
+export const setShowInfoPopup = (show) => (dispatch, getState) => {
+  dispatch(createAction(PRESENTATION_SET_SHOW_INFO_POPUP)(show));
+}

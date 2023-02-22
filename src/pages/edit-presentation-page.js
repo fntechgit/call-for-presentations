@@ -19,7 +19,8 @@ import {
   savePresentation,
   completePresentation,
   saveMediaUpload,
-  deleteMediaUpload
+  deleteMediaUpload,
+  setShowInfoPopup
 } from "../actions/presentation-actions";
 import {
   getSpeakerPermission,
@@ -40,7 +41,7 @@ import {getMarketingValue} from "../components/marketing-setting";
 import '../styles/edit-presentation-page.less';
 import {SelectionPlanContext} from "../components/SelectionPlanContext";
 
-const EditPresentationPage = ({entity, track, presentation, selectionPlan, summit, match, selectionPlans, ...props}) => {
+const EditPresentationPage = ({entity, track, presentation, selectionPlan, summit, match, selectionPlans, showInfoPopup, setShowInfoPopup, ...props}) => {
   const {setSelectionPlanCtx} = useContext(SelectionPlanContext);
 
   const [selectionPlanSettings, setSelectionPlanSettings] = useState(null);
@@ -86,10 +87,16 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
 
   if (!summit.event_types || !summit.tracks) return null;
 
-  if (selectionPlanSettings?.CFP_PRESENTATION_EDITION_CUSTOM_MESSAGE) Swal.fire({
-    html: selectionPlanSettings.CFP_PRESENTATION_EDITION_CUSTOM_MESSAGE,
-    type: "info",
-  })
+  if (selectionPlanSettings?.CFP_PRESENTATION_EDITION_CUSTOM_MESSAGE && showInfoPopup) {
+    Swal.fire({
+      html: selectionPlanSettings.CFP_PRESENTATION_EDITION_CUSTOM_MESSAGE,
+      type: "info",
+      showCloseButton: true,
+    }).then((result) =>  {
+      debugger;
+      setShowInfoPopup(false)
+    });
+  }
 
   return (
     <div className="page-wrap" id="edit-presentation-page">
@@ -202,5 +209,6 @@ export default connect(
     assignModeratorToPresentation,
     assignSpeakerToPresentation,
     getSpeakerPermission,
+    setShowInfoPopup,
   }
 )(EditPresentationPage);

@@ -18,7 +18,8 @@ import
     PRESENTATION_ADDED,
     PRESENTATION_COMPLETED,
     PRESENTATION_MATERIAL_ATTACHED,
-    PRESENTATION_MATERIAL_DELETED
+    PRESENTATION_MATERIAL_DELETED,
+    PRESENTATION_SET_SHOW_INFO_POPUP,
 } from '../actions/presentation-actions';
 
 import { VALIDATE } from 'openstack-uicore-foundation/lib/utils/actions';
@@ -57,7 +58,8 @@ export const DEFAULT_ENTITY = {
 const DEFAULT_STATE = {
     entity: DEFAULT_ENTITY,
     track: null,
-    errors: {}
+    errors: {},
+    showInfoPopup: true,
 }
 
 const presentationReducer = (state = DEFAULT_STATE, action) => {
@@ -152,6 +154,10 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
         }
         case VALIDATE: {
             return {...state,  errors: payload.errors };
+        }
+        case PRESENTATION_SET_SHOW_INFO_POPUP:{
+            debugger;
+            return {...state, showInfoPopup: payload}
         }
         default:
             return state;
