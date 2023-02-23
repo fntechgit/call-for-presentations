@@ -156,7 +156,6 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
             return {...state,  errors: payload.errors };
         }
         case PRESENTATION_SET_SHOW_INFO_POPUP:{
-            debugger;
             return {...state, showInfoPopup: payload}
         }
         default:

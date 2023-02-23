@@ -166,6 +166,11 @@ const PresentationSummaryForm = (props) => {
         return selectionPlan.allowed_presentation_questions.includes(question_id);
     }
 
+    const isQuestionEditable = (question_id) => {
+        const {selectionPlan} = props;
+        return selectionPlan.allowed_presentation_editable_questions.includes(question_id);
+    }
+
     if (!summit || !selectionPlan) return (<div/>);
 
     event_types_ddl = summit.event_types
@@ -178,7 +183,8 @@ const PresentationSummaryForm = (props) => {
     for (var event_type of event_types_ddl) {
         const ev_type_obj = summit.event_types.find(ev => ev.id === event_type.value);
         event_types_limits += ev_type_obj.name + ': ' + T.translate("edit_presentation.format_max_speakers",
-            {speakers: `${selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL ||
+            {
+                speakers: `${selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL ||
                 T.translate('edit_presentation.speakers')}`
             }) + ' ' + ev_type_obj.max_speakers;
         if (ev_type_obj.max_moderators) {
@@ -233,22 +239,25 @@ const PresentationSummaryForm = (props) => {
     return (
         <div className="presentation-form-wrapper">
             {disclaimer &&
-                <div className="disclaimer">
-                    <RawHTML>
-                        {disclaimer}
-                    </RawHTML>
-                    <div className="form-check abc-checkbox">
-                        <input type="checkbox" id="disclaimer_accepted" name="disclaimer_accepted"
-                               checked={entity.disclaimer_accepted}
-                               onChange={handleChange} className="form-check-input"/>
-                        <label className="form-check-label" htmlFor="disclaimer_accepted">
-                            I Agree *
-                        </label>
-                    </div>
-                    {hasErrors('disclaimer_accepted') &&
-                        <p className="error-label">{hasErrors('disclaimer_accepted')}</p>
-                    }
+            <div className="disclaimer">
+                <RawHTML>
+                    {disclaimer}
+                </RawHTML>
+                <div className="form-check abc-checkbox">
+                    <input type="checkbox"
+                           id="disclaimer_accepted"
+                           name="disclaimer_accepted"
+                           disabled={entity.id > 0 && !isQuestionEditable('disclaimer_accepted')}
+                           checked={entity.disclaimer_accepted}
+                           onChange={handleChange} className="form-check-input"/>
+                    <label className="form-check-label" htmlFor="disclaimer_accepted">
+                        I Agree *
+                    </label>
                 </div>
+                {hasErrors('disclaimer_accepted') &&
+                <p className="error-label">{hasErrors('disclaimer_accepted')}</p>
+                }
+            </div>
             }
             <form className="presentation-summary-form">
                 <input type="hidden" id="id" value={entity.id}/>
@@ -260,6 +269,7 @@ const PresentationSummaryForm = (props) => {
                             id="title"
                             value={entity.title}
                             onChange={handleChange}
+                            disabled={entity.id > 0 && !isQuestionEditable('title')}
                             error={hasErrors('title')}
                         />
                     </div>
@@ -281,9 +291,10 @@ const PresentationSummaryForm = (props) => {
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
-                        <label> {T.translate("edit_presentation.general_topic", 
-                        { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
+                        <label> {T.translate("edit_presentation.general_topic",
+                            {presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
                         <RadioList
+                            disabled={entity.id > 0 && !isQuestionEditable('track_id')}
                             id="track_id"
                             value={entity.track_id}
                             onChange={handleChange}
@@ -293,66 +304,71 @@ const PresentationSummaryForm = (props) => {
                     </div>
                 </div>
                 {isQuestionEnabled('level') &&
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <label> {T.translate("edit_presentation.level", 
-                            { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
-                            <Dropdown
-                                id="level"
-                                value={entity.level}
-                                onChange={handleChange}
-                                placeholder={T.translate("general.placeholders.select_one")}
-                                options={level_ddl}
-                                error={hasErrors('level')}
-                            />
-                        </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label> {T.translate("edit_presentation.level",
+                            {presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
+                        <Dropdown
+                            disabled={entity.id > 0 && !isQuestionEditable('level')}
+                            id="level"
+                            value={entity.level}
+                            onChange={handleChange}
+                            placeholder={T.translate("general.placeholders.select_one")}
+                            options={level_ddl}
+                            error={hasErrors('level')}
+                        />
                     </div>
+                </div>
                 }
                 {isQuestionEnabled('description') &&
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <label> {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_ABSTRACT_LABEL || T.translate("edit_presentation.abstract")} </label>
-                            <TextEditor id="description" className="editor" value={entity.description}
-                                        onChange={handleChange} error={hasErrors('description')}/>
-                        </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label> {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_ABSTRACT_LABEL || T.translate("edit_presentation.abstract")} </label>
+                        <TextEditor id="description" className="editor" value={entity.description}
+                                    readOnly={entity.id > 0 && !isQuestionEditable('description')}
+                                    onChange={handleChange} error={hasErrors('description')}/>
                     </div>
+                </div>
                 }
                 <hr/>
                 {isQuestionEnabled('social_description') &&
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <p>{T.translate("edit_presentation.social_summary_desc")}</p>
-                            <label> {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_SOCIAL_SUMMARY_LABEL || T.translate("edit_presentation.social_summary")} </label>
-                            <TextArea id="social_description" value={entity.social_description}
-                                      onChange={handleChange} error={hasErrors('social_description')}/>
-                        </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <p>{T.translate("edit_presentation.social_summary_desc")}</p>
+                        <label> {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_SOCIAL_SUMMARY_LABEL || T.translate("edit_presentation.social_summary")} </label>
+                        <TextArea id="social_description" value={entity.social_description}
+                                  disabled={entity.id > 0 && !isQuestionEditable('social_description')}
+                                  onChange={handleChange} error={hasErrors('social_description')}/>
                     </div>
+                </div>
                 }
                 {isQuestionEnabled('attendees_expected_learnt') &&
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <label> {T.translate("edit_presentation.expected_learn")} </label>
-                            <TextEditor id="attendees_expected_learnt" className="editor"
-                                        value={entity.attendees_expected_learnt} onChange={handleChange}
-                                        error={hasErrors('attendees_expected_learnt')}/>
-                        </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label> {T.translate("edit_presentation.expected_learn")} </label>
+                        <TextEditor id="attendees_expected_learnt" className="editor"
+                                    readOnly={entity.id > 0 && !isQuestionEditable('attendees_expected_learnt')}
+                                    value={entity.attendees_expected_learnt} onChange={handleChange}
+                                    error={hasErrors('attendees_expected_learnt')}/>
                     </div>
+                </div>
                 }
                 {isQuestionEnabled('attending_media') &&
-                    <div className="row form-group">
-                        <div className="col-md-12">
-                            <label> {T.translate("edit_presentation.attending_media", 
-                            { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
-                            <RadioList
-                                id="attending_media"
-                                value={entity.attending_media}
-                                onChange={handleChange}
-                                options={attending_media_opts}
-                                inline
-                                error={hasErrors('attending_media')}
-                            />
-                        </div>
+                <div className="row form-group">
+                    <div className="col-md-12">
+                        <label> {T.translate("edit_presentation.attending_media",
+                            {presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
+                        <RadioList
+                            disabled={entity.id > 0 && !isQuestionEditable('attending_media')}
+                            id="attending_media"
+                            value={entity.attending_media}
+                            onChange={handleChange}
+                            options={attending_media_opts}
+                            inline
+                            error={hasErrors('attending_media')}
+                        />
                     </div>
+                </div>
                 }
                 <div className="row form-group">
                     <div className="col-md-12">
@@ -367,39 +383,49 @@ const PresentationSummaryForm = (props) => {
                     </div>
                 </div>
                 {isQuestionEnabled('links') &&
-                    <>
-                        <hr/>
-                        <div className="row form-group">
-                            <div className="col-md-12">
-                                <p>{selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_LINKS_LABEL || T.translate("edit_presentation.links")} </p>
-                            </div>
-                            <div className="col-md-12">
-                                <label> #1 </label>
-                                <Input className="form-control" id="link_0" data-key="0" value={entity.links[0]}
-                                       onChange={handleChange} error={hasErrors('link_0')}/>
-                            </div>
-                            <div className="col-md-12">
-                                <label> #2 </label>
-                                <Input className="form-control" id="link_1" data-key="1" value={entity.links[1]}
-                                       onChange={handleChange} error={hasErrors('link_1')}/>
-                            </div>
-                            <div className="col-md-12">
-                                <label> #3 </label>
-                                <Input className="form-control" id="link_2" data-key="2" value={entity.links[2]}
-                                       onChange={handleChange} error={hasErrors('link_2')}/>
-                            </div>
-                            <div className="col-md-12">
-                                <label> #4 </label>
-                                <Input className="form-control" id="link_3" data-key="3" value={entity.links[3]}
-                                       onChange={handleChange} error={hasErrors('link_3')}/>
-                            </div>
-                            <div className="col-md-12">
-                                <label> #5 </label>
-                                <Input className="form-control" id="link_4" data-key="4" value={entity.links[4]}
-                                       onChange={handleChange} error={hasErrors('link_4')}/>
-                            </div>
+                <>
+                    <hr/>
+                    <div className="row form-group">
+                        <div className="col-md-12">
+                            <p>{selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_LINKS_LABEL || T.translate("edit_presentation.links")} </p>
                         </div>
-                    </>
+                        <div className="col-md-12">
+                            <label> #1 </label>
+                            <Input
+                                disabled={entity.id > 0 && !isQuestionEditable('links')}
+                                className="form-control" id="link_0" data-key="0" value={entity.links[0]}
+                                onChange={handleChange} error={hasErrors('link_0')}/>
+                        </div>
+                        <div className="col-md-12">
+                            <label> #2 </label>
+                            <Input
+                                disabled={entity.id > 0 && !isQuestionEditable('links')}
+                                className="form-control" id="link_1" data-key="1" value={entity.links[1]}
+                                onChange={handleChange} error={hasErrors('link_1')}/>
+                        </div>
+                        <div className="col-md-12">
+                            <label> #3 </label>
+                            <Input
+                                disabled={entity.id > 0 && !isQuestionEditable('links')}
+                                className="form-control" id="link_2" data-key="2" value={entity.links[2]}
+                                onChange={handleChange} error={hasErrors('link_2')}/>
+                        </div>
+                        <div className="col-md-12">
+                            <label> #4 </label>
+                            <Input
+                                disabled={entity.id > 0 && !isQuestionEditable('links')}
+                                className="form-control" id="link_3" data-key="3" value={entity.links[3]}
+                                onChange={handleChange} error={hasErrors('link_3')}/>
+                        </div>
+                        <div className="col-md-12">
+                            <label> #5 </label>
+                            <Input
+                                disabled={entity.id > 0 && !isQuestionEditable('links')}
+                                className="form-control" id="link_4" data-key="4" value={entity.links[4]}
+                                onChange={handleChange} error={hasErrors('link_4')}/>
+                        </div>
+                    </div>
+                </>
                 }
                 <hr/>
                 <SubmitButtons

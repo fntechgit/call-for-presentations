@@ -93,7 +93,6 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
       type: "info",
       showCloseButton: true,
     }).then((result) =>  {
-      debugger;
       setShowInfoPopup(false)
     });
   }
