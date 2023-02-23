@@ -47,7 +47,9 @@ class PresentationSpeakersForm extends React.Component {
     }
 
     handleSubmit(ev) {
+
         const entity = {...this.props.entity};
+        const { selectionPlanSettings } = this.props;
         ev.preventDefault();
 
         const validModerator = !entity.type.use_moderator || !entity.type.is_moderator_mandatory || entity.moderator;

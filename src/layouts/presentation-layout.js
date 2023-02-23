@@ -55,7 +55,7 @@ class PresentationLayout extends React.Component {
     }
 
     render(){
-        let { match, entity, speaker, history, loading, location, selectionPlan } = this.props;
+        let { match, entity, speaker, history, loading, location, selectionPlan, selectionPlansSettings } = this.props;
         let isNew = !match.params.presentation_id;
 
         if (loading || (!isNew && !entity.id)) return null;
@@ -68,6 +68,9 @@ class PresentationLayout extends React.Component {
             history.push(`/app/profile`);
         }
 
+        const selectionPlanSettings = selectionPlansSettings[selectionPlan?.id] || {};
+        const defaultStep = selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB ? selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB : 'summary';
+
         return(
             <Switch>
                 <Route strict exact path={`${match.url}/speakers/new`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
@@ -77,7 +80,7 @@ class PresentationLayout extends React.Component {
                 <Route strict exact path={`${match.url}/:step`} render={
                     props => (<EditPresentationPage {...props} presentation={this.presentation} selectionPlan={selectionPlan} />)
                 }/>
-                <Route render={props => (<Redirect to={`${match.url}/summary`} />)}/>
+                <Route render={props => (<Redirect to={`${match.url}/${defaultStep}`} />)}/>
             </Switch>
         );
     }
@@ -89,6 +92,7 @@ const mapStateToProps = ({ baseState, presentationState }) => ({
     summit: baseState.summit,
     loading: baseState.loading,
     tagGroups: baseState.tagGroups,
+    selectionPlansSettings: baseState.selectionPlansSettings,
     loggedSpeaker: baseState.speaker,
     ...presentationState
 })

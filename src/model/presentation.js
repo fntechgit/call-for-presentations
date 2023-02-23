@@ -22,250 +22,264 @@ const Status_Accepted = 'Accepted';
 
 class Presentation {
 
-  constructor(presentation, summit, selectionPlan, loggedUser, tagGroups) {
-    this._presentation = presentation;
-    this._selectionPlan = selectionPlan;
-    this._user = loggedUser;
-    this._summit = summit;
-    this._presentation.selectionPlan = summit.selection_plans.find(sp => sp.id === presentation.selection_plan_id);
-    this._tagGroups = tagGroups;
-    this._track = null;
-    this._submissionIsClosed = selectionPlan ? !nowBetween(selectionPlan.submission_begin_date, selectionPlan.submission_end_date) : true;
+    /**
+     * @param presentation
+     * @param summit
+     * @param selectionPlan
+     * @param loggedUser
+     * @param tagGroups
+     * @param selectionPlanSettings
+     */
+    constructor(presentation, summit, selectionPlan, loggedUser, tagGroups, selectionPlanSettings = {}) {
+        this._presentation = presentation;
+        this._selectionPlan = selectionPlan;
+        this._selectionPlanSettings = selectionPlanSettings;
+        this._user = loggedUser;
+        this._summit = summit;
+        this._presentation.selectionPlan = summit.selection_plans.find(sp => sp.id === presentation.selection_plan_id);
+        this._tagGroups = tagGroups;
+        this._track = null;
+        this._submissionIsClosed = selectionPlan ? !nowBetween(selectionPlan.submission_begin_date, selectionPlan.submission_end_date) : true;
 
-    this._steps = [
-      {name: 'NEW', lcName: 'new', step: 0},
-      {name: 'SUMMARY', lcName: 'summary', step: 1, showInNav: true},
-      {name: 'UPLOADS', lcName: 'uploads', step: 2, showInNav: false},
-      {name: 'TAGS', lcName: 'tags', step: 3, showInNav: false},
-      {name: 'SPEAKERS', lcName: 'speakers', step: 4, showInNav: false},
-      {name: 'REVIEW', lcName: 'review', step: 5, showInNav: true},
-      {name: 'COMPLETE', lcName: 'complete', step: 6}
-    ];
+        this._steps = [
+            {name: 'NEW', lcName: 'new', step: 0},
+            {name: 'SUMMARY', lcName: 'summary', step: 1, showInNav: true},
+            {name: 'UPLOADS', lcName: 'uploads', step: 2, showInNav: false},
+            {name: 'TAGS', lcName: 'tags', step: 3, showInNav: false},
+            {name: 'SPEAKERS', lcName: 'speakers', step: 4, showInNav: false},
+            {name: 'REVIEW', lcName: 'review', step: 5, showInNav: true},
+            {name: 'COMPLETE', lcName: 'complete', step: 6}
+        ];
 
-    this.updatePresentation(presentation);
-  }
-
-  updatePresentation(presentation, track = null) {
-    this._presentation = presentation;
-
-    if (track && this._presentation.track_id === track.id) {
-      this._track = track;
+        this.updatePresentation(presentation);
     }
 
-    const allowedMediaUploads = this.getAllowedMediaUploads();
-    const groupedTags = this.getAllowedTags();
-    const showSpeakers = (this._presentation.type?.use_speakers && this._presentation.type?.max_speakers > 0) ||
-                         (this._presentation.type?.use_moderator && this._presentation.type?.max_moderators > 0);
+    updatePresentation(presentation, track = null) {
+        this._presentation = presentation;
 
-    this._steps.forEach(stp => {
-      if (stp.name === 'UPLOADS' && this._presentation.type) stp.showInNav = (allowedMediaUploads.length > 0);
-      if (stp.name === 'TAGS' && this._presentation.track_id) stp.showInNav = (groupedTags.length > 0);
-      if (stp.name === 'SPEAKERS' && this._presentation.type) stp.showInNav = showSpeakers;
-    });
+        if (track && this._presentation.track_id === track.id) {
+            this._track = track;
+        }
 
-    const currentStep = this.getCurrentStep();
+        const allowedMediaUploads = this.getAllowedMediaUploads();
+        const groupedTags = this.getAllowedTags();
+        const showSpeakers = (this._presentation.type?.use_speakers && this._presentation.type?.max_speakers > 0) ||
+            (this._presentation.type?.use_moderator && this._presentation.type?.max_moderators > 0);
 
-    this._presentation.progressNum = currentStep.step;
-  }
+        this._steps.forEach(stp => {
+            if (stp.name === 'UPLOADS' && this._presentation.type) stp.showInNav = (allowedMediaUploads.length > 0);
+            if (stp.name === 'TAGS' && this._presentation.track_id) stp.showInNav = (groupedTags.length > 0);
+            if (stp.name === 'SPEAKERS' && this._presentation.type) stp.showInNav = showSpeakers;
+        });
 
-  /**
-   * @param nowUtc
-   * @returns {React.ReactNode}
-   */
-  getStatus(nowUtc) {
+        const currentStep = this.getCurrentStep();
 
-    const {is_published, status, selection_status, selectionPlan} = this._presentation;
-    const {
-      submission_begin_date,
-      submission_end_date,
-      selection_begin_date,
-      selection_end_date,
-      submission_lock_down_presentation_status_date
-    } = selectionPlan || {};
+        this._presentation.progressNum = currentStep.step;
+    }
 
     /**
-     * Published - Presentation is published
-     * Not Submitted - the submission period is open or closed, the submission is started, but not complete.
-     * Received  - the submission is complete and the submission period is open
-     * In Review - the submission is complete, submission period is closed, track chairs is open or the
-     *             submission_lock_down_presentation_status_date is greater than now.
-     * Rejected - the submission is complete, the track chairs is closed, submission is closed, and the presentation is
-     *            not in alternate or accepted on teams list.
-     * Accepted - the submission is complete, the track chair is closed, submission is closed, and the presentation is
-     *            in alternate or accepted on teams list.
-     **/
+     * @param nowUtc
+     * @returns {React.ReactNode}
+     */
+    getStatus(nowUtc) {
 
-    // submission ( CFP )
-    // check submission period
-    const submissionOpen = nowUtc >= submission_begin_date && nowUtc <= submission_end_date;
-    const submissionClosed = !submissionOpen;
-    // selection ( track chairs )
-    // check selection period
-    const selectionOpen = nowUtc >= selection_begin_date && nowUtc <= selection_end_date ;
-    const selectionEnded = !selectionOpen;
+        const {is_published, status, selection_status, selectionPlan} = this._presentation;
+        const {
+            submission_begin_date,
+            submission_end_date,
+            selection_begin_date,
+            selection_end_date,
+            submission_lock_down_presentation_status_date
+        } = selectionPlan || {};
 
-    // if the presentation is published the Accepted status is returned
-    const submissionComplete = [Status_Accepted, Status_Received].includes(status);
-    const lockDownPeriod = submission_lock_down_presentation_status_date && submission_lock_down_presentation_status_date > nowUtc;
+        /**
+         * Published - Presentation is published
+         * Not Submitted - the submission period is open or closed, the submission is started, but not complete.
+         * Received  - the submission is complete and the submission period is open
+         * In Review - the submission is complete, submission period is closed, track chairs is open or the
+         *             submission_lock_down_presentation_status_date is greater than now.
+         * Rejected - the submission is complete, the track chairs is closed, submission is closed, and the presentation is
+         *            not in alternate or accepted on teams list.
+         * Accepted - the submission is complete, the track chair is closed, submission is closed, and the presentation is
+         *            in alternate or accepted on teams list.
+         **/
 
-    const submissionAccepted = [SelectionStatus_Alternate, SelectionStatus_Accepted].includes(selection_status);
+            // submission ( CFP )
+            // check submission period
+        const submissionOpen = nowUtc >= submission_begin_date && nowUtc <= submission_end_date;
+        const submissionClosed = !submissionOpen;
+        // selection ( track chairs )
+        // check selection period
+        const selectionOpen = nowUtc >= selection_begin_date && nowUtc <= selection_end_date;
+        const selectionEnded = !selectionOpen;
 
-    if (!status) return T.translate("presentations.not_submitted");
+        // if the presentation is published the Accepted status is returned
+        const submissionComplete = [Status_Accepted, Status_Received].includes(status);
+        const lockDownPeriod = submission_lock_down_presentation_status_date && submission_lock_down_presentation_status_date > nowUtc;
 
-    if (submissionComplete) {
-      // is lock down period is enabled then short-circuit everything
-      if (lockDownPeriod || (submissionClosed && selectionOpen)) {
-        return T.translate("presentations.in_review");
-      }
-      else if(is_published) {
-        return T.translate('presentations.published')
-      }
-      else if (selectionEnded) {
-        return submissionAccepted ? T.translate("presentations.accepted") : T.translate("presentations.rejected")
-      }
-      else {
-        return T.translate("presentations.received");
-      }
-    }
-    // default state
-    return T.translate("presentations.not_submitted");
-  }
+        const submissionAccepted = [SelectionStatus_Alternate, SelectionStatus_Accepted].includes(selection_status);
 
-  isSubmitted() {
-    return (this._presentation.is_published || this._presentation.status === 'Received');
-  }
+        if (!status) return T.translate("presentations.not_submitted");
 
-  canEdit() {
-    if (!this._selectionPlan || this._submissionIsClosed) return false;
-
-    let speakers = this._presentation.speakers.map(s => {
-      if (typeof s == 'object') return s.id;
-      else return s;
-    });
-
-    let creatorId = this._presentation.creator ? this._presentation.creator.id : this._presentation.creator_id;
-    let moderatorId = this._presentation.moderator ? this._presentation.moderator.id : this._presentation.moderator_speaker_id;
-
-    let isCreator = (creatorId === this._user.member.id);
-    let isSpeaker = speakers.includes(this._user.id);
-    let isModerator = (moderatorId === this._user.id);
-    let belongsToSP = (this._presentation.selection_plan_id === this._selectionPlan.id);
-
-    return (isCreator || isSpeaker || isModerator) && belongsToSP;
-  }
-
-  canDelete() {
-    if (!this._selectionPlan) return false;
-
-    let belongsToSP = (this._presentation.selection_plan_id === this._selectionPlan.id);
-    return (!this._presentation.is_published && belongsToSP);
-  }
-
-  getProgressLink() {
-    if (this.canEdit()) {
-      let step = 'summary';
-
-      if (this._presentation.progress !== 'COMPLETE') {
-        step = this.getNextStepName();
-      }
-
-      return `/app/${this._summit.slug}/all-plans/${this._selectionPlan.id}/presentations/${this._presentation.id}/${step}`;
-    } else {
-      return `/app/${this._summit.slug}/all-plans/${this._selectionPlan.id}/presentations/${this._presentation.id}/preview`;
-    }
-  }
-
-  getSelectionPlanName() {
-    const {selectionPlan} = this._presentation;
-    let selectionPlanName = 'N/A';
-
-    if (selectionPlan) {
-      const startDate = formatEpoch(selectionPlan.submission_begin_date, 'MMM Do');
-      const endDate = formatEpoch(selectionPlan.submission_end_date, 'MMM Do');
-      selectionPlanName = `${selectionPlan.name} - ${startDate} to ${endDate}`;
+        if (submissionComplete) {
+            // is lock down period is enabled then short-circuit everything
+            if (lockDownPeriod || (submissionClosed && selectionOpen)) {
+                return T.translate("presentations.in_review");
+            } else if (is_published) {
+                return T.translate('presentations.published')
+            } else if (selectionEnded) {
+                return submissionAccepted ? T.translate("presentations.accepted") : T.translate("presentations.rejected")
+            } else {
+                return T.translate("presentations.received");
+            }
+        }
+        // default state
+        return T.translate("presentations.not_submitted");
     }
 
-    return selectionPlanName;
-  }
-
-  getAllowedMediaUploads() {
-    if (this._presentation?.type && this._presentation.type.allowed_media_upload_types.length > 0) {
-      return this._presentation.type.allowed_media_upload_types;
+    isSubmitted() {
+        return (this._presentation.is_published || this._presentation.status === 'Received');
     }
 
-    return [];
-  }
+    canEdit() {
+        if (!this._selectionPlan || this._submissionIsClosed) return false;
 
-  getAllowedTags() {
-    const track = this._track;
-    const tagGroups = this._tagGroups;
-    let groupedTags = [];
+        let speakers = this._presentation.speakers.map(s => {
+            if (typeof s == 'object') return s.id;
+            else return s;
+        });
 
-    if (track && tagGroups.length > 0) {
-      let allowedTags = track.allowed_tags.map(t => ({id: t.id, tag: t.tag}));
-      groupedTags = tagGroups.map(group => {
-        let tags = allowedTags.filter(tag => group.allowed_tags.map(t => t.tag_id).includes(tag.id));
-        return ({name: group.name, tags: tags});
-      });
+        let creatorId = this._presentation.creator ? this._presentation.creator.id : this._presentation.creator_id;
+        let moderatorId = this._presentation.moderator ? this._presentation.moderator.id : this._presentation.moderator_speaker_id;
 
-      groupedTags = groupedTags.filter(gr => gr.tags.length > 0);
+        let isCreator = (creatorId === this._user.member.id);
+        let isSpeaker = speakers.includes(this._user.id);
+        let isModerator = (moderatorId === this._user.id);
+        let belongsToSP = (this._presentation.selection_plan_id === this._selectionPlan.id);
+
+        return (isCreator || isSpeaker || isModerator) && belongsToSP;
     }
 
-    return groupedTags;
-  };
+    canDelete() {
+        if (!this._selectionPlan) return false;
 
-  getCurrentStep() {
-    let currentStep = this._steps.find(s => s.name === this._presentation.progress);
-
-    while (!currentStep.showInNav && currentStep.step < (this._steps.length - 1)) {
-      currentStep = this._steps[currentStep.step + 1];
+        let belongsToSP = (this._presentation.selection_plan_id === this._selectionPlan.id);
+        return (!this._presentation.is_published && belongsToSP);
     }
 
-    return currentStep;
-  }
+    getProgressLink() {
 
-  getNextStep() {
-    const progressNum = this._presentation.progressNum || 1;
-    const reviewStep = this._steps.find(stp => stp.name === 'REVIEW');
-    let nextStep = progressNum > 4 ? reviewStep : this._steps[progressNum + 1];
+        if (this.canEdit()) {
 
-    while (!nextStep.showInNav && nextStep.step < (this._steps.length - 1)) {
-      nextStep = this._steps[nextStep.step + 1];
+            let step = 'summary';
+
+            if (this._presentation.progress !== 'COMPLETE') {
+                step = this.getNextStepName();
+            }
+
+            // default step
+
+            if (this._presentation.id > 0 && this._selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB) {
+                step = this._selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB;
+            }
+
+            return `/app/${this._summit.slug}/all-plans/${this._selectionPlan.id}/presentations/${this._presentation.id}/${step}`;
+        } else {
+            return `/app/${this._summit.slug}/all-plans/${this._selectionPlan.id}/presentations/${this._presentation.id}/preview`;
+        }
     }
 
-    return nextStep;
-  }
+    getSelectionPlanName() {
+        const {selectionPlan} = this._presentation;
+        let selectionPlanName = 'N/A';
 
-  getNextStepName() {
-    const nextStep = this.getNextStep();
-    return nextStep.lcName;
-  }
+        if (selectionPlan) {
+            const startDate = formatEpoch(selectionPlan.submission_begin_date, 'MMM Do');
+            const endDate = formatEpoch(selectionPlan.submission_end_date, 'MMM Do');
+            selectionPlanName = `${selectionPlan.name} - ${startDate} to ${endDate}`;
+        }
 
-  getStepNameAfter(stepName) {
-    const stepIdx = this._steps.findIndex(stp => stp.name === stepName);
-    let nextStep = this._steps[stepIdx + 1];
-
-    while (!nextStep.showInNav && nextStep.step < (this._steps.length - 1)) {
-      nextStep = this._steps[nextStep.step + 1];
+        return selectionPlanName;
     }
 
-    return nextStep.lcName;
-  }
+    getAllowedMediaUploads() {
+        if (this._presentation?.type && this._presentation.type.allowed_media_upload_types.length > 0) {
+            return this._presentation.type.allowed_media_upload_types;
+        }
 
-  getStepNameBefore(stepName) {
-    const stepIdx = this._steps.findIndex(stp => stp.name === stepName.toUpperCase());
-    let nextStep = this._steps[stepIdx - 1];
-
-    while (!nextStep.showInNav && nextStep.step > 0) {
-      nextStep = this._steps[nextStep.step - 1];
+        return [];
     }
 
-    return nextStep.lcName;
-  }
+    getAllowedTags() {
+        const track = this._track;
+        const tagGroups = this._tagGroups;
+        let groupedTags = [];
 
-  getPresentationProgress() {
-    return this._presentation.progressNum;
-  }
+        if (track && tagGroups.length > 0) {
+            let allowedTags = track.allowed_tags.map(t => ({id: t.id, tag: t.tag}));
+            groupedTags = tagGroups.map(group => {
+                let tags = allowedTags.filter(tag => group.allowed_tags.map(t => t.tag_id).includes(tag.id));
+                return ({name: group.name, tags: tags});
+            });
+
+            groupedTags = groupedTags.filter(gr => gr.tags.length > 0);
+        }
+
+        return groupedTags;
+    };
+
+    getCurrentStep() {
+        let currentStep = this._steps.find(s => s.name === this._presentation.progress);
+
+        while (!currentStep.showInNav && currentStep.step < (this._steps.length - 1)) {
+            currentStep = this._steps[currentStep.step + 1];
+        }
+
+        return currentStep;
+    }
+
+    getNextStep() {
+        const progressNum = this._presentation.progressNum || 1;
+        const reviewStep = this._steps.find(stp => stp.name === 'REVIEW');
+        let nextStep = progressNum > 4 ? reviewStep : this._steps[progressNum + 1];
+
+        while (!nextStep.showInNav && nextStep.step < (this._steps.length - 1)) {
+            nextStep = this._steps[nextStep.step + 1];
+        }
+
+        return nextStep;
+    }
+
+    getNextStepName() {
+        const nextStep = this.getNextStep();
+        return nextStep.lcName;
+    }
+
+    getStepNameAfter(stepName) {
+        const stepIdx = this._steps.findIndex(stp => stp.name === stepName);
+        let nextStep = this._steps[stepIdx + 1];
+
+        while (!nextStep.showInNav && nextStep.step < (this._steps.length - 1)) {
+            nextStep = this._steps[nextStep.step + 1];
+        }
+
+        return nextStep.lcName;
+    }
+
+    getStepNameBefore(stepName) {
+        const stepIdx = this._steps.findIndex(stp => stp.name === stepName.toUpperCase());
+        let nextStep = this._steps[stepIdx - 1];
+
+        while (!nextStep.showInNav && nextStep.step > 0) {
+            nextStep = this._steps[nextStep.step - 1];
+        }
+
+        return nextStep.lcName;
+    }
+
+    getPresentationProgress() {
+        return this._presentation.progressNum;
+    }
 
 }
 
