@@ -324,7 +324,9 @@ const PresentationSummaryForm = (props) => {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_ABSTRACT_LABEL || T.translate("edit_presentation.abstract")} </label>
-                        <TextEditor id="description" className="editor" value={entity.description}
+                        <TextEditor id="description"
+                                    className={`editor${entity.id > 0 && !isQuestionEditable('description')?' disabled':''}`}
+                                    value={entity.description}
                                     readOnly={entity.id > 0 && !isQuestionEditable('description')}
                                     onChange={handleChange} error={hasErrors('description')}/>
                     </div>
@@ -346,7 +348,8 @@ const PresentationSummaryForm = (props) => {
                 <div className="row form-group">
                     <div className="col-md-12">
                         <label> {T.translate("edit_presentation.expected_learn")} </label>
-                        <TextEditor id="attendees_expected_learnt" className="editor"
+                        <TextEditor id="attendees_expected_learnt"
+                                    className={`editor${entity.id > 0 && !isQuestionEditable('attendees_expected_learnt')?' disabled':''}`}
                                     readOnly={entity.id > 0 && !isQuestionEditable('attendees_expected_learnt')}
                                     value={entity.attendees_expected_learnt} onChange={handleChange}
                                     error={hasErrors('attendees_expected_learnt')}/>
