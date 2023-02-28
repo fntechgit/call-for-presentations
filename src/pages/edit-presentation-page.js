@@ -92,6 +92,10 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
       html: selectionPlanSettings.CFP_PRESENTATION_EDITION_CUSTOM_MESSAGE,
       type: "info",
       showCloseButton: true,
+      width: '40em',
+      customClass: {        
+        content: 'edit-presentation-content',
+      }      
     }).then((result) =>  {
       setShowInfoPopup(false)
     });
