@@ -180,7 +180,9 @@ class Presentation {
             // default step
 
             if (this._presentation.id > 0 && this._selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB) {
-                step = this._selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB;
+                const defaultEditionTab = this._selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB;
+                let defaultStep = this._steps.find(s => s.name === defaultEditionTab.toString().toUpperCase());
+                step = defaultStep && defaultStep.showInNav ? defaultEditionTab : step;
             }
 
             return `/app/${this._summit.slug}/all-plans/${this._selectionPlan.id}/presentations/${this._presentation.id}/${step}`;

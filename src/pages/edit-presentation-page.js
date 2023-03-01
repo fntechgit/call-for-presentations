@@ -87,7 +87,9 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
 
   if (!summit.event_types || !summit.tracks) return null;
 
+
   if (selectionPlanSettings?.CFP_PRESENTATION_EDITION_CUSTOM_MESSAGE && showInfoPopup) {
+    setShowInfoPopup(false);
     Swal.fire({
       html: selectionPlanSettings.CFP_PRESENTATION_EDITION_CUSTOM_MESSAGE,
       type: "info",
@@ -96,8 +98,6 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
       customClass: {        
         content: 'edit-presentation-content',
       }      
-    }).then((result) =>  {
-      setShowInfoPopup(false)
     });
   }
 
