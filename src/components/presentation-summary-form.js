@@ -23,6 +23,8 @@ const PresentationSummaryForm = (props) => {
     const {selectionPlan, selectionPlanSettings, summit, presentation, step, disclaimer} = props;
     const [entity, setEntity] = useState({...props.entity});
     const [errors, setErrors] = useState({});
+    const [defaultTrack, setDefaultTrack] = useState(null);
+    const [defaultActivityType, setDefaultActivityType] = useState(null);
     const errorsLength = Object.keys(errors).length;
     let event_types_ddl = [];
     let categories = [];
@@ -90,6 +92,9 @@ const PresentationSummaryForm = (props) => {
         const {selectionPlan, disclaimer} = props;
         const errors_copy = {...errors};
         ev.preventDefault();
+
+        if(defaultTrack) entity.type_id = defaultTrack;
+        if(defaultActivityType) entity.track_id = defaultActivityType;
 
         let rules = {
             title: {required: 'Title is required.'},
@@ -236,6 +241,9 @@ const PresentationSummaryForm = (props) => {
         {label: T.translate("general.no"), value: 0}
     ];
 
+    if(selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_TRACK_SELECTION === 1 && event_types_ddl.length === 1) setDefaultTrack(event_types_ddl[0]);
+    if(selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_ACTIVITY_TYPE_SELECTION === 1 && categories.length === 1) setDefaultActivityType(categories[0]);
+
     return (
         <div className="presentation-form-wrapper">
             {disclaimer &&
@@ -274,35 +282,39 @@ const PresentationSummaryForm = (props) => {
                         />
                     </div>
                 </div>
-                <div className="row form-group">
-                    <div className="col-md-12">
-                        <label> {T.translate("edit_presentation.format")} </label>
-                        <p> {event_types_limits} </p>
-                        <Dropdown
-                            id="type_id"
-                            value={entity.type_id}
-                            onChange={handleChange}
-                            placeholder={T.translate("general.placeholders.select_one")}
-                            options={event_types_ddl}
-                            disabled={!!entity.id}
-                            error={hasErrors('type_id')}
-                        />
+                {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_TRACK_SELECTION !== '0' &&
+                    <div className="row form-group">
+                        <div className="col-md-12">
+                            <label> {T.translate("edit_presentation.format")} </label>
+                            <p> {event_types_limits} </p>
+                            <Dropdown
+                                id="type_id"
+                                value={entity.type_id}
+                                onChange={handleChange}
+                                placeholder={T.translate("general.placeholders.select_one")}
+                                options={event_types_ddl}
+                                disabled={!!entity.id}
+                                error={hasErrors('type_id')}
+                            />
+                        </div>
                     </div>
-                </div>
-                <div className="row form-group">
-                    <div className="col-md-12">
-                        <label> {T.translate("edit_presentation.general_topic",
-                            {presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
-                        <RadioList
-                            disabled={entity.id > 0 && !isQuestionEditable('track_id')}
-                            id="track_id"
-                            value={entity.track_id}
-                            onChange={handleChange}
-                            options={categories}
-                            error={hasErrors('track_id')}
-                        />
+                }            
+                {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_ACTIVITY_TYPE_SELECTION !== '0' &&
+                    <div className="row form-group">
+                        <div className="col-md-12">
+                            <label> {T.translate("edit_presentation.general_topic",
+                                {presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
+                            <RadioList
+                                disabled={entity.id > 0 && !isQuestionEditable('track_id')}
+                                id="track_id"
+                                value={entity.track_id}
+                                onChange={handleChange}
+                                options={categories}
+                                error={hasErrors('track_id')}
+                            />
+                        </div>
                     </div>
-                </div>
+                }
                 {isQuestionEnabled('level') &&
                 <div className="row form-group">
                     <div className="col-md-12">
