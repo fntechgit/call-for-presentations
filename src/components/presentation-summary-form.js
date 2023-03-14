@@ -93,8 +93,8 @@ const PresentationSummaryForm = (props) => {
         const errors_copy = {...errors};
         ev.preventDefault();
 
-        if(defaultTrack) entity.type_id = defaultTrack;
-        if(defaultActivityType) entity.track_id = defaultActivityType;
+        if(selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_TRACK_SELECTION === '1' && defaultTrack) entity.type_id = defaultTrack;
+        if(selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_ACTIVITY_TYPE_SELECTION  === '1' && defaultActivityType) entity.track_id = defaultActivityType;
 
         let rules = {
             title: {required: 'Title is required.'},
@@ -241,8 +241,8 @@ const PresentationSummaryForm = (props) => {
         {label: T.translate("general.no"), value: 0}
     ];
 
-    if(selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_TRACK_SELECTION === 1 && event_types_ddl.length === 1) setDefaultTrack(event_types_ddl[0]);
-    if(selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_ACTIVITY_TYPE_SELECTION === 1 && categories.length === 1) setDefaultActivityType(categories[0]);
+    if(selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_TRACK_SELECTION === '1' && event_types_ddl.length === 1) setDefaultTrack(event_types_ddl[0]);
+    if(selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_ACTIVITY_TYPE_SELECTION === '1' && categories.length === 1) setDefaultActivityType(categories[0]);
 
     return (
         <div className="presentation-form-wrapper">
@@ -282,7 +282,7 @@ const PresentationSummaryForm = (props) => {
                         />
                     </div>
                 </div>
-                {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_TRACK_SELECTION !== '0' &&
+                {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_TRACK_SELECTION !== '1' && event_types_ddl.length > 1 &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.format")} </label>
@@ -299,7 +299,7 @@ const PresentationSummaryForm = (props) => {
                         </div>
                     </div>
                 }            
-                {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_ACTIVITY_TYPE_SELECTION !== '0' &&
+                {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_ACTIVITY_TYPE_SELECTION !== '1' && categories.length > 1 &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.general_topic",
