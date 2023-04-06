@@ -161,6 +161,14 @@ const PresentationSummaryForm = (props) => {
         return '';
     }
 
+    const shouldShowEventTypeDDL =  () => {
+        return !(selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_ACTIVITY_TYPE_SELECTION === '1' && event_types_ddl.length === 2)
+    }
+
+    const shouldShowTrackDDL =  () => {
+        return !(selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_TRACK_SELECTION === '1' && categories.length === 1)
+    }
+
     const isQuestionEnabled = (question_id) => {
         const {selectionPlan} = props;
         return selectionPlan.allowed_presentation_questions.includes(question_id);
@@ -274,7 +282,7 @@ const PresentationSummaryForm = (props) => {
                         />
                     </div>
                 </div>
-                {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_TRACK_SELECTION !== '1' && event_types_ddl.length > 2 &&
+                {shouldShowEventTypeDDL &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.format")} </label>
@@ -290,8 +298,8 @@ const PresentationSummaryForm = (props) => {
                             />
                         </div>
                     </div>
-                }            
-                {selectionPlanSettings?.CFP_PRESENTATION_SUMMARY_HIDE_ACTIVITY_TYPE_SELECTION !== '1' && categories.length > 1 &&
+                }
+                {shouldShowTrackDDL &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.general_topic",
