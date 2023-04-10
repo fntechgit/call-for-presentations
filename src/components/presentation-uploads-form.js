@@ -12,13 +12,11 @@
  **/
 
 import React from 'react'
-import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import { UploadInputV2 } from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/utils/methods'
 import SubmitButtons from './presentation-submit-buttons'
-import {validate, scrollToError} from '../utils/methods'
-import Swal from "sweetalert2";
+import {scrollToError} from '../utils/methods'
 
 
 class PresentationUploadsForm extends React.Component {
@@ -164,6 +162,8 @@ class PresentationUploadsForm extends React.Component {
                                     error={this.hasErrors(media_type.name)}
                                     djsConfig={{withCredentials:true}}
                                     maxFiles={maxFiles}
+                                    canAdd={media_type.is_editable}
+                                    canDelete={media_type.is_editable}
                                 />
                             </div>
                         </div>
