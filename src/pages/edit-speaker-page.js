@@ -85,7 +85,7 @@ class EditSpeakerPage extends React.Component {
     }
 
     render() {
-        const {entity, orgRoles, selectionPlan, selectionPlansSettings, loggedMember, errors, speakerPermission, match, loggedInSpeaker} = this.props;
+        const {entity, orgRoles, selectionPlan, selectionPlansSettings, loggedMember, errors, speakerPermission, match, loggedInSpeaker, summit} = this.props;
         const speakerId = match.params.speaker_id;
 
         const selectionPlanSettings = selectionPlansSettings[selectionPlan?.id] || {};
@@ -110,6 +110,7 @@ class EditSpeakerPage extends React.Component {
                 <hr/>
                 <SpeakerForm
                     entity={entity}
+                    summit={summit}
                     errors={errors}
                     member={loggedMember}
                     orgRoles={orgRoles}
