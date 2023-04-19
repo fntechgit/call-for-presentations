@@ -89,7 +89,7 @@ export default class QuestionsInput extends React.Component {
                             onChange={this.handleChange}
                             placeholder={question.placeholder}
                             className="form-control"
-                            disabled={!question.is_editable}
+                            disabled={entity.id > 0 && !question.is_editable}
                         />
 
                     </React.Fragment>
@@ -105,7 +105,7 @@ export default class QuestionsInput extends React.Component {
                             placeholder={question.placeholder}
                             className="form-control"
                             rows="4"
-                            disabled={!question.is_editable}
+                            disabled={entity.id > 0 && !question.is_editable}
                         />
 
                     </React.Fragment>
@@ -119,7 +119,7 @@ export default class QuestionsInput extends React.Component {
                           checked={(answerValue === "true")}
                           onChange={this.handleChange}
                           className="form-check-input"
-                          disabled={!question.is_editable}
+                          disabled={entity.id > 0 && !question.is_editable}
                         />
 
                         <label className="form-check-label" htmlFor={`${entity.id}_${question.id}`}>
@@ -140,7 +140,7 @@ export default class QuestionsInput extends React.Component {
                             value={value}
                             options={questionValues}
                             onChange={this.handleChange}
-                            disabled={!question.is_editable}
+                            disabled={entity.id > 0 && !question.is_editable}
                         />
                     </React.Fragment>
                 );
@@ -156,7 +156,7 @@ export default class QuestionsInput extends React.Component {
                             options={questionValues}
                             onChange={this.handleChange}
                             html
-                            disabled={!question.is_editable}
+                            disabled={entity.id > 0 && !question.is_editable}
                         />
                     </React.Fragment>
                 );
@@ -172,7 +172,7 @@ export default class QuestionsInput extends React.Component {
                             onChange={this.handleChange}
                             inline
                             html
-                            disabled={!question.is_editable}
+                            disabled={entity.id > 0 && !question.is_editable}
                         />
                     </React.Fragment>
                 );
