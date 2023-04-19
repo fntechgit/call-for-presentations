@@ -141,7 +141,7 @@ class SpeakerForm extends React.Component {
         let showAffiliation = this.props.hasOwnProperty('showAffiliation');
 
         let roleOptions = orgRoles.map(r => ({value: r.id, label: r.role}));
-        const companyValue = entity.company?.id ? entity.company : {name: entity.company};
+        const companyValue = entity.company instanceof Object ? entity.company : {name: entity.company};
         
         return (
             <form className="summit-speaker-form">
@@ -188,7 +188,6 @@ class SpeakerForm extends React.Component {
                               menu: provided => ({ ...provided, zIndex: 9999 })
                           }}
                         />
-                        {/*<Input className="form-control" id="company" value={entity.company}  onChange={this.handleChange} error={this.hasErrors('company')}/>*/}
                     </div>
                     <div className="col-md-6">
                         <label> {T.translate("edit_speaker.phone_number")} </label>
