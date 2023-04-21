@@ -282,7 +282,7 @@ const PresentationSummaryForm = (props) => {
                         />
                     </div>
                 </div>
-                {shouldShowEventTypeDDL &&
+                {shouldShowEventTypeDDL() &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.format")} </label>
@@ -299,7 +299,7 @@ const PresentationSummaryForm = (props) => {
                         </div>
                     </div>
                 }
-                {shouldShowTrackDDL &&
+                {shouldShowTrackDDL() &&
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.general_topic",
