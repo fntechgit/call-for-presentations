@@ -162,7 +162,7 @@ class PresentationUploadsForm extends React.Component {
                                     error={this.hasErrors(media_type.name)}
                                     djsConfig={{withCredentials:true}}
                                     maxFiles={maxFiles}
-                                    canAdd={media_type.is_editable}
+                                    canAdd={media_type.is_editable || mediaUploads.length < maxFiles}
                                     canDelete={media_type.is_editable}
                                 />
                             </div>
