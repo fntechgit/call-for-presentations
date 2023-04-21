@@ -46,7 +46,7 @@ const ProfilePage = (props) => {
         });
     }
 
-    const {speaker, orgRoles, loggedMember, errors, loading} = props;
+    const {speaker, orgRoles, loggedMember, errors, loading, summit} = props;
 
     if (!speaker?.id && !loading && !errors) {
         Swal.fire({
@@ -62,6 +62,7 @@ const ProfilePage = (props) => {
             <hr/>
             <SpeakerForm
                 entity={props.entity}
+                summit={summit}
                 errors={errors}
                 member={loggedMember}
                 orgRoles={orgRoles}
