@@ -11,13 +11,14 @@
  * limitations under the License.
  **/
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import {connect} from 'react-redux';
 import {Switch, Route, Redirect} from 'react-router-dom';
 import {getAllFromSummit, getAllSummitDocs} from '../actions/base-actions';
 import PrimaryLayout from "./primary-layout";
 import AllSelectionPlansPage from "../pages/all-selection-plans-page";
 import NavMenu from "../components/nav-menu";
+import {SP_LANDING} from "../utils/constants";
 
 const AllPlansLayout = ({summit, location, match, speaker, member}) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
@@ -30,6 +31,18 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
       return 'profile';
     }
   };
+
+  useEffect(() => {
+    // detect number after all plans, and if it's there the next slash
+    const regex = /all-plans\/(\d+)(?:\/|$)/;
+    const regexMatch = location.pathname.match(regex);
+    if (regexMatch) {
+        const selectionPlanId = regexMatch[1];
+        localStorage.setItem(SP_LANDING, selectionPlanId);
+        return;
+    }
+    localStorage.removeItem(SP_LANDING);
+  }, [location])
 
   if (summit == null || loggedUser == null) return null;
 

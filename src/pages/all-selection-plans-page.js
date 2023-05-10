@@ -35,10 +35,6 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSett
     if (selectionPlanIdParam) {
       allPlans = allPlans.filter(sp => sp.id === selectionPlanIdParam);
     }
-  
-    // track origin
-    localStorage.setItem("SP_LANDING", selectionPlanIdParam);
-
     return allPlans.sort((a,b) => a.submission_begin_date - b.submission_begin_date);
   };
 
