@@ -81,7 +81,9 @@ class PreviewPresentationPage extends React.Component {
                     }
                     {track &&
                     <div className="item">
-                        <label>{T.translate("edit_presentation.general_topic")}</label><br/>
+                        <label>{T.translate("edit_presentation.general_topic",
+                        {presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})}</label>
+                        <br/>
                         <RawHTML>{track.name}</RawHTML>
                     </div>
                     }
