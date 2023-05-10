@@ -18,6 +18,7 @@ import {getAllFromSummit, getAllSummitDocs} from '../actions/base-actions';
 import PrimaryLayout from "./primary-layout";
 import AllSelectionPlansPage from "../pages/all-selection-plans-page";
 import NavMenu from "../components/nav-menu";
+import {SP_LANDING} from "../utils/constants";
 
 const AllPlansLayout = ({summit, location, match, speaker, member}) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
@@ -36,13 +37,11 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
     const regex = /all-plans\/(\d+)(?:\/|$)/;
     const regexMatch = location.pathname.match(regex);
     if (regexMatch) {
-      const selectionPlanId = regexMatch[1];
-      // track origin
-      localStorage.setItem("SP_LANDING", selectionPlanId);
-    } else {
-      localStorage.removeItem("SP_LANDING");
+        const selectionPlanId = regexMatch[1];
+        localStorage.setItem(SP_LANDING, selectionPlanId);
+        return;
     }
-
+    localStorage.removeItem(SP_LANDING);
   }, [location])
 
   if (summit == null || loggedUser == null) return null;

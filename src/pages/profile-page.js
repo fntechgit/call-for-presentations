@@ -20,6 +20,7 @@ import {saveSpeakerProfile, getOrganizationalRoles} from "../actions/speaker-act
 import {getSpeakerInfo} from "../actions/auth-actions";
 
 import '../styles/profile-page.less';
+import {getSubmissionsPath} from "../utils/methods";
 
 const ProfilePage = (props) => {
 
@@ -38,7 +39,7 @@ const ProfilePage = (props) => {
 
         props.saveSpeakerProfile(entity).then(() => {
             if (summit) {
-                history.push(`/app/${summit.slug}`);
+                history.push( `/app/${summit.slug}/${getSubmissionsPath()}`);
                 return;
             }
             // if we dont have a summit , the we are at /app/profile path

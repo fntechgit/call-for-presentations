@@ -16,6 +16,7 @@ import URI from "urijs";
 import validator from 'validator';
 import {getAccessToken, initLogOut} from 'openstack-uicore-foundation/lib/security/methods'
 import defaultColors from './default-colors.json';
+import {SP_LANDING} from "./constants";
 
 export const stripHtmlText = (html) => {
     let tmp = document.createElement("DIV");
@@ -263,6 +264,6 @@ export const setDefaultColors = () => {
 };
 
 export const getSubmissionsPath = () => {
-    const selectionPlanLandingId = localStorage.getItem("SP_LANDING");
+    const selectionPlanLandingId = localStorage.getItem(SP_LANDING);
     return selectionPlanLandingId ? `all-plans/${selectionPlanLandingId}` : 'all-plans';
 };
