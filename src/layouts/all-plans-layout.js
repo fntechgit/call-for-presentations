@@ -34,11 +34,13 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
   useEffect(() => {
     // detect number after all plans, and if it's there the next slash
     const regex = /all-plans\/(\d+)(?:\/|$)/;
-    const match = location.pathname.match(regex);
-    if (match) {
-      const selectionPlanId = match[1];
+    const regexMatch = location.pathname.match(regex);
+    if (regexMatch) {
+      const selectionPlanId = regexMatch[1];
       // track origin
       localStorage.setItem("SP_LANDING", selectionPlanId);
+    } else {
+      localStorage.removeItem("SP_LANDING");
     }
 
   }, [location])
