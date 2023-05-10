@@ -99,7 +99,9 @@ class PresentationReviewForm extends React.Component {
                 </div>
                 }
                 <div className="item">
-                    <label>{T.translate("edit_presentation.general_topic")}</label><br/>
+                    <label>{T.translate("edit_presentation.general_topic",
+                        {presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})}</label>
+                    <br/>
                     {track.name &&
                     <RawHTML>{track.name}</RawHTML>
                     }
