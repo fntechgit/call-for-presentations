@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import {connect} from 'react-redux';
 import {Switch, Route, Redirect} from 'react-router-dom';
 import {getAllFromSummit, getAllSummitDocs} from '../actions/base-actions';
@@ -30,6 +30,18 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
       return 'profile';
     }
   };
+
+  useEffect(() => {
+    // detect number after all plans, and if it's there the next slash
+    const regex = /all-plans\/(\d+)(?:\/|$)/;
+    const match = location.pathname.match(regex);
+    if (match) {
+      const selectionPlanId = match[1];
+      // track origin
+      localStorage.setItem("SP_LANDING", selectionPlanId);
+    }
+
+  }, [location])
 
   if (summit == null || loggedUser == null) return null;
 
