@@ -67,7 +67,7 @@ class PresentationReviewForm extends React.Component {
         }
 
         if (!entity.id || !track) return null;
-        console.log(entity, presentation);
+
         return (
             <form className="presentation-review-form">
                 {!presentation.isSubmitted() &&
@@ -120,7 +120,7 @@ class PresentationReviewForm extends React.Component {
                             selectionPlan.extra_questions.sort((a, b) => a.order - b.order).map(q => {
                                 let a = entity.extra_questions.find( a => a.question_id == q.id);
                                 if(!a) return null;
-                                return (<li><label><RawHTML>{q.label}</RawHTML></label>&nbsp;{a.answer}</li>)
+                                return (<li key={`extra_question__${entity.id}_${a.id}`}><label><RawHTML>{q.label}</RawHTML></label>&nbsp;{a.answer}</li>)
                             })
                         }
                     </ul>
@@ -136,9 +136,11 @@ class PresentationReviewForm extends React.Component {
                             entity.media_uploads.length > 0 &&
                             <ul className="list-container">
                                 {
-                                    entity.media_uploads.map(mu => <li><a target="_blank"
-                                                                          href={mu.private_url || mu.public_url}>{mu.name}</a>
-                                    </li>)
+                                    entity.media_uploads.map((mu) => {
+                                        return (<li key={`mu_${entity.id}_${mu.id}`}><a target="_blank"
+                                               href={mu.public_url || mu.private_url }>{mu.name}</a>
+                                        </li>);
+                                    })
                                 }
                             </ul>
                         }
@@ -146,7 +148,9 @@ class PresentationReviewForm extends React.Component {
                             entity.slides.length > 0 &&
                             <ul className="list-container">
                                 {
-                                    entity.slides.map(f => <li><a target="_blank" href={f.link}>{f.name}</a></li>)
+                                    entity.slides.map((f) => {
+                                        return (<li key={`slide_${entity.id}_${f.id}`}><a target="_blank" href={f.link}>{f.name}</a></li>);
+                                    })
                                 }
                             </ul>
                         }
