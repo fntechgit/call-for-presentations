@@ -120,7 +120,12 @@ class PresentationReviewForm extends React.Component {
                             selectionPlan.extra_questions.sort((a, b) => a.order - b.order).map(q => {
                                 let a = entity.extra_questions.find( a => a.question_id == q.id);
                                 if(!a) return null;
-                                return (<li key={`extra_question__${entity.id}_${a.id}`}><label><RawHTML>{q.label}</RawHTML></label>&nbsp;{a.answer}</li>)
+                                if (q.type === "RadioButtonList" || q.type === "ComboBox" || q.type === "CheckBoxList") {
+                                    const formatted_value = q.values.find(e => e.id === parseInt(a.answer))?.value;
+                                    return (<li key={`extra_question__${entity.id}_${a.question_id}`}><label><RawHTML>{q.label}</RawHTML></label>&nbsp;{formatted_value}</li>)
+                                } else {
+                                    return (<li key={`extra_question__${entity.id}_${a.question_id}`}><label><RawHTML>{q.label}</RawHTML></label>&nbsp;{a.answer}</li>)
+                                }
                             })
                         }
                     </ul>
