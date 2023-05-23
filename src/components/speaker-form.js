@@ -142,27 +142,27 @@ class SpeakerForm extends React.Component {
 
         let roleOptions = orgRoles.map(r => ({value: r.id, label: r.role}));
         const companyValue = entity.company instanceof Object ? entity.company : {name: entity.company};
-        
+
         return (
             <form className="summit-speaker-form">
                 <input type="hidden" id="id" value={entity.id} />
                 <div className="row form-group">
                     <div className="col-md-4">
-                        <label> {T.translate("edit_speaker.title")} </label>
+                        <label> {T.translate("edit_speaker.title")} * </label>
                         <Input className="form-control" id="title" value={entity.title} onChange={this.handleChange} error={this.hasErrors('title')} />
                     </div>
                     <div className="col-md-4">
-                        <label> {T.translate("general.first_name")} </label>
+                        <label> {T.translate("general.first_name")} * </label>
                         <Input className="form-control" id="first_name" value={entity.first_name} onChange={this.handleChange} error={this.hasErrors('first_name')}/>
                     </div>
                     <div className="col-md-4">
-                        <label> {T.translate("general.last_name")} </label>
+                        <label> {T.translate("general.last_name")} * </label>
                         <Input className="form-control" id="last_name" value={entity.last_name} onChange={this.handleChange} error={this.hasErrors('last_name')}/>
                     </div>
                 </div>
                 <div className="row form-group">
                     <div className="col-md-4">
-                        <label> {T.translate("edit_speaker.email")} </label>
+                        <label> {T.translate("edit_speaker.email")} * </label>
                         <Input disabled className="form-control" id="email" value={decodeURIComponent(entity.email)} onChange={this.handleChange}/>
                     </div>
                     <div className="col-md-4">
@@ -176,7 +176,7 @@ class SpeakerForm extends React.Component {
                 </div>
                 <div className="row form-group">
                     <div className="col-md-6">
-                        <label> {T.translate("edit_speaker.company")} </label>
+                        <label> {T.translate("edit_speaker.company")} * </label>
                         <RegistrationCompanyInput
                           id="company"
                           summitId={summit.id}
@@ -190,19 +190,19 @@ class SpeakerForm extends React.Component {
                         />
                     </div>
                     <div className="col-md-6">
-                        <label> {T.translate("edit_speaker.phone_number")} </label>
+                        <label> {T.translate("edit_speaker.phone_number")} * </label>
                         <Input className="form-control" id="phone_number" value={entity.phone_number} onChange={this.handleChange} error={this.hasErrors('phone_number')}/>
                     </div>
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
-                        <label> {T.translate("edit_speaker.country")} </label>
+                        <label> {T.translate("edit_speaker.country")} * </label>
                         <CountryInput id="country" value={entity.country} onChange={this.handleChange} error={this.hasErrors('country')} />
                     </div>
                 </div>
                 <div className="row form-group">
                     <div className="col-md-12">
-                        <label> {T.translate("edit_speaker.bio")} </label>
+                        <label> {T.translate("edit_speaker.bio")} * </label>
                         <TextEditor id="bio" value={entity.bio} onChange={this.handleChange} error={this.hasErrors('bio')} />
                     </div>
                 </div>
