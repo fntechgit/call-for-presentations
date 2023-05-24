@@ -39,7 +39,7 @@ const PresentationsTable = ({
 
   const handleReviewPresentation = (ev, presentation) => {
     ev.preventDefault();
-    history.push(`${match.url}/${presentation.id}/preview#comments`);
+    history.push(`${match.url}/${presentation.selection_plan_id}/presentations/${presentation.id}/preview#comments`);
   };
 
   return (
@@ -75,8 +75,8 @@ const PresentationsTable = ({
                 <td className="pres-status">
                   {presentation.getStatus(nowUtc)}
                   {canEdit && p.public_comments && p.public_comments.length > 0 &&
-                  <button className="btn btn-default btn-xs review-btn"
-                          onClick={ev => handleReviewPresentation(ev, p)}>
+                  <button className="btn btn-default btn-xs review-btn" type='button'
+                          onClick={(ev) => handleReviewPresentation(ev, p)}>
                     <i className="fa fa-exclamation-triangle blink"/>
                     {T.translate("presentations.review")}
                   </button>

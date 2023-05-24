@@ -48,7 +48,7 @@ export const getPresentation = (presentationId) => async (dispatch, getState) =>
 
   const params = {
     access_token: accessToken,
-    expand: 'track_groups, speakers, track, track.allowed_tags, presentation_materials, type, type.allowed_media_upload_types, type.allowed_media_upload_types.type, media_uploads, tags, extra_questions, links'
+    expand: 'track_groups, speakers, track, track.allowed_tags, presentation_materials, type, type.allowed_media_upload_types, type.allowed_media_upload_types.type, media_uploads, tags, extra_questions, links, public_comments'
   };
 
   return getRequest(
