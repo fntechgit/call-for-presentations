@@ -6,7 +6,8 @@
   "scripts": {
     "build-dev": "./node_modules/.bin/webpack --config webpack.dev.js",
     "build": "./node_modules/.bin/webpack --config webpack.prod.js",
-    "serve": "webpack-dev-server --open --https --config webpack.dev.js"
+    "serve": "webpack-dev-server --open --https --config webpack.dev.js",
+    "clean-branchs" : "git branch | grep -v \"master\\|main\\|production\" | xargs git branch -D"
   },
   "author": "",
   "license": "ISC",
