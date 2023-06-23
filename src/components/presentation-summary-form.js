@@ -302,7 +302,10 @@ const PresentationSummaryForm = (props) => {
                 {shouldShowTrackDDL() &&
                     <div className="row form-group">
                         <div className="col-md-12">
-                            <label> {T.translate("edit_presentation.general_topic",
+                            <label> {selectionPlanSettings?.CFP_TRACK_QUESTION_LABEL ? 
+                                selectionPlanSettings?.CFP_TRACK_QUESTION_LABEL 
+                                :
+                                T.translate("edit_presentation.general_topic",
                                 {presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>
                             <RadioList
                                 disabled={entity.id > 0 && !isQuestionEditable('track_id')}
