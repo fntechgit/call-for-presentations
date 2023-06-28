@@ -55,8 +55,11 @@ export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
         // speaker not found
 
         Swal.fire({
-            title: T.translate("landing.speaker_profile_required", {user_account: profileState.entity.email}),
-            text: T.translate("landing.speaker_profile_required_text", {user_account: profileState.entity.email}),
+            title: T.translate("landing.speaker_profile_required"),
+            text: profileState?.entity?.email ? 
+                T.translate("landing.speaker_profile_required_text", {user_account: profileState.entity.email})
+                :
+                'Loading ...',
             type: "warning",
         });
 
