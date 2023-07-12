@@ -48,7 +48,7 @@ const PresentationsTable = ({
         <h3>{title}</h3>
       </div>
       {presentations.length > 0 &&
-      <div className="col-md-12">
+      <div className="col-md-12 table-wrapper">
         <table className="table">
           <thead>
           <tr>
