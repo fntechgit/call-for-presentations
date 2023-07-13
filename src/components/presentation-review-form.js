@@ -125,9 +125,9 @@ class PresentationReviewForm extends React.Component {
                                 if(!a) return null;
                                 if (q.hasOwnProperty('values') && q.values.length > 0){
                                     const formatted_value = q.values.find(e => e.id === parseInt(a.answer))?.label
-                                    return (<li key={`extra_question__${entity.id}_${a.question_id}`}><label><RawHTML>{q.label}</RawHTML></label>&nbsp;{formatted_value}</li>)
+                                    return (<li className='extra-question' key={`extra_question__${entity.id}_${a.question_id}`}><label className='extra-question-label'><RawHTML>{q.label}</RawHTML></label>&nbsp;{formatted_value}</li>)
                                 } else {
-                                    return (<li key={`extra_question__${entity.id}_${a.question_id}`}><label><RawHTML>{q.label}</RawHTML></label>&nbsp;{a.answer}</li>)
+                                    return (<li className='extra-question' key={`extra_question__${entity.id}_${a.question_id}`}><label className='extra-question-label'><RawHTML>{q.label}</RawHTML></label>&nbsp;{a.answer}</li>)
                                 }
                             })
                         }
