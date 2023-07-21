@@ -57,7 +57,7 @@ const PresentationsTable = ({
             <th>{T.translate("presentations.presentation_status", 
               {presentation: `${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`})}</th>
             <th>{T.translate("presentations.submission_plan")}</th>
-            <th>{canEdit ? T.translate("presentations.last_edited") : <>&nbsp;</>}</th>
+            <th>{T.translate("presentations.last_edited")}</th>
             <th>&nbsp;</th>
           </tr>
           </thead>
@@ -86,7 +86,7 @@ const PresentationsTable = ({
                   {presentation.getSelectionPlanName()}
                 </td>
                 <td className="pres-last-edited">
-                  {canEdit ? formatEpoch(p.last_edited) : <>&nbsp;</>}
+                  {p.last_edited ? formatEpoch(p.last_edited) : 'N/A'}
                 </td>
                 {canEdit &&
                 <td className="text-right pres-actions">
