@@ -124,10 +124,37 @@ class PresentationReviewForm extends React.Component {
                                 let a = entity.extra_questions.find( a => a.question_id == q.id);
                                 if(!a) return null;
                                 if (q.hasOwnProperty('values') && q.values.length > 0){
-                                    const formatted_value = q.values.find(e => e.id === parseInt(a.answer))?.label
-                                    return (<li className='extra-question' key={`extra_question__${entity.id}_${a.question_id}`}><label className='extra-question-label'><RawHTML>{q.label}</RawHTML></label>&nbsp;{formatted_value}</li>)
+                                    const answers = a.answer.split(',');
+                                    const formatted_value = answers.length > 1 ? 
+                                        answers.map((a) => {
+                                            return q.values.find(e => e.id === parseInt(a))?.label;
+                                        }) 
+                                        :
+                                        q.values.find(e => e.id === parseInt(a.answer))?.label;
+                                    return (<li className='extra-question' key={`extra_question__${entity.id}_${a.question_id}`}>
+                                                <label className='extra-question-label'>
+                                                    <RawHTML>{q.label}</RawHTML>
+                                                </label>
+                                                <br/>
+                                                {Array.isArray(formatted_value) ? 
+                                                    formatted_value.map((answer) => (
+                                                        <>
+                                                            <span dangerouslySetInnerHTML={{__html: answer}} />
+                                                            <br/>
+                                                        </>
+                                                    ))
+                                                    :
+                                                    <span dangerouslySetInnerHTML={{__html: formatted_value}} />
+                                                }
+                                            </li>);
                                 } else {
-                                    return (<li className='extra-question' key={`extra_question__${entity.id}_${a.question_id}`}><label className='extra-question-label'><RawHTML>{q.label}</RawHTML></label>&nbsp;{a.answer}</li>)
+                                    return (<li className='extra-question' key={`extra_question__${entity.id}_${a.question_id}`}>
+                                                <label className='extra-question-label'>
+                                                    <RawHTML>{q.label}</RawHTML>
+                                                </label>
+                                                <br/>
+                                                <span dangerouslySetInnerHTML={{__html: a.answer}}/>
+                                            </li>);
                                 }
                             })
                         }
