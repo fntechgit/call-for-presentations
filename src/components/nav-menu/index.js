@@ -62,17 +62,24 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
                             active={activeItem === it.name}
                         />
                     ))}
-                    {globalSummitDocs?.map(doc => (
-                        <MenuItem
-                            key={doc.name}
-                            name={doc.name}
-                            label={doc.label}
-                            iconClass="fa-download"
-                            show
-                            onClick={(e) => window.open(doc.file, '_blank')}
-                            active={false}
-                        />
-                    ))}
+                    {
+                        globalSummitDocs?.map(doc => {
+                            const common = { name: doc.name, label: doc.label };
+                            return doc.file ?
+                                { ...common, url: doc.file, icon: "fa-download" } :
+                                { ...common, url: doc.web_link, icon: "fa-external-link" }
+                        }).map(dto =>
+                            <MenuItem
+                                key={dto.name}
+                                name={dto.name}
+                                label={dto.label}
+                                iconClass={dto.icon}
+                                show
+                                onClick={e => window.open(dto.url, '_blank')}
+                                active={false}
+                            />
+                        )
+                    }
                     <MenuItem
                         key="support"
                         name="support"

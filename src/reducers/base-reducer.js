@@ -79,7 +79,7 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         case RECEIVE_SUMMIT: {
             const entity = payload.response;
             const globalSummitDocs = entity.summit_documents.filter(sd => !sd.selection_plan_id);
-
+            
             return {...state, summit: entity, marketingSettings: null, globalSummitDocs, baseLoaded: false};
         }
         case SUMMIT_DOCS_RECEIVED: {
