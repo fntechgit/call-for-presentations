@@ -3,8 +3,6 @@ import T from "i18n-react";
 
 import './summit-docs-section.less';
 
-
-
 const SummitDocsSection = ({summitDocs}) => {
 
   if (summitDocs.length === 0) return null;
@@ -15,7 +13,7 @@ const SummitDocsSection = ({summitDocs}) => {
       <ul>
         {summitDocs.map(doc =>
           <li key={`summit-doc-${doc.id}`}>
-            <a href={doc.file} target="_blank">{doc.label}</a>: {doc.description}
+            <a href={doc.file ?? doc.web_link} target="_blank">{doc.label}</a>: {doc.description}
           </li>
         )}
       </ul>
