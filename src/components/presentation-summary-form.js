@@ -18,6 +18,7 @@ import {Dropdown, Input, RadioList, RawHTML, TextArea, TextEditor} from 'opensta
 import SubmitButtons from './presentation-submit-buttons'
 import {scrollToError, validate} from '../utils/methods'
 import QuestionsInput from '../components/inputs/questions-input'
+import {EXTRA_QUESTION_MAX_LENGTH} from "../utils/constants";
 
 const PresentationSummaryForm = (props) => {
     const {selectionPlan, selectionPlanSettings, summit, presentation, step, disclaimer} = props;
@@ -80,6 +81,10 @@ const PresentationSummaryForm = (props) => {
             value[ev.target.dataset.key] = ev.target.value.trim();
         }
 
+        if (id === 'extra_questions') {
+            delete (errors_copy[`extra_questions-${ev.target.question_id}`]);
+        }
+
         delete (errors_copy[id]);
         entity_copy[id] = value;
         setEntity(entity_copy);
@@ -101,9 +106,10 @@ const PresentationSummaryForm = (props) => {
                     msg: 'Please complete required Questions.',
                 },
                 maxLength: {
-                    value: 512,
+                    value: EXTRA_QUESTION_MAX_LENGTH,
                     msg: 'Answer exceeds max limit of 512 characters',
                     field: 'answer',
+                    id: 'question_id'
                 }
             },
         };
@@ -396,7 +402,7 @@ const PresentationSummaryForm = (props) => {
                             entity={entity}
                             questions={selectionPlan.extra_questions}
                             onChange={handleChange}
-                            error={hasErrors('extra_questions')}
+                            hasErrors={hasErrors}
                         />
                     </div>
                 </div>
