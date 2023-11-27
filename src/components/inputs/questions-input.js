@@ -14,6 +14,7 @@
 import React from 'react';
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import {Input, Dropdown, RadioList, CheckboxList, RawHTML} from 'openstack-uicore-foundation/lib/components'
+import {EXTRA_QUESTION_MAX_LENGTH} from "../../utils/constants";
 
 export default class QuestionsInput extends React.Component {
 
@@ -62,6 +63,7 @@ export default class QuestionsInput extends React.Component {
         let newEv = {
             target: {
                 id: this.props.id,
+                question_id: id,
                 value: answers
             }
         };
@@ -73,11 +75,14 @@ export default class QuestionsInput extends React.Component {
 
     getInput(question, answerValue) {
         let questionValues = question.values;
-        let {entity} = this.props;
+        let {entity, hasErrors} = this.props;
         let label = question.label;
-        if(question.mandatory){
+        const error = hasErrors(`extra_questions-${question.id}`);
+
+        if (question.mandatory) {
             label = `${label}<span>&nbsp;*</span>`;
         }
+
         switch (question.type) {
             case 'Text':
                 return (
@@ -91,13 +96,13 @@ export default class QuestionsInput extends React.Component {
                             className="form-control"
                             disabled={entity.id > 0 && !question.is_editable}
                         />
-
+                        {error && <p className="error-label">{error}</p>}
                     </React.Fragment>
                 );
             case 'TextArea':
                 return (
                     <React.Fragment>
-                        <label><RawHTML>{label}</RawHTML></label>
+                        <label><RawHTML>{label}</RawHTML> ({EXTRA_QUESTION_MAX_LENGTH} chars)</label>
                         <textarea
                             id={question.id}
                             value={answerValue}
@@ -107,7 +112,7 @@ export default class QuestionsInput extends React.Component {
                             rows="4"
                             disabled={entity.id > 0 && !question.is_editable}
                         />
-
+                        {error && <p className="error-label">{error}</p>}
                     </React.Fragment>
                 );
             case 'CheckBox':
@@ -127,6 +132,7 @@ export default class QuestionsInput extends React.Component {
                                 {label}
                             </RawHTML>
                         </label>
+                        {error && <p className="error-label">{error}</p>}
                     </div>
                 );
             case 'ComboBox':
@@ -142,6 +148,7 @@ export default class QuestionsInput extends React.Component {
                             onChange={this.handleChange}
                             disabled={entity.id > 0 && !question.is_editable}
                         />
+                        {error && <p className="error-label">{error}</p>}
                     </React.Fragment>
                 );
             case 'CheckBoxList':
@@ -158,6 +165,7 @@ export default class QuestionsInput extends React.Component {
                             html
                             disabled={entity.id > 0 && !question.is_editable}
                         />
+                        {error && <p className="error-label">{error}</p>}
                     </React.Fragment>
                 );
             case 'RadioButtonList':
@@ -174,22 +182,23 @@ export default class QuestionsInput extends React.Component {
                             html
                             disabled={entity.id > 0 && !question.is_editable}
                         />
+                        {error && <p className="error-label">{error}</p>}
                     </React.Fragment>
                 );
         }
     }
 
     render() {
-        let {answers} = this.state;
-        let {questions, error} = this.props;
-        let orderedQuestions = questions.sort((a, b) => (a.order > b.order) ? 1 : -1);
-        let has_error = ( this.props.hasOwnProperty('error') && error != '' );
+        const {answers} = this.state;
+        const {questions} = this.props;
+        const orderedQuestions = questions.sort((a, b) => (a.order > b.order) ? 1 : -1);
+
         return (
             <div className="extra-questions">
                 {orderedQuestions.map(q => {
+                    const answer = answers.find(ans => ans.question_id === q.id);
+                    const answerValue = answer ? answer.answer : null;
 
-                    let answer = answers.find(ans => ans.question_id === q.id);
-                    let answerValue = answer ? answer.answer : null;
                     return (
                         <div className={`row form-group`} key={`question_answer_${q.id}`}>
                             <div className="col-md-12">
@@ -198,9 +207,6 @@ export default class QuestionsInput extends React.Component {
                         </div>
                     );
                 })}
-                {has_error &&
-                <p className="error-label">{error}</p>
-                }
             </div>
         );
     }

@@ -119,32 +119,27 @@ export const validate = (entity, rules, errors) => {
         if (rules[field].hasOwnProperty('maxLength')) {
             // this allows to validate values on nested objects
             // field atributte specify the object attribute
-            let field2Validate = rules[field].maxLength.hasOwnProperty('field') ? rules[field].maxLength.field : null;
+            let field2Validate = rules[field].maxLength?.field || null;
+            const id2Group = rules[field].maxLength?.id || null;
             let toValidate = [];
             // we could have an array of values to check ( repetitive group)
             // if we only have one, we simulate the array
-            if(!Array.isArray(entity[field])){
-                toValidate.push(entity[field])
-            }
-            else{
-                toValidate = entity[field].map((e) => e[field2Validate])
-            }
-
-            try {
-                toValidate.forEach(e => {
-                    let val = stripHtmlText(e);
-                    if (val.length > 0 && val.length > rules[field].maxLength.value) {
-                        errors[field] = rules[field].maxLength.msg;
-                        result = false;
-                        // to short circuit the each , we throw an exception
-                        throw Error();
-                    }
+            if (!Array.isArray(entity[field])) {
+                toValidate.push({id: field, val: entity[field]})
+            } else {
+                toValidate = entity[field].map(e => {
+                    const id = id2Group ? `${field}-${e[id2Group]}` : field;
+                    return {id, val: e[field2Validate]}
                 })
             }
-            catch (e){
-                result = false;
-            }
 
+            toValidate.forEach(e => {
+                let val = stripHtmlText(e.val);
+                if (val.length > 0 && val.length > rules[field].maxLength.value) {
+                    errors[e.id] = rules[field].maxLength.msg;
+                    result = false;
+                }
+            })
         }
 
         if (rules[field].hasOwnProperty('link')) {
