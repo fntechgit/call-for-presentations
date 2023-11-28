@@ -107,7 +107,7 @@ const PresentationSummaryForm = (props) => {
                 },
                 maxLength: {
                     value: EXTRA_QUESTION_MAX_LENGTH,
-                    msg: 'Answer exceeds max limit of 512 characters',
+                    msg: `Answer exceeds max limit of ${EXTRA_QUESTION_MAX_LENGTH} characters.`,
                     field: 'answer',
                     id: 'question_id'
                 }
@@ -128,25 +128,25 @@ const PresentationSummaryForm = (props) => {
         }
 
         if (isQuestionEnabled('social_description')) {
-            rules.social_description = {maxLength: {value: 280, msg: 'Value exceeds max limit of 280 characters'}};
+            rules.social_description = {maxLength: {value: 280, msg: 'Value exceeds max limit of 280 characters.'}};
         }
 
         if (isQuestionEnabled('attendees_expected_learnt')) {
             rules.attendees_expected_learnt = {
                 required: 'This field is required.',
-                maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
+                maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters.'}
             };
         }
 
         if (isQuestionEnabled('description')) {
             rules.description = {
                 required: 'Abstract is required.',
-                maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters'}
+                maxLength: {value: 1000, msg: 'Value exceeds max limit of 1000 characters.'}
             };
         }
 
         if (isQuestionEnabled('links')) {
-            rules.links = {links: 'Link is not valid. Links must start with http:// or https://'};
+            rules.links = {links: 'Link is not valid. Links must start with http:// or https://.'};
         }
 
         validate(entity, rules, errors_copy);
