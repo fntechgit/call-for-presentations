@@ -22,8 +22,6 @@ import {
 } from "openstack-uicore-foundation/lib/utils/actions";
 import history from '../history';
 import {getAccessTokenSafely} from "../utils/methods";
-import {DUMMY_ACTION} from "./presentations-actions";
-import {speakerErrorHandler} from "./auth-actions";
 
 export const RECEIVE_TAG_GROUPS = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY = 'RECEIVE_EVENT_CATEGORY';
@@ -166,7 +164,8 @@ export const getMarketingSettings = (summitId) => (dispatch) => {
 
   let params = {
     per_page: 100,
-    page: 1
+    page: 1,
+    selection_plan_id: 0,
   };
 
   return getRequest(

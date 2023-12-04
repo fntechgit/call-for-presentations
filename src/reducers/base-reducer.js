@@ -24,6 +24,8 @@ import {
     REQUEST_MARKETING_SETTINGS,
     REQUEST_AVAILABLE_SUMMITS,
     RECEIVE_ALLOWED_SELECTION_PLANS,
+    REQUEST_SELECTION_PLAN_SETTINGS,
+    RECEIVE_SELECTION_PLAN_SETTINGS,
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
@@ -37,7 +39,7 @@ const DEFAULT_STATE = {
     speaker: null,
     summit: null,
     marketingSettings: null,
-    selectionPlansSettings: null,
+    selectionPlansSettings: {},
     submissionIsClosed: false,
     globalSummitDocs: [],
     baseLoaded: false,
@@ -103,6 +105,14 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         case RECEIVE_ALLOWED_SELECTION_PLANS: {
             const {data} = payload.response;
             return {...state, summit: {...state.summit, selection_plans: data}};
+        }
+        case REQUEST_SELECTION_PLAN_SETTINGS: {
+            return {...state, selectionPlansSettings: {}};
+        }
+        case RECEIVE_SELECTION_PLAN_SETTINGS: {
+            const {data} = payload.response;
+            const selectionPlansSettings = formatSelectionPlanSettings(data);
+            return {...state, marketingSettings: data, selectionPlansSettings: selectionPlansSettings};
         }
         default:
             return state;
