@@ -18,8 +18,9 @@ import ProfilePage from '../pages/profile-page'
 import SelectionProcessPage from '../pages/selection-process-page'
 import TracksGuidePage from '../pages/tracks-guide-page'
 import PresentationLayout from './presentation-layout'
+import {getSelectionPlanSettings} from "../actions/base-actions";
 
-const PrimaryLayout = ({summit, speaker, member, match}) => {
+const PrimaryLayout = ({summit, speaker, member, match,...props}) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
   const selectionPlanIdParam = parseInt(match.params.selection_plan_id);
   const [selectionPlan, setSelectionPlan] = useState(null);
@@ -28,6 +29,8 @@ const PrimaryLayout = ({summit, speaker, member, match}) => {
     if (selectionPlanIdParam) {
       const selPlan = summit.selection_plans.find(sp => sp.id === selectionPlanIdParam);
       setSelectionPlan(selPlan);
+      // retrieve marketing settings for selection plan
+      props.getSelectionPlanSettings(summit.id, selPlan.id);
     }
   }, [selectionPlanIdParam]);
 
@@ -61,6 +64,6 @@ const mapStateToProps = ({loggedUserState, baseState}) => ({
   loading: baseState.loading,
 });
 
-export default connect(mapStateToProps, null)(PrimaryLayout)
+export default connect(mapStateToProps, {getSelectionPlanSettings})(PrimaryLayout)
 
 

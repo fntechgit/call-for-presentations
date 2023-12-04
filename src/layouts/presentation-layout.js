@@ -68,7 +68,7 @@ class PresentationLayout extends React.Component {
             history.push(`/app/profile`);
         }
 
-        const selectionPlanSettings = selectionPlansSettings[selectionPlan?.id] || {};
+        const selectionPlanSettings = selectionPlansSettings && selectionPlansSettings.hasOwnProperty(selectionPlan?.id) ? (selectionPlansSettings[selectionPlan?.id] || {}): {};
         const defaultStep = selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB ? selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB : 'summary';
 
         return(

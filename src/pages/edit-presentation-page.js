@@ -41,7 +41,7 @@ import {getMarketingValue} from "../components/marketing-setting";
 import '../styles/edit-presentation-page.less';
 import {SelectionPlanContext} from "../components/SelectionPlanContext";
 
-const EditPresentationPage = ({entity, track, presentation, selectionPlan, summit, match, selectionPlans, showInfoPopup, setShowInfoPopup, ...props}) => {
+const EditPresentationPage = ({entity, track, presentation, selectionPlan, summit, match, selectionPlansSettings, showInfoPopup, setShowInfoPopup, ...props}) => {
   const {setSelectionPlanCtx} = useContext(SelectionPlanContext);
 
   const [selectionPlanSettings, setSelectionPlanSettings] = useState(null);
@@ -60,10 +60,9 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
 
   useEffect(() => {
     setSelectionPlanCtx(selectionPlan);
-    setSelectionPlanSettings(selectionPlans[selectionPlan.id] || {});
+    setSelectionPlanSettings(selectionPlansSettings[selectionPlan.id] || {});
     return () => { setSelectionPlanCtx(null) }
-  }, [selectionPlan?.id])
-
+  }, [selectionPlan?.id, selectionPlansSettings])
 
   const getNavSteps = () => {
     return presentation._steps.filter(stp => stp.showInNav);
@@ -79,6 +78,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
     getSpeakerPermission,
     trackGroups
   } = props;
+
   const title = (entity.id) ? T.translate("general.edit") : T.translate("general.new");
   const step = match.params.step;
   const disclaimer = selectionPlan.submission_period_disclaimer || getMarketingValue('spkmgmt_disclaimer');
@@ -86,7 +86,6 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
   const navSteps = getNavSteps();
 
   if (!summit.event_types || !summit.tracks) return null;
-
 
   if (selectionPlanSettings?.CFP_PRESENTATION_EDITION_CUSTOM_MESSAGE && showInfoPopup) {
     setShowInfoPopup(false);
@@ -195,7 +194,7 @@ const mapStateToProps = ({baseState, presentationState}) => ({
   tagGroups: baseState.tagGroups,
   loading: baseState.loading,
   loggedSpeaker: baseState.speaker,
-  selectionPlans: baseState.selectionPlansSettings,
+  selectionPlansSettings: baseState.selectionPlansSettings,
   ...presentationState
 })
 
