@@ -17,7 +17,7 @@ import T from 'i18n-react/dist/i18n-react';
 import { Exclusive } from 'openstack-uicore-foundation/lib/components'
 import {getSubmissionsPath} from "../utils/methods";
 
-import '../styles/preview-presentation-page.less';
+import '../styles/thankyou-presentation-page.less';
 
 class ThankYouPresentationPage extends React.Component {
 
@@ -44,7 +44,8 @@ class ThankYouPresentationPage extends React.Component {
 
                 <div className="thankyou-body-wrapper">
                     <p>
-                        {T.translate("thankyou_presentation.saved")}
+                        <b>{T.translate("thankyou_presentation.saved")}</b>{'  '}
+                        {T.translate("thankyou_presentation.saved_cont")}
                     </p>
                     <Exclusive name="thank-you-body">
                     <p>
