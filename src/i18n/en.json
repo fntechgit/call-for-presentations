@@ -257,6 +257,7 @@
   "thankyou_presentation": {
     "thank_you": "Thank you !",
     "saved": "Your submission has been saved!",
+    "saved_cont": "You will receive a confirmation email outlining important details regarding your submission.",
     "body": "If you are still working on your talk, you can come back to make updates before CFP closes. If you have completed your talk submission, a confirmation email will be sent to you and all associated speakers/moderators. Check your inbox and junk folders for an email sent from speakersupport@openinfra.dev."
   },
   "edit_profile": {
