@@ -207,7 +207,7 @@ export const validate = (entity, rules, errors) => {
                                 break;
                         }
                         if(!answeredQuestions){
-                            errors[field] = rules[field].required_questions.msg;
+                            errors[`${field}-${eq.id}`] = rules[field].required_questions.msg;
                             result = false;
                         }
                     }
