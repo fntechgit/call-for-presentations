@@ -184,10 +184,10 @@ export const validate = (entity, rules, errors) => {
                 for (var eq of questions) {
                     if(eq.mandatory){ // only check for mandatory questions ( skip optionals)
                         // check if the user answered
-                        let findEq = answers.find(q => q.question_id == eq.id);
-                        if(!findEq){
+                        let findEq = answers.find(a => a.question_id == eq.id);
+                        if (!findEq) {
                             // answer not found
-                            errors[field] = rules[field].required_questions.msg;
+                            errors[`${field}-${eq.id}`] = rules[field].required_questions.msg;
                             result = false;
                             break;
                         }
