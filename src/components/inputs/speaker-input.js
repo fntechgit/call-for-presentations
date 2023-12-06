@@ -106,6 +106,7 @@ export default class CPFSpeakerInput extends React.Component {
                 formatCreateLabel={(input) => `Add new ${selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'speaker'} with email: "${input}" `}
                 isValidNewOption={this.isValidNewOption}
                 isClearable
+                noOptionsMessage={({inputValue}) => `"${inputValue}" not found. Replace with speaker's email address to add as new speaker`}
                 {...rest}
             />
         );
