@@ -28,7 +28,7 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
     const onMenuItemClick = (event, item) => {
         event.preventDefault();
         setActiveItem(item.name);
-    
+
         const submissionsPath = getSubmissionsPath();
         const path = item.name === 'all-plans' ? submissionsPath : item.name;
 
@@ -44,6 +44,13 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
         }
 
         return exclusiveSections.includes(item.name);
+    }
+
+    const handleRequestSupport = (e) => {
+        e.preventDefault();
+        const supportEmailAddress = summit.speakers_support_email || summit.support_email || window.SUPPORT_EMAIL;
+        window.open(`mailto:${supportEmailAddress}`, '_blank');
+        return false;
     }
 
     return (
@@ -86,7 +93,7 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
                         label="Contact Support"
                         iconClass="fa-envelope"
                         show
-                        onClick={(e) => window.open(`mailto:${window.SUPPORT_EMAIL}`, '_blank')}
+                        onClick={(e) => handleRequestSupport(e)}
                         active={false}
                     />
                 </ul>
