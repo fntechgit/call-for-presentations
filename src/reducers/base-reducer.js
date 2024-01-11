@@ -81,7 +81,7 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         case RECEIVE_SUMMIT: {
             const entity = payload.response;
             const globalSummitDocs = entity.summit_documents.filter(sd => !sd.selection_plan_id);
-            
+
             return {...state, summit: entity, marketingSettings: null, globalSummitDocs, baseLoaded: false};
         }
         case SUMMIT_DOCS_RECEIVED: {
@@ -92,7 +92,7 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         case REQUEST_AVAILABLE_SUMMITS:
         case REQUEST_MARKETING_SETTINGS: {
-            setDefaultColors();            
+            setDefaultColors();
             return {...state, marketingSettings: null};
         }
         case RECEIVE_MARKETING_SETTINGS: {
@@ -112,7 +112,7 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         case RECEIVE_SELECTION_PLAN_SETTINGS: {
             const {data} = payload.response;
             const selectionPlansSettings = formatSelectionPlanSettings(data);
-            return {...state, marketingSettings: data, selectionPlansSettings: selectionPlansSettings};
+            return {...state, marketingSettings: data, selectionPlansSettings: { ...state.selectionPlansSettings, ...selectionPlansSettings}};
         }
         default:
             return state;

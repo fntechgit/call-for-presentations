@@ -11,20 +11,25 @@
  * limitations under the License.
  **/
 
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useLayoutEffect, useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
+import {getSelectionPlanSettings} from "../actions/base-actions";
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSettings}) => {
+const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSettings, getSelectionPlanSettings}) => {
   const [plansToShow, setPlansToShow] = useState([]);
   const selectionPlansIds = summit.selection_plans.map(sp => sp.id).join();
 
+  useEffect(()=>{
+    const currentSelectionPlanIds= match?.params?.selection_plan_id ? [parseInt(match?.params?.selection_plan_id)] : selectionPlansIds.split(',');
+    currentSelectionPlanIds.forEach((id) => getSelectionPlanSettings(summit.id, id));
+  }, []);
+
   useLayoutEffect(() => {
     const availablePlans = getAvailablePlans();
-
     if (availablePlans.length > 0) {
-      setPlansToShow(availablePlans);      
+      setPlansToShow(availablePlans);
     }
   }, [selectionPlansIds])
 
@@ -65,4 +70,4 @@ const mapStateToProps = ({baseState}) => ({
   selectionPlansSettings: baseState.selectionPlansSettings
 });
 
-export default connect(mapStateToProps, {})(AllSelectionPlansPage);
+export default connect(mapStateToProps, {getSelectionPlanSettings})(AllSelectionPlansPage);

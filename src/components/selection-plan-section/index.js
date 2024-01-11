@@ -14,7 +14,7 @@ import './selection-plan-section.less';
 
 const SelectionPlanSection = ({summit, selectionPlan, selectionPlanSettings, loggedSpeaker, baseLoaded, loading, ...props }) => {
   const [dataPulled, setDataPulled] = useState(false);
-
+  console.log(`selectionPlan ${selectionPlan.id}`, selectionPlanSettings);
   useEffect(() => {
     props.getAllPresentations(summit.id, selectionPlan.id).then(() => {
       // clear presentation form

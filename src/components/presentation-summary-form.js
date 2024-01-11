@@ -94,7 +94,7 @@ const PresentationSummaryForm = (props) => {
     const handleSubmit = (ev) => {
         const {selectionPlan, disclaimer} = props;
         const errors_copy = {...errors};
-        ev.preventDefault();        
+        ev.preventDefault();
 
         let rules = {
             title: {required: 'Title is required.'},
@@ -248,7 +248,7 @@ const PresentationSummaryForm = (props) => {
     const speakers_attend_opts = [
         {label: T.translate("general.yes"), value: 1},
         {label: T.translate("general.no"), value: 0}
-    ];    
+    ];
 
     return (
         <div className="presentation-form-wrapper">
@@ -308,8 +308,8 @@ const PresentationSummaryForm = (props) => {
                 {shouldShowTrackDDL() &&
                     <div className="row form-group">
                         <div className="col-md-12">
-                            <label> {selectionPlanSettings?.CFP_TRACK_QUESTION_LABEL ? 
-                                selectionPlanSettings?.CFP_TRACK_QUESTION_LABEL 
+                            <label> {selectionPlanSettings?.CFP_TRACK_QUESTION_LABEL ?
+                                selectionPlanSettings?.CFP_TRACK_QUESTION_LABEL
                                 :
                                 T.translate("edit_presentation.general_topic",
                                 {presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()})} </label>

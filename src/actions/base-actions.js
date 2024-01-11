@@ -163,8 +163,8 @@ export const loadEventCategory = () => async (dispatch, getState) => {
 export const getMarketingSettings = (summitId) => (dispatch) => {
 
   let params = {
-    per_page: 100,
     page: 1,
+    per_page: 100,
     selection_plan_id: 0,
   };
 
