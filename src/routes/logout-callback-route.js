@@ -10,10 +10,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import URI from "urijs"
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 import {connect} from "react-redux";
+import {getFromLocalStorage} from "openstack-uicore-foundation/lib/utils/methods";
+import URI from "urijs";
+import {BACK_URL} from "../utils/constants";
 
 class LogOutCallbackRoute extends React.Component {
 
@@ -45,12 +47,15 @@ class LogOutCallbackRoute extends React.Component {
 
     doLogout();
 
+    const backUrl = getFromLocalStorage(BACK_URL, true );
+    let currentLocation = URI('/');
     if (summit?.slug) {
-      history.push(`/app/${summit.slug}`);
-      return;
+      currentLocation = URI(`/app/${summit.slug}`);
     }
 
-    history.push("/");
+    if(backUrl)
+      currentLocation = currentLocation.query({[BACK_URL]:backUrl});
+    history.push(currentLocation.toString());
   }
 
 

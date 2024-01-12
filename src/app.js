@@ -36,7 +36,9 @@ import Header from "./components/header";
 import LandingPage from "./pages/landing-page";
 import {SelectionPlanContext} from "./components/SelectionPlanContext";
 import URI from "urijs";
-
+import { putOnLocalStorage }
+  from "openstack-uicore-foundation/lib/utils/methods";
+import {BACK_URL} from "./utils/constants";
 // here is set by default user lang as en
 let language = localStorage.getItem("PREFERRED_LANGUAGE");
 
@@ -94,14 +96,20 @@ class App extends PureComponent {
     this.state = {
       selectionPlanCtx: null
     }
+    this.onClickLogOut = this.onClickLogOut.bind(this);
   }
 
   onClickLogin = (backUrl) => {
     let url = URI('/auth/login');
     if(backUrl)
-      url = url.query({'BackUrl':backUrl});
-
+      url = url.query({[BACK_URL]:backUrl});
     history.push(url.toString());
+  }
+
+  onClickLogOut = () => {
+    const currentUrl = URI(window.location.href);
+    putOnLocalStorage(BACK_URL, currentUrl.path());
+    initLogOut();
   }
 
   setSelectionPlanCtx = (value) => {
@@ -109,7 +117,8 @@ class App extends PureComponent {
   }
 
   render() {
-    const {isLoggedUser, onUserAuth, doLogout, getUserInfo, backUrl, loading} = this.props;
+
+    const {isLoggedUser, onUserAuth, doLogout, getUserInfo, loading} = this.props;
     const {selectionPlanCtx} = this.state;
     const idToken = getIdToken();
 
@@ -134,7 +143,7 @@ class App extends PureComponent {
             <Route
               path={['/auth/logout', '/auth/callback', '/error', '/404', '/app/start', '/app/profile']}
               children={({match}) => (
-                <Header language={language} profilePic={profile_pic} initLogOut={initLogOut} waitForApi={!match} selectionPlan={selectionPlanCtx} />
+                <Header language={language} profilePic={profile_pic} initLogOut={this.onClickLogOut} waitForApi={!match} selectionPlan={selectionPlanCtx} />
               )}
             />
 
@@ -159,7 +168,6 @@ class App extends PureComponent {
               <AuthorizedRoute
                 path="/app/:summit_slug"
                 isLoggedUser={isLoggedUser}
-                backUrl={backUrl}
                 component={SummitLayout}
                 doLogin={this.onClickLogin}
                 Fallback={LandingPage}

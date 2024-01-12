@@ -112,7 +112,8 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         case RECEIVE_SELECTION_PLAN_SETTINGS: {
             const {data} = payload.response;
             const selectionPlansSettings = formatSelectionPlanSettings(data);
-            return {...state, marketingSettings: data, selectionPlansSettings: { ...state.selectionPlansSettings, ...selectionPlansSettings}};
+            let newSelectionPlansSettings = { ...state.selectionPlansSettings, ...selectionPlansSettings};
+            return {...state, marketingSettings: data, selectionPlansSettings: newSelectionPlansSettings} ;
         }
         default:
             return state;

@@ -22,7 +22,8 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSett
   const selectionPlansIds = summit.selection_plans.map(sp => sp.id).join();
 
   useEffect(()=>{
-    const currentSelectionPlanIds= match?.params?.selection_plan_id ? [parseInt(match?.params?.selection_plan_id)] : selectionPlansIds.split(',');
+    const currentSelectionPlanIds = match?.params?.selection_plan_id ?
+        [parseInt(match?.params?.selection_plan_id)] : selectionPlansIds.split(',');
     currentSelectionPlanIds.forEach((id) => getSelectionPlanSettings(summit.id, id));
   }, []);
 

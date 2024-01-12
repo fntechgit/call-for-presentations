@@ -13,10 +13,13 @@
 
 import React from 'react'
 import { Route, Redirect } from 'react-router-dom'
+import URI from "urijs";
+import {BACK_URL} from "../utils/constants";
 
 class AuthorizedRoute extends React.Component {
 
     getBackUrl = () => {
+
         const { location, backUrl } = this.props;
         let currentBackUrl = backUrl || location.pathname;
 
@@ -28,6 +31,11 @@ class AuthorizedRoute extends React.Component {
             currentBackUrl += location.hash
         }
 
+        let url = URI(currentBackUrl);
+
+        if(url.hasQuery(BACK_URL))
+            currentBackUrl = url.query(true)[BACK_URL];
+
         return currentBackUrl;
     };
 
@@ -36,7 +44,7 @@ class AuthorizedRoute extends React.Component {
         const backUrl = this.getBackUrl();
         const summit_slug = computedMatch.params.summit_slug;
         const redirectTo = {
-            pathname: `/app/${summit_slug}?BackUrl=${encodeURIComponent(backUrl)}`,
+            pathname: `/app/${summit_slug}?${BACK_URL}=${encodeURIComponent(backUrl)}`,
             state: { from: rest.location }
         };
         const FallbackComponent = (props) => Fallback ? <Fallback {...this.props} {...props} backUrl={backUrl}/> : <Redirect to={redirectTo} />;

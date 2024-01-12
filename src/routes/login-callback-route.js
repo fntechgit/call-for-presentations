@@ -14,6 +14,7 @@ import URI from "urijs"
 import React from 'react'
 import {withRouter} from 'react-router-dom'
 import {connect} from "react-redux";
+import {BACK_URL} from "../utils/constants";
 
 class LogInCallbackRoute extends React.Component {
 
@@ -37,8 +38,8 @@ class LogInCallbackRoute extends React.Component {
             loginHint = encodeURI(query["login_hint"]);
         }
 
-        if (query["BackUrl"]) {
-            backUrl = encodeURI(query["BackUrl"]);
+        if (query[BACK_URL]) {
+            backUrl = encodeURI(query[BACK_URL]);
         }
 
         if (query["otp_login_hint"]) {

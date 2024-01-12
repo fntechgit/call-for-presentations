@@ -16,7 +16,7 @@ import URI from "urijs";
 import validator from 'validator';
 import {getAccessToken, initLogOut} from 'openstack-uicore-foundation/lib/security/methods'
 import defaultColors from './default-colors.json';
-import {SP_LANDING} from "./constants";
+import {BACK_URL, SP_LANDING} from "./constants";
 
 export const stripHtmlText = (html) => {
     let tmp = document.createElement("DIV");
@@ -77,7 +77,7 @@ export const getBackURL = () => {
     let url      = URI(window.location.href);
     let query    = url.search(true);
     let fragment = url.fragment();
-    let backUrl  = query.hasOwnProperty('BackUrl') ? query['BackUrl'] : null;
+    let backUrl  = query.hasOwnProperty(BACK_URL) ? query[BACK_URL] : null;
     if(fragment != null && fragment != ''){
         backUrl += `#${fragment}`;
     }
@@ -244,7 +244,7 @@ export const formatSelectionPlanSettings = (data) => {
     let selectionPlanSettings = {};
     // format selection plan settings
     data.forEach(setting => {
-        if(setting.selection_plan_id) {            
+        if(setting.selection_plan_id) {
             if(!selectionPlanSettings.hasOwnProperty(setting.selection_plan_id)){
                 selectionPlanSettings[setting.selection_plan_id] = {}
             }
