@@ -166,7 +166,7 @@ class App extends PureComponent {
                 component={ProfilePage}
               />
               <AuthorizedRoute
-                path="/app/:summit_slug"
+                path={["/app/:summit_slug/all-plans/:selection_plan_id", "/app/:summit_slug"]}
                 isLoggedUser={isLoggedUser}
                 component={SummitLayout}
                 doLogin={this.onClickLogin}

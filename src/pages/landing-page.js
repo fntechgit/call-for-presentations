@@ -10,125 +10,131 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import React from 'react';
+import React, {useMemo, useState, useEffect} from 'react';
 
 import '../styles/landing-page.less';
 import T from "i18n-react/dist/i18n-react";
 import SelectionProcessPage from "./selection-process-page";
 import TracksGuidePage from "./tracks-guide-page";
 import { Exclusive } from 'openstack-uicore-foundation/lib/components'
-import { getAllFromSummit } from '../actions/base-actions';
+import { getAllFromSummit, getSelectionPlanSettings } from '../actions/base-actions';
 import { connect } from 'react-redux'
 
-class LandingPage extends React.Component {
+const LandingPage = ({match, summit, isLoggedUser, backUrl, selectionPlansSettings, ...props}) => {
+    const summitSlug = match.params.summit_slug;
+    const selectionPlanIdParam = parseInt(match.params.selection_plan_id);
+    const [settingsFetched, setSettingsFetched] = useState(false);
+    const _backUrl = backUrl || `/app/${summit.slug}`;
+    const url = window.location.href;
+    const arr = url.split("/");
+    const domain = arr[0] + "//" + arr[2];
 
-    componentDidMount() {
-        let { isLoggedUser, match } = this.props;
-        let summitSlug = match.params.summit_slug;
-
+    useEffect(() => {
         if (!isLoggedUser && summitSlug) {
-            this.props.getAllFromSummit(summitSlug);
+            props.getAllFromSummit(summitSlug);
         }
-    }
+    }, [isLoggedUser, summitSlug]);
 
-    componentWillReceiveProps(newProps) {
-        let { isLoggedUser, match } = this.props;
-        let oldSummitSlug = match.params.summit_slug;
-        let newSummitSlug = newProps.match.params.summit_slug;
-
-        if (!isLoggedUser && newSummitSlug && newSummitSlug !== oldSummitSlug) {
-            this.props.getAllFromSummit(newSummitSlug);
+    useEffect(() => {
+        if (selectionPlanIdParam) {
+            const selPlan = summit.selection_plans.find(sp => sp.id === selectionPlanIdParam);
+            // retrieve marketing settings for selection plan
+            props.getSelectionPlanSettings(summit.id, selPlan.id)
+              .then(() => {
+                  setSettingsFetched(true);
+              });
+        } else {
+            setSettingsFetched(true);
         }
-    }
+    }, [selectionPlanIdParam]);
 
-    render(){
-        let {doLogin, summit, isLoggedUser, backUrl} = this.props;
-        const url = window.location.href;
-        const arr = url.split("/");
-        const domain = arr[0] + "//" + arr[2];
+    const pageTitle = useMemo(() => {
+        const selectionPlanSettings = selectionPlansSettings?.[selectionPlanIdParam] || {};
+        const defaultTitle = T.translate("landing.submit_title");
 
-        if( !summit || isLoggedUser ) return null;
+        return selectionPlanSettings?.CFP_LANDING_PAGE_TITLE || defaultTitle;
+    }, [selectionPlansSettings]);
 
-        if(!backUrl)
-            backUrl = `/app/${summit.slug}`;
 
-        return (
-            <div className="container landing-page-wrapper">
-                <Exclusive name="os-landing">
-                    <div>
-                        <h1 className="title">{T.translate("landing.title", {'summit_name' : (window.APP_CLIENT_NAME === 'openstack'?`OpenInfra Summit ${summit.name}`: summit.name)})}</h1>
-                        <div className="steps-wrapper">
-                            <div className="steps-title">{T.translate("landing.steps_title")}</div>
-                            <ul className="submit-steps">
-                                <li>
-                                    <span>1</span>
-                                    <a href="#track-guide">
-                                        {T.translate("landing.review_link")}
-                                    </a>
-                                </li>
-                                <li>
-                                    <span>2</span>
-                                    <a href="#selection-process">{T.translate("landing.learn_link")}</a>
-                                </li>
-                                <li>
-                                    <span>3</span>
-                                    <a href="#submit">{T.translate("landing.submit_link")}</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <hr className="separator"/>
-                        <div className="submit-wrapper" id="submit">
-                            <h2 className="submit-title">{T.translate("landing.submit_title")}</h2>
+    if ( !summit || isLoggedUser || !settingsFetched) return null;
 
-                            <div className="row">
-                                <div className="col-md-6 login-box">
-                                    <div className="submit-subtitle"> {T.translate("landing.already_member")} </div>
-                                    <button className="btn btn-primary btn-lg" onClick={() => { doLogin(backUrl); }}>
-                                        {T.translate("landing.log_in")}
-                                    </button>
-                                </div>
-                                <div className="col-md-6 login-box">
-                                    <div className="submit-subtitle"> {T.translate("landing.or_join_us")}</div>
-                                    <a href="https://openinfra.dev/join" className="btn btn-default btn-lg" target="_blank">
-                                        {T.translate("landing.join_us")}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <hr className="separator"/>
-                        <div className="selection-process-wrapper" id="selection-process">
-                            <SelectionProcessPage />
-                        </div>
-                        <hr className="separator"/>
-                        <div className="categories-wrapper" id="track-guide">
-                            <TracksGuidePage />
-                        </div>
-                    </div>
-                </Exclusive>
 
-                <Exclusive name="fntech-landing">
-                    <div className="submit-wrapper" id="submit">
-                        <h2 className="submit-title">{T.translate("landing.submit_title")}</h2>
+    return (
+      <div className="container landing-page-wrapper">
+          <Exclusive name="os-landing">
+              <div>
+                  <h1 className="title">{T.translate("landing.title", {summit_name: `OpenInfra Summit ${summit.name}`})}</h1>
+                  <div className="steps-wrapper">
+                      <div className="steps-title">{T.translate("landing.steps_title")}</div>
+                      <ul className="submit-steps">
+                          <li>
+                              <span>1</span>
+                              <a href="#track-guide">
+                                  {T.translate("landing.review_link")}
+                              </a>
+                          </li>
+                          <li>
+                              <span>2</span>
+                              <a href="#selection-process">{T.translate("landing.learn_link")}</a>
+                          </li>
+                          <li>
+                              <span>3</span>
+                              <a href="#submit">{T.translate("landing.submit_link")}</a>
+                          </li>
+                      </ul>
+                  </div>
+                  <hr className="separator"/>
+                  <div className="submit-wrapper" id="submit">
+                      <h2 className="submit-title">{T.translate("landing.submit_title")}</h2>
 
-                        <div className="row">
-                            <div className="col-md-6 login-box">
-                                <div className="submit-subtitle"> {T.translate("landing.have_login")} </div>
-                                <button className="btn btn-primary btn-lg" onClick={() => { doLogin(backUrl); }}>
-                                    {T.translate("landing.log_in")}
-                                </button>
-                            </div>
-                            <div className="col-md-6 login-box">
-                                <div className="submit-subtitle"> {T.translate("landing.or_create_id")}</div>
-                                <a href={`${window.IDP_BASE_URL}/auth/register?client_id=${window.OAUTH2_CLIENT_ID}&redirect_uri=${domain}/app/profile`} className="btn btn-default btn-lg" target="_blank">
-                                    {T.translate("landing.sign_up")}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </Exclusive>
-            </div>
-        );
-    }
+                      <div className="row">
+                          <div className="col-md-6 login-box">
+                              <div className="submit-subtitle"> {T.translate("landing.already_member")} </div>
+                              <button className="btn btn-primary btn-lg" onClick={() => { props.doLogin(_backUrl); }}>
+                                  {T.translate("landing.log_in")}
+                              </button>
+                          </div>
+                          <div className="col-md-6 login-box">
+                              <div className="submit-subtitle"> {T.translate("landing.or_join_us")}</div>
+                              <a href="https://openinfra.dev/join" className="btn btn-default btn-lg" target="_blank">
+                                  {T.translate("landing.join_us")}
+                              </a>
+                          </div>
+                      </div>
+                  </div>
+                  <hr className="separator"/>
+                  <div className="selection-process-wrapper" id="selection-process">
+                      <SelectionProcessPage />
+                  </div>
+                  <hr className="separator"/>
+                  <div className="categories-wrapper" id="track-guide">
+                      <TracksGuidePage />
+                  </div>
+              </div>
+          </Exclusive>
+
+          <Exclusive name="fntech-landing">
+              <div className="submit-wrapper" id="submit">
+                  <h2 className="submit-title">{pageTitle}</h2>
+
+                  <div className="row">
+                      <div className="col-md-6 login-box">
+                          <div className="submit-subtitle"> {T.translate("landing.have_login")} </div>
+                          <button className="btn btn-primary btn-lg" onClick={() => { props.doLogin(_backUrl); }}>
+                              {T.translate("landing.log_in")}
+                          </button>
+                      </div>
+                      <div className="col-md-6 login-box">
+                          <div className="submit-subtitle"> {T.translate("landing.or_create_id")}</div>
+                          <a href={`${window.IDP_BASE_URL}/auth/register?client_id=${window.OAUTH2_CLIENT_ID}&redirect_uri=${domain}/app/profile`} className="btn btn-default btn-lg" target="_blank">
+                              {T.translate("landing.sign_up")}
+                          </a>
+                      </div>
+                  </div>
+              </div>
+          </Exclusive>
+      </div>
+    );
 }
 
 
@@ -138,8 +144,9 @@ const mapStateToProps = ({ loggedUserState, baseState }) => ({
     speaker: baseState.speaker,
     loading : baseState.loading,
     summit: baseState.summit,
+    selectionPlansSettings: baseState.selectionPlansSettings,
 });
 
-export default connect(mapStateToProps, {getAllFromSummit})(LandingPage);
+export default connect(mapStateToProps, {getAllFromSummit, getSelectionPlanSettings})(LandingPage);
 
 
