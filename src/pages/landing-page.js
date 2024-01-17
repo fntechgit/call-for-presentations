@@ -20,11 +20,10 @@ import { Exclusive } from 'openstack-uicore-foundation/lib/components'
 import { getAllFromSummit, getSelectionPlanSettings } from '../actions/base-actions';
 import { connect } from 'react-redux'
 
-const LandingPage = ({match, summit, isLoggedUser, backUrl, selectionPlansSettings, ...props}) => {
-    const summitSlug = match.params.summit_slug;
+const LandingPage = ({summitSlug, match, summit, isLoggedUser, backUrl, selectionPlansSettings, ...props}) => {
     const selectionPlanIdParam = parseInt(match.params.selection_plan_id);
     const [settingsFetched, setSettingsFetched] = useState(false);
-    const _backUrl = backUrl || `/app/${summit.slug}`;
+    const _backUrl = backUrl || `/app/${summitSlug}`;
     const url = window.location.href;
     const arr = url.split("/");
     const domain = arr[0] + "//" + arr[2];
@@ -36,24 +35,26 @@ const LandingPage = ({match, summit, isLoggedUser, backUrl, selectionPlansSettin
     }, [isLoggedUser, summitSlug]);
 
     useEffect(() => {
-        if (selectionPlanIdParam) {
-            const selPlan = summit.selection_plans.find(sp => sp.id === selectionPlanIdParam);
-            // retrieve marketing settings for selection plan
-            props.getSelectionPlanSettings(summit.id, selPlan.id)
-              .then(() => {
-                  setSettingsFetched(true);
-              });
-        } else {
-            setSettingsFetched(true);
+        if (summit) {
+            if (selectionPlanIdParam) {
+                const selPlan = summit.selection_plans.find(sp => sp.id === selectionPlanIdParam);
+                // retrieve marketing settings for selection plan
+                props.getSelectionPlanSettings(summit.id, selPlan.id)
+                  .then(() => {
+                      setSettingsFetched(true);
+                  });
+            } else {
+                setSettingsFetched(true);
+            }
         }
-    }, [selectionPlanIdParam]);
+    }, [selectionPlanIdParam, summit]);
 
     const pageTitle = useMemo(() => {
         const selectionPlanSettings = selectionPlansSettings?.[selectionPlanIdParam] || {};
         const defaultTitle = T.translate("landing.submit_title");
 
         return selectionPlanSettings?.CFP_LANDING_PAGE_TITLE || defaultTitle;
-    }, [selectionPlansSettings]);
+    }, [settingsFetched]);
 
 
     if ( !summit || isLoggedUser || !settingsFetched) return null;

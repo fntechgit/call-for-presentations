@@ -22,6 +22,7 @@ import LogOutCallbackRoute from './routes/logout-callback-route'
 import LogInCallbackRoute from './routes/login-callback-route'
 import DefaultRoute from "./routes/default-route";
 import SummitLayout from './layouts/summit-layout';
+import LandingLayout from './layouts/landing-layout';
 import {AjaxLoader} from "openstack-uicore-foundation/lib/components";
 import {resetLoading} from "openstack-uicore-foundation/lib/utils/actions";
 import {doLogout, onUserAuth, getUserInfo} from 'openstack-uicore-foundation/lib/security/actions';
@@ -33,7 +34,6 @@ import SummitSelectionPage from "./pages/summit-selection-page";
 import ProfilePage from "./pages/profile-page";
 import DirectAuthorizedRoute from "./routes/direct-authorized-route";
 import Header from "./components/header";
-import LandingPage from "./pages/landing-page";
 import {SelectionPlanContext} from "./components/SelectionPlanContext";
 import URI from "urijs";
 import { putOnLocalStorage }
@@ -166,11 +166,11 @@ class App extends PureComponent {
                 component={ProfilePage}
               />
               <AuthorizedRoute
-                path={["/app/:summit_slug/all-plans/:selection_plan_id", "/app/:summit_slug"]}
+                path="/app/:summit_slug"
                 isLoggedUser={isLoggedUser}
                 component={SummitLayout}
                 doLogin={this.onClickLogin}
-                Fallback={LandingPage}
+                Fallback={LandingLayout}
               />
               <DefaultRoute isLoggedUser={isLoggedUser}/>
             </Switch>
