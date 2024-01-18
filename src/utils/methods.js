@@ -262,3 +262,23 @@ export const getSubmissionsPath = () => {
     const selectionPlanLandingId = localStorage.getItem(SP_LANDING);
     return selectionPlanLandingId ? `all-plans/${selectionPlanLandingId}` : 'all-plans';
 };
+
+/**
+ *
+ * @param match
+ * @returns {number}
+ */
+export const getCurrentSelectionPlanId = (match) => {
+    // first try to use the match obj
+    if(match.params.selection_plan_id)
+        return parseInt(match.params.selection_plan_id)
+    // and use raw url as a fallback
+    const regex = /^\/app\/(\w*)\/all-plans\/(\d*)/;
+    let currentUrl = URI(window.location.href);
+    let path = currentUrl.path();
+    const matches = path.match(regex);
+    if(matches && matches.length > 2 ){
+        return parseInt(matches[2]);
+    }
+    return 0;
+}

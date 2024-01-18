@@ -19,9 +19,10 @@ import TracksGuidePage from "./tracks-guide-page";
 import { Exclusive } from 'openstack-uicore-foundation/lib/components'
 import { getAllFromSummit, getSelectionPlanSettings } from '../actions/base-actions';
 import { connect } from 'react-redux'
+import {getCurrentSelectionPlanId} from "../utils/methods";
 
 const LandingPage = ({summitSlug, match, summit, isLoggedUser, backUrl, selectionPlansSettings, ...props}) => {
-    const selectionPlanIdParam = parseInt(match.params.selection_plan_id);
+    const selectionPlanIdParam = getCurrentSelectionPlanId(match);
     const [settingsFetched, setSettingsFetched] = useState(false);
     const _backUrl = backUrl || `/app/${summitSlug}`;
     const url = window.location.href;

@@ -11,18 +11,26 @@
  * limitations under the License.
  **/
 
-import React, {useEffect, useState} from 'react'
-import {connect} from 'react-redux';
+import React from 'react'
 import {Switch, Route, Redirect} from 'react-router-dom';
-import {getAllFromSummit, getAllSummitDocs, getTagGroups, getAllowedSelectionPlans} from '../actions/base-actions';
-import AllPlansLayout from "./all-plans-layout";
-import PlanSelectionPage from "../pages/plan-selection-page";
-import ProfilePage from "../pages/profile-page";
-import ClockComponent from '../components/clock';
 import LandingPage from "../pages/landing-page";
+import URI from "urijs";
+import {BACK_URL} from "../utils/constants";
 
 const LandingLayout = ({match, ...parentProps}) => {
   const summitSlug = match.params.summit_slug;
+  let url = URI(window.location.href);
+  let currentBackUrl = null
+  if(url.hasQuery(BACK_URL))
+        currentBackUrl = url.query(true)[BACK_URL];
+
+  if(currentBackUrl){
+      return (
+          <Route render={ props => {
+              return <Redirect to={currentBackUrl} />
+          }} />
+      )
+  }
 
   return (
     <>
