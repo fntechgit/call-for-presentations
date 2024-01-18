@@ -197,6 +197,7 @@ export const validate = (entity, rules, errors) => {
                             case 'TextArea':
                             case 'Text':
                             case 'ComboBox':
+                            case 'CountryComboBox':
                             case 'RadioButtonList':
                             case 'CheckBoxList':
                             case 'RadioButton':

@@ -136,6 +136,7 @@ export default class QuestionsInput extends React.Component {
                     </div>
                 );
             case 'ComboBox':
+            case 'CountryComboBox':
                 let value = answerValue ? questionValues.find(val => val.id == parseInt(answerValue)) : null;
                 questionValues = questionValues.map(val => ({...val, value: val.id}));
                 return (
