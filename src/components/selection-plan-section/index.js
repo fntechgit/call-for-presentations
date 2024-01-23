@@ -23,15 +23,11 @@ const SelectionPlanSection = ({summit, selectionPlan, selectionPlanSettings, log
   }, [summit?.id, selectionPlan?.id]);
 
   const handleNewPresentation = (ev) => {
-    const {history, match} = props;
-    const {params} = match;
-    const {selection_plan_id} = params;
-    let url = match.url;
-    const segments = [];
-    if (!selection_plan_id)
-      url = `${url}/${selectionPlan.id}`;
+    const {history} = props;
+    let url = `/app/${summit.slug}/all-plans/${selectionPlan.id}/presentations/new/summary`;
+
     ev.preventDefault();
-    history.push(`${url}/presentations/new/summary`);
+    history.push(url);
   }
 
   const getTitle = (submissionIsClosed) => {

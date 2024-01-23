@@ -22,32 +22,29 @@ import {getSpeakerInfo} from "../actions/auth-actions";
 import '../styles/profile-page.less';
 import {getSubmissionsPath} from "../utils/methods";
 
-const ProfilePage = (props) => {
+const ProfilePage = ({summit, selectionPlanId, entity, speaker, orgRoles, loggedMember, errors, loading, ...props}) => {
 
     useEffect(() => {
         props.getSpeakerInfo(null);
     }, []);
 
     useEffect(() => {
-        if (props.orgRoles.length === 0) {
+        if (orgRoles.length === 0) {
             props.getOrganizationalRoles();
         }
-    }, [props.orgRoles]);
+    }, [orgRoles]);
 
     const handleSaveSpeakerProfile = (entity) => {
-        const {history, summit} = props;
 
         props.saveSpeakerProfile(entity).then(() => {
             if (summit) {
-                history.push( `/app/${summit.slug}/${getSubmissionsPath()}`);
+                props.history.push( `/app/${summit.slug}/${getSubmissionsPath()}`);
                 return;
             }
             // if we dont have a summit , the we are at /app/profile path
-            history.push('/app/start')
+            props.history.push('/app/start')
         });
     }
-
-    const {speaker, orgRoles, loggedMember, errors, loading, summit} = props;
 
     if (!speaker?.id && !loading && !errors) {
         Swal.fire({
@@ -62,7 +59,7 @@ const ProfilePage = (props) => {
             <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile")}</h3>
             <hr/>
             <SpeakerForm
-                entity={props.entity}
+                entity={entity}
                 summit={summit}
                 errors={errors}
                 member={loggedMember}
@@ -76,6 +73,7 @@ const ProfilePage = (props) => {
 
 const mapStateToProps = ({profileState, loggedUserState, baseState}) => ({
     summit: baseState.summit,
+    selectedPlanId: baseState.selectedPlanId,
     loggedMember: loggedUserState.member,
     speaker: baseState.speaker,
     loading: baseState.loading,

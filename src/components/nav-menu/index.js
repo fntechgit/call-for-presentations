@@ -18,20 +18,16 @@ import MenuItem from './menu-item'
 import MenuItemsDefinitions from './menu-items-definition'
 import '../../styles/menu.less';
 import {connect} from "react-redux";
-import {getMarketingValue} from "../marketing-setting";
-import {getSubmissionsPath} from "../../utils/methods";
 
 
-const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) => {
+const NavMenu = ({summit, selectionPlanId, active, user, exclusiveSections, globalSummitDocs}) => {
     const [activeItem, setActiveItem] = useState(active);
 
     const onMenuItemClick = (event, item) => {
         event.preventDefault();
         setActiveItem(item.name);
 
-        const submissionsPath = getSubmissionsPath();
-        const path = item.name === 'all-plans' ? submissionsPath : item.name;
-
+        const path = (item.spRouteTransform && selectionPlanId) ? item.spRouteTransform(selectionPlanId) : item.name;
         const url = `/app/${summit.slug}/${path}`;
 
         history.push(url);
@@ -106,6 +102,7 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
 const mapStateToProps = ({ baseState }) => ({
     globalSummitDocs: baseState.globalSummitDocs,
     summit: baseState.summit,
+    selectionPlanId: baseState.selectionPlanId,
 })
 
 export default withRouter(connect(

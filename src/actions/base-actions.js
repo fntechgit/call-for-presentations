@@ -37,6 +37,7 @@ export const BASE_LOADED = 'BASE_LOADED';
 export const RECEIVE_ALLOWED_SELECTION_PLANS = 'RECEIVE_ALLOWED_SELECTION_PLANS';
 export const REQUEST_SELECTION_PLAN_SETTINGS = 'REQUEST_SELECTION_PLAN_SETTINGS';
 export const RECEIVE_SELECTION_PLAN_SETTINGS = 'RECEIVE_SELECTION_PLAN_SETTINGS';
+export const SET_SELECTION_PLAN_ID = 'SET_SELECTION_PLAN_ID';
 
 
 export const clearCurrentSummit = () => (dispatch, getState) => {
@@ -174,6 +175,10 @@ export const getMarketingSettings = (summitId) => (dispatch) => {
     `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
     authErrorHandler
   )(params)(dispatch);
+};
+
+export const setSelectionPlanId = (selectionPlanId = null) => (dispatch, getState) => {
+  dispatch(createAction(SET_SELECTION_PLAN_ID)({selectionPlanId}));
 };
 
 export const getSelectionPlanSettings = (summitId, selectionPlanId) => (dispatch) => {

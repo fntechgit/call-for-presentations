@@ -17,13 +17,12 @@ import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
 import {getSelectionPlanSettings} from "../actions/base-actions";
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSettings, getSelectionPlanSettings}) => {
+const AllSelectionPlansPage = ({summit, selectionPlanId, loggedSpeaker, match, selectionPlansSettings, getSelectionPlanSettings}) => {
   const [plansToShow, setPlansToShow] = useState([]);
   const selectionPlansIds = summit.selection_plans.map(sp => sp.id).join();
 
   useEffect(()=>{
-    const currentSelectionPlanIds = match?.params?.selection_plan_id ?
-        [parseInt(match?.params?.selection_plan_id)] : selectionPlansIds.split(',');
+    const currentSelectionPlanIds = selectionPlanId ? [selectionPlanId] : selectionPlansIds.split(',');
     currentSelectionPlanIds.forEach((id) => getSelectionPlanSettings(summit.id, id));
   }, []);
 
@@ -32,10 +31,10 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSett
     if (availablePlans.length > 0) {
       setPlansToShow(availablePlans);
     }
-  }, [selectionPlansIds])
+  }, [selectionPlansIds, selectionPlanId])
 
   const getAvailablePlans = () => {
-    const selectionPlanIdParam = parseInt(match?.params?.selection_plan_id) || null;
+    const selectionPlanIdParam = selectionPlanId || null;
     let allPlans = summit.selection_plans;
 
     if (selectionPlanIdParam) {
@@ -57,15 +56,27 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSett
     );
   }
 
+  console.log('SEL PLAN ID', selectionPlanId);
+
+
   return (
     <div>
-      {plansToShow.map(sp => <SelectionPlanSection key={`selection-plan-section-${sp.id}`} selectionPlan={sp} selectionPlanSettings={selectionPlansSettings[sp.id] || {}} history={history} match={match} />)}
+      {plansToShow.map(sp =>
+        <SelectionPlanSection
+          key={`selection-plan-section-${sp.id}`}
+          selectionPlan={sp}
+          selectionPlanSettings={selectionPlansSettings[sp.id] || {}}
+          history={history}
+          match={match}
+        />
+      )}
     </div>
   );
 };
 
 const mapStateToProps = ({baseState}) => ({
   summit: baseState.summit,
+  selectionPlanId: baseState.selectionPlanId,
   loggedSpeaker: baseState.speaker,
   loading: baseState.loading,
   selectionPlansSettings: baseState.selectionPlansSettings

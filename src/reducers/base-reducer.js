@@ -26,6 +26,7 @@ import {
     RECEIVE_ALLOWED_SELECTION_PLANS,
     REQUEST_SELECTION_PLAN_SETTINGS,
     RECEIVE_SELECTION_PLAN_SETTINGS,
+    SET_SELECTION_PLAN_ID
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
@@ -44,6 +45,7 @@ const DEFAULT_STATE = {
     globalSummitDocs: [],
     baseLoaded: false,
     allowedSelectionPlans: [],
+    selectionPlanId: null,
 };
 
 const baseReducer = (state = DEFAULT_STATE, action) => {
@@ -75,14 +77,14 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         // summit / selection plan
         case CLEAR_SUMMIT:
-            return {...state, summit: null, marketingSettings: null, submissionIsClosed: false, globalSummitDocs: [], baseLoaded: false};
+            return {...state, summit: null, selectionPlanId: null, marketingSettings: null, submissionIsClosed: false, globalSummitDocs: [], baseLoaded: false};
         case ERROR_RECEIVE_SUMMIT:
             return {...state, summit: null, marketingSettings: null, submissionIsClosed: false};
         case RECEIVE_SUMMIT: {
             const entity = payload.response;
             const globalSummitDocs = entity.summit_documents.filter(sd => !sd.selection_plan_id);
 
-            return {...state, summit: entity, marketingSettings: null, globalSummitDocs, baseLoaded: false};
+            return {...state, summit: entity, selectionPlanId: null, marketingSettings: null, globalSummitDocs, baseLoaded: false};
         }
         case SUMMIT_DOCS_RECEIVED: {
             const {data} = payload.response;
@@ -114,6 +116,11 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
             const selectionPlansSettings = formatSelectionPlanSettings(data);
             let newSelectionPlansSettings = { ...state.selectionPlansSettings, ...selectionPlansSettings};
             return {...state, marketingSettings: data, selectionPlansSettings: newSelectionPlansSettings} ;
+        }
+        case SET_SELECTION_PLAN_ID: {
+            const {selectionPlanId} = payload;
+            console.log('SET PLAN ID RED ', selectionPlanId);
+            return {...state, selectionPlanId};
         }
         default:
             return state;

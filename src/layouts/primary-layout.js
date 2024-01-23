@@ -20,21 +20,20 @@ import TracksGuidePage from '../pages/tracks-guide-page'
 import PresentationLayout from './presentation-layout'
 import {getSelectionPlanSettings} from "../actions/base-actions";
 
-const PrimaryLayout = ({summit, speaker, member, match,...props}) => {
+const PrimaryLayout = ({summit, selectionPlanId, speaker, member, match,...props}) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
-  const selectionPlanIdParam = parseInt(match.params.selection_plan_id);
   const [selectionPlan, setSelectionPlan] = useState(null);
 
   useLayoutEffect(() => {
-    if (selectionPlanIdParam) {
-      const selPlan = summit.selection_plans.find(sp => sp.id === selectionPlanIdParam);
+    if (selectionPlanId) {
+      const selPlan = summit.selection_plans.find(sp => sp.id === selectionPlanId);
       setSelectionPlan(selPlan);
       // retrieve marketing settings for selection plan
       props.getSelectionPlanSettings(summit.id, selPlan.id);
     }
-  }, [selectionPlanIdParam]);
+  }, [selectionPlanId]);
 
-  if (!loggedUser || !selectionPlanIdParam || !selectionPlan) return null;
+  if (!loggedUser || !selectionPlanId || !selectionPlan) return null;
 
   return (
     <>
@@ -50,7 +49,7 @@ const PrimaryLayout = ({summit, speaker, member, match,...props}) => {
         <Route exact path={`${match.url}/profile`} component={ProfilePage}/>
         <Route exact path={`${match.url}/selection_process`} component={SelectionProcessPage}/>
         <Route exact path={`${match.url}/tracks_guide`} component={TracksGuidePage}/>
-        <Route render={props => (<Redirect to={`/app/${summit.slug}/all-plans/${selectionPlanIdParam}`}/>)}/>
+        <Route render={props => (<Redirect to={`/app/${summit.slug}/all-plans/${selectionPlanId}`}/>)}/>
       </Switch>
     </>
   );
@@ -62,6 +61,7 @@ const mapStateToProps = ({loggedUserState, baseState}) => ({
   speaker: baseState.speaker,
   summit: baseState.summit,
   loading: baseState.loading,
+  selectionPlanId: baseState.selectionPlanId
 });
 
 export default connect(mapStateToProps, {getSelectionPlanSettings})(PrimaryLayout)
