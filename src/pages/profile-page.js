@@ -22,21 +22,21 @@ import {getSpeakerInfo} from "../actions/auth-actions";
 import '../styles/profile-page.less';
 import {getSubmissionsPath} from "../utils/methods";
 
-const ProfilePage = (props) => {
+const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, summit, selectionPlanId, history, selectionPlansSettings, ...props}) => {
+    const selectionPlanSettings = selectionPlansSettings?.[selectionPlanId];
+    const speakerLabel = selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'Speaker';
 
     useEffect(() => {
-        props.getSpeakerInfo(null);
+        props.getSpeakerInfo();
     }, []);
 
     useEffect(() => {
-        if (props.orgRoles.length === 0) {
+        if (orgRoles.length === 0) {
             props.getOrganizationalRoles();
         }
-    }, [props.orgRoles]);
+    }, [orgRoles]);
 
     const handleSaveSpeakerProfile = (entity) => {
-        const {history, summit} = props;
-
         props.saveSpeakerProfile(entity).then(() => {
             if (summit) {
                 history.push( `/app/${summit.slug}/${getSubmissionsPath()}`);
@@ -46,8 +46,6 @@ const ProfilePage = (props) => {
             history.push('/app/start')
         });
     }
-
-    const {speaker, orgRoles, loggedMember, errors, loading, summit} = props;
 
     if (!speaker?.id && !loading && !errors) {
         Swal.fire({
@@ -59,10 +57,10 @@ const ProfilePage = (props) => {
 
     return (
         <div className="page-wrap" id="profile-page">
-            <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile")}</h3>
+            <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile", {speakerLabel})}</h3>
             <hr/>
             <SpeakerForm
-                entity={props.entity}
+                entity={entity}
                 summit={summit}
                 errors={errors}
                 member={loggedMember}
@@ -79,6 +77,7 @@ const mapStateToProps = ({profileState, loggedUserState, baseState}) => ({
     loggedMember: loggedUserState.member,
     speaker: baseState.speaker,
     loading: baseState.loading,
+    selectionPlansSettings: baseState.selectionPlansSettings,
     ...profileState
 })
 

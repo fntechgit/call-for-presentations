@@ -17,13 +17,12 @@ import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
 import {getSelectionPlanSettings} from "../actions/base-actions";
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSettings, getSelectionPlanSettings}) => {
+const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, selectionPlansSettings, getSelectionPlanSettings}) => {
   const [plansToShow, setPlansToShow] = useState([]);
   const selectionPlansIds = summit.selection_plans.map(sp => sp.id).join();
 
   useEffect(()=>{
-    const currentSelectionPlanIds = match?.params?.selection_plan_id ?
-        [parseInt(match?.params?.selection_plan_id)] : selectionPlansIds.split(',');
+    const currentSelectionPlanIds = selectionPlanId ? [selectionPlanId] : selectionPlansIds.split(',');
     currentSelectionPlanIds.forEach((id) => getSelectionPlanSettings(summit.id, id));
   }, []);
 
@@ -35,11 +34,10 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSett
   }, [selectionPlansIds])
 
   const getAvailablePlans = () => {
-    const selectionPlanIdParam = parseInt(match?.params?.selection_plan_id) || null;
     let allPlans = summit.selection_plans;
 
-    if (selectionPlanIdParam) {
-      allPlans = allPlans.filter(sp => sp.id === selectionPlanIdParam);
+    if (selectionPlanId) {
+      allPlans = allPlans.filter(sp => sp.id === selectionPlanId);
     }
     return allPlans.sort((a,b) => a.submission_begin_date - b.submission_begin_date);
   };

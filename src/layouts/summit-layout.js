@@ -19,6 +19,7 @@ import AllPlansLayout from "./all-plans-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
 import ProfilePage from "../pages/profile-page";
 import ClockComponent from '../components/clock';
+import {getLandingSelectionPlanId} from "../utils/methods";
 
 const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ...props}) => {
   const urlSummitSlug = match.params.summit_slug;
@@ -37,9 +38,11 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ..
   if (summitSlug !== urlSummitSlug || !baseLoaded || !dataLoaded) return null;
 
   // check if speaker profile exists, if not redirect
-  if ((!speaker || !speaker.id) && location.pathname !== `/app/${summit.slug}/profile` && !loading) {
+  if ((!speaker || !speaker.id) && !location.pathname.includes('/profile') && !loading) {
+    const spLanding = getLandingSelectionPlanId();
+
     return (
-      <Redirect exact to={{pathname: `/app/${summit.slug}/profile`}}/>
+      <Redirect exact to={{pathname: `/app/${summit.slug}/${spLanding ? `all-plans/${spLanding}/profile` : 'profile'}`}}/>
     );
   }
 

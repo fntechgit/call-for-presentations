@@ -18,8 +18,7 @@ import MenuItem from './menu-item'
 import MenuItemsDefinitions from './menu-items-definition'
 import '../../styles/menu.less';
 import {connect} from "react-redux";
-import {getMarketingValue} from "../marketing-setting";
-import {getSubmissionsPath} from "../../utils/methods";
+import {getLandingSelectionPlanId} from "../../utils/methods";
 
 
 const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) => {
@@ -29,8 +28,8 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
         event.preventDefault();
         setActiveItem(item.name);
 
-        const submissionsPath = getSubmissionsPath();
-        const path = item.name === 'all-plans' ? submissionsPath : item.name;
+        const landingSP = getLandingSelectionPlanId();
+        const path = (landingSP && item.pathTransform) ? item.pathTransform(landingSP) : item.name;
 
         const url = `/app/${summit.slug}/${path}`;
 

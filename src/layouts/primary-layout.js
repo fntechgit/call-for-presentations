@@ -11,30 +11,16 @@
  * limitations under the License.
  **/
 
-import React, {useState, useLayoutEffect} from 'react'
+import React from 'react'
 import {connect} from 'react-redux';
 import {Switch, Route, Redirect} from 'react-router-dom';
-import ProfilePage from '../pages/profile-page'
-import SelectionProcessPage from '../pages/selection-process-page'
-import TracksGuidePage from '../pages/tracks-guide-page'
 import PresentationLayout from './presentation-layout'
-import {getSelectionPlanSettings} from "../actions/base-actions";
 
-const PrimaryLayout = ({summit, speaker, member, match,...props}) => {
+const PrimaryLayout = ({summit, speaker, member, selectionPlanId, match}) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
-  const selectionPlanIdParam = parseInt(match.params.selection_plan_id);
-  const [selectionPlan, setSelectionPlan] = useState(null);
+  const selectionPlan = summit.selection_plans.find(sp => sp.id === selectionPlanId);
 
-  useLayoutEffect(() => {
-    if (selectionPlanIdParam) {
-      const selPlan = summit.selection_plans.find(sp => sp.id === selectionPlanIdParam);
-      setSelectionPlan(selPlan);
-      // retrieve marketing settings for selection plan
-      props.getSelectionPlanSettings(summit.id, selPlan.id);
-    }
-  }, [selectionPlanIdParam]);
-
-  if (!loggedUser || !selectionPlanIdParam || !selectionPlan) return null;
+  if (!loggedUser || !selectionPlanId || !selectionPlan) return null;
 
   return (
     <>
@@ -47,10 +33,7 @@ const PrimaryLayout = ({summit, speaker, member, match,...props}) => {
           path={`${match.url}/:presentation_id(\\d+)`}
           render={(props) => <PresentationLayout selectionPlan={selectionPlan} {...props}/>}
         />
-        <Route exact path={`${match.url}/profile`} component={ProfilePage}/>
-        <Route exact path={`${match.url}/selection_process`} component={SelectionProcessPage}/>
-        <Route exact path={`${match.url}/tracks_guide`} component={TracksGuidePage}/>
-        <Route render={props => (<Redirect to={`/app/${summit.slug}/all-plans/${selectionPlanIdParam}`}/>)}/>
+        <Route render={props => (<Redirect to={`/app/${summit.slug}/all-plans/${selectionPlanId}`}/>)}/>
       </Switch>
     </>
   );
@@ -64,6 +47,6 @@ const mapStateToProps = ({loggedUserState, baseState}) => ({
   loading: baseState.loading,
 });
 
-export default connect(mapStateToProps, {getSelectionPlanSettings})(PrimaryLayout)
+export default connect(mapStateToProps, {})(PrimaryLayout)
 
 
