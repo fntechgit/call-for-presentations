@@ -264,6 +264,10 @@ export const getSubmissionsPath = () => {
     return selectionPlanLandingId ? `all-plans/${selectionPlanLandingId}` : 'all-plans';
 };
 
+export const getLandingSelectionPlanId = () => {
+    return localStorage.getItem(SP_LANDING);
+}
+
 /**
  *
  * @param match
@@ -282,4 +286,20 @@ export const getCurrentSelectionPlanId = (match) => {
         return parseInt(matches[2]);
     }
     return 0;
+}
+
+// checks if path is: all-plans/{selection_plan_id}, all-plans/{selection_plan_id}/profile, all-plans/{selection_plan_id}/presentations
+export const getLandingSelectionPlan = path => {
+    const regex = /all-plans\/(\d+)(?:$|\/profile|\/presentations)(?:\/|$)$/;
+    const regexMatch = path.match(regex);
+
+    return regexMatch?.[1] || null;
+}
+
+// checks if path is: all-plans, all-plans/presentations
+export const isGlobalLanding = path => {
+    const regex = /all-plans(?:$|\/presentations)(?:\/|$)$/;
+    const regexMatch = path.match(regex);
+
+    return !!regexMatch;
 }

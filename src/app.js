@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 
-import React, {PureComponent} from "react";
+import React, {PureComponent, useEffect, useState} from "react";
 import {Switch, Route, Router} from 'react-router-dom'
 import T from "i18n-react";
 import history from "./history";
@@ -35,6 +35,8 @@ import ProfilePage from "./pages/profile-page";
 import DirectAuthorizedRoute from "./routes/direct-authorized-route";
 import Header from "./components/header";
 import {SelectionPlanContext} from "./components/SelectionPlanContext";
+import {SP_LANDING} from "./utils/constants";
+import {getLandingSelectionPlan, isGlobalLanding} from "./utils/methods";
 import URI from "urijs";
 import { putOnLocalStorage }
   from "openstack-uicore-foundation/lib/utils/methods";
@@ -88,97 +90,98 @@ if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
   window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
 }
 
-class App extends PureComponent {
-  constructor(props) {
-    super(props);
+const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props}) => {
+  const [selectionPlanCtx, setSelectionPlanCtx] = useState(null);
+  const idToken = getIdToken();
+
+  /*
+    This Effect runs only on first load and sets the SP_LANDING if is a selection plan landing url
+    If it is a global url then it resets SP_LANDING
+  */
+  useEffect(() => {
+    const globalLanding = isGlobalLanding(location.pathname);
+    const landingSelectionPlan = getLandingSelectionPlan(location.pathname);
+
     props.resetLoading();
 
-    this.state = {
-      selectionPlanCtx: null
+    if (landingSelectionPlan) {
+      localStorage.setItem(SP_LANDING, landingSelectionPlan);
+    } else if (globalLanding) {
+      localStorage.removeItem(SP_LANDING);
     }
-    this.onClickLogOut = this.onClickLogOut.bind(this);
-  }
+  }, []);
 
-  onClickLogin = (backUrl) => {
+  const onClickLogin = (backUrl) => {
     let url = URI('/auth/login');
-    if(backUrl)
+
+    if (backUrl)
       url = url.query({[BACK_URL]:backUrl});
+
     history.push(url.toString());
   }
 
-  onClickLogOut = () => {
+  const onClickLogOut = () => {
     const currentUrl = URI(window.location.href);
     putOnLocalStorage(BACK_URL, currentUrl.path());
     initLogOut();
   }
 
-  setSelectionPlanCtx = (value) => {
-    this.setState({selectionPlanCtx: value});
+  // get user pic from idtoken claims (IDP)
+  let profile_pic = '';
+
+  if (idToken) {
+    let verifier = new IdTokenVerifier({
+      issuer: window.IDP_BASE_URL,
+      audience: window.OAUTH2_CLIENT_ID
+    });
+    let jwt = verifier.decode(idToken);
+    profile_pic = jwt.payload.picture;
   }
 
-  render() {
+  return (
+    <Router history={history}>
+      <SelectionPlanContext.Provider value={{selectionPlanCtx, setSelectionPlanCtx}}>
 
-    const {isLoggedUser, onUserAuth, doLogout, getUserInfo, loading} = this.props;
-    const {selectionPlanCtx} = this.state;
-    const idToken = getIdToken();
+        <div>
+          <AjaxLoader show={loading} size={120}/>
+          <Route
+            path={['/auth/logout', '/auth/callback', '/error', '/404', '/app/start', '/app/profile']}
+            children={({match}) => (
+              <Header language={language} profilePic={profile_pic} initLogOut={onClickLogOut} waitForApi={!match} selectionPlan={selectionPlanCtx} />
+            )}
+          />
 
-    // get user pic from idtoken claims (IDP)
-    let profile_pic = '';
-
-    if (idToken) {
-      let verifier = new IdTokenVerifier({
-        issuer: window.IDP_BASE_URL,
-        audience: window.OAUTH2_CLIENT_ID
-      });
-      let jwt = verifier.decode(idToken);
-      profile_pic = jwt.payload.picture;
-    }
-
-    return (
-      <Router history={history}>
-        <SelectionPlanContext.Provider value={{selectionPlanCtx, setSelectionPlanCtx: this.setSelectionPlanCtx}}>
-
-          <div>
-            <AjaxLoader show={loading} size={120}/>
-            <Route
-              path={['/auth/logout', '/auth/callback', '/error', '/404', '/app/start', '/app/profile']}
-              children={({match}) => (
-                <Header language={language} profilePic={profile_pic} initLogOut={this.onClickLogOut} waitForApi={!match} selectionPlan={selectionPlanCtx} />
-              )}
+          <Switch>
+            <LogInCallbackRoute path="/auth/login" doLogin={doLoginBasicLogin}/>
+            <LogOutCallbackRoute path="/auth/logout" doLogout={doLogout}/>
+            <AuthorizationCallbackRoute
+              onUserAuth={onUserAuth}
+              path="/auth/callback"
+              getUserInfo={getUserInfo}
             />
-
-            <Switch>
-              <LogInCallbackRoute path="/auth/login" doLogin={doLoginBasicLogin}/>
-              <LogOutCallbackRoute path="/auth/logout" doLogout={doLogout}/>
-              <AuthorizationCallbackRoute
-                onUserAuth={onUserAuth}
-                path="/auth/callback"
-                getUserInfo={getUserInfo}
-              />
-              <Route path="/error" component={CustomErrorPage}/>
-              <Route path="/404" render={(props) => <p>404 - Not Found</p>}/>
-              <Route path="/app/start" component={SummitSelectionPage}/>
-              <DirectAuthorizedRoute
-                path="/app/profile"
-                strict
-                exact
-                isLoggedUser={isLoggedUser}
-                component={ProfilePage}
-              />
-              <AuthorizedRoute
-                path="/app/:summit_slug"
-                isLoggedUser={isLoggedUser}
-                component={SummitLayout}
-                doLogin={this.onClickLogin}
-                Fallback={LandingLayout}
-              />
-              <DefaultRoute isLoggedUser={isLoggedUser}/>
-            </Switch>
-          </div>
-        </SelectionPlanContext.Provider>
-      </Router>
-    );
-  }
+            <Route path="/error" component={CustomErrorPage}/>
+            <Route path="/404" render={(props) => <p>404 - Not Found</p>}/>
+            <Route path="/app/start" component={SummitSelectionPage}/>
+            <DirectAuthorizedRoute
+              path="/app/profile"
+              strict
+              exact
+              isLoggedUser={isLoggedUser}
+              component={ProfilePage}
+            />
+            <AuthorizedRoute
+              path="/app/:summit_slug"
+              isLoggedUser={isLoggedUser}
+              component={SummitLayout}
+              doLogin={onClickLogin}
+              Fallback={LandingLayout}
+            />
+            <DefaultRoute isLoggedUser={isLoggedUser}/>
+          </Switch>
+        </div>
+      </SelectionPlanContext.Provider>
+    </Router>
+  );
 }
 
 const mapStateToProps = ({

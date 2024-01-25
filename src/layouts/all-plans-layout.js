@@ -15,10 +15,9 @@ import React, { useEffect } from 'react'
 import {connect} from 'react-redux';
 import {Switch, Route, Redirect} from 'react-router-dom';
 import {getAllFromSummit, getAllSummitDocs} from '../actions/base-actions';
-import PrimaryLayout from "./primary-layout";
 import AllSelectionPlansPage from "../pages/all-selection-plans-page";
 import NavMenu from "../components/nav-menu";
-import {SP_LANDING, SP_LANDING_ON_AUTH} from "../utils/constants";
+import SelectionPlanLayout from "./selection-plan-layout";
 
 const AllPlansLayout = ({summit, location, match, speaker, member}) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
@@ -32,21 +31,6 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
     }
   };
 
-  useEffect(() => {
-    // detect selection plan id with strict end
-    const regex = /all-plans\/(\d+)(?:\/|$)$/;
-    const regexMatch = location.pathname.match(regex);
-    const setSPOnAuth = localStorage.getItem(SP_LANDING_ON_AUTH);
-    if (regexMatch) {
-        const selectionPlanId = regexMatch[1];
-        localStorage.setItem(SP_LANDING, selectionPlanId);
-        return;
-    }
-    // we only remove the selection plan id if we are not setting it on auth callback
-    if(!setSPOnAuth)
-      localStorage.removeItem(SP_LANDING);
-  }, [location])
-
   if (summit == null || loggedUser == null) return null;
 
   return (
@@ -59,8 +43,7 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
           <main id="page-wrap">
             <Switch>
               <Route strict exact path={match.url} component={AllSelectionPlansPage}/>
-              <Route strict exact path={`${match.url}/:selection_plan_id(\\d+)`} component={AllSelectionPlansPage}/>
-              <Route path={`${match.url}/:selection_plan_id(\\d+)/presentations`} component={PrimaryLayout}/>
+              <Route path={`${match.url}/:selection_plan_id(\\d+)`} component={SelectionPlanLayout}/>
               <Route render={() => (<Redirect to={`/app/${summit.slug}/all-plans`}/>)}/>
             </Switch>
           </main>

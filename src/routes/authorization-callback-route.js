@@ -16,7 +16,6 @@ import {getSpeakerInfo } from '../actions/auth-actions';
 import AbstractAuthorizationCallbackRoute from "openstack-uicore-foundation/lib/security/abstract-auth-callback-route";
 import { Route, Redirect } from 'react-router-dom';
 import { getUserInfo } from "openstack-uicore-foundation/lib/security/actions";
-import {SP_LANDING, SP_LANDING_ON_AUTH} from "../utils/constants";
 
 class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
 
@@ -30,23 +29,6 @@ class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
             this.props.getUserInfo('groups','').then(
                 () => {
                     if(backUrl != null) {
-
-                        // check if on back url we have a selection plan set, if so , use the principle of less privilege
-                        // detect selection plan id ( non strict end)
-                        const regex = /all-plans\/(\d+)(?:\/|$)/;
-                        const regexMatch = backUrl.match(regex);
-                        if (regexMatch) {
-                            const selectionPlanId = regexMatch[1];
-                            console.log(`selection plan ${selectionPlanId} set on back url`)
-                            localStorage.setItem(SP_LANDING, selectionPlanId);
-                            localStorage.setItem(SP_LANDING_ON_AUTH, "1");
-
-                        }
-                        else {
-                            localStorage.removeItem(SP_LANDING_ON_AUTH);
-                            localStorage.removeItem(SP_LANDING);
-                        }
-
                         console.log(`redirecting to ${backUrl} ...`);
                         location.replace(backUrl);
                     }

@@ -24,8 +24,8 @@
     "or_create_id"            : "Create an FNid",
     "join_us"                 : "Join the Foundation",
     "sign_up"                 : "Sign up",
-    "speaker_profile_required"      : "Speaker/Submitter Profile Required",
-    "speaker_profile_required_text" : "Please create a speaker/submitter profile for the email account: {user_account}. This is the profile that will be attached to the email {user_account}. This should be your info even if you are submitting a submission on someone else's behalf. You will have a chance later in the process to create a profile for other speakers you may want to assign to your submission.",
+    "speaker_profile_required"      : "Profile Required",
+    "speaker_profile_required_text" : "Please create a profile for the email account: {user_account}. This is the profile that will be attached to the email {user_account}. This should be your info even if you are submitting a submission on someone else's behalf. You will have a chance later in the process to create a profile for other accounts you may want to assign to your submission.",
     "subtitle": "Accepting submissions until {end_date} {when}",
     "closed": "SUBMISSION IS CLOSED"
   },
@@ -261,9 +261,9 @@
     "body": "If you are still working on your talk, you can come back to make updates before CFP closes. If you have completed your talk submission, a confirmation email will be sent to you and all associated speakers/moderators. Check your inbox and junk folders for an email sent from speakersupport@openinfra.dev."
   },
   "edit_profile": {
-    "profile": "Speaker Profile",
+    "profile": "{speakerLabel} Profile",
     "important": "Important!",
-    "fill_speaker_details": "You must complete your speaker profile in order to submit a presentation.",
+    "fill_speaker_details": "You must complete your profile in order to submit a presentation.",
     "profile_saved": "Profile saved successfully!"
   },
   "affiliations": {
