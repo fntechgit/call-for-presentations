@@ -19,9 +19,6 @@ import {
     authErrorHandler,
 } from "openstack-uicore-foundation/lib/utils/actions";
 import { getUserInfo} from 'openstack-uicore-foundation/lib/security/actions';
-import history from '../history'
-import T from "i18n-react/dist/i18n-react";
-import Swal from "sweetalert2";
 import {getAccessTokenSafely} from "../utils/methods";
 
 export const RECEIVE_SPEAKER_INFO       = 'RECEIVE_SPEAKER_INFO';
@@ -47,25 +44,13 @@ export const getSpeakerInfo = () => async (dispatch, getState) => {
 }
 
 export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
-    let { baseState, profileState } = getState();
     let code = err.status;
     dispatch(stopLoading());
 
     if (code == 404) {
-        // speaker not found
-
-        Swal.fire({
-            title: T.translate("landing.speaker_profile_required"),
-            text: profileState?.entity?.email ? 
-                T.translate("landing.speaker_profile_required_text", {user_account: profileState.entity.email})
-                :
-                'Loading ...',
-            type: "warning",
-        });
-
-        const backUrl = baseState.summit ? `/app/${baseState.summit.slug}/profile` : '/app/profile';
         //try to get member
-        return getUserInfo('groups','', backUrl, history)(dispatch, getState);
+        return getUserInfo('groups')(dispatch, getState);
     }
+
     dispatch(authErrorHandler(err, res));
 }
