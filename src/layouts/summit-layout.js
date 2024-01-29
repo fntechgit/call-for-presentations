@@ -20,10 +20,8 @@ import PlanSelectionPage from "../pages/plan-selection-page";
 import ProfilePage from "../pages/profile-page";
 import ClockComponent from '../components/clock';
 import {getLandingSelectionPlanId} from "../utils/methods";
-import T from "i18n-react/dist/i18n-react";
-import Swal from "sweetalert2";
 
-const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, userProfile, ...props}) => {
+const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ...props}) => {
   const urlSummitSlug = match.params.summit_slug;
   const summitSlug = summit?.slug;
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -42,16 +40,6 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, us
   // check if speaker profile exists, if not redirect
   if ((!speaker || !speaker.id) && !location.pathname.includes('/profile') && !loading) {
     const spLanding = getLandingSelectionPlanId();
-
-    // speaker not found
-    Swal.fire({
-      title: T.translate("landing.speaker_profile_required"),
-      text: userProfile?.email ?
-        T.translate("landing.speaker_profile_required_text", {user_account: userProfile.email})
-        :
-        'Loading ...',
-      type: "warning",
-    });
 
     return (
       <Redirect exact to={{pathname: `/app/${summit.slug}/${spLanding ? `all-plans/${spLanding}/profile` : 'profile'}`}}/>
@@ -76,12 +64,11 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, us
 
 }
 
-const mapStateToProps = ({baseState, profileState}) => ({
+const mapStateToProps = ({baseState}) => ({
   speaker: baseState.speaker,
   summit: baseState.summit,
   loading: baseState.loading,
   baseLoaded: baseState.baseLoaded,
-  userProfile: profileState.entity
 })
 
 export default connect(mapStateToProps, {

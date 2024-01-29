@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
@@ -25,9 +25,11 @@ import {getSubmissionsPath} from "../utils/methods";
 const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, summit, selectionPlanId, history, selectionPlansSettings, ...props}) => {
     const selectionPlanSettings = selectionPlansSettings?.[selectionPlanId];
     const speakerLabel = selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'Speaker';
+    const [speakerLoaded, setSpeakerLoaded] = useState(false);
+    const hasErrors = Object.keys(errors).length > 0;
 
     useEffect(() => {
-        props.getSpeakerInfo();
+        props.getSpeakerInfo().finally(() => setSpeakerLoaded(true));
     }, []);
 
     useEffect(() => {
@@ -47,13 +49,19 @@ const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, 
         });
     }
 
-    if (!speaker?.id && !loading && !errors) {
-        Swal.fire({
-            title: T.translate("edit_profile.important"),
-            text: T.translate("edit_profile.fill_speaker_details"),
-            type: "warning"
-        });
-    }
+    useEffect(() => {
+        if (!speaker?.id && !loading && !hasErrors && speakerLoaded) {
+            // speaker not found
+            Swal.fire({
+                title: T.translate("landing.speaker_profile_required"),
+                text: entity?.email ?
+                  T.translate("landing.speaker_profile_required_text", {user_account: entity.email})
+                  :
+                  'Loading ...',
+                type: "warning",
+            });
+        }
+    }, [speaker?.id, loading, hasErrors, speakerLoaded]);
 
     return (
         <div className="page-wrap" id="profile-page">

@@ -38,19 +38,23 @@ export const getSpeakerInfo = () => async (dispatch, getState) => {
         createAction(RECEIVE_SPEAKER_INFO),
         `${window.API_BASE_URL}/api/v1/speakers/me`,
         speakerErrorHandler
-    )(params)(dispatch, getState).then(() => {
+    )(params)(dispatch, getState)
+      .catch(() => {
+          return getUserInfo('groups')(dispatch, getState);
+      })
+      .finally(() => {
         dispatch(stopLoading());
     });
 }
 
-export const speakerErrorHandler = (err, res) => (dispatch, getState) => {
+const speakerErrorHandler = (err, res) => async (dispatch, getState) => {
     let code = err.status;
     dispatch(stopLoading());
 
     if (code == 404) {
         //try to get member
-        return getUserInfo('groups')(dispatch, getState);
+        return Promise.reject('not found');
     }
 
-    dispatch(authErrorHandler(err, res));
+    return dispatch(authErrorHandler(err, res));
 }

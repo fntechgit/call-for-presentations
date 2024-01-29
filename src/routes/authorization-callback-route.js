@@ -25,17 +25,18 @@ class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
 
     _callback(backUrl) {
         if (!backUrl) backUrl = '/app';
-        this.props.getSpeakerInfo().then(() => {
-            this.props.getUserInfo('groups','').then(
-                () => {
-                    if(backUrl != null) {
-                        console.log(`redirecting to ${backUrl} ...`);
-                        location.replace(backUrl);
-                    }
-                }
-            )
-
+        const result = this.props.getSpeakerInfo()
+          .then(() => {
+            return this.props.getUserInfo('groups','');
+          })
+          .finally(() => {
+            if(backUrl != null) {
+                console.log(`redirecting to ${backUrl} ...`);
+                location.replace(backUrl);
+            }
         });
+
+        console.log('RES: ', result);
     }
 
     _redirect2Error(error){
