@@ -31,8 +31,6 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
     }
   };
 
-  console.log(loggedUser);
-
   if (summit == null || loggedUser == null) return null;
 
   return (

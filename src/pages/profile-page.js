@@ -26,6 +26,7 @@ const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, 
     const selectionPlanSettings = selectionPlansSettings?.[selectionPlanId];
     const speakerLabel = selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'Speaker';
     const [speakerLoaded, setSpeakerLoaded] = useState(false);
+    const [alertShown, setAlertShown] = useState(false);
     const hasErrors = Object.keys(errors).length > 0;
 
     useEffect(() => {
@@ -39,18 +40,11 @@ const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, 
     }, [orgRoles]);
 
     const handleSaveSpeakerProfile = (entity) => {
-        props.saveSpeakerProfile(entity).then(() => {
-            if (summit) {
-                history.push( `/app/${summit.slug}/${getSubmissionsPath()}`);
-                return;
-            }
-            // if we dont have a summit , the we are at /app/profile path
-            history.push('/app/start')
-        });
+        props.saveSpeakerProfile(entity);
     }
 
     useEffect(() => {
-        if (!speaker?.id && !loading && !hasErrors && speakerLoaded) {
+        if (!speaker?.id && !loading && !hasErrors && speakerLoaded && !alertShown) {
             // speaker not found
             Swal.fire({
                 title: T.translate("landing.speaker_profile_required"),
@@ -60,8 +54,10 @@ const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, 
                   'Loading ...',
                 type: "warning",
             });
+
+            setAlertShown(true);
         }
-    }, [speaker?.id, loading, hasErrors, speakerLoaded]);
+    }, [speaker?.id, loading, hasErrors, alertShown, speakerLoaded]);
 
     return (
         <div className="page-wrap" id="profile-page">

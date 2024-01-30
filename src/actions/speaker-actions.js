@@ -28,7 +28,7 @@ import {
 import history from '../history'
 import Swal from "sweetalert2";
 import {getSpeakerInfo} from "./auth-actions";
-import {getAccessTokenSafely} from "../utils/methods";
+import {getAccessTokenSafely, getSubmissionsPath} from "../utils/methods";
 
 export const RECEIVE_SPEAKER_PERMISSION = 'RECEIVE_SPEAKER_PERMISSION';
 export const REQUEST_SPEAKER_PERMISSION = 'REQUEST_SPEAKER_PERMISSION';
@@ -408,6 +408,7 @@ const normalizeEntity = (entity) => {
 
 export const saveSpeakerProfile = (entity) => async (dispatch, getState) => {
     const {baseState} = getState();
+    const {summit} = baseState;
     const accessToken = await getAccessTokenSafely();
 
     dispatch(startLoading());
@@ -471,7 +472,7 @@ export const saveSpeakerProfile = (entity) => async (dispatch, getState) => {
             dispatch(getSpeakerInfo(null));
         })
         .then((payload) => {
-            const redirectUrl = baseState.summit ? `/app/${baseState.summit.slug}` : '/app/start';
+            const redirectUrl = summit ? `/app/${summit.slug}/${getSubmissionsPath()}` : '/app/start';
             success_message.html = T.translate("edit_profile.profile_saved");
             dispatch(showMessage(success_message, () => history.push(redirectUrl)));
         });

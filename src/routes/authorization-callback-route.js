@@ -35,8 +35,6 @@ class AuthorizationCallbackRoute extends AbstractAuthorizationCallbackRoute {
                 location.replace(backUrl);
             }
         });
-
-        console.log('RES: ', result);
     }
 
     _redirect2Error(error){
