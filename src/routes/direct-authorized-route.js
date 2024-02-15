@@ -20,7 +20,7 @@ class DirectAuthorizedRoute extends React.Component {
     componentDidMount() {
         const { isLoggedUser} = this.props;
         if(!isLoggedUser)
-            doLoginBasicLogin('/app/profile');
+            doLoginBasicLogin('/app');
     }
 
     render() {
