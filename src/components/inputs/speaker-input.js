@@ -90,6 +90,12 @@ export default class CPFSpeakerInput extends React.Component {
         return re.test(String(inputValue).toLowerCase());
     }
 
+    getNoOptionsMessage = ({inputValue}) => {
+        const speakerLabel = this.props.selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'speaker';
+        if (inputValue) return `"${inputValue}" not found. Replace with ${speakerLabel}'s email address to add as new ${speakerLabel}`;
+        return `Please input ${speakerLabel}'s email address.`
+    }
+
     render() {
         let {onChange, placeholder, selectionPlanSettings, id, speakers, value, ...rest} = this.props;
 
@@ -106,7 +112,7 @@ export default class CPFSpeakerInput extends React.Component {
                 formatCreateLabel={(input) => `Add new ${selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'speaker'} with email: "${input}" `}
                 isValidNewOption={this.isValidNewOption}
                 isClearable
-                noOptionsMessage={({inputValue}) => `"${inputValue}" not found. Replace with speaker's email address to add as new speaker`}
+                noOptionsMessage={this.getNoOptionsMessage}
                 {...rest}
             />
         );
