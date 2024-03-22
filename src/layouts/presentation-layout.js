@@ -65,7 +65,7 @@ class PresentationLayout extends React.Component {
         }
 
         if (!speaker) {
-            history.push(`/app/profile`);
+            history.push(`/app/${summit.slug}/all-plans/profile`);
         }
 
         const selectionPlanSettings = selectionPlansSettings && selectionPlansSettings.hasOwnProperty(selectionPlan?.id) ? (selectionPlansSettings[selectionPlan?.id] || {}): {};

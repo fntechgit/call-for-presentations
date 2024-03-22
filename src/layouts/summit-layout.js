@@ -42,7 +42,7 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ..
     const spLanding = getLandingSelectionPlanId();
 
     return (
-      <Redirect exact to={{pathname: `/app/${summit.slug}/${spLanding ? `all-plans/${spLanding}/profile` : 'profile'}`}}/>
+      <Redirect exact to={{pathname: `/app/${summit.slug}/${spLanding ? `all-plans/${spLanding}/profile` : 'all-plans/profile'}`}}/>
     );
   }
 
@@ -51,11 +51,14 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ..
       <ClockComponent active={true} summit={summit}/>
       <Switch>
         <Route strict exact path={`${match.url}/select-plan`} component={PlanSelectionPage}/>
-        <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
         <Route path={`${match.url}/all-plans`} component={AllPlansLayout}/>
         <Route
             path={`${match.url}/:selection_plan_id(\\d+)/presentations`}
             render={props => (<Redirect to={`/app/${summitSlug}/all-plans/${props.match.params.selection_plan_id}`}/>)}
+        />
+        <Route
+          path={`${match.url}/profile`}
+          render={() => (<Redirect to={`/app/${summitSlug}/all-plans/profile`}/>)}
         />
         <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`}/>)}/>
       </Switch>

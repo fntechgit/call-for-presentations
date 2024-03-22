@@ -128,7 +128,7 @@ const LandingPage = ({summitSlug, match, summit, isLoggedUser, backUrl, selectio
                       </div>
                       <div className="col-md-6 login-box">
                           <div className="submit-subtitle"> {T.translate("landing.or_create_id")}</div>
-                          <a href={`${window.IDP_BASE_URL}/auth/register?client_id=${window.OAUTH2_CLIENT_ID}&redirect_uri=${domain}/app/profile`} className="btn btn-default btn-lg" target="_blank">
+                          <a href={`${window.IDP_BASE_URL}/auth/register?client_id=${window.OAUTH2_CLIENT_ID}&redirect_uri=${_backUrl}`} className="btn btn-default btn-lg" target="_blank">
                               {T.translate("landing.sign_up")}
                           </a>
                       </div>

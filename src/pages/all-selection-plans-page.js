@@ -45,7 +45,7 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, s
   if ( !summit || !loggedSpeaker ) return null;
 
   if (!loggedSpeaker) {
-    history.push(`/app/profile`);
+    history.push(`/app/${summit.slug}/all-plans/profile`);
     return;
   }
 

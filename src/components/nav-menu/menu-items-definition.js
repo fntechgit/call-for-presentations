@@ -1,12 +1,12 @@
 import {getMarketingValue} from "../marketing-setting";
 
 const MenuItemsDefinitions = [
-    {name: 'all-plans', iconClass: 'fa-chevron-right', show: true, pathTransform: sp => `all-plans/${sp}`},
+    {name: 'all-plans', iconClass: 'fa-chevron-right', show: true, pathTransform: sp => sp ? `all-plans/${sp}` : 'all-plans'},
     {
         name: 'profile',
         iconClass: 'fa-chevron-right',
         showIf: () => getMarketingValue('CFP_HIDE_MY_BIO') !== '1',
-        pathTransform: sp => `all-plans/${sp}/profile`
+        pathTransform: sp => sp ? `all-plans/${sp}/profile` : `all-plans/profile`
     },
     {name: 'tracks_guide', iconClass: 'fa-chevron-right'},
     {name: 'selection_process', iconClass: 'fa-chevron-right'},

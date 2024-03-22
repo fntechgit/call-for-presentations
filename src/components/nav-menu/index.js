@@ -29,7 +29,7 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
         setActiveItem(item.name);
 
         const landingSP = getLandingSelectionPlanId();
-        const path = (landingSP && item.pathTransform) ? item.pathTransform(landingSP) : item.name;
+        const path = item.pathTransform ? item.pathTransform(landingSP) : item.name;
 
         const url = `/app/${summit.slug}/${path}`;
 

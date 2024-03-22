@@ -18,6 +18,7 @@ import {getAllFromSummit, getAllSummitDocs} from '../actions/base-actions';
 import AllSelectionPlansPage from "../pages/all-selection-plans-page";
 import NavMenu from "../components/nav-menu";
 import SelectionPlanLayout from "./selection-plan-layout";
+import ProfilePage from "../pages/profile-page";
 
 const AllPlansLayout = ({summit, location, match, speaker, member}) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
@@ -43,6 +44,7 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
           <main id="page-wrap">
             <Switch>
               <Route strict exact path={match.url} component={AllSelectionPlansPage}/>
+              <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
               <Route path={`${match.url}/:selection_plan_id(\\d+)`} component={SelectionPlanLayout}/>
               <Route render={() => (<Redirect to={`/app/${summit.slug}/all-plans`}/>)}/>
             </Switch>
