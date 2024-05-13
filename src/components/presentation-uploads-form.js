@@ -13,7 +13,7 @@
 
 import React from 'react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import { UploadInputV2 } from 'openstack-uicore-foundation/lib/components'
+import {RawHTML, UploadInputV2} from 'openstack-uicore-foundation/lib/components'
 import {findElementPos} from 'openstack-uicore-foundation/lib/utils/methods'
 import SubmitButtons from './presentation-submit-buttons'
 import {scrollToError} from '../utils/methods'
@@ -148,9 +148,10 @@ class PresentationUploadsForm extends React.Component {
                                     {media_type.is_mandatory && <i> - {media_type.min_uploads_qty} mandatory</i>}
                                     {maxFiles && <i> - {maxFiles} max. allowed</i>}
                                 </label>
-                                {
-                                    media_type.description !== '' &&
-                                    <p>{media_type.description}</p>
+                                {media_type.description &&
+                                  <div>
+                                    <RawHTML>{media_type.description}</RawHTML>
+                                  </div>
                                 }
                                 <UploadInputV2
                                     id={`media_upload_${media_type.id}`}
