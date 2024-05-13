@@ -136,7 +136,7 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
 
 const getSummitDocs = (selectionPlanId, allTypes, allSummitDocs) => {
   return allSummitDocs.filter(doc => {
-    const allowedType = true; //doc.show_always || doc.event_types.some(r => allTypes.includes(r));
+    const allowedType = doc.show_always || doc.event_types.some(r => allTypes.includes(r));
     const allowedSelectionPlan = doc.selection_plan_id === selectionPlanId;
 
     return allowedSelectionPlan && allowedType;
