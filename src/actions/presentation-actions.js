@@ -54,7 +54,7 @@ export const getPresentation = (presentationId) => async (dispatch, getState) =>
   return getRequest(
     null,
     createAction(RECEIVE_PRESENTATION),
-    `${window.API_BASE_URL}/api/v1/summits/${summit.id}/events/${presentationId}`,
+    `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}`,
     (err, res) => presentationErrorHandler(err, res)(dispatch, getState)
   )(params)(dispatch, getState).then((payload) => {
       dispatch(stopLoading());
