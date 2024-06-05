@@ -19,18 +19,38 @@ import MenuItemsDefinitions from './menu-items-definition'
 import '../../styles/menu.less';
 import {connect} from "react-redux";
 import {getLandingSelectionPlanId} from "../../utils/methods";
+import DocList from "./doc-list";
 
 
-const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) => {
+const NavMenu = ({summit, active, user, exclusiveSections, presentation}) => {
     const [activeItem, setActiveItem] = useState(active);
+    const landingSP = getLandingSelectionPlanId();
+
+    const globalSummitDocs = summit.summit_documents.filter(sd => sd.selection_plan_id === 0);
+    const otherDocs = summit.summit_documents.filter(d => {
+        let shouldFilter = !!d.selection_plan;
+        // if user landed on a SP, then we just show those docs
+        if (landingSP) {
+            shouldFilter = d.selection_plan?.id === parseInt(landingSP)
+        }
+        // if user is editing a specific presentation type, we filter docs for that type
+        if (presentation?.id) {
+            shouldFilter = d.selection_plan?.id === presentation.selection_plan_id && d.event_types.includes(presentation.type.id);
+        }
+        return shouldFilter;
+    });
+    const summitDocsPerPlan = otherDocs.reduce((res, it) => {
+        if (!it.selection_plan) return res;
+        if (!res[it.selection_plan.name]) res[it.selection_plan.name] = [];
+        res[it.selection_plan.name].push(it);
+        return res;
+    }, {});
 
     const onMenuItemClick = (event, item) => {
         event.preventDefault();
         setActiveItem(item.name);
 
-        const landingSP = getLandingSelectionPlanId();
         const path = item.pathTransform ? item.pathTransform(landingSP) : item.name;
-
         const url = `/app/${summit.slug}/${path}`;
 
         history.push(url);
@@ -68,33 +88,25 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
                             active={activeItem === it.name}
                         />
                     ))}
-                    {
-                        globalSummitDocs?.map(doc => {
-                            const common = { name: doc.name, label: doc.label };
-                            return doc.file ?
-                                { ...common, url: doc.file, icon: "fa-download" } :
-                                { ...common, url: doc.web_link, icon: "fa-external-link" }
-                        }).map(dto =>
-                            <MenuItem
-                                key={dto.name}
-                                name={dto.name}
-                                label={dto.label}
-                                iconClass={dto.icon}
-                                show
-                                onClick={e => window.open(dto.url, '_blank')}
-                                active={false}
-                            />
-                        )
-                    }
                     <MenuItem
-                        key="support"
-                        name="support"
-                        label="Contact Support"
-                        iconClass="fa-envelope"
-                        show
-                        onClick={(e) => handleRequestSupport(e)}
-                        active={false}
+                      key="support"
+                      name="support"
+                      label="Contact Support"
+                      iconClass="fa-envelope"
+                      show
+                      onClick={(e) => handleRequestSupport(e)}
+                      active={false}
                     />
+                    <hr/>
+
+                    <DocList docs={globalSummitDocs} title="General Docs" />
+
+                    {Object.entries(summitDocsPerPlan).map(([sptitle, spdocs]) => {
+                        return (
+                          <DocList docs={spdocs} title={sptitle} />
+                        )
+                    })}
+
                 </ul>
             </div>
         </div>
@@ -102,9 +114,9 @@ const NavMenu = ({summit, active, user, exclusiveSections, globalSummitDocs}) =>
 
 }
 
-const mapStateToProps = ({ baseState }) => ({
-    globalSummitDocs: baseState.globalSummitDocs,
+const mapStateToProps = ({ baseState, presentationState }) => ({
     summit: baseState.summit,
+    presentation: presentationState.entity
 })
 
 export default withRouter(connect(
