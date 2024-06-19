@@ -27,6 +27,7 @@ const NavMenu = ({summit, active, user, exclusiveSections, presentation}) => {
     const landingSP = getLandingSelectionPlanId();
 
     const globalSummitDocs = summit.summit_documents.filter(sd => sd.selection_plan_id === 0);
+
     const otherDocs = summit.summit_documents.filter(d => {
         let shouldFilter = !!d.selection_plan;
         // if user landed on a SP, then we just show those docs
@@ -34,11 +35,14 @@ const NavMenu = ({summit, active, user, exclusiveSections, presentation}) => {
             shouldFilter = d.selection_plan?.id === parseInt(landingSP)
         }
         // if user is editing a specific presentation type, we filter docs for that type
-        if (presentation?.id) {
-            shouldFilter = d.selection_plan?.id === presentation.selection_plan_id && d.event_types.includes(presentation.type.id);
+        if (presentation?.type_id) {
+            shouldFilter = d.selection_plan?.id === presentation.selection_plan_id && d.event_types.includes(presentation.type_id);
+        } else if (d.event_types?.length > 0) { // we filter the docs that have a type constraint
+            shouldFilter = false;
         }
         return shouldFilter;
     });
+
     const summitDocsPerPlan = otherDocs.reduce((res, it) => {
         if (!it.selection_plan) return res;
         if (!res[it.selection_plan.name]) res[it.selection_plan.name] = [];
@@ -103,7 +107,7 @@ const NavMenu = ({summit, active, user, exclusiveSections, presentation}) => {
 
                     {Object.entries(summitDocsPerPlan).map(([sptitle, spdocs]) => {
                         return (
-                          <DocList docs={spdocs} title={sptitle} />
+                          <DocList docs={spdocs} title={sptitle} key={`doc-sp-${sptitle}`} />
                         )
                     })}
 

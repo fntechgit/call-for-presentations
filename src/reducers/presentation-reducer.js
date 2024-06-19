@@ -20,6 +20,7 @@ import
     PRESENTATION_MATERIAL_ATTACHED,
     PRESENTATION_MATERIAL_DELETED,
     PRESENTATION_SET_SHOW_INFO_POPUP,
+    PRESENTATION_SET_TYPE,
 } from '../actions/presentation-actions';
 
 import { VALIDATE } from 'openstack-uicore-foundation/lib/utils/actions';
@@ -112,6 +113,10 @@ const presentationReducer = (state = DEFAULT_STATE, action) => {
             }
 
             return {...state, entity: {...DEFAULT_ENTITY, ...entity}, errors: {} };
+        }
+        case PRESENTATION_SET_TYPE: {
+            const {type_id} = payload;
+            return {...state, entity: {...state.entity, type_id} };
         }
         case PRESENTATION_ADDED:
         case PRESENTATION_COMPLETED:
