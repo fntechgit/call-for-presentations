@@ -97,30 +97,3 @@ export const getModeratorPresentations = (selectionPlanId, accessToken) => (disp
   });
 };
 
-/*
-export const getSummitDocs = (presentations, summitId) => async (dispatch, getState) => {
-
-
-    let { baseState } = getState();
-    const accessToken = await getAccessTokenSafely();
-
-    dispatch(startLoading());
-
-    let eventTypes = presentations.map(p => p.type.name);
-    eventTypes = eventTypes.filter((t,i) => eventTypes.indexOf(t) === i);
-
-    let params = {
-        access_token : accessToken,
-        'filter[]': [`event_type==${eventTypes.join('||')}`]
-    };
-
-    return getRequest(
-        null,
-        createAction(SUMMIT_DOCS_RECEIVED),
-        `${window.API_BASE_URL}/api/v1/summits/${summitId}/summit-documents`,
-        authErrorHandler
-    )(params)(dispatch).then(() => {
-            dispatch(stopLoading());
-        }
-    );
-};*/

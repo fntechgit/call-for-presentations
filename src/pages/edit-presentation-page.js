@@ -20,7 +20,8 @@ import {
   completePresentation,
   saveMediaUpload,
   deleteMediaUpload,
-  setShowInfoPopup
+  setShowInfoPopup,
+  setPresentationType
 } from "../actions/presentation-actions";
 import {
   getSpeakerPermission,
@@ -76,6 +77,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
     deleteMediaUpload,
     completePresentation,
     getSpeakerPermission,
+    setPresentationType,
     trackGroups
   } = props;
 
@@ -118,6 +120,7 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
         selectionPlanSettings={selectionPlanSettings}
         errors={errors}
         onSubmit={entity => savePresentation(entity, presentation, 'SUMMARY')}
+        changePresentationType={setPresentationType}
       />
       }
 
@@ -212,5 +215,6 @@ export default connect(
     assignSpeakerToPresentation,
     getSpeakerPermission,
     setShowInfoPopup,
+    setPresentationType
   }
 )(EditPresentationPage);

@@ -38,6 +38,7 @@ export const PRESENTATION_COMPLETED = 'PRESENTATION_COMPLETED';
 export const PRESENTATION_MATERIAL_ATTACHED = 'PRESENTATION_MATERIAL_ATTACHED';
 export const PRESENTATION_MATERIAL_DELETED = 'PRESENTATION_MATERIAL_DELETED';
 export const PRESENTATION_SET_SHOW_INFO_POPUP = 'PRESENTATION_SET_SHOW_INFO_POPUP';
+export const PRESENTATION_SET_TYPE = 'PRESENTATION_SET_TYPE';
 
 export const getPresentation = (presentationId) => async (dispatch, getState) => {
   const {baseState} = getState();
@@ -129,6 +130,9 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
     });
 };
 
+export const setPresentationType = (type_id) => (dispatch, getState) => {
+  dispatch(createAction(PRESENTATION_SET_TYPE)({type_id}));
+};
 
 export const saveMediaUpload = (entity, mediaUpload) => async (dispatch, getState) => {
   const {baseState} = getState();
