@@ -18,25 +18,32 @@ import MenuItem from './menu-item'
 import MenuItemsDefinitions from './menu-items-definition'
 import '../../styles/menu.less';
 import {connect} from "react-redux";
-import {getLandingSelectionPlanId} from "../../utils/methods";
+import {getCurrentSelectionPlanId, getLandingSelectionPlanId} from "../../utils/methods";
 import DocList from "./doc-list";
 
 
 const NavMenu = ({summit, active, user, exclusiveSections, presentation}) => {
     const [activeItem, setActiveItem] = useState(active);
     const landingSP = getLandingSelectionPlanId();
+    const currentSP = getCurrentSelectionPlanId();
 
     const globalSummitDocs = summit.summit_documents.filter(sd => sd.selection_plan_id === 0);
 
     const otherDocs = summit.summit_documents.filter(d => {
         let shouldFilter = !!d.selection_plan;
         // if user landed on a SP, then we just show those docs
-        if (landingSP) {
-            shouldFilter = d.selection_plan?.id === parseInt(landingSP)
+        if (currentSP || landingSP) {
+            shouldFilter = d.selection_plan?.id === parseInt(currentSP || landingSP)
         }
+
+        // if doc doesn't have a type constraint we should show it
+        if (d.event_types.length === 0) {
+            return shouldFilter;
+        }
+
         // if user is editing a specific presentation type, we filter docs for that type
         if (presentation?.type_id) {
-            shouldFilter = d.selection_plan?.id === presentation.selection_plan_id && d.event_types.includes(presentation.type_id);
+            shouldFilter = d.event_types.includes(presentation.type_id);
         } else if (d.event_types?.length > 0) { // we filter the docs that have a type constraint
             shouldFilter = false;
         }
@@ -49,6 +56,7 @@ const NavMenu = ({summit, active, user, exclusiveSections, presentation}) => {
         res[it.selection_plan.name].push(it);
         return res;
     }, {});
+
 
     const onMenuItemClick = (event, item) => {
         event.preventDefault();

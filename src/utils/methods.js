@@ -275,7 +275,7 @@ export const getLandingSelectionPlanId = () => {
  */
 export const getCurrentSelectionPlanId = (match) => {
     // first try to use the match obj
-    if(match.params.selection_plan_id)
+    if(match?.params?.selection_plan_id)
         return parseInt(match.params.selection_plan_id)
     // and use raw url as a fallback
     const regex = /^\/app\/(\w*)\/all-plans\/(\d*)/;
