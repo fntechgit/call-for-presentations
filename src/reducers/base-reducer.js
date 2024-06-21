@@ -26,6 +26,7 @@ import {
     RECEIVE_ALLOWED_SELECTION_PLANS,
     REQUEST_SELECTION_PLAN_SETTINGS,
     RECEIVE_SELECTION_PLAN_SETTINGS,
+    RECEIVE_ALLOWED_SELECTION_PLAN
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
 import {PROFILE_PIC_ATTACHED} from "../actions/speaker-actions";
@@ -114,6 +115,11 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
             const selectionPlansSettings = formatSelectionPlanSettings(data);
             let newSelectionPlansSettings = { ...state.selectionPlansSettings, ...selectionPlansSettings};
             return {...state, marketingSettings: data, selectionPlansSettings: newSelectionPlansSettings} ;
+        }
+        case RECEIVE_ALLOWED_SELECTION_PLAN: {
+            const newSelectionPlan = payload.response;
+            const updatedSelectionPlans = [...state.summit.selection_plans.filter(sp => sp.id !== newSelectionPlan.id), newSelectionPlan];
+            return {...state, summit: {...state.summit, selection_plans: updatedSelectionPlans}};
         }
         default:
             return state;

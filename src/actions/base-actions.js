@@ -37,6 +37,7 @@ export const BASE_LOADED = 'BASE_LOADED';
 export const RECEIVE_ALLOWED_SELECTION_PLANS = 'RECEIVE_ALLOWED_SELECTION_PLANS';
 export const REQUEST_SELECTION_PLAN_SETTINGS = 'REQUEST_SELECTION_PLAN_SETTINGS';
 export const RECEIVE_SELECTION_PLAN_SETTINGS = 'RECEIVE_SELECTION_PLAN_SETTINGS';
+export const RECEIVE_ALLOWED_SELECTION_PLAN = 'RECEIVE_ALLOWED_SELECTION_PLAN';
 
 
 export const clearCurrentSummit = () => (dispatch, getState) => {
@@ -130,6 +131,28 @@ export const getAllowedSelectionPlans = (summitId) => async (dispatch, getState)
     null,
     createAction(RECEIVE_ALLOWED_SELECTION_PLANS),
     `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/me`,
+    console.log
+  )(params)(dispatch, getState).then(() => {
+    dispatch(stopLoading());
+  });
+}
+
+export const getAllowedSelectionPlan = (selectionPlanId) => async (dispatch, getState) => {
+  const {baseState} = getState();  
+  const summitId = baseState.summit.id;
+  const accessToken = await getAccessTokenSafely();
+
+  dispatch(startLoading());
+
+  const params = {
+    access_token: accessToken,
+    expand: 'track_groups,extra_questions,extra_questions.values'
+  };
+
+  return getRequest(
+    null,
+    createAction(RECEIVE_ALLOWED_SELECTION_PLAN),
+    `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/${selectionPlanId}`,
     console.log
   )(params)(dispatch, getState).then(() => {
     dispatch(stopLoading());
