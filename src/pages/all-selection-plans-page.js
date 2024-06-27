@@ -17,30 +17,16 @@ import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
 import {getSelectionPlanSettings} from "../actions/base-actions";
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, selectionPlansSettings, getSelectionPlanSettings}) => {
-  const [plansToShow, setPlansToShow] = useState([]);
-  const selectionPlansIds = summit.selection_plans.map(sp => sp.id).join();
+const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSettings, getSelectionPlanSettings}) => {
+  const plansToShow = summit.selection_plans
+    .filter(sp => !sp.is_hidden)
+    .sort((a,b) => a.submission_begin_date - b.submission_begin_date);
+
+  const selectionPlansIds = plansToShow.map(sp => sp.id);
 
   useEffect(()=>{
-    const currentSelectionPlanIds = selectionPlanId ? [selectionPlanId] : selectionPlansIds.split(',');
-    currentSelectionPlanIds.forEach((id) => getSelectionPlanSettings(summit.id, id));
+    selectionPlansIds.forEach((id) => getSelectionPlanSettings(summit.id, id));
   }, []);
-
-  useLayoutEffect(() => {
-    const availablePlans = getAvailablePlans();
-    if (availablePlans.length > 0) {
-      setPlansToShow(availablePlans);
-    }
-  }, [selectionPlansIds])
-
-  const getAvailablePlans = () => {
-    let allPlans = summit.selection_plans;
-
-    if (selectionPlanId) {
-      allPlans = allPlans.filter(sp => sp.id === selectionPlanId);
-    }
-    return allPlans.sort((a,b) => a.submission_begin_date - b.submission_begin_date);
-  };
 
   if ( !summit || !loggedSpeaker ) return null;
 
