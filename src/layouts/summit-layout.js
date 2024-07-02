@@ -14,7 +14,7 @@
 import React, {useEffect, useState} from 'react'
 import {connect} from 'react-redux';
 import {Switch, Route, Redirect} from 'react-router-dom';
-import {getAllFromSummit, getAllSummitDocs, getTagGroups, getAllowedSelectionPlans} from '../actions/base-actions';
+import {getAllFromSummit, getTagGroups, getAllowedSelectionPlans} from '../actions/base-actions';
 import AllPlansLayout from "./all-plans-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
 import ProfilePage from "../pages/profile-page";
@@ -76,7 +76,6 @@ const mapStateToProps = ({baseState}) => ({
 
 export default connect(mapStateToProps, {
   getAllFromSummit,
-  getAllSummitDocs,
   getTagGroups,
   getAllowedSelectionPlans
 })(SummitLayout);
