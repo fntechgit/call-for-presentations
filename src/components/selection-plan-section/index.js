@@ -5,7 +5,6 @@ import Swal from "sweetalert2";
 import {getAllPresentations} from '../../actions/presentations-actions';
 import {deletePresentation, resetPresentation} from '../../actions/presentation-actions';
 import PresentationsTable from "../../components/presentations-table";
-import SummitDocsSection from "../../components/summit-docs-section";
 import {formatEpoch} from "openstack-uicore-foundation/lib/utils/methods";
 import moment from "moment-timezone";
 import {nowBetween} from "../../utils/methods";
@@ -130,7 +129,6 @@ const SelectionPlanSection = ({summit, selectionPlan, selectionPlanSettings, log
           history={history}
           match={match}
         />
-        <SummitDocsSection summitDocs={summitDocs} />
       </div>
 
     </div>

@@ -11,10 +11,10 @@
  * limitations under the License.
  **/
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import {connect} from 'react-redux';
 import {Switch, Route, Redirect} from 'react-router-dom';
-import {getAllFromSummit, getAllSummitDocs} from '../actions/base-actions';
+import {getAllFromSummit} from '../actions/base-actions';
 import AllSelectionPlansPage from "../pages/all-selection-plans-page";
 import NavMenu from "../components/nav-menu";
 import SelectionPlanLayout from "./selection-plan-layout";
@@ -63,4 +63,4 @@ const mapStateToProps = ({baseState, loggedUserState}) => ({
   loading: baseState.loading
 })
 
-export default connect(mapStateToProps, {getAllFromSummit, getAllSummitDocs})(AllPlansLayout);
+export default connect(mapStateToProps, {getAllFromSummit})(AllPlansLayout);

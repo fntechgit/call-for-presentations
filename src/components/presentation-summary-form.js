@@ -91,6 +91,12 @@ const PresentationSummaryForm = (props) => {
         setErrors(errors_copy);
     }
 
+    const handleTypeChange = (ev) => {
+        const {value} = ev.target;
+        props.changePresentationType(value);
+        handleChange(ev);
+    }
+
     const handleSubmit = (ev) => {
         const {selectionPlan, disclaimer} = props;
         const errors_copy = {...errors};
@@ -296,7 +302,7 @@ const PresentationSummaryForm = (props) => {
                             <Dropdown
                                 id="type_id"
                                 value={entity.type_id}
-                                onChange={handleChange}
+                                onChange={handleTypeChange}
                                 placeholder={T.translate("general.placeholders.select_one")}
                                 options={event_types_ddl}
                                 disabled={!!entity.id}

@@ -19,7 +19,6 @@ import {
     ERROR_RECEIVE_SUMMIT,
     RECEIVE_SUMMIT,
     RECEIVE_MARKETING_SETTINGS,
-    SUMMIT_DOCS_RECEIVED,
     BASE_LOADED,
     REQUEST_MARKETING_SETTINGS,
     REQUEST_AVAILABLE_SUMMITS,
@@ -41,7 +40,6 @@ const DEFAULT_STATE = {
     marketingSettings: null,
     selectionPlansSettings: {},
     submissionIsClosed: false,
-    globalSummitDocs: [],
     baseLoaded: false,
     allowedSelectionPlans: [],
 };
@@ -75,20 +73,12 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         // summit / selection plan
         case CLEAR_SUMMIT:
-            return {...state, summit: null, marketingSettings: null, submissionIsClosed: false, globalSummitDocs: [], baseLoaded: false};
+            return {...state, summit: null, marketingSettings: null, submissionIsClosed: false, baseLoaded: false};
         case ERROR_RECEIVE_SUMMIT:
             return {...state, summit: null, marketingSettings: null, submissionIsClosed: false};
         case RECEIVE_SUMMIT: {
             const entity = payload.response;
-            const globalSummitDocs = entity.summit_documents.filter(sd => !sd.selection_plan_id);
-
-            return {...state, summit: entity, marketingSettings: null, globalSummitDocs, baseLoaded: false};
-        }
-        case SUMMIT_DOCS_RECEIVED: {
-            const {data} = payload.response;
-            const globalSummitDocs = data.filter(sd => !sd.selection_plan_id);
-
-            return {...state, globalSummitDocs};
+            return {...state, summit: entity, marketingSettings: null, baseLoaded: false};
         }
         case REQUEST_AVAILABLE_SUMMITS:
         case REQUEST_MARKETING_SETTINGS: {

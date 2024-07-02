@@ -30,7 +30,6 @@ export const REQUEST_MARKETING_SETTINGS = 'REQUEST_MARKETING_SETTINGS';
 export const RECEIVE_MARKETING_SETTINGS = 'RECEIVE_MARKETING_SETTINGS';
 export const REQUEST_AVAILABLE_SUMMITS = 'REQUEST_AVAILABLE_SUMMITS';
 export const RECEIVE_AVAILABLE_SUMMITS = 'RECEIVE_AVAILABLE_SUMMITS';
-export const SUMMIT_DOCS_RECEIVED = 'SUMMIT_DOCS_RECEIVED';
 export const ERROR_RECEIVE_SUMMIT = 'ERROR_RECEIVE_SUMMIT';
 export const CLEAR_SUMMIT = 'CLEAR_SUMMIT';
 export const BASE_LOADED = 'BASE_LOADED';
@@ -59,7 +58,7 @@ export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
 
 export const getCurrentSummitPublic = (id) => (dispatch) => {
   let params = {
-    expand: 'event_types,event_types.allowed_media_upload_types,event_types.allowed_media_upload_types.type,tracks'
+    expand: 'event_types,event_types.allowed_media_upload_types,event_types.allowed_media_upload_types.type,tracks,summit_documents.selection_plan'
   };
 
   return getRequest(
@@ -188,22 +187,6 @@ export const getSelectionPlanSettings = (summitId, selectionPlanId) => (dispatch
     createAction(REQUEST_SELECTION_PLAN_SETTINGS),
     createAction(RECEIVE_SELECTION_PLAN_SETTINGS),
     `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
-    authErrorHandler
-  )(params)(dispatch);
-};
-
-
-export const getAllSummitDocs = (summitId) => async (dispatch) => {
-  const accessToken = await getAccessTokenSafely();
-
-  const params = {
-    access_token: accessToken,
-  };
-
-  return getRequest(
-    null,
-    createAction(SUMMIT_DOCS_RECEIVED),
-    `${window.API_BASE_URL}/api/v1/summits/${summitId}/summit-documents`,
     authErrorHandler
   )(params)(dispatch);
 };
