@@ -17,9 +17,9 @@ import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
 import {getSelectionPlanSettings} from "../actions/base-actions";
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlansSettings, getSelectionPlanSettings}) => {
+const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, selectionPlansSettings, getSelectionPlanSettings}) => {
   const plansToShow = summit.selection_plans
-    .filter(sp => !sp.is_hidden)
+    .filter(sp => selectionPlanId ? sp.id === selectionPlanId : !sp.is_hidden)
     .sort((a,b) => a.submission_begin_date - b.submission_begin_date);
 
   const selectionPlansIds = plansToShow.map(sp => sp.id);
