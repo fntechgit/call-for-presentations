@@ -95,7 +95,7 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         case RECEIVE_ALLOWED_SELECTION_PLANS: {
             const {data} = payload.response;
-            return {...state, allowedSelectionPlans: data};
+            return {...state, summit: {...state.summit, selection_plans: data}};
         }
         case REQUEST_SELECTION_PLAN_SETTINGS: {
             return {...state, selectionPlansSettings: {}};
@@ -108,8 +108,8 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         case RECEIVE_ALLOWED_SELECTION_PLAN: {
             const newSelectionPlan = payload.response;
-            const updatedSelectionPlans = [...state.allowedSelectionPlans.filter(sp => sp.id !== newSelectionPlan.id), newSelectionPlan];
-            return {...state, allowedSelectionPlans: updatedSelectionPlans};
+            const updatedSelectionPlans = [...state.summit.selection_plans.filter(sp => sp.id !== newSelectionPlan.id), newSelectionPlan];
+            return {...state, summit: {...state.summit, selection_plans: updatedSelectionPlans}};
         }
         default:
             return state;

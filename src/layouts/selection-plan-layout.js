@@ -22,20 +22,18 @@ import SelectionProcessPage from "../pages/selection-process-page";
 import TracksGuidePage from "../pages/tracks-guide-page";
 import history from '../history'
 
-const SelectionPlanLayout = ({summit, allowedSelectionPlans, match, ...props}) => {
+const SelectionPlanLayout = ({summit, match, ...props}) => {
   const selectionPlanId = parseInt(match.params?.selection_plan_id);
 
   useEffect(() => {
     if (selectionPlanId) {
+      const allowedSelectionPlans = summit.selection_plans;
+      if (!allowedSelectionPlans.some(sp => sp.id === selectionPlanId)) {
+        history.push(`/app/${summit.slug}/all-plans`);
+        return;
+      }
       // update selection plan and retrieve marketing settings for selection plan
-      props.getAllowedSelectionPlan(selectionPlanId).finally(() => {
-        // redirect if the user is not allowed on the selection plan
-        if(!allowedSelectionPlans.some(sp => sp.id === selectionPlanId)) {
-          history.push(`/app/${summit.slug}/all-plans`);
-        } else {
-          props.getSelectionPlanSettings(summit.id, selectionPlanId);
-        }
-      });
+      props.getAllowedSelectionPlan(selectionPlanId).finally(() => props.getSelectionPlanSettings(summit.id, selectionPlanId));
     }
   }, [selectionPlanId]);
 
@@ -52,8 +50,7 @@ const SelectionPlanLayout = ({summit, allowedSelectionPlans, match, ...props}) =
 }
 
 const mapStateToProps = ({baseState}) => ({
-  summit: baseState.summit,
-  allowedSelectionPlans: baseState.allowedSelectionPlans
+  summit: baseState.summit
 })
 
 export default connect(mapStateToProps, {getAllowedSelectionPlan, getSelectionPlanSettings})(SelectionPlanLayout);
