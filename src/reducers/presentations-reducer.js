@@ -60,7 +60,7 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
       const {response, selectionPlanId} = payload;
       const presentations = response.data;
       const stateData = collections.find(col => col.selectionPlan.id === selectionPlanId);
-      stateData.presentationsCreated = presentations;
+      if (stateData) stateData.presentationsCreated = presentations;
 
       return {...state, collections};
     }
@@ -69,8 +69,10 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
       const {response, selectionPlanId} = payload;
       const presentations = response.data;
       const stateData = collections.find(col => col.selectionPlan.id === selectionPlanId);
-      const createdIds = stateData.presentationsCreated.map(pc => pc.id);
-      stateData.presentationsSpeaker = presentations.filter(p => !createdIds.includes(p.id));
+      if (stateData) {
+        const createdIds = stateData.presentationsCreated.map(pc => pc.id);
+        stateData.presentationsSpeaker = presentations.filter(p => !createdIds.includes(p.id));
+      }
 
       return {...state, collections};
     }
@@ -79,8 +81,10 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
       const {response, selectionPlanId} = payload;
       const presentations = response.data;
       const stateData = collections.find(col => col.selectionPlan.id === selectionPlanId);
-      const createdIds = stateData.presentationsCreated.map(pc => pc.id);
-      stateData.presentationsModerator = presentations.filter(p => !createdIds.includes(p.id));
+      if (stateData) {
+        const createdIds = stateData.presentationsCreated.map(pc => pc.id);
+        stateData.presentationsModerator = presentations.filter(p => !createdIds.includes(p.id));
+      }
 
       return {...state, collections};
     }
@@ -120,11 +124,13 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
       const collectionsCopy = [...collections]
       const {selectionPlanId} = payload;
       const stateData = collectionsCopy.find(col => col.selectionPlan.id === selectionPlanId);
+    
+      if (stateData) {
+        const allPresentationTypes = getAllTypes(stateData);
+        stateData.summitDocs = getSummitDocs(selectionPlanId, allPresentationTypes, allSummitDocs);
+        stateData.allPresentationTypes = allPresentationTypes;
+      }
 
-      const allPresentationTypes = getAllTypes(stateData);
-
-      stateData.summitDocs = getSummitDocs(selectionPlanId, allPresentationTypes, allSummitDocs);
-      stateData.allPresentationTypes = allPresentationTypes;
 
       return {...state, collections: collectionsCopy};
     }
@@ -144,9 +150,9 @@ const getSummitDocs = (selectionPlanId, allTypes, allSummitDocs) => {
 };
 
 const getAllTypes = (data, allTypes = []) => {
-  allTypes = data.presentationsCreated.reduce((res, item) => [...res, item.type.id], allTypes);
-  allTypes = data.presentationsSpeaker.reduce((res, item) => [...res, item.type.id], allTypes);
-  allTypes = data.presentationsModerator.reduce((res, item) => [...res, item.type.id], allTypes);
+  allTypes = data?.presentationsCreated.reduce((res, item) => [...res, item.type.id], allTypes);
+  allTypes = data?.presentationsSpeaker.reduce((res, item) => [...res, item.type.id], allTypes);
+  allTypes = data?.presentationsModerator.reduce((res, item) => [...res, item.type.id], allTypes);
 
   // remove duplicates
   allTypes = [...new Set(allTypes)];
