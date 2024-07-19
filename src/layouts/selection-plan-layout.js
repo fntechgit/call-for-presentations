@@ -20,12 +20,18 @@ import AllSelectionPlansPage from "../pages/all-selection-plans-page";
 import ProfilePage from "../pages/profile-page";
 import SelectionProcessPage from "../pages/selection-process-page";
 import TracksGuidePage from "../pages/tracks-guide-page";
+import history from '../history'
 
 const SelectionPlanLayout = ({summit, match, ...props}) => {
   const selectionPlanId = parseInt(match.params?.selection_plan_id);
 
   useEffect(() => {
     if (selectionPlanId) {
+      const allowedSelectionPlans = summit.selection_plans;
+      if (!allowedSelectionPlans.some(sp => sp.id === selectionPlanId)) {
+        history.push(`/app/${summit.slug}/all-plans`);
+        return;
+      }
       // update selection plan and retrieve marketing settings for selection plan
       props.getAllowedSelectionPlan(selectionPlanId).finally(() => props.getSelectionPlanSettings(summit.id, selectionPlanId));
     }
@@ -44,7 +50,7 @@ const SelectionPlanLayout = ({summit, match, ...props}) => {
 }
 
 const mapStateToProps = ({baseState}) => ({
-  summit: baseState.summit,
+  summit: baseState.summit
 })
 
 export default connect(mapStateToProps, {getAllowedSelectionPlan, getSelectionPlanSettings})(SelectionPlanLayout);
