@@ -7,7 +7,7 @@
     "build-dev": "./node_modules/.bin/webpack --config webpack.dev.js",
     "build": "./node_modules/.bin/webpack --config webpack.prod.js",
     "serve": "webpack-dev-server --open --https --config webpack.dev.js",
-    "clean-branchs" : "git branch | grep -v \"master\\|main\\|production\" | xargs git branch -D"
+    "clean-branchs": "git branch | grep -v \"master\\|main\\|production\" | xargs git branch -D"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +21,7 @@
     "@babel/preset-react": "^7.16.7",
     "@babel/runtime": "^7.17.8",
     "@react-pdf/renderer": "^3.1.11",
+    "@sentry/react": "^8.32.0",
     "@types/googlemaps": "^3.39.3",
     "@types/markerclustererplus": "^2.1.29",
     "@types/react": "^16.9.32",
@@ -35,9 +36,9 @@
     "css-loader": "^6.7.1",
     "dotenv-webpack": "^7.1.0",
     "dropzone": "5.7.2",
-    "final-form": "^4.20.7",
     "file-loader": "^6.2.0",
     "file-saver": "^2.0.2",
+    "final-form": "^4.20.7",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "html-webpack-plugin": "^5.5.0",
