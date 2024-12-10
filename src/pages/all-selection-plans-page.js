@@ -20,7 +20,11 @@ import {getSelectionPlanSettings} from "../actions/base-actions";
 const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, selectionPlansSettings, getSelectionPlanSettings}) => {
   const plansToShow = summit.selection_plans
     .filter(sp => selectionPlanId ? sp.id === selectionPlanId : !sp.is_hidden)
-    .sort((a,b) => a.submission_begin_date - b.submission_begin_date);
+    .sort((a,b) => {
+      const endDateDiff = b.submission_end_date - a.submission_end_date;
+      // if the selections plans shares the same end date, sort by id
+      return endDateDiff !== 0 ? endDateDiff : a.id - b.id;
+    });
 
   const selectionPlansIds = plansToShow.map(sp => sp.id);
 
