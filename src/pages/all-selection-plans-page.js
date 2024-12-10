@@ -20,7 +20,11 @@ import {getSelectionPlanSettings} from "../actions/base-actions";
 const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, selectionPlansSettings, getSelectionPlanSettings}) => {
   const plansToShow = summit.selection_plans
     .filter(sp => selectionPlanId ? sp.id === selectionPlanId : !sp.is_hidden)
-    .sort((a,b) => a.submission_begin_date - b.submission_begin_date);
+    .sort((a,b) => {
+      const beginDateDiff = a.submission_begin_date - b.submission_begin_date;
+      // if the selections plans shares the same begin date, sort by id
+      return beginDateDiff !== 0 ? beginDateDiff : a.id - b.id;
+    });
 
   const selectionPlansIds = plansToShow.map(sp => sp.id);
 
@@ -40,6 +44,8 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, s
       <div className="small-page-wrap">You cannot submit a presentation for this event at this time</div>
     );
   }
+
+  console.log("CHECK!!!>>>> ", summit.selection_plans);
 
   return (
     <div>
