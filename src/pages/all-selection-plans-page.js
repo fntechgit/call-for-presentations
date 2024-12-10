@@ -21,9 +21,9 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, s
   const plansToShow = summit.selection_plans
     .filter(sp => selectionPlanId ? sp.id === selectionPlanId : !sp.is_hidden)
     .sort((a,b) => {
-      const beginDateDiff = a.submission_begin_date - b.submission_begin_date;
-      // if the selections plans shares the same begin date, sort by id
-      return beginDateDiff !== 0 ? beginDateDiff : a.id - b.id;
+      const endDateDiff = b.submission_end_date - a.submission_end_date;
+      // if the selections plans shares the same end date, sort by id
+      return endDateDiff !== 0 ? endDateDiff : a.id - b.id;
     });
 
   const selectionPlansIds = plansToShow.map(sp => sp.id);
