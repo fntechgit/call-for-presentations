@@ -45,8 +45,6 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, s
     );
   }
 
-  console.log("CHECK!!!>>>> ", summit.selection_plans);
-
   return (
     <div>
       {plansToShow.map(sp => <SelectionPlanSection key={`selection-plan-section-${sp.id}`} selectionPlan={sp} selectionPlanSettings={selectionPlansSettings[sp.id] || {}} history={history} match={match} />)}
