@@ -159,12 +159,13 @@ class PresentationUploadsForm extends React.Component {
                                     onRemove={this.handleRemoveFile}
                                     value={mediaUploads}
                                     mediaType={media_type}
-                                    postUrl={`${window.API_BASE_URL}/api/public/v1/files/upload`}
+                                    postUrl={`${window.FILE_UPLOAD_API_BASE_URL}/api/v1/files/upload`}
                                     error={this.hasErrors(media_type.name)}
                                     djsConfig={{withCredentials:true}}
                                     maxFiles={maxFiles}
                                     canAdd={media_type.is_editable || mediaUploads.length < maxFiles}
                                     canDelete={media_type.is_editable}
+                                    parallelChunkUploads={true}
                                 />
                             </div>
                         </div>

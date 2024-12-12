@@ -5436,6 +5436,11 @@ js-base64@^2.4.9:
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-2.6.4.tgz#f4e686c5de1ea1f867dbcad3d46d969428df98c4"
   integrity sha512-pZe//GGmwJndub7ZghVHz7vjb2LgC1m8B07Au3eYqeqv9emhESByMXxaEgkUkEqJe87oBbSniGYoQNIBklc7IQ==
 
+js-cookie@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/js-cookie/-/js-cookie-3.0.5.tgz#0b7e2fd0c01552c58ba86e0841f94dc2557dcdbc"
+  integrity sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -6482,10 +6487,10 @@ open@^8.0.9:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
-openstack-uicore-foundation@4.1.46:
-  version "4.1.46"
-  resolved "https://registry.yarnpkg.com/openstack-uicore-foundation/-/openstack-uicore-foundation-4.1.46.tgz#836a490b97206be533e324a28c5f406efe1d160d"
-  integrity sha512-nBDasT5zKR1Xe7QlpWWk2CK/TJALTLavYSyxdrF7EOt7X0cg8Srzb3eyBJOr3GqRvoFgfMy23BdGPehIsJbKDw==
+openstack-uicore-foundation@4.1.92:
+  version "4.1.92"
+  resolved "https://registry.yarnpkg.com/openstack-uicore-foundation/-/openstack-uicore-foundation-4.1.92.tgz#9236453d749da13afef4d4eb74a7db7812c0bb7f"
+  integrity sha512-KtL1klFw4BMAK9EGHANlSlpBcpB6sYJIHkohOMIRHpgtL/x7KCD0rOZZeGyXB3VB0TYQVWyyCyEkHQMrBK7RTQ==
 
 optimize-css-assets-webpack-plugin@^6.0.1:
   version "6.0.1"
