@@ -24,16 +24,18 @@ const PresentationSummaryForm = (props) => {
     const {selectionPlan, selectionPlanSettings, summit, presentation, step, disclaimer} = props;
     const [entity, setEntity] = useState({...props.entity});
     const [errors, setErrors] = useState({});
+    const [submitted, setSubmitted] = useState(false);
     const errorsLength = Object.keys(errors).length;
     let event_types_ddl = [];
     let categories = [];
 
     useEffect(() => {
-        //scroll to first error
-        if (Object.keys(errors).length > 0) {
+        if (submitted && errorsLength > 0) {
             scrollToError();
+            setSubmitted(false);
         }
-    }, [errorsLength]);
+    }, [submitted, errors]);
+    
 
     useEffect(() => {
         //scroll to first error
@@ -163,6 +165,7 @@ const PresentationSummaryForm = (props) => {
         }
 
         setErrors(errors_copy);
+        setSubmitted(true);
     }
 
     const hasErrors = (field) => {
