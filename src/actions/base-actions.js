@@ -59,7 +59,7 @@ export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
 
 export const getCurrentSummitPublic = (id) => (dispatch) => {
   let params = {
-    expand: 'event_types,event_types.allowed_media_upload_types,event_types.allowed_media_upload_types.type,tracks,summit_documents.selection_plan'
+    expand: 'event_types,event_types.allowed_media_upload_types,event_types.allowed_media_upload_types.type,tracks,summit_documents,summit_documents.selection_plan'
   };
 
   return getRequest(
