@@ -37,7 +37,7 @@ const NavMenu = ({summit, active, user, exclusiveSections, presentation}) => {
         }
 
         // if doc doesn't have a type constraint we should show it
-        if (d.event_types.length === 0) {
+        if (!d.event_types || d.event_types.length === 0) {
             return shouldFilter;
         }
 
