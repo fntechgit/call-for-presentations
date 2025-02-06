@@ -108,15 +108,19 @@ class Presentation {
         // check submission period
         const submissionOpen = nowUtc >= submission_begin_date && nowUtc <= submission_end_date;
         const submissionClosed = !submissionOpen;
-        // selection ( track chairs )
+        // selection ( TRACK CHAIRS )
         // check selection period
-        const hasSeledtionPeriodDefined = selection_begin_date != null && selection_end_date != null;
+        const hasSelectionPeriodDefined = selection_begin_date != null && selection_end_date != null;
         const selectionOpen = nowUtc >= selection_begin_date && nowUtc <= selection_end_date;
-        const selectionEnded = !selectionOpen;
+        const selectionEnded = hasSelectionPeriodDefined && selection_end_date < nowUtc;
+
 
         // if the presentation is published the Accepted status is returned
         const submissionComplete = [Status_Accepted, Status_Received].includes(status);
-        const lockDownPeriod = submission_lock_down_presentation_status_date && submission_lock_down_presentation_status_date > nowUtc;
+        // lock down period is only valid if hasSelectionPeriodDefined AND ( selectionOpen || selectionEnded )
+        const lockDownPeriod = submission_lock_down_presentation_status_date
+          && submission_lock_down_presentation_status_date > nowUtc
+          && hasSelectionPeriodDefined && (selectionOpen || selectionEnded) ;
 
         const submissionAccepted = [SelectionStatus_Alternate, SelectionStatus_Accepted].includes(selection_status);
 
@@ -124,11 +128,11 @@ class Presentation {
 
         if (submissionComplete) {
             // is lock down period is enabled then short-circuit everything
-            if (lockDownPeriod || (submissionClosed && hasSeledtionPeriodDefined && selectionOpen)) {
+            if (lockDownPeriod || (submissionClosed && hasSelectionPeriodDefined && selectionOpen)) {
                 return T.translate("presentations.in_review");
             } else if (is_published) {
                 return T.translate('presentations.published')
-            } else if (hasSeledtionPeriodDefined && selectionEnded) {
+            } else if (hasSelectionPeriodDefined && selectionEnded) {
                 return submissionAccepted ? T.translate("presentations.accepted") : T.translate("presentations.rejected")
             } else {
                 return T.translate("presentations.received");
