@@ -41,6 +41,8 @@ import URI from "urijs";
 import { putOnLocalStorage }
   from "openstack-uicore-foundation/lib/utils/methods";
 import {BACK_URL} from "./utils/constants";
+import * as Sentry from "@sentry/react";
+import {SentryFallbackFunction} from './components/SentryErrorComponent';
 // here is set by default user lang as en
 let language = localStorage.getItem("PREFERRED_LANGUAGE");
 
@@ -86,6 +88,8 @@ window.EXCLUSIVE_SECTIONS = [];
 window.LOGO_URL = process.env["LOGO_URL"];
 window.SHOW_LANGUAGE_SELECTION = !!Number(process.env["SHOW_LANGUAGE_SELECTION"]);
 window.SUPPORT_EMAIL = process.env["SUPPORT_EMAIL"];
+window.SENTRY_DSN = process.env["SENTRY_DSN"];
+window.SENTRY_TRACE_SAMPLE_RATE = process.env['SENTRY_TRACE_SAMPLE_RATE'];
 
 if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
   window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
@@ -93,6 +97,7 @@ if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
 
 const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props}) => {
   const [selectionPlanCtx, setSelectionPlanCtx] = useState(null);
+  const [sentryInitialized, setSentryInitialized] = useState(false);
   const idToken = getIdToken();
 
   /*
@@ -139,57 +144,80 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
     profile_pic = jwt.payload.picture;
   }
 
+  if (window.SENTRY_DSN && window.SENTRY_DSN !== "" && sentryInitialized === false) {
+    console.log("app init sentry ...")
+    // Initialize Sentry
+    Sentry.init({
+      dsn: window.SENTRY_DSN,
+      integrations: [
+        Sentry.browserTracingIntegration(),
+        Sentry.replayIntegration(),
+      ],
+      // Set tracesSampleRate to 1.0 to capture 100%
+      // of transactions for performance monitoring.
+      tracesSampleRate: window.SENTRY_TRACE_SAMPLE_RATE,
+      // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+      tracePropagationTargets: ["localhost"],
+      // Session Replay
+      replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+      replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+    });
+    setSentryInitialized(true);
+  }
+
   return (
-    <Router history={history}>
-      <SelectionPlanContext.Provider value={{selectionPlanCtx, setSelectionPlanCtx}}>
+    <Sentry.ErrorBoundary fallback={SentryFallbackFunction({ componentName: "Call For Presentation App" })}>
+      <Router history={history}>
+        <SelectionPlanContext.Provider value={{ selectionPlanCtx, setSelectionPlanCtx }}>
 
-        <div>
-          <AjaxLoader show={loading} size={120}/>
-          <Route
-            path={['/auth/logout', '/auth/callback', '/error', '/404', '/app/start', '/app/profile']}
-            children={({match}) => (
-              <Header language={language} profilePic={profile_pic} initLogOut={onClickLogOut} waitForApi={!match} selectionPlan={selectionPlanCtx} />
-            )}
-          />
+          <div>
+            <AjaxLoader show={loading} size={120} />
+            <Route
+              path={['/auth/logout', '/auth/callback', '/error', '/404', '/app/start', '/app/profile']}
+              children={({ match }) => (
+                <Header language={language} profilePic={profile_pic} initLogOut={onClickLogOut} waitForApi={!match} selectionPlan={selectionPlanCtx} />
+              )}
+            />
 
-          <Switch>
-            <LogInCallbackRoute path="/auth/login" doLogin={doLoginBasicLogin}/>
-            <LogOutCallbackRoute path="/auth/logout" doLogout={doLogout}/>
-            <AuthorizationCallbackRoute
-              onUserAuth={onUserAuth}
-              path="/auth/callback"
-              getUserInfo={getUserInfo}
-            />
-            <Route path="/error" component={CustomErrorPage}/>
-            <Route path="/404" render={(props) => <p>404 - Not Found</p>}/>
-            <Route path="/app/start" component={SummitSelectionPage}/>
-            <DirectAuthorizedRoute
-              path="/app/profile"
-              strict
-              exact
-              isLoggedUser={isLoggedUser}
-              component={ProfilePage}
-            />
-            <AuthorizedRoute
-              path="/app/:summit_slug"
-              isLoggedUser={isLoggedUser}
-              component={SummitLayout}
-              doLogin={onClickLogin}
-              Fallback={LandingLayout}
-            />
-            <DefaultRoute isLoggedUser={isLoggedUser}/>
-          </Switch>
-        </div>
-      </SelectionPlanContext.Provider>
-    </Router>
+            <Switch>
+              <LogInCallbackRoute path="/auth/login" doLogin={doLoginBasicLogin} />
+              <LogOutCallbackRoute path="/auth/logout" doLogout={doLogout} />
+              <AuthorizationCallbackRoute
+                onUserAuth={onUserAuth}
+                path="/auth/callback"
+                getUserInfo={getUserInfo}
+              />
+              <Route path="/error" component={CustomErrorPage} />
+              <Route path="/404" render={(props) => <p>404 - Not Found</p>} />
+              <Route path="/app/start" component={SummitSelectionPage} />
+              <DirectAuthorizedRoute
+                path="/app/profile"
+                strict
+                exact
+                isLoggedUser={isLoggedUser}
+                component={ProfilePage}
+              />
+              <AuthorizedRoute
+                path="/app/:summit_slug"
+                isLoggedUser={isLoggedUser}
+                component={SummitLayout}
+                doLogin={onClickLogin}
+                Fallback={LandingLayout}
+              />
+              <DefaultRoute isLoggedUser={isLoggedUser} />
+            </Switch>
+          </div>
+        </SelectionPlanContext.Provider>
+      </Router>
+    </Sentry.ErrorBoundary>
   );
 }
 
 const mapStateToProps = ({
-                           loggedUserState,
-                           baseState,
-                           summitSelectionState,
-                         }) => ({
+  loggedUserState,
+  baseState,
+  summitSelectionState,
+}) => ({
   isLoggedUser: loggedUserState.isLoggedUser,
   member: loggedUserState.member,
   speaker: baseState.speaker,
