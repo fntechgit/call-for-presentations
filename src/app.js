@@ -88,6 +88,7 @@ window.LOGO_URL = process.env["LOGO_URL"];
 window.SHOW_LANGUAGE_SELECTION = !!Number(process.env["SHOW_LANGUAGE_SELECTION"]);
 window.SUPPORT_EMAIL = process.env["SUPPORT_EMAIL"];
 window.SENTRY_DSN = process.env["SENTRY_DSN"];
+window.SENTRY_TRACE_SAMPLE_RATE = process.env['SENTRY_TRACE_SAMPLE_RATE'];
 
 if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
   window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
@@ -151,8 +152,9 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
         Sentry.browserTracingIntegration(),
         Sentry.replayIntegration(),
       ],
-      // Tracing
-      tracesSampleRate: 1.0, //  Capture 100% of the transactions
+      // Set tracesSampleRate to 1.0 to capture 100%
+      // of transactions for performance monitoring.
+      tracesSampleRate: window.SENTRY_TRACE_SAMPLE_RATE,
       // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
       tracePropagationTargets: ["localhost"],
       // Session Replay
