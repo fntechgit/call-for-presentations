@@ -37,7 +37,7 @@ const LandingPage = ({summitSlug, match, summit, isLoggedUser, backUrl, selectio
 
     useEffect(() => {
         if (summit) {
-            if (selectionPlanIdParam) {
+            if (selectionPlanIdParam && summit?.selection_plans) {
                 const selPlan = summit.selection_plans.find(sp => sp.id === selectionPlanIdParam);
                 // retrieve marketing settings for selection plan
                 props.getSelectionPlanSettings(summit.id, selPlan.id)
