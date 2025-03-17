@@ -17,7 +17,8 @@ import {RawHTML, UploadInputV2} from 'openstack-uicore-foundation/lib/components
 import {findElementPos} from 'openstack-uicore-foundation/lib/utils/methods'
 import SubmitButtons from './presentation-submit-buttons'
 import {scrollToError} from '../utils/methods'
-
+import {initLogOut} from 'openstack-uicore-foundation/lib/security/methods'
+import Swal from 'sweetalert2';
 
 class PresentationUploadsForm extends React.Component {
     constructor(props) {
@@ -31,7 +32,7 @@ class PresentationUploadsForm extends React.Component {
         this.handleRemoveFile = this.handleRemoveFile.bind(this);
         this.onUploadComplete = this.onUploadComplete.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-
+        this.onUploadError = this.onUploadError.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -79,6 +80,14 @@ class PresentationUploadsForm extends React.Component {
             };
 
             this.props.onSaveMU(entity, media_upload);
+        }
+    }
+
+    onUploadError(error, status){
+        if(status == 403){
+            Swal.fire("ERROR", error.detail, "error");
+            console.log(error);
+            initLogOut();
         }
     }
 
@@ -156,6 +165,7 @@ class PresentationUploadsForm extends React.Component {
                                 <UploadInputV2
                                     id={`media_upload_${media_type.id}`}
                                     onUploadComplete={this.onUploadComplete}
+                                    onError={this.onUploadError}
                                     onRemove={this.handleRemoveFile}
                                     value={mediaUploads}
                                     mediaType={media_type}
