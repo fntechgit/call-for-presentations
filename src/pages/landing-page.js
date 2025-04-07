@@ -65,7 +65,7 @@ const LandingPage = ({summitSlug, match, summit, isLoggedUser, backUrl, selectio
       <div className="container landing-page-wrapper">
           <Exclusive name="os-landing">
               <div>
-                  <h1 className="title">{T.translate("landing.title", {summit_name: `OpenInfra Summit ${summit.name}`})}</h1>
+                  <h1 className="title">{T.translate("landing.title", {summit_name: `${summit.name}`})}</h1>
                   <div className="steps-wrapper">
                       <div className="steps-title">{T.translate("landing.steps_title")}</div>
                       <ul className="submit-steps">
