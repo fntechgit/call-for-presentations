@@ -15,5 +15,6 @@ openstack:
 fntech:
   - fntech-landing
   - presentation-attachment
+  - event-type-limits
 
 

@@ -8,8 +8,16 @@ const MenuItemsDefinitions = [
         showIf: () => getMarketingValue('CFP_HIDE_MY_BIO') !== '1',
         pathTransform: sp => sp ? `all-plans/${sp}/profile` : `all-plans/profile`
     },
-    {name: 'tracks_guide', iconClass: 'fa-chevron-right'},
-    {name: 'selection_process', iconClass: 'fa-chevron-right'},
+    {
+        name: 'tracks_guide',
+        iconClass: 'fa-chevron-right',
+        pathTransform: sp => sp ? `all-plans/${sp}/tracks_guide` : `all-plans/tracks_guide`
+    },
+    {
+        name: 'selection_process',
+        iconClass: 'fa-chevron-right',
+        pathTransform: sp => sp ? `all-plans/${sp}/selection_process` : `all-plans/selection_process`
+    },
 ];
 
 export default MenuItemsDefinitions;

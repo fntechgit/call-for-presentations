@@ -14,7 +14,7 @@
 import React, {useState, useEffect} from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import {Dropdown, Input, RadioList, RawHTML, TextArea, TextEditor} from 'openstack-uicore-foundation/lib/components'
+import {Dropdown, Input, RadioList, RawHTML, TextArea, TextEditor, Exclusive} from 'openstack-uicore-foundation/lib/components'
 import SubmitButtons from './presentation-submit-buttons'
 import {scrollToError, validate} from '../utils/methods'
 import QuestionsInput from '../components/inputs/questions-input'
@@ -301,7 +301,9 @@ const PresentationSummaryForm = (props) => {
                     <div className="row form-group">
                         <div className="col-md-12">
                             <label> {T.translate("edit_presentation.format")} </label>
-                            <p> {event_types_limits} </p>
+                            <Exclusive name="event-type-limits">
+                                <p>{event_types_limits}</p>
+                            </Exclusive>
                             <Dropdown
                                 id="type_id"
                                 value={entity.type_id}
