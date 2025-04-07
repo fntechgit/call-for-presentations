@@ -35,6 +35,11 @@ export default class TracksGuidePage extends React.Component {
         </p>
 
         <p>
+          <strong> {T.translate("tracks_guide.scientific")} </strong><br/>
+          {T.translate("tracks_guide.scientific_desc")}
+        </p>
+
+        <p>
           <strong> {T.translate("tracks_guide.ci_cd")} </strong><br/>
           {T.translate("tracks_guide.ci_cd_desc")}
         </p>
@@ -55,44 +60,23 @@ export default class TracksGuidePage extends React.Component {
         </p>
 
         <p>
-          <strong> {T.translate("tracks_guide.hardware_enablement")} </strong><br/>
-          {T.translate("tracks_guide.hardware_enablement_desc")}
-        </p>
-
-        <p>
-          <strong> {T.translate("tracks_guide.open_dev")} </strong><br/>
-          {T.translate("tracks_guide.open_dev_desc")}
-        </p>
-
-        <p>
           <strong> {T.translate("tracks_guide.private_cloud")} </strong><br/>
           {T.translate("tracks_guide.private_cloud_desc")}
         </p>
 
         <p>
-          <strong> {T.translate("tracks_guide.public_cloud")} </strong><br/>
-          {T.translate("tracks_guide.public_cloud_desc")}
+          <strong> {T.translate("tracks_guide.hybrid_cloud")} </strong><br/>
+          {T.translate("tracks_guide.hybrid_cloud_desc")}
+        </p>
+
+        <p>
+          <strong> {T.translate("tracks_guide.digital_sovereign")} </strong><br/>
+          {T.translate("tracks_guide.digital_sovereign_desc")}
         </p>
 
         <p>
           <strong> {T.translate("tracks_guide.security")} </strong><br/>
           {T.translate("tracks_guide.security_desc")}
-        </p>
-        <hr />
-        <h3>{T.translate("tracks_guide.forum_discussions")}</h3>
-        <p>
-          <strong> {T.translate("tracks_guide.forum")} </strong><br/>
-          {T.translate("tracks_guide.forum_desc")}
-        </p>
-
-        <p>
-          <strong> {T.translate("tracks_guide.project_onboarding")} </strong><br/>
-          {T.translate("tracks_guide.project_onboarding_desc")}
-        </p>
-
-        <p>
-          <strong> {T.translate("tracks_guide.working_groups")} </strong><br/>
-          {T.translate("tracks_guide.working_groups_desc")}
         </p>
       </div>
     );

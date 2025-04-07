@@ -42,8 +42,8 @@ const SelectionPlanLayout = ({summit, match, ...props}) => {
       <Route strict exact path={match.url} render={props => <AllSelectionPlansPage {...props} selectionPlanId={selectionPlanId} />} />
       <Route path={`${match.url}/presentations`} render={props => <PrimaryLayout {...props} selectionPlanId={selectionPlanId} />} />
       <Route path={`${match.url}/profile`} render={props => <ProfilePage {...props} selectionPlanId={selectionPlanId} />} />
-      <Route path={`${match.url}/selection_process`} render={props => <SelectionProcessPage {...props} selectionPlanId={selectionPlanId} />} />
-      <Route path={`${match.url}/tracks_guide`} render={props => <TracksGuidePage {...props} selectionPlanId={selectionPlanId} />} />
+      <Route path={`${match.url}/selection_process`} render={props => <SelectionProcessPage {...props} />} />
+      <Route path={`${match.url}/tracks_guide`} render={props => <TracksGuidePage {...props} />} />
       <Route render={() => (<Redirect to={`${match.url}/presentations`}/>)} />
     </Switch>
   );

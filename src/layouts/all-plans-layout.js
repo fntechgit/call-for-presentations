@@ -19,6 +19,8 @@ import AllSelectionPlansPage from "../pages/all-selection-plans-page";
 import NavMenu from "../components/nav-menu";
 import SelectionPlanLayout from "./selection-plan-layout";
 import ProfilePage from "../pages/profile-page";
+import SelectionProcessPage from "../pages/selection-process-page";
+import TracksGuidePage from "../pages/tracks-guide-page";
 
 const AllPlansLayout = ({summit, location, match, speaker, member}) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
@@ -46,6 +48,8 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
               <Route strict exact path={match.url} component={AllSelectionPlansPage}/>
               <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
               <Route path={`${match.url}/:selection_plan_id(\\d+)`} component={SelectionPlanLayout}/>
+              <Route path={`${match.url}/selection_process`} render={props => <SelectionProcessPage {...props} />} />
+              <Route path={`${match.url}/tracks_guide`} render={props => <TracksGuidePage {...props} />} />
               <Route render={() => (<Redirect to={`/app/${summit.slug}/all-plans`}/>)}/>
             </Switch>
           </main>
