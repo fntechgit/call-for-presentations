@@ -288,7 +288,7 @@
   "tracks_guide": {
     "title": "Summit Tracks",
     "the_summit": "The Summit",
-    "the_summit_desc": "The OpenInfra Summit includes keynotes, presentations, panels, hands-on workshops, and collaborative working sessions covering over 30 open source projects. Expect to hear about the intersection of many open source infrastructure projects, including Ceph, Kubernetes, Magma, ONAP, and the projects hosted by the OpenInfra Foundation: Kata Containers, Linux, OpenStack, PyTorch, StarlingX, and Zuul",
+    "the_summit_desc": "The OpenInfra Summit includes keynotes, presentations, panels, hands-on workshops, and collaborative working sessions covering over 30 open source projects. Expect to hear about the intersection of many open source infrastructure projects, including Ceph, Kubernetes, Magma, ONAP, PyTorch, Linux and the projects hosted by the OpenInfra Foundation: Kata Containers, OpenStack, StarlingX, and Zuul",
     "5g": "Telco, NFV & Edge Use Cases",
     "5g_desc": "Topics include: telco, cloudlet, distributed computing, economics, mesh, security, networking, architecture, ease of deployment, edge ecosystem, hardware performance accelerators (e.g., GPUs, ASICs, etc.), hardware profile, IoT, low end-to-end latency, management tools, scaling, edge-enabled applications, physical hardening, QoS, remote/extreme environments, remote troubleshooting, standalone cloudlets, tamper evidence, tamper resistance, VM and container handoff across WAN connections, zero-touch provisioning, SDN, SLAs, and standardization (e.g., ETSI NFV).",
     "ai": "AI infrastructure",
