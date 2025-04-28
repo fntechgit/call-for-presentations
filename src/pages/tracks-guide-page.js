@@ -13,6 +13,7 @@
 
 import React from 'react';
 import T from 'i18n-react/dist/i18n-react';
+import {RawHTML} from 'openstack-uicore-foundation/lib/components'
 
 export default class TracksGuidePage extends React.Component {
 
@@ -77,6 +78,10 @@ export default class TracksGuidePage extends React.Component {
         <p>
           <strong> {T.translate("tracks_guide.security")} </strong><br/>
           {T.translate("tracks_guide.security_desc")}
+        </p>
+        <p>
+          <strong> {T.translate("tracks_guide.gerrit")} </strong><br/>
+          <RawHTML>{T.translate("tracks_guide.gerrit_desc")}</RawHTML>
         </p>
       </div>
     );

@@ -310,6 +310,8 @@
     "digital_sovereign": "Digital Sovereignty",
     "digital_sovereign_desc": "Topics include: data localization, compliance with local regulations, open standards, self-sovereign identity, privacy protection, government and enterprise sovereignty strategies, secure data storage and processing, national and regional cloud initiatives, interoperability, data governance, transparency, trust, digital independence, and the role of open-source technologies in supporting digital sovereignty.",
     "security": "Security, Confidential Computing",
-    "security_desc": "Topics include: attestation, authenticity, authorization, data protection, encryption, identification, policy enforcement, privacy, regulatory compliance, risk management, trusted computing, confidential computing, secure enclaves, vulnerability tracking and mitigation, and securing infrastructure at every layer."
+    "security_desc": "Topics include: attestation, authenticity, authorization, data protection, encryption, identification, policy enforcement, privacy, regulatory compliance, risk management, trusted computing, confidential computing, secure enclaves, vulnerability tracking and mitigation, and securing infrastructure at every layer.",
+    "gerrit": "Gerrit",
+    "gerrit_desc": "The <a href=\"https://gerrit.googlesource.com/summit/2025/+/refs/heads/master/index.md\">Gerrit User Summit</a> is the event that brings together Gerrit admins, developers, practitioners, and the whole community, in one place, providing attendees with the opportunity to learn, explore, network face-to-face, and help shape the future of Gerrit development and solutions."
   }
 }
