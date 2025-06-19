@@ -255,9 +255,8 @@
     "contact": ", 参与讨论，或通过邮件{email}直接与基金会峰会团队联系。"
   },
   "tracks_guide": {
-    "title": "峰会专题",
-    "the_summit": "峰会",
-    "the_summit_desc": "OpenStack峰会是一个为期四天的活动，涵盖所有开放基础设施。内容包括主题演讲，演示文稿，小组讨论，实践研讨会和协作工作会议。期待听到许多开源基础设施项目的交集，包括Ansible，Ceph，Kata Containers，Kubernetes，ONAP，OpenStack等。",
+    "title": "{summit} Tracks",
+    "the_summit_desc": "{summit} includes keynotes, presentations, panels, hands-on workshops, and collaborative working sessions covering over 30 open source projects. Expect to hear about the intersection of many open source infrastructure projects, including Ceph, Kubernetes, Magma, ONAP, PyTorch, Linux and the projects hosted by the OpenInfra Foundation: Kata Containers, OpenStack, StarlingX, and Zuul",
     "5g": "5G、网络功能虚拟化与边缘计算",
     "5g_desc": "议题包括：5G、微云计算、分布式计算、经济效益、网格、安全、网络、架构、简化部署、边缘计算生态系统、硬件性能加速器（如GPUs, ASICs等）、硬件配置文件、物联网、端到端低延迟、管理工具、扩展、支持边缘的应用、物理强化、远程/极端环境、远程故障排除、独立微云、篡改证据、防篡改技术、跨广域网络连接的虚拟机和容器切换、零接触配置、QoS、SDN、SLAs、标准化如ETSI NFV行业规范等。",
     "ai": "人工智能、机器学习、高性能计算",
@@ -281,6 +280,10 @@
     "public_cloud": "公有云",
     "public_cloud_desc": "议题包括：架构/硬件、经济效益、云可移植性、功能与需求、联合、硬件、运维/升级、多租户、网络、性能、规模、安全与合规、SLAs、存储、开源平台、工具与SDKs、UI/UX、升级、用户体验等。",
     "security": "安全",
-    "security_desc": "议题包括：认证、真实性、授权、数据保护、加密、身份识别、策略实施、隐私、法规遵从性、风险管理、可信计算、漏洞追踪/缓解等。"
+    "security_desc": "议题包括：认证、真实性、授权、数据保护、加密、身份识别、策略实施、隐私、法规遵从性、风险管理、可信计算、漏洞追踪/缓解等。",
+    "forum": "The Forum",
+    "forum_desc": "This is your opportunity to share knowledge and highlight updates on your projects with the community. If you want to discuss a key topic or a new idea, submit a Forum session to have a conversation with the attendees in a collaborative session.",
+    "new_contributor": "New Contributor Showcase",
+    "new_contributor_desc": "The New Contributor Showcase is open to students, young professionals, and those shifting careers into tech to gain exposure, share their work, and build meaningful connections in the open source world. Selected contributors will have the opportunity to present their projects at the New Contributor Showcase during the {summit}, a unique platform to showcase your work, receive feedback from experienced community members, and network across the open source ecosystem."
   }
 }

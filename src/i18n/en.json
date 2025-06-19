@@ -286,9 +286,8 @@
     "contact": ", and/or contact the Foundation Summit Team directly {email}."
   },
   "tracks_guide": {
-    "title": "Summit Tracks",
-    "the_summit": "The Summit",
-    "the_summit_desc": "The OpenInfra Summit includes keynotes, presentations, panels, hands-on workshops, and collaborative working sessions covering over 30 open source projects. Expect to hear about the intersection of many open source infrastructure projects, including Ceph, Kubernetes, Magma, ONAP, PyTorch, Linux and the projects hosted by the OpenInfra Foundation: Kata Containers, OpenStack, StarlingX, and Zuul",
+    "title": "{summit} Tracks",
+    "the_summit_desc": "{summit} includes keynotes, presentations, panels, hands-on workshops, and collaborative working sessions covering over 30 open source projects. Expect to hear about the intersection of many open source infrastructure projects, including Ceph, Kubernetes, Magma, ONAP, PyTorch, Linux and the projects hosted by the OpenInfra Foundation: Kata Containers, OpenStack, StarlingX, and Zuul",
     "5g": "Telco, NFV & Edge Use Cases",
     "5g_desc": "Topics include: telco, cloudlet, distributed computing, economics, mesh, security, networking, architecture, ease of deployment, edge ecosystem, hardware performance accelerators (e.g., GPUs, ASICs, etc.), hardware profile, IoT, low end-to-end latency, management tools, scaling, edge-enabled applications, physical hardening, QoS, remote/extreme environments, remote troubleshooting, standalone cloudlets, tamper evidence, tamper resistance, VM and container handoff across WAN connections, zero-touch provisioning, SDN, SLAs, and standardization (e.g., ETSI NFV).",
     "ai": "AI infrastructure",
@@ -312,6 +311,10 @@
     "security": "Security, Confidential Computing",
     "security_desc": "Topics include: attestation, authenticity, authorization, data protection, encryption, identification, policy enforcement, privacy, regulatory compliance, risk management, trusted computing, confidential computing, secure enclaves, vulnerability tracking and mitigation, and securing infrastructure at every layer.",
     "gerrit": "Gerrit",
-    "gerrit_desc": "The <a href=\"https://gerrit.googlesource.com/summit/2025/+/refs/heads/master/index.md\">Gerrit User Summit</a> is the event that brings together Gerrit admins, developers, practitioners, and the whole community, in one place, providing attendees with the opportunity to learn, explore, network face-to-face, and help shape the future of Gerrit development and solutions."
+    "gerrit_desc": "The <a href=\"https://gerrit.googlesource.com/summit/2025/+/refs/heads/master/index.md\">Gerrit User Summit</a> is the event that brings together Gerrit admins, developers, practitioners, and the whole community, in one place, providing attendees with the opportunity to learn, explore, network face-to-face, and help shape the future of Gerrit development and solutions.",
+    "forum": "The Forum",
+    "forum_desc": "This is your opportunity to share knowledge and highlight updates on your projects with the community. If you want to discuss a key topic or a new idea, submit a Forum session to have a conversation with the attendees in a collaborative session.",
+    "new_contributor": "New Contributor Showcase",
+    "new_contributor_desc": "The New Contributor Showcase is open to students, young professionals, and those shifting careers into tech to gain exposure, share their work, and build meaningful connections in the open source world. Selected contributors will have the opportunity to present their projects at the New Contributor Showcase during the {summit}, a unique platform to showcase your work, receive feedback from experienced community members, and network across the open source ecosystem."
   }
 }
