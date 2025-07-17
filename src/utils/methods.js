@@ -298,7 +298,7 @@ export const getLandingSelectionPlan = path => {
 
 // checks if path is: all-plans, all-plans/presentations
 export const isGlobalLanding = path => {
-    const regex = /all-plans(?:$|\/presentations)(?:\/|$)$/;
+    const regex = /all-plans(?:\/|$|\/presentations)(?:\/|$)$/;
     const regexMatch = path.match(regex);
 
     return !!regexMatch;
