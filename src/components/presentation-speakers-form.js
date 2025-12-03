@@ -159,6 +159,8 @@ class PresentationSpeakersForm extends React.Component {
                 <h3>{T.translate("edit_presentation.speaker_included", 
                     { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")})}</h3>
 
+                <span dangerouslySetInnerHTML={{ __html: T.translate("edit_presentation.speaker_included_note")}} />
+
                 <hr/>
                 <div className="speakers">
                     {entity.moderator &&
