@@ -170,6 +170,7 @@
     "speaker": "Speaker",
     "moderator": "Moderator",
     "speaker_included": "Participants included in this {presentation}",
+    "speaker_included_note": "<b>NOTE</b>: If you are a speaker, please be sure to add yourself below as a participant.",
     "speaker_important": "IMPORTANT! We have added new questions to the participant bio form. Please review the bios for all participants before submitting.",
     "speaker_note": "Please Note: We have added new questions to the speaker bio form. Please review the bios for all speakers before submitting.",
     "more_speaker": "Please add speaker(s) participating in this presentation. All speakers will receive an email notifying them of this presentation submission.",
