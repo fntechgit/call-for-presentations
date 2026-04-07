@@ -18,7 +18,6 @@ import { Exclusive, Dropdown } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
 import Swal from "sweetalert2";
-import {getMarketingValue} from "./marketing-setting";
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {
@@ -47,24 +46,41 @@ class PresentationSpeakersForm extends React.Component {
     }
 
     handleSubmit(ev) {
-
-        const entity = {...this.props.entity};
-        const { selectionPlanSettings } = this.props;
         ev.preventDefault();
 
+        const { selectionPlanSettings, entity } = this.props;
         const validModerator = !entity.type.use_moderator || !entity.type.is_moderator_mandatory || entity.moderator;
-        const validSpeaker = !entity.type.use_speakers || !entity.type.are_speakers_mandatory || entity.speakers.length > 0;
+        const presentation = selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase();
 
         if (!validModerator) {
-            Swal.fire("Validation error", T.translate("edit_presentation.errors.add_moderator", 
-            { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()}), "warning");
-        } else if (!validSpeaker) {
-            Swal.fire("Validation error", T.translate("edit_presentation.errors.add_speaker", 
-            { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase(),
-             speaker: selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker").toLowerCase()}), "warning");
-        } else {
-            this.props.onSubmit(this.props.entity);
+            Swal.fire("Validation error", T.translate("edit_presentation.errors.add_moderator", { presentation }), "warning");
+            return;
         }
+
+        const MIN = (entity.type.are_speakers_mandatory ? 1 : 0);
+        const MAX = (entity.type.are_speakers_mandatory || entity.type.use_speakers ? Infinity : 0);
+        const minSpeakers = entity.type?.min_speakers || MIN;
+        const maxSpeakers = entity.type?.max_speakers || MAX;
+        const validSpeaker = !entity.type.use_speakers || (entity.speakers.length <= maxSpeakers && entity.speakers.length >= minSpeakers);
+        if (!validSpeaker) {
+            const speaker = (selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker")).toLowerCase();
+            const speakers = (selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || T.translate("edit_presentation.speakers")).toLowerCase();
+            const TParams = { presentation, speaker, speakers, max: maxSpeakers, min: minSpeakers }
+
+            let errorField = "add_speakers";
+            if (Infinity === maxSpeakers) {
+                errorField = "add_min_number_speakers";
+            }
+            else if (minSpeakers === maxSpeakers ) {
+                errorField = maxSpeakers === 1 ? "add_only_one_speaker" : "add_exact_number_of_speakers";
+            }
+
+            let errorText = T.translate(`edit_presentation.errors.${errorField}`, TParams);
+            Swal.fire("Validation error", errorText, "warning");
+            return;
+        }
+
+        this.props.onSubmit(this.props.entity);
     }
 
     handleBack(ev) {
@@ -101,12 +117,13 @@ class PresentationSpeakersForm extends React.Component {
 
     handleAddSpeaker(ev) {
         const {speaker, currentSpeakerType} = this.state;
-        const {history, onAddSpeaker, onAddModerator, match} = this.props;
+        const {history, onAddSpeaker, onAddModerator, match, selectionPlanSettings} = this.props;
+        const speakerLabel = selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker").toLowerCase();
         ev.preventDefault();
 
         if(!speaker){
             // speaker not set
-            this.setState({...this.state, error: T.translate("edit_presentation.errors.missing_speaker")});
+            this.setState({...this.state, error: T.translate("edit_presentation.errors.missing_speaker", {speaker: speakerLabel})});
             return;
         }
 
@@ -134,14 +151,14 @@ class PresentationSpeakersForm extends React.Component {
         }
 
         // speaker not set
-        this.setState({...this.state, error: T.translate("edit_presentation.errors.missing_speaker")});
+        this.setState({...this.state, error: T.translate("edit_presentation.errors.missing_speaker", {speaker: speakerLabel})});
         return false;
     }
 
     render() {
         let {summit, selectionPlanSettings, entity, presentation, step} = this.props;
         let {speakerInput, error, speaker} = this.state;
-        let eventType = summit.event_types.find(t => t.id == entity.type_id);        
+        let eventType = summit.event_types.find(t => t.id == entity.type_id);
         let canAddSpeakers = (eventType && eventType.max_speakers > entity.speakers.length);
         let canAddModerator = (eventType && eventType.max_moderators && !entity.moderator);
 
@@ -156,7 +173,7 @@ class PresentationSpeakersForm extends React.Component {
 
         return (
             <div>
-                <h3>{T.translate("edit_presentation.speaker_included", 
+                <h3>{T.translate("edit_presentation.speaker_included",
                     { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")})}</h3>
 
                 <span dangerouslySetInnerHTML={{ __html: T.translate("edit_presentation.speaker_included_note")}} />
@@ -220,8 +237,8 @@ class PresentationSpeakersForm extends React.Component {
                                     selectionPlanSettings={selectionPlanSettings}
                                     value={speakerInput}
                                     speakers={entity.speakers}
-                                    placeholder={T.translate("edit_presentation.placeholders.speakers", 
-                                        {speakers: `${selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || 
+                                    placeholder={T.translate("edit_presentation.placeholders.speakers",
+                                        {speakers: `${selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL ||
                                             T.translate('edit_presentation.speakers').toLowerCase()}`
                                         })}
                                     onChange={this.handleChangeSpeaker}
