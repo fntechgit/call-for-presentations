@@ -6,16 +6,13 @@
   "scripts": {
     "build-dev": "./node_modules/.bin/webpack --config webpack.dev.js",
     "build": "./node_modules/.bin/webpack --config webpack.prod.js",
-    "serve": "webpack-dev-server --open --https --config webpack.dev.js",
+    "serve": "webpack-dev-server --open --config webpack.dev.js",
     "clean-branchs": "git branch | grep -v \"master\\|main\\|production\" | xargs git branch -D"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@babel/core": "^7.17.8",
-    "@babel/plugin-proposal-class-properties": "^7.16.7",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.16.7",
-    "@babel/plugin-proposal-object-rest-spread": "^7.17.3",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-flow": "^7.16.7",
     "@babel/preset-react": "^7.16.7",
@@ -27,7 +24,6 @@
     "@types/markerclustererplus": "^2.1.29",
     "@types/react": "^16.9.32",
     "awesome-bootstrap-checkbox": "^1.0.1",
-    "babel-cli": "^6.26.0",
     "babel-loader": "^8.1.0",
     "browser-tabs-lock": "1.2.15",
     "buffer": "^6.0.3",
@@ -35,6 +31,7 @@
     "crypto-browserify": "^3.12.0",
     "crypto-js": "^4.1.1",
     "css-loader": "^6.7.1",
+    "css-minimizer-webpack-plugin": "^7.0.0",
     "dotenv-webpack": "^7.1.0",
     "dropzone": "5.7.2",
     "file-loader": "^6.2.0",
@@ -50,17 +47,15 @@
     "js-cookie": "^3.0.5",
     "js-yaml": "^4.1.0",
     "js-yaml-loader": "^1.2.2",
-    "less": "^4.1.2",
-    "less-loader": "^10.2.0",
+    "less": "^4.6.4",
+    "less-loader": "^12.3.2",
     "lodash": "^4.17.14",
     "mini-css-extract-plugin": "^2.6.0",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
-    "node-sass": "^7.0.1",
+    "extend": "^3.0.2",
     "openstack-uicore-foundation": "4.1.98",
-    "optimize-css-assets-webpack-plugin": "^6.0.1",
     "path-browserify": "^1.0.1",
-    "postcss-loader": "^2.1.6",
     "process": "^0.11.10",
     "prop-types": "^15.7.2",
     "react": "^16.6.3",
@@ -86,7 +81,8 @@
     "redux": "^3.7.2",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
-    "sass-loader": "^12.6.0",
+    "sass": "^1.89.0",
+    "sass-loader": "^13.3.3",
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.1",
     "superagent": "^6.1.0",
@@ -100,7 +96,9 @@
     "webpack-dev-server": "^4.7.4",
     "webpack-merge": "^5.8.0"
   },
-  "devDependencies": {
-    "@babel/plugin-transform-arrow-functions": "^7.16.7"
+  "devDependencies": {},
+  "resolutions": {
+      "lodash": "4.17.21"
   }
+
 }

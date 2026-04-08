@@ -59,7 +59,7 @@ module.exports = {
             crypto: require.resolve('crypto-browserify'),
             stream: require.resolve('stream-browserify'),
             buffer: require.resolve("buffer"),
-            fs: require.resolve('fs'),
+            fs: false,
             process: require.resolve("process"),
         }
     },
@@ -79,12 +79,7 @@ module.exports = {
                             '@babel/preset-react',
                             '@babel/preset-flow'
                         ],
-                        plugins: [
-                            "@babel/plugin-proposal-object-rest-spread",
-                            "@babel/plugin-proposal-class-properties",
-                            "@babel/plugin-proposal-nullish-coalescing-operator",
-                            "@babel/plugin-transform-arrow-functions",
-                        ]
+                        plugins: []
                     }
                 }
             },
@@ -100,7 +95,7 @@ module.exports = {
             {
                 test: /\.scss/,
                 exclude: /\.module\.scss/,
-                use: [MiniCssExtractPlugin.loader, "css-loader", 'sass-loader']
+                use: [MiniCssExtractPlugin.loader, "css-loader", { loader: 'sass-loader', options: { api: 'modern' } }]
             },
             {
                 test: /\.module.less/,
@@ -131,7 +126,7 @@ module.exports = {
                             modules: true,
                         }
                     },
-                    { loader: "sass-loader" }
+                    { loader: 'sass-loader', options: { api: 'modern' } }
                 ]
             },
             {
