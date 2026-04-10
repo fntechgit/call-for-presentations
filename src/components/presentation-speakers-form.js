@@ -57,26 +57,41 @@ class PresentationSpeakersForm extends React.Component {
             return;
         }
 
-        const MIN = (entity.type.are_speakers_mandatory ? 1 : 0);
-        const MAX = (entity.type.are_speakers_mandatory || entity.type.use_speakers ? Infinity : 0);
-        const minSpeakers = entity.type?.min_speakers || MIN;
-        const maxSpeakers = entity.type?.max_speakers || MAX;
-        const validSpeaker = !entity.type.use_speakers || (entity.speakers.length <= maxSpeakers && entity.speakers.length >= minSpeakers);
+        const speakersCount = Array.isArray(entity.speakers) ? entity.speakers.length : 0;
+        const defaultMinSpeakers = (entity.type?.are_speakers_mandatory ? 1 : 0);
+        const defaultMaxSpeakers = ((entity.type?.are_speakers_mandatory || entity.type?.use_speakers) ? Infinity : 0);
+        const minSpeakers = entity.type?.min_speakers || defaultMinSpeakers;
+        const possibleMaxSpeakers = (entity.type?.max_speakers || defaultMaxSpeakers);
+        // Protection against invalid configuration of max_speakers < min_speakers
+        const maxSpeakers = possibleMaxSpeakers >= minSpeakers ? possibleMaxSpeakers : minSpeakers;
+        const validSpeaker = !entity.type.use_speakers || (speakersCount <= maxSpeakers && speakersCount >= minSpeakers);
+
         if (!validSpeaker) {
             const speaker = (selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker")).toLowerCase();
             const speakers = (selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || T.translate("edit_presentation.speakers")).toLowerCase();
-            const TParams = { presentation, speaker, speakers, max: maxSpeakers, min: minSpeakers }
+            const translationParams = { presentation, speaker, speakers, max: maxSpeakers, min: minSpeakers };
 
-            let errorField = "add_speakers";
-            if (Infinity === maxSpeakers) {
-                errorField = "add_min_number_speakers";
-            }
-            else if (minSpeakers === maxSpeakers ) {
-                errorField = maxSpeakers === 1 ? "add_only_one_speaker" : "add_exact_number_of_speakers";
+            let errorField;
+            switch (true) {
+                // There is no upper limit of speakers but there is a minimum
+                case (Infinity === maxSpeakers):
+                    errorField = "add_min_number_speakers";
+                    break;
+                // There should be only one speaker
+                case (minSpeakers === maxSpeakers && maxSpeakers === 1):
+                    errorField = "add_only_one_speaker";
+                    break;
+                // There should be exactly a number of speakers
+                case (minSpeakers === maxSpeakers && maxSpeakers !== 1):
+                    errorField = "add_exact_number_of_speakers";
+                    break;
+                // The default error message when there is an upper limit and a minimum of speakers
+                default:
+                    errorField = "add_speakers";
+                    break;
             }
 
-            let errorText = T.translate(`edit_presentation.errors.${errorField}`, TParams);
-            Swal.fire("Validation error", errorText, "warning");
+            Swal.fire("Validation error", T.translate(`edit_presentation.errors.${errorField}`, translationParams), "warning");
             return;
         }
 
@@ -159,7 +174,8 @@ class PresentationSpeakersForm extends React.Component {
         let {summit, selectionPlanSettings, entity, presentation, step} = this.props;
         let {speakerInput, error, speaker} = this.state;
         let eventType = summit.event_types.find(t => t.id == entity.type_id);
-        let canAddSpeakers = (eventType && eventType.max_speakers > entity.speakers.length);
+        let speakersCount = entity.speakers?.length ?? 0;
+        let canAddSpeakers = (eventType && eventType.max_speakers > speakersCount);
         let canAddModerator = (eventType && eventType.max_moderators && !entity.moderator);
 
         let speakerTypes = [];
@@ -203,7 +219,7 @@ class PresentationSpeakersForm extends React.Component {
                         </div>
                     }
 
-                    {entity.speakers.map(s => (
+                    {entity.speakers?.map(s => (
                         <div className="row speaker" key={"speaker_" + s.id}>
                             <div className="col-md-4">
                                 <i className="fa fa-user"></i>
