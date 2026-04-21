@@ -167,12 +167,20 @@
     "review_subtitle": "您的演讲已经提交并等待专题负责人审阅",
     "permission_denied": "没有权限",
     "no_edit": "您无权编辑此演示文稿",
-    "add_speaker_error": "您需要添加至少一名演讲者到演讲议题中来。",
     "chair_comments": "Chair Comments",
     "presentation_material": "Presentation Material",
     "placeholders": {
       "type_id" : "-- Select One --",
       "level" : "-- Select One --"
+    },
+    "errors": {
+      "role": "您必须选择一个角色。",
+      "add_moderator": "您需要添加至少一名主持人到 {presentation} 中来。",
+      "add_speakers": "您需要添加 {min} 到 {max} 名 {speakers} 到 {presentation} 中来。",
+      "add_only_one_speaker": "您需要添加一名 {speaker} 到 {presentation} 中来。",
+      "add_exact_number_of_speakers": "您需要添加 {min} 名 {speakers} 到 {presentation} 中来。",
+      "add_min_number_speakers": "您需要添加至少 {min} 名 {speakers} 到 {presentation} 中来。",
+      "missing_speaker": "您需要选择一个 {speaker}。"
     }
   },
   "edit_speaker": {
