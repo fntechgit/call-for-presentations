@@ -11,17 +11,19 @@
  * limitations under the License.
  **/
 
-import React, {useEffect, useState} from 'react'
-import {connect} from 'react-redux';
-import {Switch, Route, Redirect} from 'react-router-dom';
-import {getAllFromSummit, getTagGroups, getAllowedSelectionPlans} from '../actions/base-actions';
-import AllPlansLayout from "./all-plans-layout";
-import PlanSelectionPage from "../pages/plan-selection-page";
-import ProfilePage from "../pages/profile-page";
+import React, { useEffect, useState, Suspense } from 'react'
+import { connect } from 'react-redux';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
+import { getAllFromSummit, getTagGroups, getAllowedSelectionPlans } from '../actions/base-actions';
 import ClockComponent from '../components/clock';
-import {getLandingSelectionPlanId} from "../utils/methods";
+import { getLandingSelectionPlanId } from "../utils/methods";
 
-const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ...props}) => {
+const AllPlansLayout = React.lazy(() => import("./all-plans-layout"));
+const PlanSelectionPage = React.lazy(() => import("../pages/plan-selection-page"));
+const ProfilePage = React.lazy(() => import("../pages/profile-page"));
+
+const SummitLayout = ({ summit, loading, match, speaker, location, baseLoaded, ...props }) => {
   const urlSummitSlug = match.params.summit_slug;
   const summitSlug = summit?.slug;
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -42,32 +44,34 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ..
     const spLanding = getLandingSelectionPlanId();
 
     return (
-      <Redirect exact to={{pathname: `/app/${summit.slug}/${spLanding ? `all-plans/${spLanding}/profile` : 'all-plans/profile'}`}}/>
+      <Redirect exact to={{ pathname: `/app/${summit.slug}/${spLanding ? `all-plans/${spLanding}/profile` : 'all-plans/profile'}` }} />
     );
   }
 
   return (
     <>
-      <ClockComponent active={true} summit={summit}/>
-      <Switch>
-        <Route strict exact path={`${match.url}/select-plan`} component={PlanSelectionPage}/>
-        <Route path={`${match.url}/all-plans`} component={AllPlansLayout}/>
-        <Route
+      <ClockComponent active={true} summit={summit} />
+      <Suspense fallback={<AjaxLoader show relative size={120} />}>
+        <Switch>
+          <Route strict exact path={`${match.url}/select-plan`} component={PlanSelectionPage} />
+          <Route path={`${match.url}/all-plans`} component={AllPlansLayout} />
+          <Route
             path={`${match.url}/:selection_plan_id(\\d+)/presentations`}
-            render={props => (<Redirect to={`/app/${summitSlug}/all-plans/${props.match.params.selection_plan_id}`}/>)}
-        />
-        <Route
-          path={`${match.url}/profile`}
-          render={() => (<Redirect to={`/app/${summitSlug}/all-plans/profile`}/>)}
-        />
-        <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`}/>)}/>
-      </Switch>
+            render={props => (<Redirect to={`/app/${summitSlug}/all-plans/${props.match.params.selection_plan_id}`} />)}
+          />
+          <Route
+            path={`${match.url}/profile`}
+            render={() => (<Redirect to={`/app/${summitSlug}/all-plans/profile`} />)}
+          />
+          <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`} />)} />
+        </Switch>
+      </Suspense>
     </>
   );
 
 }
 
-const mapStateToProps = ({baseState}) => ({
+const mapStateToProps = ({ baseState }) => ({
   speaker: baseState.speaker,
   summit: baseState.summit,
   loading: baseState.loading,

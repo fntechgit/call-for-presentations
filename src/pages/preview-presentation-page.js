@@ -14,7 +14,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
-import { RawHTML } from 'openstack-uicore-foundation/lib/components'
+import RawHTML from 'openstack-uicore-foundation/lib/components/raw-html';
 import { loadEventCategory } from "../actions/base-actions";
 import {getSubmissionsPath} from "../utils/methods";
 
