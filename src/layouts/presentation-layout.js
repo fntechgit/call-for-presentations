@@ -15,10 +15,6 @@ import React, { useEffect, useMemo } from 'react'
 import { connect } from 'react-redux';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { getPresentation, resetPresentation } from '../actions/presentation-actions'
-import EditPresentationPage from '../pages/edit-presentation-page'
-import PreviewPresentationPage from '../pages/preview-presentation-page'
-import ThankYouPresentationPage from '../pages/thankyou-presentation-page'
-import EditSpeakerPage from '../pages/edit-speaker-page'
 import Presentation from '../model/presentation'
 import PresentationEditGate from '../components/presentation-edit-gate'
 

@@ -14,8 +14,8 @@
 import React from 'react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import SubmitButtons from "./presentation-submit-buttons";
-import Exclusive from 'openstack-uicore-foundation/lib/components/exclusive-wrapper'
-import Dropdown from 'openstack-uicore-foundation/lib/components/inputs/dropdown'
+import Exclusive from 'openstack-uicore-foundation/lib/components/exclusive-wrapper';
+import Dropdown from 'openstack-uicore-foundation/lib/components/inputs/dropdown';
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
 import Swal from "sweetalert2";

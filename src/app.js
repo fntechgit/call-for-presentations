@@ -41,8 +41,7 @@ import URI from "urijs";
 import { putOnLocalStorage }
   from "openstack-uicore-foundation/lib/utils/methods";
 import {BACK_URL} from "./utils/constants";
-import * as Sentry from "@sentry/react";
-import {SentryFallbackFunction} from './components/SentryErrorComponent';
+import SentryErrorBoundary from "./components/SentryErrorBoundary";
 // here is set by default user lang as en
 let language = localStorage.getItem("PREFERRED_LANGUAGE");
 
@@ -170,7 +169,7 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
   }
 
   return (
-    <Sentry.ErrorBoundary fallback={SentryFallbackFunction({ componentName: "Call For Presentation App" })}>
+    <SentryErrorBoundary componentName="Call For Presentation App">
       <Router history={history}>
         <SelectionPlanContext.Provider value={{ selectionPlanCtx, setSelectionPlanCtx }}>
 
@@ -213,7 +212,7 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
           </div>
         </SelectionPlanContext.Provider>
       </Router>
-    </Sentry.ErrorBoundary>
+    </SentryErrorBoundary>
   );
 }
 
