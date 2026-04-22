@@ -11,18 +11,24 @@
  * limitations under the License.
  **/
 
-import React, {useEffect} from 'react'
-import {connect} from 'react-redux';
-import {Switch, Route, Redirect} from 'react-router-dom';
-import {getAllowedSelectionPlan, getSelectionPlanSettings} from '../actions/base-actions';
-import PrimaryLayout from "./primary-layout";
-import AllSelectionPlansPage from "../pages/all-selection-plans-page";
-import ProfilePage from "../pages/profile-page";
-import SelectionProcessPage from "../pages/selection-process-page";
-import TracksGuidePage from "../pages/tracks-guide-page";
+import React, { useEffect, Suspense } from 'react'
+import { connect } from 'react-redux';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
+import { getAllowedSelectionPlan, getSelectionPlanSettings } from '../actions/base-actions';
 import history from '../history'
 
-const SelectionPlanLayout = ({summit, match, ...props}) => {
+const EditPresentationPage = React.lazy(() =>
+  import("../pages/edit-presentation-page")
+);
+
+const PrimaryLayout = React.lazy(() => import("./primary-layout"));
+const AllSelectionPlansPage = React.lazy(() => import("../pages/all-selection-plans-page"));
+const ProfilePage = React.lazy(() => import("../pages/profile-page"));
+const SelectionProcessPage = React.lazy(() => import("../pages/selection-process-page"));
+const TracksGuidePage = React.lazy(() => import("../pages/tracks-guide-page"));
+
+const SelectionPlanLayout = ({ summit, match, ...props }) => {
   const selectionPlanId = parseInt(match.params?.selection_plan_id);
 
   useEffect(() => {
@@ -38,19 +44,21 @@ const SelectionPlanLayout = ({summit, match, ...props}) => {
   }, [selectionPlanId]);
 
   return (
-    <Switch>
-      <Route strict exact path={match.url} render={props => <AllSelectionPlansPage {...props} selectionPlanId={selectionPlanId} />} />
-      <Route path={`${match.url}/presentations`} render={props => <PrimaryLayout {...props} selectionPlanId={selectionPlanId} />} />
-      <Route path={`${match.url}/profile`} render={props => <ProfilePage {...props} selectionPlanId={selectionPlanId} />} />
-      <Route path={`${match.url}/selection_process`} render={props => <SelectionProcessPage {...props} />} />
-      <Route path={`${match.url}/tracks_guide`} render={props => <TracksGuidePage {...props} />} />
-      <Route render={() => (<Redirect to={`${match.url}/presentations`}/>)} />
-    </Switch>
+    <Suspense fallback={<AjaxLoader show relative size={120} />}>
+      <Switch>
+        <Route strict exact path={match.url} render={props => <AllSelectionPlansPage {...props} selectionPlanId={selectionPlanId} />} />
+        <Route path={`${match.url}/presentations`} render={props => <PrimaryLayout {...props} selectionPlanId={selectionPlanId} />} />
+        <Route path={`${match.url}/profile`} render={props => <ProfilePage {...props} selectionPlanId={selectionPlanId} />} />
+        <Route path={`${match.url}/selection_process`} render={props => <SelectionProcessPage {...props} />} />
+        <Route path={`${match.url}/tracks_guide`} render={props => <TracksGuidePage {...props} />} />
+        <Route render={() => (<Redirect to={`${match.url}/presentations`} />)} />
+      </Switch>
+    </Suspense>
   );
 }
 
-const mapStateToProps = ({baseState}) => ({
+const mapStateToProps = ({ baseState }) => ({
   summit: baseState.summit
 })
 
-export default connect(mapStateToProps, {getAllowedSelectionPlan, getSelectionPlanSettings})(SelectionPlanLayout);
+export default connect(mapStateToProps, { getAllowedSelectionPlan, getSelectionPlanSettings })(SelectionPlanLayout);

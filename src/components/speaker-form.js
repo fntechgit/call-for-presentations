@@ -17,7 +17,15 @@ import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import {findElementPos} from 'openstack-uicore-foundation/lib/utils/methods'
 import AffiliationsTable from './affiliationstable'
 import PresentationLinks from "./inputs/presentation-links";
-import { Input, TextEditor, UploadInput, Exclusive, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput, RegistrationCompanyInput } from 'openstack-uicore-foundation/lib/components'
+import Input from 'openstack-uicore-foundation/lib/components/inputs/text-input';
+import TextEditor from 'openstack-uicore-foundation/lib/components/inputs/editor-input';
+import UploadInput from 'openstack-uicore-foundation/lib/components/inputs/upload-input';
+import Exclusive from 'openstack-uicore-foundation/lib/components/exclusive-wrapper';
+import CountryInput from 'openstack-uicore-foundation/lib/components/inputs/country-input';
+import LanguageInput from 'openstack-uicore-foundation/lib/components/inputs/language-input';
+import CheckboxList from 'openstack-uicore-foundation/lib/components/inputs/checkbox-list';
+import FreeMultiTextInput from 'openstack-uicore-foundation/lib/components/inputs/free-multi-text-input';
+import RegistrationCompanyInput from 'openstack-uicore-foundation/lib/components/inputs/registration-company-input';
 import {validate, scrollToError} from "../utils/methods";
 
 

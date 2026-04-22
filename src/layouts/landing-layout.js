@@ -11,29 +11,33 @@
  * limitations under the License.
  **/
 
-import React from 'react'
-import {Switch, Route, Redirect} from 'react-router-dom';
-import LandingPage from "../pages/landing-page";
+import React, { Suspense } from 'react'
+import { Switch, Route, Redirect } from 'react-router-dom';
 import URI from "urijs";
-import {BACK_URL} from "../utils/constants";
+import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
+import { BACK_URL } from "../utils/constants";
 
-const LandingLayout = ({match, ...parentProps}) => {
+const LandingPage = React.lazy(() =>
+  import("../pages/landing-page")
+);
+
+const LandingLayout = ({ match, ...parentProps }) => {
   const summitSlug = match.params.summit_slug;
   let url = URI(window.location.href);
   let currentBackUrl = null
-  if(url.hasQuery(BACK_URL))
-        currentBackUrl = url.query(true)[BACK_URL];
+  if (url.hasQuery(BACK_URL))
+    currentBackUrl = url.query(true)[BACK_URL];
 
-  if(currentBackUrl){
-      return (
-          <Route render={ props => {
-              return <Redirect to={currentBackUrl} />
-          }} />
-      )
+  if (currentBackUrl) {
+    return (
+      <Route render={props => {
+        return <Redirect to={currentBackUrl} />
+      }} />
+    )
   }
 
   return (
-    <>
+    <Suspense fallback={<AjaxLoader show relative size={120} />}>
       <Switch>
         <Route
           strict
@@ -46,7 +50,7 @@ const LandingLayout = ({match, ...parentProps}) => {
           render={props => (<LandingPage summitSlug={summitSlug} {...parentProps} {...props} />)}
         />
       </Switch>
-    </>
+    </Suspense>
   );
 
 }

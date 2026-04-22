@@ -11,36 +11,38 @@
  * limitations under the License.
  **/
 
-import React from 'react'
-import {connect} from 'react-redux';
-import {Switch, Route, Redirect} from 'react-router-dom';
-import PresentationLayout from './presentation-layout'
+import React, { Suspense } from "react";
+import { connect } from 'react-redux';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 
-const PrimaryLayout = ({summit, speaker, member, selectionPlanId, match}) => {
+const PresentationLayout = React.lazy(() => import("./presentation-layout"));
+
+const PrimaryLayout = ({ summit, speaker, member, selectionPlanId, match }) => {
   const loggedUser = (speaker && speaker.id) ? speaker : member;
   const selectionPlan = summit.selection_plans.find(sp => sp.id === selectionPlanId);
 
   if (!loggedUser || !selectionPlanId || !selectionPlan) return null;
 
   return (
-    <>
+    <Suspense fallback={<AjaxLoader show relative size={120} />}>
       <Switch>
         <Route
           path={`${match.url}/new`}
-          render={(props) => <PresentationLayout selectionPlan={selectionPlan} {...props}/>}
+          render={(props) => <PresentationLayout selectionPlan={selectionPlan} {...props} />}
         />
         <Route
           path={`${match.url}/:presentation_id(\\d+)`}
-          render={(props) => <PresentationLayout selectionPlan={selectionPlan} {...props}/>}
+          render={(props) => <PresentationLayout selectionPlan={selectionPlan} {...props} />}
         />
-        <Route render={props => (<Redirect to={`/app/${summit.slug}/all-plans/${selectionPlanId}`}/>)}/>
+        <Route render={props => (<Redirect to={`/app/${summit.slug}/all-plans/${selectionPlanId}`} />)} />
       </Switch>
-    </>
+    </Suspense>
   );
 
 }
 
-const mapStateToProps = ({loggedUserState, baseState}) => ({
+const mapStateToProps = ({ loggedUserState, baseState }) => ({
   member: loggedUserState.member,
   speaker: baseState.speaker,
   summit: baseState.summit,
