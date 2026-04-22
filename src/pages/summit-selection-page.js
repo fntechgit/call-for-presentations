@@ -12,7 +12,7 @@
  **/
 
 import React from "react";
-import {Dropdown} from 'openstack-uicore-foundation/lib/components'
+import Dropdown from 'openstack-uicore-foundation/lib/components/inputs/dropdown';
 import history from "../history";
 import {connect} from "react-redux";
 import {

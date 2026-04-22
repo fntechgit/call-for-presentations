@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import AffiliationsActionsTableCell from './AffiliationsActionsTableCell';
-import { OrganizationInput, DateTimePicker } from 'openstack-uicore-foundation/lib/components'
+import DateTimePicker from 'openstack-uicore-foundation/lib/components/inputs/datetimepicker';
+import OrganizationInput from 'openstack-uicore-foundation/lib/components/inputs/organization-input';
 import { epochToMoment, formatEpoch } from 'openstack-uicore-foundation/lib//utils/methods'
 import { addAffiliation, saveAffiliation, deleteAffiliation } from "../../actions/member-actions"
 import T from "i18n-react/dist/i18n-react";

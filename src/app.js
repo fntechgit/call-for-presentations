@@ -23,7 +23,7 @@ import LogInCallbackRoute from './routes/login-callback-route'
 import DefaultRoute from "./routes/default-route";
 import SummitLayout from './layouts/summit-layout';
 import LandingLayout from './layouts/landing-layout';
-import {AjaxLoader} from "openstack-uicore-foundation/lib/components";
+import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 import {resetLoading} from "openstack-uicore-foundation/lib/utils/actions";
 import {doLogout, onUserAuth, getUserInfo} from 'openstack-uicore-foundation/lib/security/actions';
 import {initLogOut, doLoginBasicLogin, getIdToken} from 'openstack-uicore-foundation/lib/security/methods';
@@ -41,8 +41,7 @@ import URI from "urijs";
 import { putOnLocalStorage }
   from "openstack-uicore-foundation/lib/utils/methods";
 import {BACK_URL} from "./utils/constants";
-import * as Sentry from "@sentry/react";
-import {SentryFallbackFunction} from './components/SentryErrorComponent';
+import SentryErrorBoundary from "./components/SentryErrorBoundary";
 // here is set by default user lang as en
 let language = localStorage.getItem("PREFERRED_LANGUAGE");
 
@@ -144,29 +143,8 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
     profile_pic = jwt.payload.picture;
   }
 
-  if (window.SENTRY_DSN && window.SENTRY_DSN !== "" && sentryInitialized === false) {
-    console.log("app init sentry ...")
-    // Initialize Sentry
-    Sentry.init({
-      dsn: window.SENTRY_DSN,
-      integrations: [
-        Sentry.browserTracingIntegration(),
-        Sentry.replayIntegration(),
-      ],
-      // Set tracesSampleRate to 1.0 to capture 100%
-      // of transactions for performance monitoring.
-      tracesSampleRate: window.SENTRY_TRACE_SAMPLE_RATE,
-      // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-      tracePropagationTargets: ["localhost"],
-      // Session Replay
-      replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-      replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-    });
-    setSentryInitialized(true);
-  }
-
   return (
-    <Sentry.ErrorBoundary fallback={SentryFallbackFunction({ componentName: "Call For Presentation App" })}>
+    <SentryErrorBoundary componentName="Call For Presentation App">
       <Router history={history}>
         <SelectionPlanContext.Provider value={{ selectionPlanCtx, setSelectionPlanCtx }}>
 
@@ -209,7 +187,7 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
           </div>
         </SelectionPlanContext.Provider>
       </Router>
-    </Sentry.ErrorBoundary>
+    </SentryErrorBoundary>
   );
 }
 

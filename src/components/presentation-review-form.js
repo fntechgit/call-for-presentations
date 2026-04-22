@@ -14,7 +14,7 @@
 import React from 'react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import SubmitButtons from "./presentation-submit-buttons";
-import { RawHTML } from 'openstack-uicore-foundation/lib/components'
+import RawHTML from 'openstack-uicore-foundation/lib/components/raw-html'
 import T from "i18n-react/dist/i18n-react";
 import {getMarketingValue} from "./marketing-setting";
 

@@ -13,7 +13,8 @@
 
 import React from 'react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import {RawHTML, UploadInputV2} from 'openstack-uicore-foundation/lib/components'
+import RawHTML from 'openstack-uicore-foundation/lib/components/raw-html';
+import UploadInputV2 from 'openstack-uicore-foundation/lib/components/inputs/upload-input-v2';
 import {findElementPos} from 'openstack-uicore-foundation/lib/utils/methods'
 import SubmitButtons from './presentation-submit-buttons'
 import {scrollToError} from '../utils/methods'
