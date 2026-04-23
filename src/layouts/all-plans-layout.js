@@ -47,6 +47,9 @@ const AllPlansLayout = ({summit, location, match, speaker, member}) => {
             <Switch>
               <Route strict exact path={match.url} component={AllSelectionPlansPage}/>
               <Route strict exact path={`${match.url}/profile`} component={ProfilePage}/>
+              <Route strict exact path={`${match.url}/:selection_plan_id(\\d+)/profile`}
+                render={props => <ProfilePage {...props} selectionPlanId={parseInt(props.match.params.selection_plan_id)} />}
+              />
               <Route path={`${match.url}/:selection_plan_id(\\d+)`} component={SelectionPlanLayout}/>
               <Route path={`${match.url}/selection_process`} render={props => <SelectionProcessPage {...props} />} />
               <Route path={`${match.url}/tracks_guide`} render={props => <TracksGuidePage {...props} />} />
