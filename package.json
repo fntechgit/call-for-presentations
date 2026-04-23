@@ -58,7 +58,7 @@
     "mini-css-extract-plugin": "^2.6.0",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
-    "openstack-uicore-foundation": "4.2.27",
+    "openstack-uicore-foundation": "4.2.28-beta.6",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "prop-types": "^15.7.2",

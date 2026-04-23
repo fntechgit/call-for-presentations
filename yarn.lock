@@ -5355,10 +5355,10 @@ open@^8.0.9:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
-openstack-uicore-foundation@4.2.27:
-  version "4.2.27"
-  resolved "https://registry.npmjs.org/openstack-uicore-foundation/-/openstack-uicore-foundation-4.2.27.tgz#2a4ef839a643c09217dcf7280d9b32298edd7f2c"
-  integrity sha512-KAuCi+zXtwauazt/f/Azxs/RX+YWpe9DmKx01e/Nn5TYa0/c3F7xNq2gOMS2NvvSTAVLUQ6MTknN/98jDlqB7g==
+openstack-uicore-foundation@4.2.28-beta.6:
+  version "4.2.28-beta.6"
+  resolved "https://registry.npmjs.org/openstack-uicore-foundation/-/openstack-uicore-foundation-4.2.28-beta.6.tgz#7304427e6e80802a8575fe6fc5fb18c6f0d0a147"
+  integrity sha512-2wshJvSmetE3ZqvCCjSyHWHuCqP/xwedcu+ROdhlfG67pRGe0aD6d4h3KjW1xE02SMC7pAODRUA12PiEXkdNAA==
 
 p-limit@^2.2.0:
   version "2.3.0"
