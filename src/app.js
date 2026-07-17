@@ -23,7 +23,7 @@ import LogInCallbackRoute from './routes/login-callback-route'
 import DefaultRoute from "./routes/default-route";
 import SummitLayout from './layouts/summit-layout';
 import LandingLayout from './layouts/landing-layout';
-import {AjaxLoader} from "openstack-uicore-foundation/lib/components";
+import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 import {resetLoading} from "openstack-uicore-foundation/lib/utils/actions";
 import {doLogout, onUserAuth, getUserInfo} from 'openstack-uicore-foundation/lib/security/actions';
 import {initLogOut, doLoginBasicLogin, getIdToken} from 'openstack-uicore-foundation/lib/security/methods';
