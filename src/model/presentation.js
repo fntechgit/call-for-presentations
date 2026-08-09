@@ -12,7 +12,7 @@
  **/
 
 import T from 'i18n-react/dist/i18n-react';
-import {formatEpoch, nowAfter, nowBetween} from "../utils/methods";
+import {formatEpoch, nowBetween} from "../utils/methods";
 
 const SelectionStatus_Accepted = 'accepted';
 const SelectionStatus_Alternate = 'alternate';
@@ -172,8 +172,9 @@ class Presentation {
         // a grant only counts once the window has actually ENDED, not merely whenever it is not
         // open: submissionIsClosed is also true before the window starts, and honoring a grant
         // there would admit edits the API refuses, since isSubmissionReopened() requires
-        // now > submission_end_date
-        const submissionEnded = nowAfter(this._selectionPlan.submission_end_date);
+        // now > submission_end_date. On the trusted clock, not nowBetween's local one, because
+        // this is part of the reopen check rather than the plan window check
+        const submissionEnded = nowUtc > this._selectionPlan.submission_end_date;
         const reopened = !!reopenedUntil && submissionEnded && nowUtc < reopenedUntil;
 
         if (submissionIsClosed && !reopened) return false;
