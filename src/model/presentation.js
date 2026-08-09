@@ -12,7 +12,7 @@
  **/
 
 import T from 'i18n-react/dist/i18n-react';
-import {formatEpoch, nowBetween} from "../utils/methods";
+import {formatEpoch, nowAfter, nowBetween} from "../utils/methods";
 
 const SelectionStatus_Accepted = 'accepted';
 const SelectionStatus_Alternate = 'alternate';
@@ -39,7 +39,6 @@ class Presentation {
         this._presentation.selectionPlan = summit.selection_plans.find(sp => sp.id === presentation.selection_plan_id);
         this._tagGroups = tagGroups;
         this._track = null;
-        this._submissionIsClosed = selectionPlan ? !nowBetween(selectionPlan.submission_begin_date, selectionPlan.submission_end_date) : true;
 
         this._steps = [
             {name: 'NEW', lcName: 'new', step: 0},
@@ -75,6 +74,12 @@ class Presentation {
         const currentStep = this.getCurrentStep();
 
         this._presentation.progressNum = currentStep.step;
+    }
+
+    // the plan is captured at construction, but navigating refetches it by id and swaps the copy
+    // held in redux, so a long-lived instance has to be told or canEdit keeps gating on the old one
+    updateSelectionPlan(selectionPlan) {
+        this._selectionPlan = selectionPlan;
     }
 
     /**
@@ -146,8 +151,32 @@ class Presentation {
         return (this._presentation.is_published || this._presentation.status === 'Received');
     }
 
-    canEdit() {
-        if (!this._selectionPlan || this._submissionIsClosed) return false;
+    /**
+     * @param nowUtc epoch seconds, server-synced via the Clock
+     * @returns {boolean}
+     */
+    canEdit(nowUtc) {
+        if (!this._selectionPlan) return false;
+        // the API refuses writes on a disabled plan, and a disabled one does reach client state:
+        // selection-plan-layout refetches the plan by id on navigation, that endpoint applies no
+        // enabled filter unlike the /me feed, and base-reducer swaps the filtered copy for it.
+        // Only an explicit false blocks, so a payload without the field still edits normally.
+        if (this._selectionPlan.is_enabled === false) return false;
+
+        // computed per call, not snapshotted in the constructor, so a window that ends while the
+        // page is open locks the form without a reload
+        const submissionIsClosed = !nowBetween(this._selectionPlan.submission_begin_date, this._selectionPlan.submission_end_date);
+        // ungranted arrives as null on the list feeds and '' on the detail feed, which coerces
+        // every null to empty string; !! just renders both false
+        const reopenedUntil = this._presentation.submission_reopened_until;
+        // a grant only counts once the window has actually ENDED, not merely whenever it is not
+        // open: submissionIsClosed is also true before the window starts, and honoring a grant
+        // there would admit edits the API refuses, since isSubmissionReopened() requires
+        // now > submission_end_date
+        const submissionEnded = nowAfter(this._selectionPlan.submission_end_date);
+        const reopened = !!reopenedUntil && submissionEnded && nowUtc < reopenedUntil;
+
+        if (submissionIsClosed && !reopened) return false;
 
         let speakers = this._presentation.speakers.map(s => {
             if (typeof s == 'object') return s.id;
@@ -172,9 +201,9 @@ class Presentation {
         return (!this._presentation.is_published && belongsToSP);
     }
 
-    getProgressLink() {
+    getProgressLink(nowUtc) {
 
-        if (this.canEdit()) {
+        if (this.canEdit(nowUtc)) {
 
             let step = 'summary';
 

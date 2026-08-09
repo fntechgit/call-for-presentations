@@ -28,6 +28,9 @@ import clockReducer from "./reducers/clock-reducer";
 const config = {
     key: 'root',
     storage,
+    // the clock is live state — persisting it rehydrates a stale nowUtc over the seed, which is how
+    // a millisecond value written before the seed was fixed survives into the next session
+    blacklist: ['clockState'],
 }
 
 const reducers = persistCombineReducers(config, {

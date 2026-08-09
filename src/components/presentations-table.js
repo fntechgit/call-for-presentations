@@ -34,7 +34,7 @@ const PresentationsTable = ({
 
   const handleEditPresentation = (ev, presentation) => {
     ev.preventDefault();
-    history.push(presentation.getProgressLink());
+    history.push(presentation.getProgressLink(nowUtc));
   };
 
   const handleReviewPresentation = (ev, presentation) => {
