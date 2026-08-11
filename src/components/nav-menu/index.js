@@ -18,13 +18,15 @@ import MenuItem from './menu-item'
 import MenuItemsDefinitions from './menu-items-definition'
 import '../../styles/menu.less';
 import {connect} from "react-redux";
-import {getCurrentSelectionPlanId, getLandingSelectionPlanId} from "../../utils/methods";
+import {getCurrentSelectionPlanId, getAllowedLandingSelectionPlanId} from "../../utils/methods";
 import DocList from "./doc-list";
 
 
 const NavMenu = ({summit, active, user, exclusiveSections, presentation}) => {
     const [activeItem, setActiveItem] = useState(active);
-    const landingSP = getLandingSelectionPlanId();
+    // a landing plan the user cannot submit to would build menu links that the allowed-plan
+    // guard bounces back to /all-plans, so fall back to the global routes instead
+    const landingSP = getAllowedLandingSelectionPlanId(summit);
     const currentSP = getCurrentSelectionPlanId();
 
     const globalSummitDocs = summit.summit_documents.filter(sd => sd.selection_plan_id === 0);
