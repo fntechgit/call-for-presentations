@@ -264,7 +264,7 @@ class PresentationSpeakersForm extends React.Component {
                                         id="speaker"
                                         selectionPlanSettings={selectionPlanSettings}
                                         value={speakerInput}
-                                        speakers={entity.speakers}
+                                        speakers={Array.isArray(entity.speakers) ? entity.speakers : []}
                                         placeholder={T.translate("edit_presentation.placeholders.speakers",
                                             {
                                                 speakers: `${selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL ||
