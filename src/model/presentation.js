@@ -87,6 +87,10 @@ class Presentation {
      * @returns {React.ReactNode}
      */
     getStatus(nowUtc) {
+        // every branch below classifies the submission and selection windows against nowUtc, so
+        // before the first Clock tick there is no answer to give. null coerces to 0 in these
+        // comparisons, which would render a confidently wrong status; render nothing instead.
+        if (nowUtc == null) return null;
 
         const {is_published, status, selection_status, selectionPlan} = this._presentation;
         const {
@@ -152,6 +156,31 @@ class Presentation {
     }
 
     /**
+     * The operative reopen deadline, or null when a grant is not what is letting this
+     * presentation be edited. Three things must hold, mirroring the API's
+     * isSubmissionReopened(): the plan is enabled, its window has actually ENDED, and the
+     * grant is still live. "Not open" is not the same as "ended" — the window is also not
+     * open before it starts, and honoring a grant there would admit edits the API refuses.
+     *
+     * Single definition on purpose: canEdit() gates on it and the banner displays it, and if
+     * the two drifted the banner would announce a deadline that does not constrain anything —
+     * e.g. after an admin extends submission_end_date past an existing grant.
+     *
+     * @param nowUtc epoch seconds from the Clock, or null before the first tick
+     * @returns {number|null}
+     */
+    getReopenedUntil(nowUtc) {
+        if (nowUtc == null) return null;
+        if (!this._selectionPlan || this._selectionPlan.is_enabled === false) return null;
+        // ungranted arrives as null on the list feeds and '' on the detail feed, which coerces
+        // every null to empty string; a falsy check covers both
+        const until = this._presentation.submission_reopened_until;
+        if (!until) return null;
+        if (nowUtc <= this._selectionPlan.submission_end_date) return null;
+        return nowUtc < until ? until : null;
+    }
+
+    /**
      * @param nowUtc epoch seconds, server-synced via the Clock
      * @returns {boolean}
      */
@@ -164,18 +193,11 @@ class Presentation {
         if (this._selectionPlan.is_enabled === false) return false;
 
         // computed per call, not snapshotted in the constructor, so a window that ends while the
-        // page is open locks the form without a reload
+        // page is open locks the form without a reload. Still on nowBetween's local clock, as it
+        // was before this feature; the reopen check below is the part that moved to the synced
+        // one, because a 24h grant makes skew a far larger fraction than a multi-week plan window.
         const submissionIsClosed = !nowBetween(this._selectionPlan.submission_begin_date, this._selectionPlan.submission_end_date);
-        // ungranted arrives as null on the list feeds and '' on the detail feed, which coerces
-        // every null to empty string; !! just renders both false
-        const reopenedUntil = this._presentation.submission_reopened_until;
-        // a grant only counts once the window has actually ENDED, not merely whenever it is not
-        // open: submissionIsClosed is also true before the window starts, and honoring a grant
-        // there would admit edits the API refuses, since isSubmissionReopened() requires
-        // now > submission_end_date. On the trusted clock, not nowBetween's local one, because
-        // this is part of the reopen check rather than the plan window check
-        const submissionEnded = nowUtc > this._selectionPlan.submission_end_date;
-        const reopened = !!reopenedUntil && submissionEnded && nowUtc < reopenedUntil;
+        const reopened = !!this.getReopenedUntil(nowUtc);
 
         if (submissionIsClosed && !reopened) return false;
 

@@ -104,15 +104,19 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
     });
   }
 
+  // asks the model rather than re-deriving the condition, so the banner cannot announce a
+  // deadline that canEdit() does not actually gate on
+  const reopenedUntil = presentation.getReopenedUntil(nowUtc);
+
   return (
     <div className="page-wrap" id="edit-presentation-page">
       <div className="presentation-header-wrapper">
         <h2>{title} {`${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`}</h2>
       </div>
-      {entity.submission_reopened_until > nowUtc &&
+      {reopenedUntil &&
       <div className="alert alert-warning">
         {T.translate("edit_presentation.submission_reopened", {
-          end_date: formatEpoch(entity.submission_reopened_until, "MMMM DD, YYYY h:mm a"),
+          end_date: formatEpoch(reopenedUntil, "MMMM DD, YYYY h:mm a"),
           when: moment.tz.guess(),
         })}
       </div>

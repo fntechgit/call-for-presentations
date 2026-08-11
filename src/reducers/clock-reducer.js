@@ -10,17 +10,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-import moment from 'moment-timezone';
 import { REHYDRATE } from 'redux-persist';
 import { LOGOUT_USER } from 'openstack-uicore-foundation/lib/security/actions';
 import {
     UPDATE_CLOCK,
 } from '../actions/clock-actions';
-// epoch SECONDS, matching the Clock ticks that replace it and every consumer of nowUtc
-const localNowUtc = moment().unix();
 
+// null, not the browser clock: uicore's Clock leaves state.timestamp null until the time
+// service answers, and tick() no-ops until then, so any seed here survives for a whole round
+// trip. A device clock running fast past submission_reopened_until would make an active grant
+// read as expired, and the resulting redirect to /preview is one-way. Consumers treat null as
+// "not known yet" rather than as a time. Ticks arrive in epoch SECONDS, as does the API.
 const DEFAULT_STATE = {
-    nowUtc: localNowUtc,
+    nowUtc: null,
 };
 
 const clockReducer = (state = DEFAULT_STATE, action) => {
@@ -35,7 +37,7 @@ const clockReducer = (state = DEFAULT_STATE, action) => {
             // writes, while autoMergeLevel2 merges every stored key back in on rehydrate. Returning
             // a NEW object is what suppresses that merge, since the reconciler skips any key whose
             // substate the reducer already modified.
-            return { nowUtc: moment().unix() };
+            return { nowUtc: null };
         case UPDATE_CLOCK: {
             const { timestamp } = payload;
             return { ...state, nowUtc: timestamp };
