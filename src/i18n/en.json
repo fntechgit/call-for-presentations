@@ -209,7 +209,8 @@
       "add_only_one_speaker": "You need to add one {speaker} to the {presentation}.",
       "add_exact_number_of_speakers": "You need to add {min} {speakers} to the {presentation}.",
       "add_min_number_speakers": "You need to add at least {min} {speakers} to the {presentation}.",
-      "missing_speaker": "You need to select a {speaker}."
+      "missing_speaker": "You need to select a {speaker}.",
+      "remove_speakers": "You can have at most {max} {speakers} in the {presentation}. Please remove {excess}."
     }
   },
   "edit_speaker": {
