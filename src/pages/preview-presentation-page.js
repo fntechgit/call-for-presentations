@@ -41,7 +41,7 @@ class PreviewPresentationPage extends React.Component {
         ev.preventDefault();
         
         const {history, summit} = this.props;
-        const submissionsPath = getSubmissionsPath();
+        const submissionsPath = getSubmissionsPath(summit);
 
         history.push(`/app/${summit.slug}/${submissionsPath}`);
     }

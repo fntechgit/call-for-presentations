@@ -259,8 +259,8 @@ export const setDefaultColors = () => {
     setDocumentColors(defaultColors);
 };
 
-export const getSubmissionsPath = () => {
-    const selectionPlanLandingId = localStorage.getItem(SP_LANDING);
+export const getSubmissionsPath = (summit) => {
+    const selectionPlanLandingId = getAllowedLandingSelectionPlanId(summit);
     return selectionPlanLandingId ? `all-plans/${selectionPlanLandingId}` : 'all-plans';
 };
 

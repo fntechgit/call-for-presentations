@@ -11,18 +11,18 @@
  * limitations under the License.
  **/
 
-import { getAllowedLandingSelectionPlanId } from './methods';
+import { getAllowedLandingSelectionPlanId, getSubmissionsPath } from './methods';
 import { SP_LANDING } from './constants';
 
-describe('getAllowedLandingSelectionPlanId', () => {
-    const setLanding = (value) => {
-        global.localStorage = {
-            getItem: (key) => (key === SP_LANDING && value !== null ? String(value) : null)
-        };
+const setLanding = (value) => {
+    global.localStorage = {
+        getItem: (key) => (key === SP_LANDING && value !== null ? String(value) : null)
     };
+};
 
-    const summitWithPlans = (...ids) => ({selection_plans: ids.map(id => ({id}))});
+const summitWithPlans = (...ids) => ({selection_plans: ids.map(id => ({id}))});
 
+describe('getAllowedLandingSelectionPlanId', () => {
     it('returns the landing plan id when the user is allowed to submit to it', () => {
         setLanding(123);
 
@@ -62,5 +62,25 @@ describe('getAllowedLandingSelectionPlanId', () => {
 
         expect(getAllowedLandingSelectionPlanId(undefined)).toBeNull();
         expect(getAllowedLandingSelectionPlanId({})).toBeNull();
+    });
+});
+
+describe('getSubmissionsPath', () => {
+    it('keeps the landing plan in the path when the user can submit to it', () => {
+        setLanding(123);
+
+        expect(getSubmissionsPath(summitWithPlans(45, 123))).toBe('all-plans/123');
+    });
+
+    it('falls back to the global submissions path when the landing plan is stale', () => {
+        setLanding(999);
+
+        expect(getSubmissionsPath(summitWithPlans(45, 123))).toBe('all-plans');
+    });
+
+    it('falls back to the global submissions path when no landing plan was stored', () => {
+        setLanding(null);
+
+        expect(getSubmissionsPath(summitWithPlans(45, 123))).toBe('all-plans');
     });
 });
