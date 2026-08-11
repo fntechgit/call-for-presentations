@@ -269,6 +269,25 @@ export const getLandingSelectionPlanId = () => {
 }
 
 /**
+ * SP_LANDING is stored globally, so it can outlive the summit it was set on and point to a
+ * selection plan the user cannot submit to. Callers that build URLs from it must use this
+ * instead, or they send the user into a route the allowed-plan guard bounces back.
+ *
+ * @param summit
+ * @returns {number|null} the landing selection plan id, or null when it is not submittable
+ */
+export const getAllowedLandingSelectionPlanId = (summit) => {
+    const storedId = localStorage.getItem(SP_LANDING);
+    if (!storedId) return null;
+
+    const selectionPlanLandingId = parseInt(storedId);
+    if (Number.isNaN(selectionPlanLandingId) || selectionPlanLandingId <= 0) return null;
+
+    const isAllowed = summit?.selection_plans?.some(sp => sp.id === selectionPlanLandingId);
+    return isAllowed ? selectionPlanLandingId : null;
+}
+
+/**
  *
  * @param match
  * @returns {number}
