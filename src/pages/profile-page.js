@@ -20,7 +20,6 @@ import {saveSpeakerProfile, getOrganizationalRoles} from "../actions/speaker-act
 import {getSpeakerInfo} from "../actions/auth-actions";
 
 import '../styles/profile-page.less';
-import {getSubmissionsPath} from "../utils/methods";
 
 const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, summit, selectionPlanId, history, selectionPlansSettings, ...props}) => {
     const selectionPlanSettings = selectionPlansSettings?.[selectionPlanId];
