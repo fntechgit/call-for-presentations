@@ -157,10 +157,11 @@ class Presentation {
 
     /**
      * The operative reopen deadline, or null when a grant is not what is letting this
-     * presentation be edited. Three things must hold, mirroring the API's
-     * isSubmissionReopened(): the plan is enabled, its window has actually ENDED, and the
-     * grant is still live. "Not open" is not the same as "ended" — the window is also not
-     * open before it starts, and honoring a grant there would admit edits the API refuses.
+     * presentation be edited. Four things must hold, mirroring the API's
+     * isSubmissionReopened(): the plan is enabled, it has a submission end date, that window
+     * has actually ENDED, and the grant is still live. "Not open" is not the same as "ended" —
+     * the window is also not open before it starts, and honoring a grant there would admit
+     * edits the API refuses.
      *
      * Single definition on purpose: canEdit() gates on it and the banner displays it, and if
      * the two drifted the banner would announce a deadline that does not constrain anything —
@@ -176,6 +177,11 @@ class Presentation {
         // every null to empty string; a falsy check covers both
         const until = this._presentation.submission_reopened_until;
         if (!until) return null;
+        // no end date means no window to have ended, so there is nothing to reopen. Without this
+        // the comparison below is nowUtc <= 0 (null and '' coerce, undefined gives NaN), which is
+        // false, so the grant would be honored and the form would render against a plan every
+        // write fails on. Falsy check, matching the coercion note above.
+        if (!this._selectionPlan.submission_end_date) return null;
         if (nowUtc <= this._selectionPlan.submission_end_date) return null;
         return nowUtc < until ? until : null;
     }
