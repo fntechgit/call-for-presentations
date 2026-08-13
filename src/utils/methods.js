@@ -264,10 +264,6 @@ export const getSubmissionsPath = (summit) => {
     return selectionPlanLandingId ? `all-plans/${selectionPlanLandingId}` : 'all-plans';
 };
 
-export const getLandingSelectionPlanId = () => {
-    return localStorage.getItem(SP_LANDING);
-}
-
 /**
  * SP_LANDING is stored globally, so it can outlive the summit it was set on and point to a
  * selection plan the user cannot submit to. Callers that build URLs from it must use this
