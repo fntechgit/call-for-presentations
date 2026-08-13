@@ -259,13 +259,32 @@ export const setDefaultColors = () => {
     setDocumentColors(defaultColors);
 };
 
-export const getSubmissionsPath = () => {
-    const selectionPlanLandingId = localStorage.getItem(SP_LANDING);
+export const getSubmissionsPath = (summit) => {
+    const selectionPlanLandingId = getAllowedLandingSelectionPlanId(summit);
     return selectionPlanLandingId ? `all-plans/${selectionPlanLandingId}` : 'all-plans';
 };
 
-export const getLandingSelectionPlanId = () => {
-    return localStorage.getItem(SP_LANDING);
+/**
+ * SP_LANDING is stored globally, so it can outlive the summit it was set on and point to a
+ * selection plan id that isn't among the member's allowed plans for this summit. Callers that
+ * build URLs from it must use this instead, or they send the user into a route the allowed-plan
+ * guard bounces back. This mirrors the guard in selection-plan-layout.js:SelectionPlanLayout
+ * (allowedSelectionPlans.some(sp => sp.id === selectionPlanId)) on purpose: it's what closes the
+ * redirect loop. If either check ever gains a condition the other lacks, the loop comes back.
+ *
+ * @param summit
+ * @returns {number|null} the landing selection plan id, or null when it isn't among the
+ *   member's allowed plans for this summit
+ */
+export const getAllowedLandingSelectionPlanId = (summit) => {
+    const storedId = localStorage.getItem(SP_LANDING);
+    if (!storedId) return null;
+
+    const selectionPlanLandingId = parseInt(storedId);
+    if (Number.isNaN(selectionPlanLandingId) || selectionPlanLandingId <= 0) return null;
+
+    const isAllowed = summit?.selection_plans?.some(sp => sp.id === selectionPlanLandingId);
+    return isAllowed ? selectionPlanLandingId : null;
 }
 
 /**

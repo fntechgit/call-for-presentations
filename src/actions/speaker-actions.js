@@ -472,7 +472,7 @@ export const saveSpeakerProfile = (entity) => async (dispatch, getState) => {
             dispatch(getSpeakerInfo(null));
         })
         .then((payload) => {
-            const redirectUrl = summit ? `/app/${summit.slug}/${getSubmissionsPath()}` : '/app/start';
+            const redirectUrl = summit ? `/app/${summit.slug}/${getSubmissionsPath(summit)}` : '/app/start';
             success_message.html = T.translate("edit_profile.profile_saved");
             dispatch(showMessage(success_message, () => history.push(redirectUrl)));
         });

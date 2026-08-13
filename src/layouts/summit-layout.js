@@ -19,7 +19,7 @@ import AllPlansLayout from "./all-plans-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
 import ProfilePage from "../pages/profile-page";
 import ClockComponent from '../components/clock';
-import {getLandingSelectionPlanId} from "../utils/methods";
+import {getAllowedLandingSelectionPlanId} from "../utils/methods";
 
 const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ...props}) => {
   const urlSummitSlug = match.params.summit_slug;
@@ -39,7 +39,9 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ..
 
   // check if speaker profile exists, if not redirect
   if ((!speaker || !speaker.id) && !location.pathname.includes('/profile') && !loading) {
-    const spLanding = getLandingSelectionPlanId();
+    // only keep the landing plan in the URL if the user can actually submit to it, otherwise
+    // SelectionPlanLayout's guard bounces us back here and we redirect again, forever
+    const spLanding = getAllowedLandingSelectionPlanId(summit);
 
     return (
       <Redirect exact to={{pathname: `/app/${summit.slug}/${spLanding ? `all-plans/${spLanding}/profile` : 'all-plans/profile'}`}}/>
