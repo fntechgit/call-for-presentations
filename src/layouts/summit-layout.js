@@ -17,7 +17,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 import { getAllFromSummit, getTagGroups, getAllowedSelectionPlans } from '../actions/base-actions';
 import ClockComponent from '../components/clock';
-import { getLandingSelectionPlanId } from "../utils/methods";
+import { getAllowedLandingSelectionPlanId } from "../utils/methods";
 
 const AllPlansLayout = React.lazy(() => import("./all-plans-layout"));
 const PlanSelectionPage = React.lazy(() => import("../pages/plan-selection-page"));
