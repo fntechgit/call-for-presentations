@@ -18,17 +18,7 @@ import { Exclusive, Dropdown } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
 import Swal from "sweetalert2";
-
-const getSpeakerLimits = (type) => {
-    if (!type) return { min: 0, max: 0 };
-    const defaultMin = type.are_speakers_mandatory ? 1 : 0;
-    const defaultMax = (type.are_speakers_mandatory || type.use_speakers) ? Infinity : 0;
-    const min = type.min_speakers ?? defaultMin;
-    const possibleMax = type.max_speakers ?? defaultMax;
-    // Protection against invalid configuration of max_speakers < min_speakers
-    const max = possibleMax >= min ? possibleMax : min;
-    return { min, max };
-};
+import { getSpeakerLimits, getSpeakerCountErrorField } from './speaker-limits';
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {
@@ -77,30 +67,7 @@ class PresentationSpeakersForm extends React.Component {
             const speaker = (selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker")).toLowerCase();
             const speakers = (selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || T.translate("edit_presentation.speakers")).toLowerCase();
             const translationParams = { presentation, speaker, speakers, max: maxSpeakers, min: minSpeakers, excess };
-
-            let errorField;
-            if (speakersCount > maxSpeakers) {
-                errorField = "remove_speakers";
-            } else {
-                switch (true) {
-                    // There is no upper limit of speakers but there is a minimum
-                    case (Infinity === maxSpeakers):
-                        errorField = "add_min_number_speakers";
-                        break;
-                    // There should be only one speaker
-                    case (minSpeakers === maxSpeakers && maxSpeakers === 1):
-                        errorField = "add_only_one_speaker";
-                        break;
-                    // There should be exactly a number of speakers
-                    case (minSpeakers === maxSpeakers && maxSpeakers !== 1):
-                        errorField = "add_exact_number_of_speakers";
-                        break;
-                    // The default error message when there is an upper limit and a minimum of speakers
-                    default:
-                        errorField = "add_speakers";
-                        break;
-                }
-            }
+            const errorField = getSpeakerCountErrorField(speakersCount, minSpeakers, maxSpeakers);
 
             Swal.fire("Validation error", T.translate(`edit_presentation.errors.${errorField}`, translationParams), "warning");
             return;
