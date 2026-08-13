@@ -89,6 +89,7 @@ window.SHOW_LANGUAGE_SELECTION = !!Number(process.env["SHOW_LANGUAGE_SELECTION"]
 window.SUPPORT_EMAIL = process.env["SUPPORT_EMAIL"];
 window.SENTRY_DSN = process.env["SENTRY_DSN"];
 window.SENTRY_TRACE_SAMPLE_RATE = process.env['SENTRY_TRACE_SAMPLE_RATE'];
+window.SENTRY_TRACE_PROPAGATION_TARGETS = process.env['SENTRY_TRACE_PROPAGATION_TARGETS'];
 
 if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
   window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
