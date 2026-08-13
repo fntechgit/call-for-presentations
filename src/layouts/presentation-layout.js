@@ -129,20 +129,20 @@ const PresentationLayout = ({
 }
 
 const mapStateToProps = ({ baseState, presentationState, clockState }) => ({
-  speaker: baseState.speaker,
-  summit: baseState.summit,
-  loading: baseState.loading,
-  tagGroups: baseState.tagGroups,
-  selectionPlansSettings: baseState.selectionPlansSettings,
-  loggedSpeaker: baseState.speaker,
-  nowUtc: clockState.nowUtc,
-  ...presentationState
+    speaker: baseState.speaker,
+    summit: baseState.summit,
+    loading: baseState.loading,
+    tagGroups: baseState.tagGroups,
+    selectionPlansSettings: baseState.selectionPlansSettings,
+    loggedSpeaker: baseState.speaker,
+    nowUtc: clockState.nowUtc,
+    ...presentationState
 })
 
 export default connect(
-  mapStateToProps,
-  {
-    getPresentation,
-    resetPresentation
-  }
+    mapStateToProps,
+    {
+        getPresentation,
+        resetPresentation
+    }
 )(PresentationLayout)
