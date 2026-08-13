@@ -185,6 +185,7 @@
     "review_subtitle": "Your {presentation} is submitted and awaiting review by Track Chairs",
     "permission_denied": "Permission Denied",
     "no_edit": "You are not allowed to edit this presentation",
+    "submission_reopened": "Submission reopened until {end_date} {when}. Finish your changes before it closes.",
     "chair_comments": "Chair Comments",
     "presentation_material": "{presentation} Material",
     "role": "Role",

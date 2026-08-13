@@ -34,7 +34,11 @@ const PresentationsTable = ({
 
   const handleEditPresentation = (ev, presentation) => {
     ev.preventDefault();
-    history.push(presentation.getProgressLink());
+    // getProgressLink asks canEdit, so before the first Clock tick it would resolve every
+    // reopened presentation to /preview, and the layout's redirect guard makes that one-way.
+    // Do nothing until the clock is real rather than navigate somewhere we cannot come back from.
+    if (nowUtc == null) return;
+    history.push(presentation.getProgressLink(nowUtc));
   };
 
   const handleReviewPresentation = (ev, presentation) => {
