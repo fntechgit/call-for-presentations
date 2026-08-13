@@ -61,16 +61,32 @@ class PresentationLayout extends React.Component {
       this.props.getPresentation(newId);
     }
 
-    this.presentation.updatePresentation(newProps.entity, newProps.track);
+    // Gated on the props each call actually reads. This component now subscribes to the
+    // clock, so props change every second; updatePresentation is not cheap or side-effect
+    // free (it recomputes allowed media uploads and grouped tags, rewrites step visibility,
+    // and writes progressNum onto the redux entity), and none of that depends on the tick.
+    // The per-tick re-render still happens, which is what locks the form on time.
+    // Identity comparison is sound here: presentation-reducer builds a new entity object on
+    // RECEIVE_PRESENTATION and PRESENTATION_UPDATED.
+    if (newProps.selectionPlan !== this.props.selectionPlan) {
+      this.presentation.updateSelectionPlan(newProps.selectionPlan);
+    }
+
+    if (newProps.entity !== this.props.entity || newProps.track !== this.props.track) {
+      this.presentation.updatePresentation(newProps.entity, newProps.track);
+    }
   }
 
   render() {
-    let { match, entity, speaker, history, loading, location, selectionPlan, selectionPlansSettings } = this.props;
+    let { match, entity, speaker, history, loading, location, selectionPlan, selectionPlansSettings, nowUtc } = this.props;
     let isNew = !match.params.presentation_id;
 
     if (loading || (!isNew && !entity.id)) return null;
 
-    if (!isNew && match.params.presentation_id == entity.id && !this.presentation.canEdit() && !location.pathname.endsWith('preview')) {
+    // nowUtc is null until the first Clock tick. Evaluating the gate against a seed would
+    // let a fast device clock read a live grant as expired, and this redirect is one-way:
+    // the guard below skips it once already on /preview, so a corrected tick never undoes it.
+    if (!isNew && nowUtc != null && match.params.presentation_id == entity.id && !this.presentation.canEdit(nowUtc) && !location.pathname.endsWith('preview')) {
       return (<Redirect to={`${match.url}/preview`} />);
     }
 
@@ -99,13 +115,14 @@ class PresentationLayout extends React.Component {
 
 }
 
-const mapStateToProps = ({ baseState, presentationState }) => ({
+const mapStateToProps = ({ baseState, presentationState, clockState }) => ({
   speaker: baseState.speaker,
   summit: baseState.summit,
   loading: baseState.loading,
   tagGroups: baseState.tagGroups,
   selectionPlansSettings: baseState.selectionPlansSettings,
   loggedSpeaker: baseState.speaker,
+  nowUtc: clockState.nowUtc,
   ...presentationState
 })
 
