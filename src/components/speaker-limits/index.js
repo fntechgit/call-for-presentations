@@ -13,22 +13,17 @@
 
 export const getSpeakerLimits = (type) => {
     if (!type) return { min: 0, max: 0 };
-    const defaultMin = type.are_speakers_mandatory ? 1 : 0;
-    const defaultMax = (type.are_speakers_mandatory || type.use_speakers) ? Infinity : 0;
-    const min = type.min_speakers ?? defaultMin;
-    const possibleMax = type.max_speakers ?? defaultMax;
+    // min_speakers/max_speakers are non-nullable ints on the API's PresentationType
+    // (see PresentationTypeSerializer) - always present, never Infinity/unbounded.
+    const { min_speakers: min, max_speakers: max } = type;
     // Protection against invalid configuration of max_speakers < min_speakers
-    const max = possibleMax >= min ? possibleMax : min;
-    return { min, max };
+    return { min, max: max >= min ? max : min };
 };
 
 export const getSpeakerCountErrorField = (speakersCount, minSpeakers, maxSpeakers) => {
     if (speakersCount > maxSpeakers) return "remove_speakers";
 
     switch (true) {
-        // There is no upper limit of speakers but there is a minimum
-        case (Infinity === maxSpeakers):
-            return "add_min_number_speakers";
         // There should be only one speaker
         case (minSpeakers === maxSpeakers && maxSpeakers === 1):
             return "add_only_one_speaker";
@@ -39,4 +34,24 @@ export const getSpeakerCountErrorField = (speakersCount, minSpeakers, maxSpeaker
         default:
             return "add_speakers";
     }
+};
+
+// Single source of truth for "is this presentation's speaker count valid" - used both
+// by the Speakers step (on save) and the Review step (on final Complete), so the
+// Complete action can't finalize a presentation the Speakers step would have rejected.
+export const validateSpeakerCount = (entity) => {
+    if (!entity?.type?.use_speakers) return { valid: true };
+
+    const speakersCount = Array.isArray(entity.speakers) ? entity.speakers.length : 0;
+    const { min, max } = getSpeakerLimits(entity.type);
+
+    if (speakersCount <= max && speakersCount >= min) return { valid: true };
+
+    return {
+        valid: false,
+        errorField: getSpeakerCountErrorField(speakersCount, min, max),
+        min,
+        max,
+        excess: speakersCount - max
+    };
 };

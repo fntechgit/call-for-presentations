@@ -18,7 +18,7 @@ import { Exclusive, Dropdown } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
 import Swal from "sweetalert2";
-import { getSpeakerLimits, getSpeakerCountErrorField } from './speaker-limits';
+import { getSpeakerLimits, validateSpeakerCount } from './speaker-limits';
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {
@@ -58,16 +58,13 @@ class PresentationSpeakersForm extends React.Component {
             return;
         }
 
-        const speakersCount = Array.isArray(entity.speakers) ? entity.speakers.length : 0;
-        const { min: minSpeakers, max: maxSpeakers } = getSpeakerLimits(entity.type);
-        const validSpeaker = !entity.type.use_speakers || (speakersCount <= maxSpeakers && speakersCount >= minSpeakers);
-        const excess = speakersCount - maxSpeakers;
+        const speakerValidation = validateSpeakerCount(entity);
 
-        if (!validSpeaker) {
+        if (!speakerValidation.valid) {
             const speaker = (selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker")).toLowerCase();
             const speakers = (selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || T.translate("edit_presentation.speakers")).toLowerCase();
-            const translationParams = { presentation, speaker, speakers, max: maxSpeakers, min: minSpeakers, excess };
-            const errorField = getSpeakerCountErrorField(speakersCount, minSpeakers, maxSpeakers);
+            const { errorField, min, max, excess } = speakerValidation;
+            const translationParams = { presentation, speaker, speakers, max, min, excess };
 
             Swal.fire("Validation error", T.translate(`edit_presentation.errors.${errorField}`, translationParams), "warning");
             return;

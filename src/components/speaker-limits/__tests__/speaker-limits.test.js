@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 
-import { getSpeakerLimits, getSpeakerCountErrorField } from '..';
+import { getSpeakerLimits, getSpeakerCountErrorField, validateSpeakerCount } from '..';
 
 describe('getSpeakerLimits', () => {
     it('returns zero/zero when no event type is available yet', () => {
@@ -19,22 +19,14 @@ describe('getSpeakerLimits', () => {
         expect(getSpeakerLimits(undefined)).toEqual({ min: 0, max: 0 });
     });
 
-    it('defaults to at-least-one with no upper bound when speakers are mandatory and no explicit limits are configured', () => {
-        expect(getSpeakerLimits({ are_speakers_mandatory: true })).toEqual({ min: 1, max: Infinity });
-    });
-
-    it('defaults to optional/unbounded when speakers are enabled but not mandatory and no explicit limits are configured', () => {
-        expect(getSpeakerLimits({ use_speakers: true, are_speakers_mandatory: false })).toEqual({ min: 0, max: Infinity });
-    });
-
     it('defaults to zero/zero when the event type does not use speakers at all', () => {
-        expect(getSpeakerLimits({ use_speakers: false, are_speakers_mandatory: false })).toEqual({ min: 0, max: 0 });
+        expect(getSpeakerLimits({ use_speakers: false, are_speakers_mandatory: false, min_speakers: 0, max_speakers: 0 })).toEqual({ min: 0, max: 0 });
     });
 
     it('honors an explicit min_speakers of 0 even when speakers are mandatory', () => {
-        // min_speakers=0 is a real, distinct configuration from "unset" - the
-        // nullish check must not treat 0 as missing and fall back to defaultMin=1.
-        expect(getSpeakerLimits({ are_speakers_mandatory: true, min_speakers: 0 })).toEqual({ min: 0, max: Infinity });
+        // min_speakers=0 is a real, distinct configuration from a positive minimum -
+        // the API always sends a concrete min_speakers, so 0 must pass through as-is.
+        expect(getSpeakerLimits({ are_speakers_mandatory: true, min_speakers: 0, max_speakers: 5 })).toEqual({ min: 0, max: 5 });
     });
 
     it('honors an explicit finite range', () => {
@@ -61,10 +53,6 @@ describe('getSpeakerCountErrorField', () => {
         expect(getSpeakerCountErrorField(5, 3, 3)).toBe('remove_speakers');
     });
 
-    it('reports add_min_number_speakers when there is no upper bound', () => {
-        expect(getSpeakerCountErrorField(0, 2, Infinity)).toBe('add_min_number_speakers');
-    });
-
     it('reports add_only_one_speaker when exactly one speaker is required', () => {
         expect(getSpeakerCountErrorField(0, 1, 1)).toBe('add_only_one_speaker');
     });
@@ -75,5 +63,37 @@ describe('getSpeakerCountErrorField', () => {
 
     it('reports add_speakers for a bounded range with distinct min and max', () => {
         expect(getSpeakerCountErrorField(0, 2, 5)).toBe('add_speakers');
+    });
+});
+
+describe('validateSpeakerCount', () => {
+    it('is valid when the event type does not use speakers at all, regardless of count', () => {
+        expect(validateSpeakerCount({ type: { use_speakers: false }, speakers: [] })).toEqual({ valid: true });
+    });
+
+    it('is invalid when exactly one speaker is required and none were added', () => {
+        const result = validateSpeakerCount({ type: { use_speakers: true, min_speakers: 1, max_speakers: 1 }, speakers: [] });
+        expect(result.valid).toBe(false);
+        expect(result.errorField).toBe('add_only_one_speaker');
+    });
+
+    it('is valid once enough speakers were added to satisfy the minimum', () => {
+        const speakers = [{ id: 1 }, { id: 2 }];
+        expect(validateSpeakerCount({ type: { use_speakers: true, min_speakers: 2, max_speakers: 5 }, speakers })).toEqual({ valid: true });
+    });
+
+    it('is invalid, with the correct excess, when the count exceeds the max', () => {
+        // regression test for the Complete-action bypass: a speaker removed on the Speakers step
+        // can leave a presentation over/under limits without ever re-running this check there, so
+        // this same function must also gate the Review step's Complete action before it submits.
+        const speakers = [{ id: 1 }, { id: 2 }, { id: 3 }];
+        const result = validateSpeakerCount({ type: { use_speakers: true, min_speakers: 1, max_speakers: 2 }, speakers });
+        expect(result).toEqual({ valid: false, errorField: 'remove_speakers', min: 1, max: 2, excess: 1 });
+    });
+
+    it('is invalid when the entity has no speakers array at all', () => {
+        const result = validateSpeakerCount({ type: { use_speakers: true, min_speakers: 1, max_speakers: 1 } });
+        expect(result.valid).toBe(false);
+        expect(result.errorField).toBe('add_only_one_speaker');
     });
 });
