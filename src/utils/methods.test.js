@@ -14,6 +14,12 @@
 import { getAllowedLandingSelectionPlanId, getSubmissionsPath } from './methods';
 import { SP_LANDING } from './constants';
 
+const originalLocalStorage = global.localStorage;
+
+afterEach(() => {
+    global.localStorage = originalLocalStorage;
+});
+
 const setLanding = (value) => {
     global.localStorage = {
         getItem: (key) => (key === SP_LANDING && value !== null ? String(value) : null)
