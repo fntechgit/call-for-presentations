@@ -186,7 +186,7 @@ class PresentationSpeakersForm extends React.Component {
         let { speakerInput, error, speaker } = this.state;
         let eventType = summit.event_types.find(t => t.id == entity.type_id);
         let speakersCount = entity.speakers?.length ?? 0;
-        let { max: maxSpeakers } = getSpeakerLimits(eventType);
+        let { max: maxSpeakers } = getSpeakerLimits(entity.type);
         let canAddSpeakers = (eventType && maxSpeakers > speakersCount);
         let canAddModerator = (eventType && eventType.max_moderators && !entity.moderator);
 
