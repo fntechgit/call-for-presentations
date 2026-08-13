@@ -18,10 +18,6 @@ import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 import { getAllowedSelectionPlan, getSelectionPlanSettings } from '../actions/base-actions';
 import history from '../history'
 
-const EditPresentationPage = React.lazy(() =>
-  import("../pages/edit-presentation-page")
-);
-
 const PrimaryLayout = React.lazy(() => import("./primary-layout"));
 const AllSelectionPlansPage = React.lazy(() => import("../pages/all-selection-plans-page"));
 const ProfilePage = React.lazy(() => import("../pages/profile-page"));

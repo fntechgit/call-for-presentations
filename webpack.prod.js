@@ -7,6 +7,7 @@ const path = require("path");
 
 module.exports = merge(common, {
   mode: "production",
+  devtool: "source-map",
   output: {
     filename: "[name]_[contenthash].js",
     chunkFilename: "[name]_[contenthash].js",
