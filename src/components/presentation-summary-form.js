@@ -14,7 +14,13 @@
 import React, {useState, useEffect} from 'react'
 import T from 'i18n-react/dist/i18n-react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
-import {Dropdown, Input, RadioList, RawHTML, TextArea, TextEditor, Exclusive} from 'openstack-uicore-foundation/lib/components'
+import Dropdown from 'openstack-uicore-foundation/lib/components/inputs/dropdown';
+import Input from 'openstack-uicore-foundation/lib/components/inputs/text-input';
+import RadioList from 'openstack-uicore-foundation/lib/components/inputs/radio-list';
+import RawHTML from 'openstack-uicore-foundation/lib/components/raw-html';
+import TextArea from 'openstack-uicore-foundation/lib/components/inputs/textarea-input';
+import TextEditor from 'openstack-uicore-foundation/lib/components/inputs/editor-input';
+import Exclusive from 'openstack-uicore-foundation/lib/components/exclusive-wrapper';
 import SubmitButtons from './presentation-submit-buttons'
 import {scrollToError, validate} from '../utils/methods'
 import QuestionsInput from '../components/inputs/questions-input'

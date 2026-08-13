@@ -11,31 +11,41 @@
  * limitations under the License.
  **/
 
-import React from 'react'
+import React, { Suspense } from "react";
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
+import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 import { getPresentation, resetPresentation } from '../actions/presentation-actions'
-import EditPresentationPage from '../pages/edit-presentation-page'
-import PreviewPresentationPage from '../pages/preview-presentation-page'
-import ThankYouPresentationPage from '../pages/thankyou-presentation-page'
-import EditSpeakerPage from '../pages/edit-speaker-page'
 import Presentation from '../model/presentation'
+
+const EditPresentationPage = React.lazy(() =>
+    import("../pages/edit-presentation-page")
+);
+const PreviewPresentationPage = React.lazy(() =>
+    import("../pages/preview-presentation-page")
+);
+const ThankYouPresentationPage = React.lazy(() =>
+    import("../pages/thankyou-presentation-page")
+);
+const EditSpeakerPage = React.lazy(() =>
+    import("../pages/edit-speaker-page")
+);
 
 class PresentationLayout extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.presentation = new Presentation(
-          props.entity,
-          props.summit,
-          props.selectionPlan,
-          props.loggedSpeaker,
-          props.tagGroups
+            props.entity,
+            props.summit,
+            props.selectionPlan,
+            props.loggedSpeaker,
+            props.tagGroups
         );
     }
 
     componentDidMount() {
-        let {presentation_id} = this.props.match.params;
+        let { presentation_id } = this.props.match.params;
         if (!presentation_id) {
             this.props.resetPresentation();
             return;
@@ -67,7 +77,7 @@ class PresentationLayout extends React.Component {
         }
     }
 
-    render(){
+    render() {
         let { match, entity, speaker, history, loading, location, selectionPlan, selectionPlansSettings, nowUtc } = this.props;
         let isNew = !match.params.presentation_id;
 
@@ -76,28 +86,30 @@ class PresentationLayout extends React.Component {
         // nowUtc is null until the first Clock tick. Evaluating the gate against a seed would
         // let a fast device clock read a live grant as expired, and this redirect is one-way:
         // the guard below skips it once already on /preview, so a corrected tick never undoes it.
-        if (!isNew && nowUtc != null && match.params.presentation_id == entity.id && !this.presentation.canEdit(nowUtc) && !location.pathname.endsWith('preview') ) {
-            return(<Redirect to={`${match.url}/preview`} />);
+        if (!isNew && nowUtc != null && match.params.presentation_id == entity.id && !this.presentation.canEdit(nowUtc) && !location.pathname.endsWith('preview')) {
+            return (<Redirect to={`${match.url}/preview`} />);
         }
 
         if (!speaker) {
             history.push(`/app/${summit.slug}/all-plans/profile`);
         }
 
-        const selectionPlanSettings = selectionPlansSettings && selectionPlansSettings.hasOwnProperty(selectionPlan?.id) ? (selectionPlansSettings[selectionPlan?.id] || {}): {};
+        const selectionPlanSettings = selectionPlansSettings && selectionPlansSettings.hasOwnProperty(selectionPlan?.id) ? (selectionPlansSettings[selectionPlan?.id] || {}) : {};
         const defaultStep = selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB ? selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB : 'summary';
 
-        return(
-            <Switch>
-                <Route strict exact path={`${match.url}/speakers/new`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
-                <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
-                <Route strict exact path={`${match.url}/preview`} render={(props) => <PreviewPresentationPage {...props} selectionPlan={selectionPlan}/>}/>
-                <Route strict exact path={`${match.url}/thank-you`} render={(props) => <ThankYouPresentationPage {...props} selectionPlan={selectionPlan}/>}/>
-                <Route strict exact path={`${match.url}/:step`} render={
-                    props => (<EditPresentationPage {...props} presentation={this.presentation} selectionPlan={selectionPlan} />)
-                }/>
-                <Route render={props => (<Redirect to={`${match.url}/${defaultStep}`} />)}/>
-            </Switch>
+        return (
+            <Suspense fallback={<AjaxLoader show relative size={120} />}>
+                <Switch>
+                    <Route strict exact path={`${match.url}/speakers/new`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan} />} />
+                    <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan} />} />
+                    <Route strict exact path={`${match.url}/preview`} render={(props) => <PreviewPresentationPage {...props} selectionPlan={selectionPlan} />} />
+                    <Route strict exact path={`${match.url}/thank-you`} render={(props) => <ThankYouPresentationPage {...props} selectionPlan={selectionPlan} />} />
+                    <Route strict exact path={`${match.url}/:step`} render={
+                        props => (<EditPresentationPage {...props} presentation={this.presentation} selectionPlan={selectionPlan} />)
+                    } />
+                    <Route render={props => (<Redirect to={`${match.url}/${defaultStep}`} />)} />
+                </Switch>
+            </Suspense>
         );
     }
 

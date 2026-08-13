@@ -13,7 +13,7 @@
 
 import React from 'react';
 import T from 'i18n-react/dist/i18n-react';
-import { RawHTML } from 'openstack-uicore-foundation/lib/components'
+import RawHTML from 'openstack-uicore-foundation/lib/components/raw-html';
 
 export default class SelectionProcessPage extends React.Component {
 

@@ -14,7 +14,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
-import { Exclusive } from 'openstack-uicore-foundation/lib/components'
+import Exclusive from 'openstack-uicore-foundation/lib/components/exclusive-wrapper';
 import {getSubmissionsPath} from "../utils/methods";
 
 import '../styles/thankyou-presentation-page.less';

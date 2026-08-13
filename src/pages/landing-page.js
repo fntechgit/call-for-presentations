@@ -16,7 +16,7 @@ import '../styles/landing-page.less';
 import T from "i18n-react/dist/i18n-react";
 import SelectionProcessPage from "./selection-process-page";
 import TracksGuidePage from "./tracks-guide-page";
-import { Exclusive } from 'openstack-uicore-foundation/lib/components'
+import Exclusive from 'openstack-uicore-foundation/lib/components/exclusive-wrapper';
 import { getAllFromSummit, getSelectionPlanSettings } from '../actions/base-actions';
 import { connect } from 'react-redux'
 import {getCurrentSelectionPlanId} from "../utils/methods";
