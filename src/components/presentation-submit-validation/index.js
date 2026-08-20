@@ -65,7 +65,7 @@ export const validateSpeakerCount = (entity) => {
 // matching the order the Speakers step originally validated in.
 export const getSubmitValidationError = (entity, selectionPlanSettings) => {
     const presentation = selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase();
-    const validModerator = !entity.type.use_moderator || !entity.type.is_moderator_mandatory || entity.moderator;
+    const validModerator = !entity.type?.use_moderator || !entity.type?.is_moderator_mandatory || entity.moderator;
 
     if (!validModerator) {
         return { errorField: "add_moderator", params: { presentation } };
