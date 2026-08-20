@@ -18,7 +18,7 @@ import { Exclusive, Dropdown } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
 import Swal from "sweetalert2";
-import { getSpeakerLimits, validateSpeakerCount } from './speaker-limits';
+import { getSpeakerLimits, getSubmitValidationError } from './presentation-submit-validation';
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {
@@ -50,23 +50,11 @@ class PresentationSpeakersForm extends React.Component {
         ev.preventDefault();
 
         const { selectionPlanSettings, entity } = this.props;
-        const validModerator = !entity.type.use_moderator || !entity.type.is_moderator_mandatory || entity.moderator;
-        const presentation = selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase();
+        const validationError = getSubmitValidationError(entity, selectionPlanSettings);
 
-        if (!validModerator) {
-            Swal.fire("Validation error", T.translate("edit_presentation.errors.add_moderator", { presentation }), "warning");
-            return;
-        }
-
-        const speakerValidation = validateSpeakerCount(entity);
-
-        if (!speakerValidation.valid) {
-            const speaker = (selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker")).toLowerCase();
-            const speakers = (selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || T.translate("edit_presentation.speakers")).toLowerCase();
-            const { errorField, min, max, excess } = speakerValidation;
-            const translationParams = { presentation, speaker, speakers, max, min, excess };
-
-            Swal.fire("Validation error", T.translate(`edit_presentation.errors.${errorField}`, translationParams), "warning");
+        if (validationError) {
+            const { errorField, params } = validationError;
+            Swal.fire("Validation error", T.translate(`edit_presentation.errors.${errorField}`, params), "warning");
             return;
         }
 

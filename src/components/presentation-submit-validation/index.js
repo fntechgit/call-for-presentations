@@ -11,6 +11,8 @@
  * limitations under the License.
  **/
 
+import T from "i18n-react/dist/i18n-react";
+
 export const getSpeakerLimits = (type) => {
     if (!type) return { min: 0, max: 0 };
     // min_speakers/max_speakers are non-nullable ints on the API's PresentationType
@@ -54,4 +56,29 @@ export const validateSpeakerCount = (entity) => {
         max,
         excess: speakersCount - max
     };
+};
+
+// Single source of truth for the presentation-level "can this be submitted" check -
+// used by both the Speakers step (Save) and the Review step (Complete), so a
+// presentation missing its mandatory moderator or its required speaker count can't
+// be finalized from either entry point. The moderator requirement is checked first,
+// matching the order the Speakers step originally validated in.
+export const getSubmitValidationError = (entity, selectionPlanSettings) => {
+    const presentation = selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase();
+    const validModerator = !entity.type.use_moderator || !entity.type.is_moderator_mandatory || entity.moderator;
+
+    if (!validModerator) {
+        return { errorField: "add_moderator", params: { presentation } };
+    }
+
+    const speakerValidation = validateSpeakerCount(entity);
+
+    if (!speakerValidation.valid) {
+        const speaker = (selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker")).toLowerCase();
+        const speakers = (selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || T.translate("edit_presentation.speakers")).toLowerCase();
+        const { errorField, min, max, excess } = speakerValidation;
+        return { errorField, params: { presentation, speaker, speakers, max, min, excess } };
+    }
+
+    return null;
 };

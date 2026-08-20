@@ -18,7 +18,7 @@ import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
 import Swal from "sweetalert2";
 import {getMarketingValue} from "./marketing-setting";
-import { validateSpeakerCount } from './speaker-limits';
+import { getSubmitValidationError } from './presentation-submit-validation';
 
 class PresentationReviewForm extends React.Component {
     constructor(props) {
@@ -45,16 +45,11 @@ class PresentationReviewForm extends React.Component {
         ev.preventDefault();
 
         const { entity, selectionPlanSettings } = this.props;
-        const speakerValidation = validateSpeakerCount(entity);
+        const validationError = getSubmitValidationError(entity, selectionPlanSettings);
 
-        if (!speakerValidation.valid) {
-            const presentation = selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase();
-            const speaker = (selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker")).toLowerCase();
-            const speakers = (selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || T.translate("edit_presentation.speakers")).toLowerCase();
-            const { errorField, min, max, excess } = speakerValidation;
-            const translationParams = { presentation, speaker, speakers, max, min, excess };
-
-            Swal.fire("Validation error", T.translate(`edit_presentation.errors.${errorField}`, translationParams), "warning");
+        if (validationError) {
+            const { errorField, params } = validationError;
+            Swal.fire("Validation error", T.translate(`edit_presentation.errors.${errorField}`, params), "warning");
             return;
         }
 
