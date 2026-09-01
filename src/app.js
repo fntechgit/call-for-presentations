@@ -90,6 +90,8 @@ window.SHOW_LANGUAGE_SELECTION = !!Number(process.env["SHOW_LANGUAGE_SELECTION"]
 window.SUPPORT_EMAIL = process.env["SUPPORT_EMAIL"];
 window.SENTRY_DSN = process.env["SENTRY_DSN"];
 window.SENTRY_TRACE_SAMPLE_RATE = process.env['SENTRY_TRACE_SAMPLE_RATE'];
+window.SENTRY_SESSION_SAMPLE_RATE = process.env.SENTRY_SESSION_SAMPLE_RATE || 1.0;
+window.SENTRY_ERROR_SAMPLE_RATE = process.env.SENTRY_ERROR_SAMPLE_RATE || 1.0;
 
 if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
   window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
@@ -159,8 +161,8 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
       // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
       tracePropagationTargets: ["localhost"],
       // Session Replay
-      replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-      replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+      replaysSessionSampleRate: window.SENTRY_SESSION_SAMPLE_RATE, // This sets the sample rate at 70%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+      replaysOnErrorSampleRate: window.SENTRY_ERROR_SAMPLE_RATE, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
     });
     setSentryInitialized(true);
   }
