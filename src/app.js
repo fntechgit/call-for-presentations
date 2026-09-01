@@ -92,6 +92,7 @@ window.SENTRY_DSN = process.env["SENTRY_DSN"];
 window.SENTRY_TRACE_SAMPLE_RATE = process.env['SENTRY_TRACE_SAMPLE_RATE'];
 window.SENTRY_SESSION_SAMPLE_RATE = process.env.SENTRY_SESSION_SAMPLE_RATE || 1.0;
 window.SENTRY_ERROR_SAMPLE_RATE = process.env.SENTRY_ERROR_SAMPLE_RATE || 1.0;
+window.SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || "production";
 
 if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
   window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
@@ -151,6 +152,7 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
     // Initialize Sentry
     Sentry.init({
       dsn: window.SENTRY_DSN,
+      environment: window.SENTRY_ENVIRONMENT,
       integrations: [
         Sentry.browserTracingIntegration(),
         Sentry.replayIntegration(),
