@@ -205,8 +205,11 @@
     "errors": {
       "role": "You must select a Role.",
       "add_moderator": "You need to add a moderator to the {presentation}.",
-      "add_speaker": "You need to add at least one {speaker} to the {presentation}.",
-      "missing_speaker": "You need to select a participant."
+      "add_speakers": "You need to add between {min} and {max} {speakers} to the {presentation}.",
+      "add_only_one_speaker": "You need to add one {speaker} to the {presentation}.",
+      "add_exact_number_of_speakers": "You need to add {min} {speakers} to the {presentation}.",
+      "missing_speaker": "You need to select a {speaker}.",
+      "remove_speakers": "You can have at most {max} {speakers} in the {presentation}. Please remove {excess}."
     }
   },
   "edit_speaker": {

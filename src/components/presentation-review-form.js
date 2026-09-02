@@ -16,7 +16,9 @@ import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import SubmitButtons from "./presentation-submit-buttons";
 import { RawHTML } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
+import Swal from "sweetalert2";
 import {getMarketingValue} from "./marketing-setting";
+import { getSubmitValidationError } from './presentation-submit-validation';
 
 class PresentationReviewForm extends React.Component {
     constructor(props) {
@@ -41,6 +43,15 @@ class PresentationReviewForm extends React.Component {
 
     handleSubmit(ev) {
         ev.preventDefault();
+
+        const { entity, selectionPlanSettings } = this.props;
+        const validationError = getSubmitValidationError(entity, selectionPlanSettings);
+
+        if (validationError) {
+            const { errorField, params } = validationError;
+            Swal.fire("Validation error", T.translate(`edit_presentation.errors.${errorField}`, params), "warning");
+            return;
+        }
 
         this.props.onSubmit(this.props.entity);
     }

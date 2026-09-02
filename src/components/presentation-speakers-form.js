@@ -18,7 +18,7 @@ import { Exclusive, Dropdown } from 'openstack-uicore-foundation/lib/components'
 import T from "i18n-react/dist/i18n-react";
 import CPFSpeakerInput from './inputs/speaker-input'
 import Swal from "sweetalert2";
-import {getMarketingValue} from "./marketing-setting";
+import { getSpeakerLimits, getSubmitValidationError } from './presentation-submit-validation';
 
 class PresentationSpeakersForm extends React.Component {
     constructor(props) {
@@ -27,8 +27,8 @@ class PresentationSpeakersForm extends React.Component {
         this.state = {
             speaker: {},
             speakerInput: null,
-            entity: {...props.entity},
-            currentSpeakerType : null
+            entity: { ...props.entity },
+            currentSpeakerType: null
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -40,31 +40,25 @@ class PresentationSpeakersForm extends React.Component {
         this.handleAddSpeaker = this.handleAddSpeaker.bind(this);
     }
 
-    handleChangeSpeakerType(ev){
-        let {value, id} = ev.target;
+    handleChangeSpeakerType(ev) {
+        let { value, id } = ev.target;
         id = id.toString();
-        this.setState({...this.state, currentSpeakerType: value, error: null});
+        this.setState({ ...this.state, currentSpeakerType: value, error: null });
     }
 
     handleSubmit(ev) {
-
-        const entity = {...this.props.entity};
-        const { selectionPlanSettings } = this.props;
         ev.preventDefault();
 
-        const validModerator = !entity.type.use_moderator || !entity.type.is_moderator_mandatory || entity.moderator;
-        const validSpeaker = !entity.type.use_speakers || !entity.type.are_speakers_mandatory || entity.speakers.length > 0;
+        const { selectionPlanSettings, entity } = this.props;
+        const validationError = getSubmitValidationError(entity, selectionPlanSettings);
 
-        if (!validModerator) {
-            Swal.fire("Validation error", T.translate("edit_presentation.errors.add_moderator", 
-            { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase()}), "warning");
-        } else if (!validSpeaker) {
-            Swal.fire("Validation error", T.translate("edit_presentation.errors.add_speaker", 
-            { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation").toLowerCase(),
-             speaker: selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker").toLowerCase()}), "warning");
-        } else {
-            this.props.onSubmit(this.props.entity);
+        if (validationError) {
+            const { errorField, params } = validationError;
+            Swal.fire("Validation error", T.translate(`edit_presentation.errors.${errorField}`, params), "warning");
+            return;
         }
+
+        this.props.onSubmit(this.props.entity);
     }
 
     handleBack(ev) {
@@ -73,12 +67,12 @@ class PresentationSpeakersForm extends React.Component {
     }
 
     handleChangeSpeaker(ev) {
-        let {value, id} = ev.target;
-        this.setState({speaker: value, speakerInput: value});
+        let { value, id } = ev.target;
+        this.setState({ speaker: value, speakerInput: value });
     }
 
     handleSpeakerClick(speakerId, speakerType, ev) {
-        let {history, entity, summit} = this.props;
+        let { history, entity, summit } = this.props;
         ev.preventDefault();
         this.props.onSpeakerEdit(entity.selection_plan_id, entity.id, speakerId, speakerType);
     }
@@ -94,24 +88,25 @@ class PresentationSpeakersForm extends React.Component {
     }
 
     handleEditSpeaker(speakerId, speakerType, ev) {
-        let {history, entity} = this.props;
+        let { history, entity } = this.props;
         ev.preventDefault();
         this.props.onSpeakerEdit(entity.selection_plan_id, entity.id, speakerId, speakerType);
     }
 
     handleAddSpeaker(ev) {
-        const {speaker, currentSpeakerType} = this.state;
-        const {history, onAddSpeaker, onAddModerator, match} = this.props;
+        const { speaker, currentSpeakerType } = this.state;
+        const { history, onAddSpeaker, onAddModerator, match, selectionPlanSettings } = this.props;
+        const speakerLabel = selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.speaker").toLowerCase();
         ev.preventDefault();
 
-        if(!speaker){
+        if (!speaker) {
             // speaker not set
-            this.setState({...this.state, error: T.translate("edit_presentation.errors.missing_speaker")});
+            this.setState({ ...this.state, error: T.translate("edit_presentation.errors.missing_speaker", { speaker: speakerLabel }) });
             return;
         }
 
-        if(!currentSpeakerType){
-            this.setState({...this.state, error: T.translate("edit_presentation.errors.role")});
+        if (!currentSpeakerType) {
+            this.setState({ ...this.state, error: T.translate("edit_presentation.errors.role") });
             return;
         }
 
@@ -122,7 +117,7 @@ class PresentationSpeakersForm extends React.Component {
             } else {
                 onAddSpeaker(speaker);
             }
-            this.setState({...this.state, currentSpeakerType: null, speakerInput: null, error: null});
+            this.setState({ ...this.state, currentSpeakerType: null, speakerInput: null, error: null });
             return false;
         }
 
@@ -134,41 +129,43 @@ class PresentationSpeakersForm extends React.Component {
         }
 
         // speaker not set
-        this.setState({...this.state, error: T.translate("edit_presentation.errors.missing_speaker")});
+        this.setState({ ...this.state, error: T.translate("edit_presentation.errors.missing_speaker", { speaker: speakerLabel }) });
         return false;
     }
 
     render() {
-        let {summit, selectionPlanSettings, entity, presentation, step} = this.props;
-        let {speakerInput, error, speaker} = this.state;
-        let eventType = summit.event_types.find(t => t.id == entity.type_id);        
-        let canAddSpeakers = (eventType && eventType.max_speakers > entity.speakers.length);
+        let { summit, selectionPlanSettings, entity, presentation, step } = this.props;
+        let { speakerInput, error, speaker } = this.state;
+        let eventType = summit.event_types.find(t => t.id == entity.type_id);
+        let speakersCount = entity.speakers?.length ?? 0;
+        let { max: maxSpeakers } = getSpeakerLimits(entity.type);
+        let canAddSpeakers = (eventType && maxSpeakers > speakersCount);
         let canAddModerator = (eventType && eventType.max_moderators && !entity.moderator);
 
         let speakerTypes = [];
-        if(canAddSpeakers){
-            speakerTypes.push({value:'speaker', label: selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.labels.speaker")});
+        if (canAddSpeakers) {
+            speakerTypes.push({ value: 'speaker', label: selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || T.translate("edit_presentation.labels.speaker") });
         }
 
-        if(canAddModerator){
-            speakerTypes.push({value:'moderator', label: T.translate("edit_presentation.labels.moderator")});
+        if (canAddModerator) {
+            speakerTypes.push({ value: 'moderator', label: T.translate("edit_presentation.labels.moderator") });
         }
 
         return (
             <div>
-                <h3>{T.translate("edit_presentation.speaker_included", 
-                    { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")})}</h3>
+                <h3>{T.translate("edit_presentation.speaker_included",
+                    { presentation: selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation") })}</h3>
 
-                <span dangerouslySetInnerHTML={{ __html: T.translate("edit_presentation.speaker_included_note")}} />
+                <span dangerouslySetInnerHTML={{ __html: T.translate("edit_presentation.speaker_included_note") }} />
 
-                <hr/>
+                <hr />
                 <div className="speakers">
                     {entity.moderator &&
                         <div className="row speaker" key={"speaker_" + entity.moderator.id}>
                             <div className="col-md-4">
                                 <i className="fa fa-user"></i>
                                 <a href="#"
-                                   onClick={this.handleSpeakerClick.bind(this, entity.moderator.id, 'moderator')}>
+                                    onClick={this.handleSpeakerClick.bind(this, entity.moderator.id, 'moderator')}>
                                     {entity.moderator.first_name} {entity.moderator.last_name}
                                 </a>
                             </div>
@@ -186,7 +183,7 @@ class PresentationSpeakersForm extends React.Component {
                         </div>
                     }
 
-                    {entity.speakers.map(s => (
+                    {entity.speakers?.map(s => (
                         <div className="row speaker" key={"speaker_" + s.id}>
                             <div className="col-md-4">
                                 <i className="fa fa-user"></i>
@@ -208,54 +205,55 @@ class PresentationSpeakersForm extends React.Component {
                 </div>
 
                 <form className="presentation-speakers-form">
-                    <input type="hidden" id="id" value={entity.id}/>
+                    <input type="hidden" id="id" value={entity.id} />
                     {speakerTypes.length > 0 &&
-                    <div>
-                        <br/>
-                        <div className="row form-group">
-                            <div className="col-md-8">
-                                <label> {T.translate("edit_presentation.enter_speaker")} </label>
-                                <CPFSpeakerInput
-                                    id="speaker"
-                                    selectionPlanSettings={selectionPlanSettings}
-                                    value={speakerInput}
-                                    speakers={entity.speakers}
-                                    placeholder={T.translate("edit_presentation.placeholders.speakers", 
-                                        {speakers: `${selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL || 
-                                            T.translate('edit_presentation.speakers').toLowerCase()}`
-                                        })}
-                                    onChange={this.handleChangeSpeaker}
-                                />
+                        <div>
+                            <br />
+                            <div className="row form-group">
+                                <div className="col-md-8">
+                                    <label> {T.translate("edit_presentation.enter_speaker")} </label>
+                                    <CPFSpeakerInput
+                                        id="speaker"
+                                        selectionPlanSettings={selectionPlanSettings}
+                                        value={speakerInput}
+                                        speakers={Array.isArray(entity.speakers) ? entity.speakers : []}
+                                        placeholder={T.translate("edit_presentation.placeholders.speakers",
+                                            {
+                                                speakers: `${selectionPlanSettings?.CFP_SPEAKERS_PLURAL_LABEL ||
+                                                    T.translate('edit_presentation.speakers').toLowerCase()}`
+                                            })}
+                                        onChange={this.handleChangeSpeaker}
+                                    />
+                                </div>
+                                <div className="col-md-3">
+                                    <label> {T.translate("edit_presentation.role")} </label>
+                                    <Dropdown
+                                        id="speaker_type"
+                                        value={this.state.currentSpeakerType}
+                                        options={speakerTypes}
+                                        onChange={this.handleChangeSpeakerType}
+                                        isSearchable={false}
+                                        isClearable={false}
+                                        placeholder={T.translate("edit_presentation.placeholders.role")}
+                                    />
+                                </div>
+                                <div className="col-md-1 add-speaker-btn">
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={this.handleAddSpeaker}>
+                                        {T.translate("edit_presentation.add_speaker")}
+                                    </button>
+                                </div>
                             </div>
-                            <div className="col-md-3">
-                                <label> {T.translate("edit_presentation.role")} </label>
-                                <Dropdown
-                                    id="speaker_type"
-                                    value={this.state.currentSpeakerType}
-                                    options={speakerTypes}
-                                    onChange={this.handleChangeSpeakerType}
-                                    isSearchable={false}
-                                    isClearable={false}
-                                    placeholder={T.translate("edit_presentation.placeholders.role")}
-                                />
-                            </div>
-                            <div className="col-md-1 add-speaker-btn">
-                                <button
-                                    className="btn btn-primary"
-                                    onClick={this.handleAddSpeaker}>
-                                    {T.translate("edit_presentation.add_speaker")}
-                                </button>
-                            </div>
+                            {error &&
+                                <p className="error-label">{error}</p>}
+                            {speaker && isNaN(speaker.id) && (speaker.value) &&
+                                <p>* Please select a Role and click "Add".</p>}
                         </div>
-                        {error &&
-                        <p className="error-label">{error}</p>}
-                        {speaker && isNaN(speaker.id) && (speaker.value)  &&
-                        <p>* Please select a Role and click "Add".</p>}
-                    </div>
                     }
 
                     {!canAddSpeakers && !canAddModerator &&
-                    <h3 className="limit-speakers">{T.translate("edit_presentation.max_speakers")}</h3>
+                        <h3 className="limit-speakers">{T.translate("edit_presentation.max_speakers")}</h3>
                     }
 
                     <Exclusive name="legal-disclaimer-speakers">
@@ -264,7 +262,7 @@ class PresentationSpeakersForm extends React.Component {
                         </div>
                     </Exclusive>
 
-                    <hr/>
+                    <hr />
                     <SubmitButtons presentation={presentation} step={step} onSubmit={this.handleSubmit.bind(this)} />
                 </form>
 
