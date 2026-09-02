@@ -61,9 +61,27 @@ describe('validateSpeakerCount', () => {
     });
 
     it('is invalid when exactly one speaker is required and none were added', () => {
-        const result = validateSpeakerCount({ type: { use_speakers: true, min_speakers: 1, max_speakers: 1 }, speakers: [] });
+        const result = validateSpeakerCount({ type: { use_speakers: true, are_speakers_mandatory: true, min_speakers: 1, max_speakers: 1 }, speakers: [] });
         expect(result.valid).toBe(false);
         expect(result.errorField).toBe('add_only_one_speaker');
+    });
+
+    it('does not enforce the minimum when speakers are not mandatory, mirroring fulfilSpeakersConditions()', () => {
+        const entity = {
+            type: { use_speakers: true, are_speakers_mandatory: false, min_speakers: 2, max_speakers: 5 },
+            speakers: [{ id: 1 }]
+        };
+        expect(validateSpeakerCount(entity)).toEqual({ valid: true });
+    });
+
+    it('still enforces the maximum when speakers are not mandatory', () => {
+        const entity = {
+            type: { use_speakers: true, are_speakers_mandatory: false, min_speakers: 0, max_speakers: 2 },
+            speakers: [{ id: 1 }, { id: 2 }, { id: 3 }]
+        };
+        const result = validateSpeakerCount(entity);
+        expect(result.valid).toBe(false);
+        expect(result.errorField).toBe('remove_speakers');
     });
 
     it('is valid once enough speakers were added to satisfy the minimum', () => {
@@ -78,7 +96,7 @@ describe('validateSpeakerCount', () => {
     });
 
     it('is invalid when the entity has no speakers array at all', () => {
-        const result = validateSpeakerCount({ type: { use_speakers: true, min_speakers: 1, max_speakers: 1 } });
+        const result = validateSpeakerCount({ type: { use_speakers: true, are_speakers_mandatory: true, min_speakers: 1, max_speakers: 1 } });
         expect(result.valid).toBe(false);
         expect(result.errorField).toBe('add_only_one_speaker');
     });
@@ -119,7 +137,7 @@ describe('getSubmitValidationError', () => {
 
     it('blocks submission when the speaker count is below the minimum', () => {
         const entity = {
-            type: { use_moderator: false, is_moderator_mandatory: false, use_speakers: true, min_speakers: 2, max_speakers: 5 },
+            type: { use_moderator: false, is_moderator_mandatory: false, use_speakers: true, are_speakers_mandatory: true, min_speakers: 2, max_speakers: 5 },
             moderator: null,
             speakers: []
         };

@@ -46,8 +46,9 @@ export const validateSpeakerCount = (entity) => {
 
     const speakersCount = Array.isArray(entity.speakers) ? entity.speakers.length : 0;
     const { min, max } = getSpeakerLimits(entity.type);
+    const minRequired = entity.type.are_speakers_mandatory ? min : 0;
 
-    if (speakersCount <= max && speakersCount >= min) return { valid: true };
+    if (speakersCount <= max && speakersCount >= minRequired) return { valid: true };
 
     return {
         valid: false,
