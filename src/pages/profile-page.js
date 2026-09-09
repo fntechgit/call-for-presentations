@@ -62,6 +62,11 @@ const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, 
         <div className="page-wrap" id="profile-page">
             <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile", {speakerLabel})}</h3>
             <hr/>
+            <div className="alert alert-info">
+                <i className="fa fa-info-circle" />
+                &nbsp;&nbsp;
+                {T.translate("edit_profile.disclaimer")}
+            </div>
             <SpeakerForm
                 entity={entity}
                 summit={summit}

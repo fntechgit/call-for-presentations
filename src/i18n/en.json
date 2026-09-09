@@ -269,7 +269,8 @@
     "profile": "{speakerLabel} Profile",
     "important": "Important!",
     "fill_speaker_details": "You must complete your profile in order to submit a presentation.",
-    "profile_saved": "Profile saved successfully!"
+    "profile_saved": "Profile saved successfully!",
+    "disclaimer": "All information on this page — bio, photos, affiliations, company, title, social links, etc. — except email and phone number — are considered public information and may be published or displayed by any show on the platform."
   },
   "affiliations": {
     "title": "Job Title",
