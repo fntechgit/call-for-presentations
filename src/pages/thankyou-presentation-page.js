@@ -29,8 +29,8 @@ class ThankYouPresentationPage extends React.Component {
     onDone(ev) {
         ev.preventDefault();
     
-        const {history, summit} = this.props;
-        const submissionsPath = getSubmissionsPath(summit);
+        const {history, summit, selectionPlan} = this.props;
+        const submissionsPath = getSubmissionsPath(summit, selectionPlan?.id);
     
         history.push(`/app/${summit.slug}/${submissionsPath}`);
     }
