@@ -259,9 +259,9 @@ export const setDefaultColors = () => {
     setDocumentColors(defaultColors);
 };
 
-export const getSubmissionsPath = (summit) => {
-    const selectionPlanLandingId = getAllowedLandingSelectionPlanId(summit);
-    return selectionPlanLandingId ? `all-plans/${selectionPlanLandingId}` : 'all-plans';
+export const getSubmissionsPath = (summit, currentSelectionPlanId) => {
+    const selectionPlanId = currentSelectionPlanId || getAllowedLandingSelectionPlanId(summit);
+    return selectionPlanId ? `all-plans/${selectionPlanId}` : 'all-plans';
 };
 
 /**
