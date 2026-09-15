@@ -11,17 +11,17 @@
  * limitations under the License.
  **/
 
-import React, {useEffect, useState} from 'react';
-import {connect} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
 import SpeakerForm from '../components/speaker-form'
-import {saveSpeakerProfile, getOrganizationalRoles} from "../actions/speaker-actions";
-import {getSpeakerInfo} from "../actions/auth-actions";
+import { saveSpeakerProfile, getOrganizationalRoles } from "../actions/speaker-actions";
+import { getSpeakerInfo } from "../actions/auth-actions";
 
 import '../styles/profile-page.less';
 
-const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, summit, selectionPlanId, history, selectionPlansSettings, ...props}) => {
+const ProfilePage = ({ entity, speaker, orgRoles, loggedMember, errors, loading, summit, selectionPlanId, history, selectionPlansSettings, ...props }) => {
     const selectionPlanSettings = selectionPlansSettings?.[selectionPlanId];
     const speakerLabel = selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'Speaker';
     const [speakerLoaded, setSpeakerLoaded] = useState(false);
@@ -48,9 +48,9 @@ const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, 
             Swal.fire({
                 title: T.translate("landing.speaker_profile_required"),
                 text: entity?.email ?
-                  T.translate("landing.speaker_profile_required_text", {user_account: entity.email})
-                  :
-                  'Loading ...',
+                    T.translate("landing.speaker_profile_required_text", { user_account: entity.email })
+                    :
+                    'Loading ...',
                 type: "warning",
             });
 
@@ -60,12 +60,12 @@ const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, 
 
     return (
         <div className="page-wrap" id="profile-page">
-            <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile", {speakerLabel})}</h3>
-            <hr/>
+            <h3>{T.translate("general.edit")} {T.translate("edit_profile.profile", { speakerLabel })}</h3>
+            <hr />
             <div className="alert alert-info">
                 <i className="fa fa-info-circle" />
                 &nbsp;&nbsp;
-                {T.translate("edit_profile.disclaimer")}
+                <span dangerouslySetInnerHTML={{ __html: T.translate("edit_profile.disclaimer") }} />
             </div>
             <SpeakerForm
                 entity={entity}
@@ -80,7 +80,7 @@ const ProfilePage = ({entity, speaker, orgRoles, loggedMember, errors, loading, 
     );
 }
 
-const mapStateToProps = ({profileState, loggedUserState, baseState}) => ({
+const mapStateToProps = ({ profileState, loggedUserState, baseState }) => ({
     summit: baseState.summit,
     loggedMember: loggedUserState.member,
     speaker: baseState.speaker,
