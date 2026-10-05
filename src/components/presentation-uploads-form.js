@@ -19,6 +19,16 @@ import SubmitButtons from './presentation-submit-buttons'
 import {scrollToError} from '../utils/methods'
 import {initLogOut} from 'openstack-uicore-foundation/lib/security/methods'
 import Swal from 'sweetalert2';
+import * as Sentry from '@sentry/react';
+
+// the upload input reports a single failed file once per failed chunk,
+// so the same error is only sent to Sentry once inside this window
+const UPLOAD_ERROR_REPORT_WINDOW_MS = 10000;
+
+const getUploadErrorMessage = (error) => {
+    if (typeof error === 'string') return error;
+    return error?.message || error?.detail || 'unknown error';
+};
 
 class PresentationUploadsForm extends React.Component {
     constructor(props) {
@@ -83,12 +93,31 @@ class PresentationUploadsForm extends React.Component {
         }
     }
 
-    onUploadError(error, status){
+    onUploadError(error, status, inputId){
         if(status == 403){
             Swal.fire("ERROR", error.detail, "error");
             console.log(error);
             initLogOut();
+            return;
         }
+
+        // Upload failures (e.g. "Server responded with 0 code." on a dropped connection)
+        // are not exceptions, so without this they never reach Sentry.
+        const message = getUploadErrorMessage(error);
+        const reportKey = `${inputId}|${status}|${message}`;
+        const now = Date.now();
+        if (this.lastUploadErrorReport &&
+            this.lastUploadErrorReport.key === reportKey &&
+            now - this.lastUploadErrorReport.at < UPLOAD_ERROR_REPORT_WINDOW_MS) {
+            return;
+        }
+        this.lastUploadErrorReport = {key: reportKey, at: now};
+
+        Sentry.captureMessage(`Media upload failed: ${message}`, {
+            level: 'error',
+            tags: {upload_status: status ?? 'none'},
+            extra: {presentation_id: this.state.entity?.id, upload_input: inputId, error},
+        });
     }
 
     handleSubmit(ev) {

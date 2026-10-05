@@ -40,7 +40,8 @@ class PresentationLayout extends React.Component {
             this.props.resetPresentation();
             return;
         }
-        this.props.getPresentation(presentation_id);
+        // a failed load is already reported to the user by presentationErrorHandler
+        this.props.getPresentation(presentation_id).catch(() => {});
     }
 
     componentWillReceiveProps(newProps) {
@@ -48,7 +49,7 @@ class PresentationLayout extends React.Component {
         let newId = newProps.match.params.presentation_id;
 
         if (newId && oldId !== newId) {
-            this.props.getPresentation(newId);
+            this.props.getPresentation(newId).catch(() => {});
         }
 
         // Gated on the props each call actually reads. This component now subscribes to the
