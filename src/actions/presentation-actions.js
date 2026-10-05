@@ -56,7 +56,7 @@ export const getPresentation = (presentationId) => async (dispatch, getState) =>
     null,
     createAction(RECEIVE_PRESENTATION),
     `${window.API_BASE_URL}/api/v1/summits/${summit.id}/presentations/${presentationId}`,
-    (err, res) => presentationErrorHandler(err, res)(dispatch, getState)
+    presentationErrorHandler
   )(params)(dispatch, getState).then((payload) => {
       dispatch(stopLoading());
       return payload.response;
@@ -100,6 +100,8 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
             presentation.updatePresentation({...payload, track_id: payload.track.id}, payload.track);
             const nextStep = presentation.getStepNameAfter(currentStep);
             history.push(`/app/${summit.slug}/all-plans/${payload.selection_plan_id}/presentations/${payload.id}/${nextStep}`);
+          }, (error) => {
+            // already reported to the user by presentationErrorHandler
           });
       }, (error) => {
         dispatch(stopLoading());
@@ -123,6 +125,8 @@ export const savePresentation = (entity, presentation, currentStep = null) => as
           presentation.updatePresentation({...payload, track_id: payload.track.id}, payload.track);
           const nextStep = presentation.getStepNameAfter(currentStep);
           history.push(`/app/${summit.slug}/all-plans/${payload.selection_plan_id}/presentations/${payload.id}/${nextStep}`);
+        }, (error) => {
+          // already reported to the user by presentationErrorHandler
         }
       );
     }, (error) => {
