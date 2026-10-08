@@ -114,7 +114,9 @@ export const getSpeakerPermission = (selectionPlanId, presentationId, speakerId,
             }
 
         }
-    );
+    )
+    // failures were already reported to the user by speakerPermissionErrorHandler
+    .catch(() => {});
 };
 
 export const speakerPermissionErrorHandler = (err, res) => (dispatch) => {
@@ -160,7 +162,9 @@ export const requestSpeakerPermission = () => async (dispatch, getState) => {
         .then((payload) => {
             dispatch(stopLoading());
             dispatch(showSuccessMessage(T.translate("edit_speaker.auth_requested_success")));
-        });
+        })
+        // failures were already reported to the user by authErrorHandler
+        .catch(() => {});
 
 
 }
