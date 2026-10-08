@@ -254,7 +254,8 @@
     "auth_pending": "Permission Request Pending",
     "auth_pending_text": "You already requested permission to edit, but the speaker has not granted it yet.",
     "company": "Company",
-    "phone_number": "Phone #"
+    "phone_number": "Phone #",
+    "photo_too_large": "The photo must be 10 MB or smaller."
   },
   "preview_presentation": {
     "preview_presentation": "Preview Your Submission"
