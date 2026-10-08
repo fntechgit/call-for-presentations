@@ -283,7 +283,8 @@ const presentationErrorHandler = (err, res) => (dispatch, getState) => {
         () => {
           if (summit) {
             history.push(`/app/${summit.slug}/all-plans`);
-            dispatch(getAllowedSelectionPlans(summit.id))
+            // failures were already reported to the user by authErrorHandler
+            dispatch(getAllowedSelectionPlans(summit.id)).catch(() => {});
           } else {
             history.push(`/app/start`);
           }

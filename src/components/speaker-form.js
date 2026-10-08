@@ -19,6 +19,8 @@ import AffiliationsTable from './affiliationstable'
 import PresentationLinks from "./inputs/presentation-links";
 import { Input, TextEditor, UploadInput, Exclusive, CountryInput, LanguageInput, CheckboxList, FreeMultiTextInput, RegistrationCompanyInput } from 'openstack-uicore-foundation/lib/components'
 import {validate, scrollToError} from "../utils/methods";
+import {SPEAKER_PHOTO_MAX_SIZE} from "../utils/constants";
+import Swal from "sweetalert2";
 
 
 class SpeakerForm extends React.Component {
@@ -35,6 +37,7 @@ class SpeakerForm extends React.Component {
         this.handleRemoveProfilePic = this.handleRemoveProfilePic.bind(this);
         this.handleUploadBigPic = this.handleUploadBigPic.bind(this);
         this.handleRemoveBigPic = this.handleRemoveBigPic.bind(this);
+        this.handleUploadError = this.handleUploadError.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
@@ -93,6 +96,13 @@ class SpeakerForm extends React.Component {
         entity.big_pic_file = null;
         entity.big_pic = '';
         this.setState({entity:entity});
+    }
+
+    handleUploadError(rejectedFiles) {
+        // dropzone also rejects non-image files; only oversized photos get a message
+        if (rejectedFiles.some(file => file.size > SPEAKER_PHOTO_MAX_SIZE)) {
+            Swal.fire("Validation error", T.translate("edit_speaker.photo_too_large"), "warning");
+        }
     }
 
     handleSubmit(ev) {
@@ -213,6 +223,8 @@ class SpeakerForm extends React.Component {
                             value={entity.pic}
                             file={entity.pic_file}
                             handleUpload={this.handleUploadProfilePic}
+                            handleError={this.handleUploadError}
+                            maxSize={SPEAKER_PHOTO_MAX_SIZE}
                             handleRemove={this.handleRemoveProfilePic}
                             className="dropzone col-md-6"
                             multiple={false}
@@ -225,6 +237,8 @@ class SpeakerForm extends React.Component {
                             value={entity.big_pic}
                             file={entity.big_pic_file}
                             handleUpload={this.handleUploadBigPic}
+                            handleError={this.handleUploadError}
+                            maxSize={SPEAKER_PHOTO_MAX_SIZE}
                             handleRemove={this.handleRemoveBigPic}
                             className="dropzone col-md-6"
                             multiple={false}

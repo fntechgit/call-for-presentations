@@ -43,6 +43,7 @@ export const SPEAKER_REMOVED = 'SPEAKER_REMOVED';
 export const MODERATOR_ASSIGNED = 'MODERATOR_ASSIGNED';
 export const MODERATOR_REMOVED = 'MODERATOR_REMOVED';
 export const PIC_ATTACHED = 'PIC_ATTACHED';
+export const SPEAKER_BIG_PIC_ATTACHED = 'SPEAKER_BIG_PIC_ATTACHED';
 
 export const RECEIVE_SPEAKER_PROFILE = 'RECEIVE_SPEAKER_PROFILE';
 export const RESET_PROFILE_FORM = 'RESET_PROFILE_FORM';
@@ -113,7 +114,9 @@ export const getSpeakerPermission = (selectionPlanId, presentationId, speakerId,
             }
 
         }
-    );
+    )
+    // failures were already reported to the user by speakerPermissionErrorHandler
+    .catch(() => {});
 };
 
 export const speakerPermissionErrorHandler = (err, res) => (dispatch) => {
@@ -159,7 +162,9 @@ export const requestSpeakerPermission = () => async (dispatch, getState) => {
         .then((payload) => {
             dispatch(stopLoading());
             dispatch(showSuccessMessage(T.translate("edit_speaker.auth_requested_success")));
-        });
+        })
+        // failures were already reported to the user by authErrorHandler
+        .catch(() => {});
 
 
 }
@@ -181,6 +186,7 @@ export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
     };
 
     const pic_file = entity.pic_file;
+    const big_pic_file = entity.big_pic_file;
     const normalizedEntity = normalizeEntity(entity);
 
     const success_message = {
@@ -210,11 +216,7 @@ export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
 
                 return payload;
             })
-            .then((payload) => {
-                if (pic_file) {
-                    dispatch(uploadFile(payload.response, pic_file));
-                }
-            })
+            .then((payload) => dispatch(uploadSpeakerPhotos(payload.response, pic_file, big_pic_file)))
             .then((payload) => {
                 dispatch(showMessage(
                     success_message,
@@ -222,7 +224,9 @@ export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
                         history.push(`/app/${summit.slug}/all-plans/${selectionPlanId}/presentations/${presentationId}/speakers`)
                     }
                 ));
-            });
+            })
+            // failures were already reported to the user by authErrorHandler
+            .catch(() => {});
 
     }
 
@@ -244,11 +248,7 @@ export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
             }
             return payload;
         })
-        .then((payload) => {
-            if (pic_file) {
-                dispatch(uploadFile(payload.response, pic_file));
-            }
-        })
+        .then((payload) => dispatch(uploadSpeakerPhotos(payload.response, pic_file, big_pic_file)))
         .then(() => {
             dispatch(showMessage(
                 success_message,
@@ -256,7 +256,9 @@ export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
                     history.push(`/app/${summit.slug}/all-plans/${selectionPlanId}/presentations/${presentationId}/speakers`)
                 }
             ));
-        });
+        })
+        // failures were already reported to the user by authErrorHandler
+        .catch(() => {});
 
 }
 
@@ -270,7 +272,7 @@ const uploadFile = (entity, file) => async (dispatch) => {
     const formData = new FormData();
     formData.append('file', file);
 
-    postRequest(
+    return postRequest(
         null,
         createAction(PIC_ATTACHED),
         `${window.API_BASE_URL}/api/v1/speakers/${entity.id}/photo`,
@@ -278,6 +280,39 @@ const uploadFile = (entity, file) => async (dispatch) => {
         authErrorHandler,
         {pic: entity.pic}
     )(params)(dispatch)
+}
+
+const uploadBigFile = (entity, file) => async (dispatch) => {
+    const accessToken = await getAccessTokenSafely();
+
+    const params = {
+        access_token: accessToken,
+    };
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return postRequest(
+        null,
+        createAction(SPEAKER_BIG_PIC_ATTACHED),
+        `${window.API_BASE_URL}/api/v1/speakers/${entity.id}/big-photo`,
+        formData,
+        authErrorHandler,
+        {pic: entity.pic}
+    )(params)(dispatch)
+}
+
+const uploadSpeakerPhotos = (entity, pic_file, big_pic_file) => (dispatch) => {
+    const uploads = [];
+
+    if (pic_file) {
+        uploads.push(dispatch(uploadFile(entity, pic_file)));
+    }
+    if (big_pic_file) {
+        uploads.push(dispatch(uploadBigFile(entity, big_pic_file)));
+    }
+
+    return Promise.all(uploads);
 }
 
 
@@ -437,18 +472,13 @@ export const saveSpeakerProfile = (entity) => async (dispatch, getState) => {
             authErrorHandler,
             entity
         )(params)(dispatch)
-            .then((payload) => {
-                if (pic_file) {
-                    dispatch(uploadFileProfile(payload.response, pic_file));
-                }
-                if (big_pic_file) {
-                    dispatch(uploadFileBigPhoto(payload.response, big_pic_file));
-                }
-            })
+            .then((payload) => dispatch(uploadProfilePhotos(payload.response, pic_file, big_pic_file)))
             .then((payload) => {
                 success_message.html = T.translate("edit_profile.profile_saved");
                 dispatch(showMessage(success_message));
-            });
+            })
+            // failures were already reported to the user by authErrorHandler
+            .catch(() => {});
     }
 
     return postRequest(
@@ -459,14 +489,7 @@ export const saveSpeakerProfile = (entity) => async (dispatch, getState) => {
         authErrorHandler,
         entity
     )(params)(dispatch)
-        .then((payload) => {
-            if (pic_file) {
-                dispatch(uploadFileProfile(payload.response, pic_file));
-            }
-            if (big_pic_file) {
-                dispatch(uploadFileBigPhoto(payload.response, big_pic_file));
-            }
-        })
+        .then((payload) => dispatch(uploadProfilePhotos(payload.response, pic_file, big_pic_file)))
         .then((payload) => {
             // we need to call this because we need the expanded member in the speaker payload
             dispatch(getSpeakerInfo(null));
@@ -475,7 +498,22 @@ export const saveSpeakerProfile = (entity) => async (dispatch, getState) => {
             const redirectUrl = summit ? `/app/${summit.slug}/${getSubmissionsPath(summit)}` : '/app/start';
             success_message.html = T.translate("edit_profile.profile_saved");
             dispatch(showMessage(success_message, () => history.push(redirectUrl)));
-        });
+        })
+        // failures were already reported to the user by authErrorHandler
+        .catch(() => {});
+}
+
+const uploadProfilePhotos = (entity, pic_file, big_pic_file) => (dispatch) => {
+    const uploads = [];
+
+    if (pic_file) {
+        uploads.push(dispatch(uploadFileProfile(entity, pic_file)));
+    }
+    if (big_pic_file) {
+        uploads.push(dispatch(uploadFileBigPhoto(entity, big_pic_file)));
+    }
+
+    return Promise.all(uploads);
 }
 
 
@@ -489,7 +527,7 @@ const uploadFileProfile = (entity, file) => async (dispatch) => {
         access_token: accessToken,
     };
 
-    postRequest(
+    return postRequest(
         null,
         createAction(PROFILE_PIC_ATTACHED),
         `${window.API_BASE_URL}/api/v1/speakers/${entity.id}/photo`,
@@ -509,7 +547,7 @@ const uploadFileBigPhoto = (entity, file) => async (dispatch) => {
         access_token: accessToken,
     };
 
-    postRequest(
+    return postRequest(
         null,
         createAction(BIG_PIC_ATTACHED),
         `${window.API_BASE_URL}/api/v1/speakers/${entity.id}/big-photo`,
