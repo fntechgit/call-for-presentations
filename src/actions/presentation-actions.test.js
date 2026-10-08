@@ -15,6 +15,8 @@ import Swal from 'sweetalert2';
 import { getPresentation } from './presentation-actions';
 
 const mockHandlerErrors = [];
+// error the mocked request fails with; null falls back to a response timeout
+const mockRequestError = { current: null };
 
 // Same contract as uicore's responseHandler: from superagent's async callback it calls
 // errorHandler(err, res)(dispatch, state) and only then rejects. If that call throws, the
@@ -23,7 +25,7 @@ jest.mock('openstack-uicore-foundation/lib/utils/actions', () => ({
     getRequest: (requestActionCreator, receiveActionCreator, endpoint, errorHandler) =>
         () => (dispatch, state) => new Promise((resolve, reject) => {
             setTimeout(() => {
-                const err = { status: undefined, message: 'Timeout of 60000ms exceeded' };
+                const err = mockRequestError.current || { status: undefined, message: 'Timeout of 60000ms exceeded' };
                 try {
                     errorHandler(err, undefined)(dispatch, state);
                 } catch (e) {
@@ -41,6 +43,7 @@ jest.mock('openstack-uicore-foundation/lib/utils/actions', () => ({
     startLoading: () => ({ type: 'START_LOADING' }),
     showMessage: jest.fn(),
     authErrorHandler: jest.fn(),
+    VALIDATE: 'VALIDATE',
 }));
 jest.mock('openstack-uicore-foundation/lib/security/methods', () => ({ doLoginBasicLogin: jest.fn() }));
 jest.mock('i18n-react/dist/i18n-react', () => ({ translate: (key) => key }));
@@ -52,6 +55,10 @@ jest.mock('../utils/methods', () => ({ getAccessTokenSafely: async () => 'token'
 describe('getPresentation', () => {
     beforeAll(() => {
         global.window = { API_BASE_URL: 'https://api.example' };
+    });
+
+    afterEach(() => {
+        mockRequestError.current = null;
     });
 
     it('reports a failed load through presentationErrorHandler and rejects instead of crashing', async () => {
@@ -69,5 +76,23 @@ describe('getPresentation', () => {
         expect(outcome).toBe('rejected');
         expect(Swal.fire).toHaveBeenCalledWith('ERROR', 'errors.server_error', 'error');
         expect(dispatch).toHaveBeenCalledWith({ type: 'STOP_LOADING' });
+    });
+
+    it('dispatches VALIDATE with the field errors on a 412 (CFP-PROD-7)', async () => {
+        const errors = { title: 'The title field is required.' };
+        mockRequestError.current = { status: 412, response: { body: { errors } } };
+        const dispatch = jest.fn((action) => action);
+        const getState = () => ({ baseState: { summit: { id: 1, slug: 'summit' }, tagGroups: [] } });
+
+        // before the fix VALIDATE was never imported, the handler threw a ReferenceError and the promise never settled
+        const outcome = await Promise.race([
+            getPresentation(10)(dispatch, getState).then(() => 'resolved', () => 'rejected'),
+            new Promise((resolve) => setTimeout(() => resolve('pending'), 200)),
+        ]);
+
+        expect(mockHandlerErrors).toEqual([]);
+        expect(outcome).toBe('rejected');
+        expect(Swal.fire).toHaveBeenCalledWith('Validation error', 'title: The title field is required.<br>', 'warning');
+        expect(dispatch).toHaveBeenCalledWith({ type: 'VALIDATE', payload: { errors } });
     });
 });
