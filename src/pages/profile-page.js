@@ -21,7 +21,7 @@ import { getSpeakerInfo } from "../actions/auth-actions";
 
 import '../styles/profile-page.less';
 
-const ProfilePage = ({ entity, speaker, orgRoles, loggedMember, errors, loading, summit, selectionPlanId, history, selectionPlansSettings, ...props }) => {
+const ProfilePage = ({ entity, speaker, orgRoles, loggedMember, errors, loading, selectionPlanId, history, selectionPlansSettings, ...props }) => {
     const selectionPlanSettings = selectionPlansSettings?.[selectionPlanId];
     const speakerLabel = selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'Speaker';
     const [speakerLoaded, setSpeakerLoaded] = useState(false);
@@ -69,7 +69,6 @@ const ProfilePage = ({ entity, speaker, orgRoles, loggedMember, errors, loading,
             </div>
             <SpeakerForm
                 entity={entity}
-                summit={summit}
                 errors={errors}
                 member={loggedMember}
                 orgRoles={orgRoles}
@@ -81,7 +80,6 @@ const ProfilePage = ({ entity, speaker, orgRoles, loggedMember, errors, loading,
 }
 
 const mapStateToProps = ({ profileState, loggedUserState, baseState }) => ({
-    summit: baseState.summit,
     loggedMember: loggedUserState.member,
     speaker: baseState.speaker,
     loading: baseState.loading,
