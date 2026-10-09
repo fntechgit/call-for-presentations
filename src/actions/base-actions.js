@@ -42,13 +42,22 @@ export const clearCurrentSummit = () => (dispatch, getState) => {
   dispatch(createAction(CLEAR_SUMMIT)({}));
 };
 
-export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
+/**
+ * @param summitSlug
+ * @param withSpeakerData also loads the tag groups and the speaker's allowed selection plans, which need a logged user
+ */
+export const getAllFromSummit = (summitSlug, withSpeakerData = false) => (dispatch, getState) => {
   dispatch(startLoading());
   dispatch(createAction(BASE_LOADED)({loaded: false}));
 
   return getCurrentSummitPublic(summitSlug)(dispatch, getState)
     .then(({response}) => {
-      return dispatch(getMarketingSettings(response.id)).then(() => {
+      // independent of each other, they only need the summit id
+      const loads = [dispatch(getMarketingSettings(response.id))];
+      if (withSpeakerData) {
+        loads.push(dispatch(getTagGroups(response.id)), dispatch(getAllowedSelectionPlans(response.id)));
+      }
+      return Promise.all(loads).then(() => {
         dispatch(createAction(BASE_LOADED)({loaded: true}));
         dispatch(stopLoading());
         return response;
