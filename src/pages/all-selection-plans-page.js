@@ -16,8 +16,12 @@ import {connect} from 'react-redux';
 import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
 import {getSelectionPlanSettings} from "../actions/base-actions";
+import {getAllPresentations} from "../actions/presentations-actions";
+import {resetPresentation} from "../actions/presentation-actions";
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, selectionPlansSettings, getSelectionPlanSettings}) => {
+const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, selectionPlansSettings, getSelectionPlanSettings, getAllPresentations, resetPresentation}) => {
+  const [dataPulled, setDataPulled] = useState(false);
+
   const plansToShow = summit.selection_plans
     .filter(sp => selectionPlanId ? sp.id === selectionPlanId : !sp.is_hidden)
     .sort((a,b) => {
@@ -32,6 +36,14 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, s
     selectionPlansIds.forEach((id) => getSelectionPlanSettings(summit.id, id));
   }, []);
 
+  useEffect(() => {
+    getAllPresentations(summit.id).then(() => {
+      // clear presentation form
+      resetPresentation();
+      setDataPulled(true);
+    });
+  }, [summit?.id]);
+
   if ( !summit || !loggedSpeaker ) return null;
 
   if (!loggedSpeaker) {
@@ -44,6 +56,8 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, s
       <div className="small-page-wrap">You cannot submit a presentation for this event at this time</div>
     );
   }
+
+  if (!dataPulled) return null;
 
   return (
     <div>
@@ -59,4 +73,4 @@ const mapStateToProps = ({baseState}) => ({
   selectionPlansSettings: baseState.selectionPlansSettings
 });
 
-export default connect(mapStateToProps, {getSelectionPlanSettings})(AllSelectionPlansPage);
+export default connect(mapStateToProps, {getSelectionPlanSettings, getAllPresentations, resetPresentation})(AllSelectionPlansPage);
