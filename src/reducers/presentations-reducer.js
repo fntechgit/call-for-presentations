@@ -12,12 +12,7 @@
  **/
 
 import {LOGOUT_USER} from 'openstack-uicore-foundation/lib/security/actions';
-import {
-  CREATED_RECEIVED,
-  SPEAKER_RECEIVED,
-  MODERATOR_RECEIVED,
-  REGROUP_PRESENTATIONS
-} from '../actions/presentations-actions';
+import {PRESENTATIONS_RECEIVED} from '../actions/presentations-actions';
 import {PRESENTATION_ADDED, PRESENTATION_DELETED} from '../actions/presentation-actions'
 import {CLEAR_SUMMIT, RECEIVE_ALLOWED_SELECTION_PLANS, RECEIVE_SUMMIT} from "../actions/base-actions";
 
@@ -55,34 +50,31 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
       })
       return ({...state, collections});
     }
-    case CREATED_RECEIVED: {
-      const {collections} = state;
-      const {response, selectionPlanId} = payload;
-      const presentations = response.data;
-      const stateData = collections.find(col => col.selectionPlan.id === selectionPlanId);
-      stateData.presentationsCreated = presentations;
+    case PRESENTATIONS_RECEIVED: {
+      const {collections, allSummitDocs} = state;
+      const {created, speaker, moderator} = payload;
+      // presentations of plans without a collection (not allowed for this speaker) are dropped
+      const collectionsCopy = collections.map(col => {
+        const selectionPlanId = col.selectionPlan.id;
+        const inPlan = p => p.selection_plan_id === selectionPlanId;
+        const presentationsCreated = created.filter(inPlan);
+        const createdIds = presentationsCreated.map(pc => pc.id);
+        const stateData = {
+          ...col,
+          presentationsCreated,
+          presentationsSpeaker: speaker.filter(p => inPlan(p) && !createdIds.includes(p.id)),
+          presentationsModerator: moderator.filter(p => inPlan(p) && !createdIds.includes(p.id)),
+        };
+        const allPresentationTypes = getAllTypes(stateData);
 
-      return {...state, collections};
-    }
-    case SPEAKER_RECEIVED: {
-      const {collections} = state;
-      const {response, selectionPlanId} = payload;
-      const presentations = response.data;
-      const stateData = collections.find(col => col.selectionPlan.id === selectionPlanId);
-      const createdIds = stateData.presentationsCreated.map(pc => pc.id);
-      stateData.presentationsSpeaker = presentations.filter(p => !createdIds.includes(p.id));
+        return {
+          ...stateData,
+          allPresentationTypes,
+          summitDocs: getSummitDocs(selectionPlanId, allPresentationTypes, allSummitDocs),
+        };
+      });
 
-      return {...state, collections};
-    }
-    case MODERATOR_RECEIVED: {
-      const {collections} = state;
-      const {response, selectionPlanId} = payload;
-      const presentations = response.data;
-      const stateData = collections.find(col => col.selectionPlan.id === selectionPlanId);
-      const createdIds = stateData.presentationsCreated.map(pc => pc.id);
-      stateData.presentationsModerator = presentations.filter(p => !createdIds.includes(p.id));
-
-      return {...state, collections};
+      return {...state, collections: collectionsCopy};
     }
     case PRESENTATION_DELETED: {
       const {presentationId, selectionPlanId} = payload;
@@ -112,19 +104,6 @@ const presentationsReducer = (state = DEFAULT_STATE, action) => {
         stateData.allPresentationTypes.push(entity.type.id);
         stateData.summitDocs = getSummitDocs(entity.selection_plan_id, stateData.allPresentationTypes, allSummitDocs);
       }
-
-      return {...state, collections: collectionsCopy};
-    }
-    case REGROUP_PRESENTATIONS: {
-      const {collections, allSummitDocs} = state;
-      const collectionsCopy = [...collections]
-      const {selectionPlanId} = payload;
-      const stateData = collectionsCopy.find(col => col.selectionPlan.id === selectionPlanId);
-
-      const allPresentationTypes = getAllTypes(stateData);
-
-      stateData.summitDocs = getSummitDocs(selectionPlanId, allPresentationTypes, allSummitDocs);
-      stateData.allPresentationTypes = allPresentationTypes;
 
       return {...state, collections: collectionsCopy};
     }
