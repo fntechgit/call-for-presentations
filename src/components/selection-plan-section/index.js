@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {connect} from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
-import {getAllPresentations} from '../../actions/presentations-actions';
-import {deletePresentation, resetPresentation} from '../../actions/presentation-actions';
+import {deletePresentation} from '../../actions/presentation-actions';
 import PresentationsTable from "../../components/presentations-table";
 import {formatEpoch} from "openstack-uicore-foundation/lib/utils/methods";
 import moment from "moment-timezone";
@@ -12,15 +11,6 @@ import './selection-plan-section.less';
 
 
 const SelectionPlanSection = ({summit, selectionPlan, selectionPlanSettings, loggedSpeaker, baseLoaded, loading, ...props }) => {
-  const [dataPulled, setDataPulled] = useState(false);
-  useEffect(() => {
-    props.getAllPresentations(summit.id, selectionPlan.id).then(() => {
-      // clear presentation form
-      props.resetPresentation();
-      setDataPulled(true);
-    });
-  }, [summit?.id, selectionPlan?.id]);
-
   const handleNewPresentation = (ev) => {
     const {history} = props;
     let url = `/app/${summit.slug}/all-plans/${selectionPlan.id}/presentations/new/summary`;
@@ -64,8 +54,6 @@ const SelectionPlanSection = ({summit, selectionPlan, selectionPlanSettings, log
       }
     });
   };
-
-  if (!dataPulled) return null;
 
   const { collections, match, history } = props;
   const thisPlan = collections.find(col => col.selectionPlan.id === selectionPlan.id);
@@ -145,8 +133,6 @@ const mapStateToProps = ({presentationsState, baseState}) => ({
 export default connect(
   mapStateToProps,
   {
-    getAllPresentations,
     deletePresentation,
-    resetPresentation,
   }
 )(SelectionPlanSection);

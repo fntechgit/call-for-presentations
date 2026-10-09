@@ -34,8 +34,7 @@ export const ERROR_RECEIVE_SUMMIT = 'ERROR_RECEIVE_SUMMIT';
 export const CLEAR_SUMMIT = 'CLEAR_SUMMIT';
 export const BASE_LOADED = 'BASE_LOADED';
 export const RECEIVE_ALLOWED_SELECTION_PLANS = 'RECEIVE_ALLOWED_SELECTION_PLANS';
-export const REQUEST_SELECTION_PLAN_SETTINGS = 'REQUEST_SELECTION_PLAN_SETTINGS';
-export const RECEIVE_SELECTION_PLAN_SETTINGS = 'RECEIVE_SELECTION_PLAN_SETTINGS';
+export const RECEIVE_MARKETING_SETTINGS_PAGE = 'RECEIVE_MARKETING_SETTINGS_PAGE';
 export const RECEIVE_ALLOWED_SELECTION_PLAN = 'RECEIVE_ALLOWED_SELECTION_PLAN';
 
 
@@ -43,13 +42,22 @@ export const clearCurrentSummit = () => (dispatch, getState) => {
   dispatch(createAction(CLEAR_SUMMIT)({}));
 };
 
-export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
+/**
+ * @param summitSlug
+ * @param withSpeakerData also loads the tag groups and the speaker's allowed selection plans, which need a logged user
+ */
+export const getAllFromSummit = (summitSlug, withSpeakerData = false) => (dispatch, getState) => {
   dispatch(startLoading());
   dispatch(createAction(BASE_LOADED)({loaded: false}));
 
   return getCurrentSummitPublic(summitSlug)(dispatch, getState)
     .then(({response}) => {
-      return dispatch(getMarketingSettings(response.id)).then(() => {
+      // independent of each other, they only need the summit id
+      const loads = [dispatch(getMarketingSettings(response.id))];
+      if (withSpeakerData) {
+        loads.push(dispatch(getTagGroups(response.id)), dispatch(getAllowedSelectionPlans(response.id)));
+      }
+      return Promise.all(loads).then(() => {
         dispatch(createAction(BASE_LOADED)({loaded: true}));
         dispatch(stopLoading());
         return response;
@@ -182,36 +190,24 @@ export const loadEventCategory = () => async (dispatch, getState) => {
   );
 };
 
-export const getMarketingSettings = (summitId) => (dispatch) => {
+export const getMarketingSettings = (summitId) => async (dispatch) => {
+  dispatch(createAction(REQUEST_MARKETING_SETTINGS)({}));
 
-  let params = {
-    page: 1,
-    per_page: 100,
-    selection_plan_id: 0,
-  };
-
-  return getRequest(
-    createAction(REQUEST_MARKETING_SETTINGS),
-    createAction(RECEIVE_MARKETING_SETTINGS),
+  // without selection_plan_id the list holds the summit values (selection_plan_id 0) and every plan's
+  const getPage = (page) => getRequest(
+    null,
+    createAction(RECEIVE_MARKETING_SETTINGS_PAGE),
     `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
     authErrorHandler
-  )(params)(dispatch);
-};
+  )({page, per_page: 100})(dispatch).then(({response}) => response);
 
-export const getSelectionPlanSettings = (summitId, selectionPlanId) => (dispatch) => {
+  const firstPage = await getPage(1);
+  const otherPages = await Promise.all(
+    Array.from({length: firstPage.last_page - 1}, (_, i) => getPage(i + 2))
+  );
+  const data = [firstPage, ...otherPages].flatMap(page => page.data);
 
-  let params = {
-    per_page: 100,
-    page: 1,
-    selection_plan_id: selectionPlanId
-  };
-
-  return getRequest(
-    createAction(REQUEST_SELECTION_PLAN_SETTINGS),
-    createAction(RECEIVE_SELECTION_PLAN_SETTINGS),
-    `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
-    authErrorHandler
-  )(params)(dispatch);
+  dispatch(createAction(RECEIVE_MARKETING_SETTINGS)({response: {data}}));
 };
 
 const currentSummitErrorHandler = (err, res) => (dispatch, state) => {
