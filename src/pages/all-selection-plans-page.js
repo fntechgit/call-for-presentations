@@ -15,11 +15,10 @@ import React, {useLayoutEffect, useState, useEffect} from 'react';
 import {connect} from 'react-redux';
 import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
-import {getSelectionPlanSettings} from "../actions/base-actions";
 import {getAllPresentations} from "../actions/presentations-actions";
 import {resetPresentation} from "../actions/presentation-actions";
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, selectionPlansSettings, getSelectionPlanSettings, getAllPresentations, resetPresentation}) => {
+const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, selectionPlansSettings, getAllPresentations, resetPresentation}) => {
   const [dataPulled, setDataPulled] = useState(false);
 
   const plansToShow = summit.selection_plans
@@ -29,12 +28,6 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, s
       // if the selections plans shares the same end date, sort by id
       return endDateDiff !== 0 ? endDateDiff : a.id - b.id;
     });
-
-  const selectionPlansIds = plansToShow.map(sp => sp.id);
-
-  useEffect(()=>{
-    selectionPlansIds.forEach((id) => getSelectionPlanSettings(summit.id, id));
-  }, []);
 
   useEffect(() => {
     getAllPresentations(summit.id).then(() => {
@@ -73,4 +66,4 @@ const mapStateToProps = ({baseState}) => ({
   selectionPlansSettings: baseState.selectionPlansSettings
 });
 
-export default connect(mapStateToProps, {getSelectionPlanSettings, getAllPresentations, resetPresentation})(AllSelectionPlansPage);
+export default connect(mapStateToProps, {getAllPresentations, resetPresentation})(AllSelectionPlansPage);
