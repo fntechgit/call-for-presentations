@@ -14,7 +14,7 @@
 import React, {useEffect} from 'react'
 import {connect} from 'react-redux';
 import {Switch, Route, Redirect} from 'react-router-dom';
-import {getAllowedSelectionPlan, getSelectionPlanSettings} from '../actions/base-actions';
+import {getAllowedSelectionPlan} from '../actions/base-actions';
 import PrimaryLayout from "./primary-layout";
 import AllSelectionPlansPage from "../pages/all-selection-plans-page";
 import ProfilePage from "../pages/profile-page";
@@ -32,8 +32,8 @@ const SelectionPlanLayout = ({summit, match, ...props}) => {
         history.push(`/app/${summit.slug}/all-plans`);
         return;
       }
-      // update selection plan and retrieve marketing settings for selection plan
-      props.getAllowedSelectionPlan(selectionPlanId).finally(() => props.getSelectionPlanSettings(summit.id, selectionPlanId));
+      // update selection plan; its marketing settings are already loaded with the summit ones
+      props.getAllowedSelectionPlan(selectionPlanId);
     }
   }, [selectionPlanId]);
 
@@ -53,4 +53,4 @@ const mapStateToProps = ({baseState}) => ({
   summit: baseState.summit
 })
 
-export default connect(mapStateToProps, {getAllowedSelectionPlan, getSelectionPlanSettings})(SelectionPlanLayout);
+export default connect(mapStateToProps, {getAllowedSelectionPlan})(SelectionPlanLayout);
