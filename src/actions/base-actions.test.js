@@ -11,28 +11,36 @@
  * limitations under the License.
  **/
 
-import { authErrorHandler } from 'openstack-uicore-foundation/lib/utils/actions';
-import { getAllowedSelectionPlan, getAllowedSelectionPlans } from './base-actions';
+import { authErrorHandler, getRequest } from 'openstack-uicore-foundation/lib/utils/actions';
+import {
+    getAllowedSelectionPlan,
+    getAllowedSelectionPlans,
+    getMarketingSettings,
+    REQUEST_MARKETING_SETTINGS,
+    RECEIVE_MARKETING_SETTINGS,
+} from './base-actions';
 
 const mockHandlerErrors = [];
 
 // Same contract as uicore's responseHandler: from the request callback it calls
 // errorHandler(err, res)(dispatch, state) and only then rejects. If that call throws, the
 // exception escapes the callback and the promise never settles.
+const mockFailingGetRequest = (requestAction, receiveAction, url, errorHandler) => () => (dispatch, state) =>
+    new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const err = { status: 500 };
+            try {
+                errorHandler(err, {})(dispatch, state);
+            } catch (e) {
+                mockHandlerErrors.push(e);
+                return;
+            }
+            reject({ err, dispatch, state });
+        }, 0);
+    });
+
 jest.mock('openstack-uicore-foundation/lib/utils/actions', () => ({
-    getRequest: (requestAction, receiveAction, url, errorHandler) => () => (dispatch, state) =>
-        new Promise((resolve, reject) => {
-            setTimeout(() => {
-                const err = { status: 500 };
-                try {
-                    errorHandler(err, {})(dispatch, state);
-                } catch (e) {
-                    mockHandlerErrors.push(e);
-                    return;
-                }
-                reject({ err, dispatch, state });
-            }, 0);
-        }),
+    getRequest: jest.fn(),
     createAction: (type) => (payload) => ({ type, payload }),
     stopLoading: () => ({ type: 'STOP_LOADING' }),
     startLoading: () => ({ type: 'START_LOADING' }),
@@ -48,16 +56,20 @@ const settles = (promise) => Promise.race([
     new Promise((resolve) => setTimeout(() => resolve('pending'), 200)),
 ]);
 
+beforeAll(() => {
+    global.window = { API_BASE_URL: 'https://api.example', MARKETING_API_BASE_URL: 'https://marketing' };
+});
+
+beforeEach(() => {
+    jest.clearAllMocks();
+});
+
 describe('selection plan loading errors', () => {
     const getState = () => ({ baseState: { summit: { id: 1, slug: 'summit' } } });
 
-    beforeAll(() => {
-        global.window = { API_BASE_URL: 'https://api.example' };
-    });
-
     beforeEach(() => {
-        jest.clearAllMocks();
         mockHandlerErrors.length = 0;
+        getRequest.mockImplementation(mockFailingGetRequest);
     });
 
     // before the fix console.log was the error handler; uicore called its undefined return
@@ -81,5 +93,40 @@ describe('selection plan loading errors', () => {
         expect(mockHandlerErrors).toEqual([]);
         expect(outcome).toBe('rejected');
         expect(authErrorHandler).toHaveBeenCalled();
+    });
+});
+
+describe('getMarketingSettings', () => {
+    it('fetches the summit and selection plan values from the show endpoint in one request', async () => {
+        getRequest.mockImplementation(() => () => () =>
+            Promise.resolve({response: {last_page: 1, data: [{key: 'A', selection_plan_id: 0}, {key: 'B', selection_plan_id: 5}]}}));
+        const dispatch = jest.fn();
+
+        await getMarketingSettings(10)(dispatch);
+
+        expect(getRequest).toHaveBeenCalledTimes(1);
+        expect(getRequest.mock.calls[0][2]).toBe('https://marketing/api/public/v1/config-values/all/shows/10');
+        expect(dispatch).toHaveBeenCalledWith({type: REQUEST_MARKETING_SETTINGS, payload: {}});
+        expect(dispatch).toHaveBeenCalledWith({
+            type: RECEIVE_MARKETING_SETTINGS,
+            payload: {response: {data: [{key: 'A', selection_plan_id: 0}, {key: 'B', selection_plan_id: 5}]}}
+        });
+    });
+
+    it('requests the remaining pages without a selection plan filter and joins them in page order', async () => {
+        const requestedPages = [];
+        getRequest.mockImplementation(() => (params) => () => {
+            requestedPages.push(params);
+            return Promise.resolve({response: {last_page: 3, data: [{key: `K${params.page}`}]}});
+        });
+        const dispatch = jest.fn();
+
+        await getMarketingSettings(10)(dispatch);
+
+        expect(requestedPages).toEqual([{page: 1, per_page: 100}, {page: 2, per_page: 100}, {page: 3, per_page: 100}]);
+        expect(dispatch).toHaveBeenLastCalledWith({
+            type: RECEIVE_MARKETING_SETTINGS,
+            payload: {response: {data: [{key: 'K1'}, {key: 'K2'}, {key: 'K3'}]}}
+        });
     });
 });

@@ -23,8 +23,6 @@ import {
     REQUEST_MARKETING_SETTINGS,
     REQUEST_AVAILABLE_SUMMITS,
     RECEIVE_ALLOWED_SELECTION_PLANS,
-    REQUEST_SELECTION_PLAN_SETTINGS,
-    RECEIVE_SELECTION_PLAN_SETTINGS,
     RECEIVE_ALLOWED_SELECTION_PLAN
 } from "../actions/base-actions";
 import { RECEIVE_SPEAKER_INFO } from '../actions/auth-actions';
@@ -88,23 +86,16 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         case RECEIVE_MARKETING_SETTINGS: {
             const {data} = payload.response;
+            // summit values have no selection plan, the rest are grouped per plan
+            const summitSettings = data.filter(setting => !setting.selection_plan_id);
             // set color vars
-            setDocumentColors(data);
+            setDocumentColors(summitSettings);
             const selectionPlansSettings = formatSelectionPlanSettings(data);
-            return {...state, marketingSettings: data, selectionPlansSettings: selectionPlansSettings};
+            return {...state, marketingSettings: summitSettings, selectionPlansSettings: selectionPlansSettings};
         }
         case RECEIVE_ALLOWED_SELECTION_PLANS: {
             const {data} = payload.response;
             return {...state, summit: {...state.summit, selection_plans: data}};
-        }
-        case REQUEST_SELECTION_PLAN_SETTINGS: {
-            return {...state, selectionPlansSettings: {}};
-        }
-        case RECEIVE_SELECTION_PLAN_SETTINGS: {
-            const {data} = payload.response;
-            const selectionPlansSettings = formatSelectionPlanSettings(data);
-            let newSelectionPlansSettings = { ...state.selectionPlansSettings, ...selectionPlansSettings};
-            return {...state, marketingSettings: data, selectionPlansSettings: newSelectionPlansSettings} ;
         }
         case RECEIVE_ALLOWED_SELECTION_PLAN: {
             const newSelectionPlan = payload.response;
