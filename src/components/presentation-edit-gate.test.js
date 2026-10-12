@@ -14,10 +14,10 @@
 import { Redirect } from 'react-router-dom';
 import { PresentationEditGate, mapStateToProps } from './presentation-edit-gate';
 
-const lockedFor = ({ canEdit = true, nowUtc = 1000, ...overrides } = {}) => mapStateToProps(
+const lockedFor = ({ canEdit = true, canCreate = true, nowUtc = 1000, ...overrides } = {}) => mapStateToProps(
     { clockState: { nowUtc } },
     {
-        presentation: { canEdit: jest.fn(() => canEdit) },
+        presentation: { canEdit: jest.fn(() => canEdit), canCreate: jest.fn(() => canCreate) },
         isNew: false,
         presentationId: '10',
         entityId: 10,
@@ -26,18 +26,18 @@ const lockedFor = ({ canEdit = true, nowUtc = 1000, ...overrides } = {}) => mapS
 ).locked;
 
 describe('PresentationEditGate', () => {
-    const previewUrl = '/app/summit/all-plans/89/presentations/10/preview';
+    const redirectUrl = '/app/summit/all-plans/89/presentations/10/preview';
     const children = 'routes';
 
     it('renders the routes while unlocked', () => {
-        expect(PresentationEditGate({ locked: false, previewUrl, children })).toBe(children);
+        expect(PresentationEditGate({ locked: false, redirectUrl, children })).toBe(children);
     });
 
-    it('replaces the routes with a redirect to the preview once locked', () => {
-        const result = PresentationEditGate({ locked: true, previewUrl, children });
+    it('replaces the routes with a redirect once locked', () => {
+        const result = PresentationEditGate({ locked: true, redirectUrl, children });
 
         expect(result.type).toBe(Redirect);
-        expect(result.props.to).toBe(previewUrl);
+        expect(result.props.to).toBe(redirectUrl);
     });
 });
 
@@ -54,8 +54,16 @@ describe('PresentationEditGate mapStateToProps', () => {
         expect(lockedFor({ canEdit: false, nowUtc: null })).toBe(false);
     });
 
-    it('does not lock a new presentation or a stale entity from another presentation', () => {
-        expect(lockedFor({ canEdit: false, isNew: true })).toBe(false);
+    it('does not lock a stale entity from another presentation', () => {
         expect(lockedFor({ canEdit: false, entityId: 11 })).toBe(false);
+    });
+
+    it('gates a new presentation on canCreate, not canEdit', () => {
+        expect(lockedFor({ isNew: true, canEdit: false, canCreate: true })).toBe(false);
+        expect(lockedFor({ isNew: true, canEdit: true, canCreate: false })).toBe(true);
+    });
+
+    it('gates a new presentation before the first clock tick', () => {
+        expect(lockedFor({ isNew: true, canCreate: false, nowUtc: null })).toBe(true);
     });
 });

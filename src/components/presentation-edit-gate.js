@@ -16,17 +16,20 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
 // locked is derived in mapStateToProps: a react-redux 5 connect is a legacy context provider, so any gate render re-renders the routes
-export const PresentationEditGate = ({ locked, previewUrl, children }) => {
-    if (locked) return <Redirect to={previewUrl} />;
+export const PresentationEditGate = ({ locked, redirectUrl, children }) => {
+    if (locked) return <Redirect to={redirectUrl} />;
 
     return children;
 };
 
-// nowUtc is null until the first Clock tick. Evaluating the gate against a seed would let a fast
-// device clock read a live grant as expired, and this redirect is one-way: the gate isn't mounted
-// on /preview, so a corrected tick never undoes it.
+// An existing presentation waits for the first Clock tick: nowUtc is null until then, evaluating
+// against a seed would let a fast device clock read a live grant as expired, and this redirect is
+// one-way: the gate isn't mounted on /preview, so a corrected tick never undoes it. canCreate is
+// on the local clock, so /new is gated from the first render; nowUtc still re-runs it every tick.
 export const mapStateToProps = ({ clockState }, { presentation, isNew, presentationId, entityId }) => ({
-    locked: !isNew && clockState.nowUtc != null && presentationId == entityId && !presentation.canEdit(clockState.nowUtc),
+    locked: isNew
+        ? !presentation.canCreate()
+        : clockState.nowUtc != null && presentationId == entityId && !presentation.canEdit(clockState.nowUtc),
 });
 
 export default connect(mapStateToProps)(PresentationEditGate);

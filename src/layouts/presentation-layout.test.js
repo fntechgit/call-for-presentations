@@ -18,7 +18,7 @@ import React from 'react';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux';
-import { Router, Route } from 'react-router-dom';
+import { Router, Route, Switch } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { render, act, screen } from '@testing-library/react';
 import PresentationLayout from './presentation-layout';
@@ -26,10 +26,13 @@ import { SelectionPlanContext } from '../components/SelectionPlanContext';
 
 // render counts of the stubbed pages and forms, keyed by stub name
 const mockRenders = {};
-const mockStub = (name) => () => {
-    mockRenders[name] = (mockRenders[name] || 0) + 1;
-    return null;
-};
+// a declaration, not a const: jest.mock factories are hoisted above the module's consts
+function mockStub(name) {
+    return () => {
+        mockRenders[name] = (mockRenders[name] || 0) + 1;
+        return null;
+    };
+}
 
 jest.mock('../pages/preview-presentation-page', () => mockStub('preview'));
 jest.mock('../pages/thankyou-presentation-page', () => mockStub('thankYou'));
@@ -71,8 +74,10 @@ jest.mock('sweetalert2', () => ({ fire: jest.fn() }));
 const DAY = 86400;
 const NOW = Math.floor(Date.now() / 1000);
 const BASE_URL = '/presentations/10';
+const NEW_URL = '/presentations/new';
+const PLAN_URL = '/app/summit/all-plans/89';
 
-const openPlan = { id: 89, is_enabled: true, submission_begin_date: NOW - DAY, submission_end_date: NOW + DAY };
+const openPlan = { id: 89, is_enabled: true, allow_new_presentations: true, submission_begin_date: NOW - DAY, submission_end_date: NOW + DAY };
 const lockedPlan = { ...openPlan, is_enabled: false };
 // window ended an hour ago, so only the reopen grant on the entity keeps it editable
 const closedPlan = { ...openPlan, submission_end_date: NOW - 3600 };
@@ -112,7 +117,10 @@ const setup = ({ path, plan = openPlan, presentation = entity, nowUtc = NOW, loa
         <Provider store={store}>
             <Router history={history}>
                 <SelectionPlanContext.Provider value={{ setSelectionPlanCtx }}>
-                    <Route path="/presentations/:presentation_id" component={Host} />
+                    <Switch>
+                        <Route path="/presentations/new" component={Host} />
+                        <Route path="/presentations/:presentation_id" component={Host} />
+                    </Switch>
                 </SelectionPlanContext.Provider>
             </Router>
         </Provider>
@@ -167,6 +175,24 @@ describe('PresentationLayout edit gate', () => {
 
             expect(history.location.pathname).toBe(`${BASE_URL}/preview`);
             expect(mockRenders.thankYou).toBeUndefined();
+        });
+    });
+
+    describe('new presentation', () => {
+        it('stays on the form while the submission window is open', () => {
+            const { history, setSelectionPlanCtx } = setup({ path: `${NEW_URL}/summary`, presentation: emptyEntity });
+
+            expect(history.location.pathname).toBe(`${NEW_URL}/summary`);
+            expect(mockRenders.summaryForm).toBeGreaterThan(0);
+            expect(setSelectionPlanCtx).toHaveBeenCalled();
+        });
+
+        it('goes to the plan page without mounting the form once the window has ended', () => {
+            const { history, setSelectionPlanCtx } = setup({ path: `${NEW_URL}/summary`, plan: closedPlan, presentation: emptyEntity, nowUtc: null });
+
+            expect(history.location.pathname).toBe(PLAN_URL);
+            expect(mockRenders.summaryForm).toBeUndefined();
+            expect(setSelectionPlanCtx).not.toHaveBeenCalled();
         });
     });
 
