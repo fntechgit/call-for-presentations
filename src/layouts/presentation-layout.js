@@ -81,26 +81,29 @@ class PresentationLayout extends React.Component {
         const defaultStep = selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB ? selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB : 'summary';
 
         return(
-            <>
-                <PresentationEditGate
-                    presentation={this.presentation}
-                    isNew={isNew}
-                    presentationId={match.params.presentation_id}
-                    entityId={entity.id}
-                    pathname={location.pathname}
-                    previewUrl={`${match.url}/preview`}
-                />
-                <Switch>
-                    <Route strict exact path={`${match.url}/speakers/new`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
-                    <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
-                    <Route strict exact path={`${match.url}/preview`} render={(props) => <PreviewPresentationPage {...props} selectionPlan={selectionPlan}/>}/>
-                    <Route strict exact path={`${match.url}/thank-you`} render={(props) => <ThankYouPresentationPage {...props} selectionPlan={selectionPlan}/>}/>
-                    <Route strict exact path={`${match.url}/:step`} render={
-                        props => (<EditPresentationPage {...props} presentation={this.presentation} selectionPlan={selectionPlan} />)
-                    }/>
-                    <Route render={props => (<Redirect to={`${match.url}/${defaultStep}`} />)}/>
-                </Switch>
-            </>
+            <Switch>
+                <Route strict exact path={`${match.url}/preview`} render={(props) => <PreviewPresentationPage {...props} selectionPlan={selectionPlan}/>}/>
+                {/* outside the gate, so a locked presentation can still be previewed */}
+                <Route render={() => (
+                    <PresentationEditGate
+                        presentation={this.presentation}
+                        isNew={isNew}
+                        presentationId={match.params.presentation_id}
+                        entityId={entity.id}
+                        previewUrl={`${match.url}/preview`}
+                    >
+                        <Switch>
+                            <Route strict exact path={`${match.url}/speakers/new`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
+                            <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
+                            <Route strict exact path={`${match.url}/thank-you`} render={(props) => <ThankYouPresentationPage {...props} selectionPlan={selectionPlan}/>}/>
+                            <Route strict exact path={`${match.url}/:step`} render={
+                                props => (<EditPresentationPage {...props} presentation={this.presentation} selectionPlan={selectionPlan} />)
+                            }/>
+                            <Route render={props => (<Redirect to={`${match.url}/${defaultStep}`} />)}/>
+                        </Switch>
+                    </PresentationEditGate>
+                )}/>
+            </Switch>
         );
     }
 

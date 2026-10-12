@@ -12,41 +12,50 @@
  **/
 
 import { Redirect } from 'react-router-dom';
-import { PresentationEditGate } from './presentation-edit-gate';
+import { PresentationEditGate, mapStateToProps } from './presentation-edit-gate';
 
-const renderGate = ({ canEdit = true, ...overrides } = {}) => PresentationEditGate({
-    presentation: { canEdit: jest.fn(() => canEdit) },
-    isNew: false,
-    presentationId: '10',
-    entityId: 10,
-    pathname: '/app/summit/all-plans/89/presentations/10/summary',
-    previewUrl: '/app/summit/all-plans/89/presentations/10/preview',
-    nowUtc: 1000,
-    ...overrides,
-});
+const lockedFor = ({ canEdit = true, nowUtc = 1000, ...overrides } = {}) => mapStateToProps(
+    { clockState: { nowUtc } },
+    {
+        presentation: { canEdit: jest.fn(() => canEdit) },
+        isNew: false,
+        presentationId: '10',
+        entityId: 10,
+        ...overrides,
+    },
+).locked;
 
 describe('PresentationEditGate', () => {
-    it('renders nothing while the presentation is editable', () => {
-        expect(renderGate()).toBeNull();
+    const previewUrl = '/app/summit/all-plans/89/presentations/10/preview';
+    const children = 'routes';
+
+    it('renders the routes while unlocked', () => {
+        expect(PresentationEditGate({ locked: false, previewUrl, children })).toBe(children);
     });
 
-    it('redirects to the preview once the presentation can no longer be edited', () => {
-        const result = renderGate({ canEdit: false });
+    it('replaces the routes with a redirect to the preview once locked', () => {
+        const result = PresentationEditGate({ locked: true, previewUrl, children });
 
         expect(result.type).toBe(Redirect);
-        expect(result.props.to).toBe('/app/summit/all-plans/89/presentations/10/preview');
+        expect(result.props.to).toBe(previewUrl);
+    });
+});
+
+describe('PresentationEditGate mapStateToProps', () => {
+    it('is unlocked while the presentation is editable', () => {
+        expect(lockedFor()).toBe(false);
     });
 
-    it('waits for the first clock tick before gating', () => {
-        expect(renderGate({ canEdit: false, nowUtc: null })).toBeNull();
+    it('locks once the presentation can no longer be edited', () => {
+        expect(lockedFor({ canEdit: false })).toBe(true);
     });
 
-    it('does not redirect again when already on the preview', () => {
-        expect(renderGate({ canEdit: false, pathname: '/app/summit/all-plans/89/presentations/10/preview' })).toBeNull();
+    it('waits for the first clock tick before locking', () => {
+        expect(lockedFor({ canEdit: false, nowUtc: null })).toBe(false);
     });
 
-    it('does not gate a new presentation or a stale entity from another presentation', () => {
-        expect(renderGate({ canEdit: false, isNew: true })).toBeNull();
-        expect(renderGate({ canEdit: false, entityId: 11 })).toBeNull();
+    it('does not lock a new presentation or a stale entity from another presentation', () => {
+        expect(lockedFor({ canEdit: false, isNew: true })).toBe(false);
+        expect(lockedFor({ canEdit: false, entityId: 11 })).toBe(false);
     });
 });

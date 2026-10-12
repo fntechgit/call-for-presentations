@@ -12,7 +12,7 @@
  **/
 
 import T from 'i18n-react/dist/i18n-react';
-import { PresentationReopenedBanner } from './presentation-reopened-banner';
+import { PresentationReopenedBanner, mapStateToProps } from './presentation-reopened-banner';
 
 jest.mock('i18n-react/dist/i18n-react', () => ({ translate: jest.fn((key) => key) }));
 jest.mock('openstack-uicore-foundation/lib/utils/methods', () => ({ formatEpoch: (epoch) => `epoch:${epoch}` }));
@@ -22,18 +22,22 @@ describe('PresentationReopenedBanner', () => {
     beforeEach(() => jest.clearAllMocks());
 
     it('renders nothing when submission is not reopened', () => {
-        const presentation = { getReopenedUntil: jest.fn(() => null) };
-
-        expect(PresentationReopenedBanner({ presentation, nowUtc: 1000 })).toBeNull();
-        expect(presentation.getReopenedUntil).toHaveBeenCalledWith(1000);
+        expect(PresentationReopenedBanner({ reopenedUntil: null })).toBeNull();
     });
 
-    it('announces the reopen deadline reported by the model', () => {
-        const presentation = { getReopenedUntil: jest.fn(() => 2000) };
-
-        const banner = PresentationReopenedBanner({ presentation, nowUtc: 1000 });
+    it('announces the reopen deadline', () => {
+        const banner = PresentationReopenedBanner({ reopenedUntil: 2000 });
 
         expect(banner.props.className).toBe('alert alert-warning');
         expect(T.translate).toHaveBeenCalledWith('edit_presentation.submission_reopened', { end_date: 'epoch:2000', when: 'UTC' });
+    });
+});
+
+describe('PresentationReopenedBanner mapStateToProps', () => {
+    it('asks the model for the reopen deadline at the current clock time', () => {
+        const presentation = { getReopenedUntil: jest.fn(() => 2000) };
+
+        expect(mapStateToProps({ clockState: { nowUtc: 1000 } }, { presentation })).toEqual({ reopenedUntil: 2000 });
+        expect(presentation.getReopenedUntil).toHaveBeenCalledWith(1000);
     });
 });

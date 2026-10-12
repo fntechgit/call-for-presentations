@@ -17,12 +17,8 @@ import T from 'i18n-react/dist/i18n-react';
 import moment from 'moment-timezone';
 import { formatEpoch } from 'openstack-uicore-foundation/lib/utils/methods';
 
-// owns the clock subscription so a tick re-renders only this banner, not the step forms
-export const PresentationReopenedBanner = ({ presentation, nowUtc }) => {
-    // asks the model rather than re-deriving the condition, so the banner cannot announce a
-    // deadline that canEdit() does not actually gate on
-    const reopenedUntil = presentation.getReopenedUntil(nowUtc);
-
+// owns the clock subscription; selecting reopenedUntil rather than nowUtc means a tick only renders it when the deadline changes
+export const PresentationReopenedBanner = ({ reopenedUntil }) => {
     if (!reopenedUntil) return null;
 
     return (
@@ -35,8 +31,10 @@ export const PresentationReopenedBanner = ({ presentation, nowUtc }) => {
     );
 };
 
-const mapStateToProps = ({ clockState }) => ({
-    nowUtc: clockState.nowUtc,
+// asks the model rather than re-deriving the condition, so the banner cannot announce a
+// deadline that canEdit() does not actually gate on
+export const mapStateToProps = ({ clockState }, { presentation }) => ({
+    reopenedUntil: presentation.getReopenedUntil(clockState.nowUtc),
 });
 
 export default connect(mapStateToProps)(PresentationReopenedBanner);
