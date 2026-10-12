@@ -15,8 +15,6 @@ import React, {useContext, useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 import T from 'i18n-react/dist/i18n-react';
 import Swal from "sweetalert2";
-import moment from "moment-timezone";
-import {formatEpoch} from "openstack-uicore-foundation/lib/utils/methods";
 import {
   savePresentation,
   completePresentation,
@@ -40,11 +38,12 @@ import PresentationUploadsForm from "../components/presentation-uploads-form"
 import PresentationSpeakersForm from "../components/presentation-speakers-form";
 import PresentationReviewForm from "../components/presentation-review-form";
 import {getMarketingValue} from "../components/marketing-setting";
+import PresentationReopenedBanner from "../components/presentation-reopened-banner";
 
 import '../styles/edit-presentation-page.less';
 import {SelectionPlanContext} from "../components/SelectionPlanContext";
 
-const EditPresentationPage = ({entity, track, presentation, selectionPlan, summit, match, selectionPlansSettings, showInfoPopup, setShowInfoPopup, nowUtc, ...props}) => {
+const EditPresentationPage = ({entity, track, presentation, selectionPlan, summit, match, selectionPlansSettings, showInfoPopup, setShowInfoPopup, ...props}) => {
   const {setSelectionPlanCtx} = useContext(SelectionPlanContext);
 
   const [selectionPlanSettings, setSelectionPlanSettings] = useState(null);
@@ -104,23 +103,12 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
     });
   }
 
-  // asks the model rather than re-deriving the condition, so the banner cannot announce a
-  // deadline that canEdit() does not actually gate on
-  const reopenedUntil = presentation.getReopenedUntil(nowUtc);
-
   return (
     <div className="page-wrap" id="edit-presentation-page">
       <div className="presentation-header-wrapper">
         <h2>{title} {`${selectionPlanSettings?.CFP_PRESENTATIONS_SINGULAR_LABEL || T.translate("edit_presentation.presentation")}`}</h2>
       </div>
-      {reopenedUntil &&
-      <div className="alert alert-warning">
-        {T.translate("edit_presentation.submission_reopened", {
-          end_date: formatEpoch(reopenedUntil, "MMMM DD, YYYY h:mm a"),
-          when: moment.tz.guess(),
-        })}
-      </div>
-      }
+      <PresentationReopenedBanner presentation={presentation} />
       <PresentationNav activeStep={step} progress={presentation.getPresentationProgress()} steps={navSteps} selectionPlanSettings={selectionPlanSettings} />
 
       {step === 'summary' &&
@@ -206,13 +194,12 @@ const EditPresentationPage = ({entity, track, presentation, selectionPlan, summi
   );
 }
 
-const mapStateToProps = ({baseState, presentationState, clockState}) => ({
+const mapStateToProps = ({baseState, presentationState}) => ({
   summit: baseState.summit,
   tagGroups: baseState.tagGroups,
   loading: baseState.loading,
   loggedSpeaker: baseState.speaker,
   selectionPlansSettings: baseState.selectionPlansSettings,
-  nowUtc: clockState.nowUtc,
   ...presentationState
 })
 
