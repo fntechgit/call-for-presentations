@@ -8,7 +8,10 @@
     "build": "./node_modules/.bin/webpack --config webpack.prod.js",
     "serve": "webpack-dev-server --open --config webpack.dev.js",
     "test": "jest",
-    "clean-branchs": "git branch | grep -v \"master\\|main\\|production\" | xargs git branch -D"
+    "clean-branchs": "git branch | grep -v \"master\\|main\\|production\" | xargs git branch -D",
+    "lint": "eslint src",
+    "precommit": "yarn lint-staged --verbose",
+    "prepare": "husky"
   },
   "author": "",
   "license": "ISC",
@@ -103,11 +106,29 @@
     "webpack-merge": "^5.8.0"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.24.7",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@testing-library/react": "12.1.5",
+    "eslint": "8.2.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "eslint-plugin-unused-imports": "^4.0.1",
+    "husky": "^9.0.11",
     "jest": "30.4.2",
-    "jest-environment-jsdom": "30.4.1"
+    "jest-environment-jsdom": "30.4.1",
+    "lint-staged": "^15.1.0",
+    "prettier": "^2.0.5"
   },
   "resolutions": {
     "lodash": "4.17.21"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": "eslint --fix",
+    "**/*": "prettier --write --ignore-unknown"
   }
 }
