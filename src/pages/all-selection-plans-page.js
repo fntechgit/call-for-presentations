@@ -30,6 +30,7 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, s
     });
 
   useEffect(() => {
+    if (plansToShow.length === 0) return;
     getAllPresentations(summit.id).then(() => {
       // clear presentation form
       resetPresentation();
