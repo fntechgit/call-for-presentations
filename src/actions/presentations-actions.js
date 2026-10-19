@@ -37,11 +37,12 @@ export const getAllPresentations = (summitId) => async (dispatch) => {
 
   const moderator = dispatch(getPresentationsByRole('moderator', summitId, accessToken));
 
-  return Promise.all([created, speaker, moderator]).then(([created, speaker, moderator]) => {
+  // a failed role (already alerted by authErrorHandler) counts as empty, so the other roles still render
+  return Promise.allSettled([created, speaker, moderator]).then((results) => {
+      const [created, speaker, moderator] = results.map(result => result.status === 'fulfilled' ? result.value : []);
       dispatch(createAction(PRESENTATIONS_RECEIVED)({created, speaker, moderator}));
-      dispatch(stopLoading());
     }
-  );
+  ).finally(() => dispatch(stopLoading()));
 };
 
 export const getPresentationsByRole = (role, summitId, accessToken) => (dispatch) => {

@@ -14,14 +14,18 @@
 import React from 'react'
 import {connect} from "react-redux";
 import store from '../store';
+import {getCurrentSelectionPlanId} from "../utils/methods";
 
 
 export const getMarketingValue = (key) => {
     const {baseState} = store.getState();
     const {marketingSettings} = baseState;
 
-    if (!marketingSettings) return null;
-    const setting = marketingSettings.find(s => s.key === key);
+    // baseState is persisted, so a session from before the grouping can still rehydrate the old array
+    if (!marketingSettings || Array.isArray(marketingSettings)) return null;
+    // the current selection plan's value, falling back to the summit one (0)
+    const planId = getCurrentSelectionPlanId();
+    const setting = marketingSettings[planId]?.find(s => s.key === key) || marketingSettings[0].find(s => s.key === key);
 
     if (!setting) return null;
 

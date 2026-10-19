@@ -37,7 +37,7 @@ describe('baseReducer RECEIVE_MARKETING_SETTINGS', () => {
 
         const state = baseReducer(undefined, {type: RECEIVE_MARKETING_SETTINGS, payload: {response: {data}}});
 
-        expect(state.marketingSettings).toEqual([data[0]]);
+        expect(state.marketingSettings).toEqual({0: [data[0]], 5: [data[1]], 7: [data[2]]});
         expect(state.selectionPlansSettings).toEqual({
             5: {spkmgmt_disclaimer: 'plan 5'},
             7: {CFP_LANDING_PAGE_TITLE: 'title 7'},
