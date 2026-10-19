@@ -86,12 +86,15 @@ const baseReducer = (state = DEFAULT_STATE, action) => {
         }
         case RECEIVE_MARKETING_SETTINGS: {
             const {data} = payload.response;
-            // summit values have no selection plan, the rest are grouped per plan
-            const summitSettings = data.filter(setting => !setting.selection_plan_id);
+            // raw rows grouped by selection plan id, summit values (no selection plan) under 0
+            const marketingSettings = data.reduce((groups, setting) => {
+                const planId = setting.selection_plan_id || 0;
+                return {...groups, [planId]: [...(groups[planId] || []), setting]};
+            }, {0: []});
             // set color vars
-            setDocumentColors(summitSettings);
+            setDocumentColors(marketingSettings[0]);
             const selectionPlansSettings = formatSelectionPlanSettings(data);
-            return {...state, marketingSettings: summitSettings, selectionPlansSettings: selectionPlansSettings};
+            return {...state, marketingSettings, selectionPlansSettings: selectionPlansSettings};
         }
         case RECEIVE_ALLOWED_SELECTION_PLANS: {
             const {data} = payload.response;

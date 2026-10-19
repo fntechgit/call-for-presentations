@@ -13,6 +13,7 @@
 
 import React, {useEffect, useState} from 'react'
 import {connect} from 'react-redux';
+import T from "i18n-react/dist/i18n-react";
 import {Switch, Route, Redirect} from 'react-router-dom';
 import {getAllFromSummit} from '../actions/base-actions';
 import AllPlansLayout from "./all-plans-layout";
@@ -25,11 +26,18 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ..
   const urlSummitSlug = match.params.summit_slug;
   const summitSlug = summit?.slug;
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   // get summit data on every refresh
   useEffect(() => {
-    props.getAllFromSummit(urlSummitSlug, true).then(() => setDataLoaded(true));
+    props.getAllFromSummit(urlSummitSlug, true)
+      .then(() => setDataLoaded(true))
+      .catch(() => setLoadError(true));
   }, []);
+
+  if (loadError) {
+    return <div className="small-page-wrap">{T.translate("errors.load_data_error")}</div>;
+  }
 
   if (summitSlug !== urlSummitSlug || !baseLoaded || !dataLoaded) return null;
 

@@ -22,6 +22,7 @@ import {
 } from "openstack-uicore-foundation/lib/utils/actions";
 import history from '../history';
 import {getAccessTokenSafely} from "../utils/methods";
+import {DUMMY_ACTION} from "./presentations-actions";
 
 export const RECEIVE_TAG_GROUPS = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY = 'RECEIVE_EVENT_CATEGORY';
@@ -34,7 +35,6 @@ export const ERROR_RECEIVE_SUMMIT = 'ERROR_RECEIVE_SUMMIT';
 export const CLEAR_SUMMIT = 'CLEAR_SUMMIT';
 export const BASE_LOADED = 'BASE_LOADED';
 export const RECEIVE_ALLOWED_SELECTION_PLANS = 'RECEIVE_ALLOWED_SELECTION_PLANS';
-export const RECEIVE_MARKETING_SETTINGS_PAGE = 'RECEIVE_MARKETING_SETTINGS_PAGE';
 export const RECEIVE_ALLOWED_SELECTION_PLAN = 'RECEIVE_ALLOWED_SELECTION_PLAN';
 
 
@@ -53,9 +53,11 @@ export const getAllFromSummit = (summitSlug, withSpeakerData = false) => (dispat
   return getCurrentSummitPublic(summitSlug)(dispatch, getState)
     .then(({response}) => {
       // independent of each other, they only need the summit id
-      const loads = [dispatch(getMarketingSettings(response.id))];
+      // marketing settings are optional, authErrorHandler already alerted, so don't block the summit load
+      const loads = [dispatch(getMarketingSettings(response.id)).catch(() => {})];
       if (withSpeakerData) {
-        loads.push(dispatch(getTagGroups(response.id)), dispatch(getAllowedSelectionPlans(response.id)));
+        // no own loading toggle: the flag isn't ref-counted and this thunk already covers the whole load
+        loads.push(dispatch(getTagGroups(response.id)), dispatch(getAllowedSelectionPlans(response.id, false)));
       }
       return Promise.all(loads).then(() => {
         dispatch(createAction(BASE_LOADED)({loaded: true}));
@@ -124,10 +126,10 @@ export const getTagGroups = (summitId) => async (dispatch) => {
   )(params)(dispatch);
 };
 
-export const getAllowedSelectionPlans = (summitId) => async (dispatch, getState) => {
+export const getAllowedSelectionPlans = (summitId, withLoading = true) => async (dispatch, getState) => {
   const accessToken = await getAccessTokenSafely();
 
-  dispatch(startLoading());
+  if (withLoading) dispatch(startLoading());
 
   const params = {
     access_token: accessToken,
@@ -140,7 +142,7 @@ export const getAllowedSelectionPlans = (summitId) => async (dispatch, getState)
     `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/me`,
     console.log
   )(params)(dispatch, getState).then(() => {
-    dispatch(stopLoading());
+    if (withLoading) dispatch(stopLoading());
   });
 }
 
@@ -196,7 +198,7 @@ export const getMarketingSettings = (summitId) => async (dispatch) => {
   // without selection_plan_id the list holds the summit values (selection_plan_id 0) and every plan's
   const getPage = (page) => getRequest(
     null,
-    createAction(RECEIVE_MARKETING_SETTINGS_PAGE),
+    createAction(DUMMY_ACTION),
     `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
     authErrorHandler
   )({page, per_page: 100})(dispatch).then(({response}) => response);
@@ -230,6 +232,7 @@ const currentSummitErrorHandler = (err, res) => (dispatch, state) => {
       break;
     default:
       Swal.fire("ERROR", T.translate("errors.server_error"), "error");
+      history.push('/');
       break
   }
 };
