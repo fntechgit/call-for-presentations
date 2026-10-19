@@ -16,6 +16,7 @@ import
     RECEIVE_SPEAKER,
     RESET_SPEAKER_FORM,
     UPDATE_SPEAKER,
+    SPEAKER_SAVED,
     SPEAKER_UPDATED,
     PIC_ATTACHED,
     SPEAKER_BIG_PIC_ATTACHED,
@@ -123,6 +124,10 @@ const speakerReducer = (state = DEFAULT_STATE, action) => {
         case SPEAKER_BIG_PIC_ATTACHED: {
             let pic_info = {...payload.response};
             return {...state, entity: {...state.entity, big_pic: pic_info.url, big_pic_file: null} };
+        }
+        case SPEAKER_SAVED: {
+            // keep the id from a create, so a retry after a failed upload PUTs instead of re-POSTing
+            return {...state, entity: {...state.entity, id: payload.response.id} };
         }
         case SPEAKER_UPDATED: {
             return state;

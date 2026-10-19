@@ -21,6 +21,7 @@ import {
     saveSpeakerProfile,
     SPEAKER_BIG_PIC_ATTACHED,
 } from './speaker-actions';
+import speakerReducer from '../reducers/speaker-reducer';
 
 // per-request outcome keyed by "METHOD /path"; anything not listed succeeds with mockDefaultResponse
 const mockOutcomes = {};
@@ -194,12 +195,32 @@ describe('saveSpeakerProfile', () => {
         expect(successMessages()).toHaveLength(1);
     });
 
-    it('does not refresh or report success when a photo upload fails, and settles (create)', async () => {
+    it('still refreshes the speaker but does not report success when a photo upload fails, and settles (create)', async () => {
         mockOutcomes['POST /api/v1/speakers/7/photo'] = { status: 412 };
 
         await expect(saveSpeakerProfile(makeSpeaker({ id: 0, pic_file: pic }))(makeDispatch(), getState)).resolves.toBeUndefined();
 
-        expect(getSpeakerInfo).not.toHaveBeenCalled();
+        expect(getSpeakerInfo).toHaveBeenCalledTimes(1);
+        expect(successMessages()).toHaveLength(0);
+    });
+
+    it('does not settle while the other upload is still pending after one fails', async () => {
+        const bigPhoto = deferred();
+        mockOutcomes['POST /api/v1/speakers/7/photo'] = { status: 412 };
+        mockOutcomes['POST /api/v1/speakers/7/big-photo'] = { wait: bigPhoto.promise };
+        let settled = false;
+
+        const saving = saveSpeakerProfile(makeSpeaker({ pic_file: pic, big_pic_file: bigPic }))(makeDispatch(), getState)
+            .then(() => { settled = true; });
+        await flush();
+
+        expect(authErrorHandler).toHaveBeenCalled();
+        expect(settled).toBe(false);
+
+        bigPhoto.resolve();
+        await saving;
+
+        expect(settled).toBe(true);
         expect(successMessages()).toHaveLength(0);
     });
 });
@@ -233,5 +254,21 @@ describe('saveSpeaker', () => {
 
         expect(authErrorHandler).toHaveBeenCalled();
         expect(successMessages()).toHaveLength(0);
+    });
+
+    it('keeps the created speaker id in the speaker state when a photo upload fails (create)', async () => {
+        mockOutcomes['POST /api/v1/speakers/7/photo'] = { status: 412 };
+        const dispatch = makeDispatch();
+
+        await saveSpeaker(makeSpeaker({ id: 0, pic_file: pic }), 'speaker')(dispatch, getState);
+
+        const state = dispatch.mock.calls
+            .map(([action]) => action)
+            .filter((action) => action && typeof action === 'object')
+            .reduce(speakerReducer, speakerReducer(undefined, { type: '@@INIT' }));
+
+        expect(mockCalls).toContain('POST /api/v1/speakers');
+        expect(successMessages()).toHaveLength(0);
+        expect(state.entity.id).toBe(7);
     });
 });

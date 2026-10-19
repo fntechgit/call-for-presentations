@@ -312,7 +312,11 @@ const uploadSpeakerPhotos = (entity, pic_file, big_pic_file) => (dispatch) => {
         uploads.push(dispatch(uploadBigFile(entity, big_pic_file)));
     }
 
-    return Promise.all(uploads);
+    // wait for every upload to finish, so a late response can't land after the save has settled
+    return Promise.allSettled(uploads).then((results) => {
+        const failed = results.find((result) => result.status === 'rejected');
+        if (failed) return Promise.reject(failed.reason);
+    });
 }
 
 
@@ -489,11 +493,9 @@ export const saveSpeakerProfile = (entity) => async (dispatch, getState) => {
         authErrorHandler,
         entity
     )(params)(dispatch)
-        .then((payload) => dispatch(uploadProfilePhotos(payload.response, pic_file, big_pic_file)))
-        .then((payload) => {
-            // we need to call this because we need the expanded member in the speaker payload
-            dispatch(getSpeakerInfo(null));
-        })
+        .then((payload) => dispatch(uploadProfilePhotos(payload.response, pic_file, big_pic_file))
+            // we need the expanded member in the speaker payload, and the speaker exists even if an upload failed
+            .finally(() => { dispatch(getSpeakerInfo(null)); }))
         .then((payload) => {
             const redirectUrl = summit ? `/app/${summit.slug}/${getSubmissionsPath(summit)}` : '/app/start';
             success_message.html = T.translate("edit_profile.profile_saved");
@@ -513,7 +515,11 @@ const uploadProfilePhotos = (entity, pic_file, big_pic_file) => (dispatch) => {
         uploads.push(dispatch(uploadFileBigPhoto(entity, big_pic_file)));
     }
 
-    return Promise.all(uploads);
+    // wait for every upload to finish, so a late response can't land after the save has settled
+    return Promise.allSettled(uploads).then((results) => {
+        const failed = results.find((result) => result.status === 'rejected');
+        if (failed) return Promise.reject(failed.reason);
+    });
 }
 
 
