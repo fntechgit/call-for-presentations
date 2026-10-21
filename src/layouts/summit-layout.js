@@ -32,7 +32,9 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ..
       await props.getTagGroups(summit.id);
       await props.getAllowedSelectionPlans(summit.id);
       setDataLoaded(true);
-    });
+    })
+    // failures were already reported to the user by the actions' error handlers
+    .catch(() => {});
   }, []);
 
   if (summitSlug !== urlSummitSlug || !baseLoaded || !dataLoaded) return null;

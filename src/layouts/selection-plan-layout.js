@@ -33,7 +33,10 @@ const SelectionPlanLayout = ({summit, match, ...props}) => {
         return;
       }
       // update selection plan and retrieve marketing settings for selection plan
-      props.getAllowedSelectionPlan(selectionPlanId).finally(() => props.getSelectionPlanSettings(summit.id, selectionPlanId));
+      // failures were already reported to the user by the actions' error handlers
+      props.getAllowedSelectionPlan(selectionPlanId)
+        .then(() => props.getSelectionPlanSettings(summit.id, selectionPlanId))
+        .catch(() => {});
     }
   }, [selectionPlanId]);
 

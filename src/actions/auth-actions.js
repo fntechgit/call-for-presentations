@@ -52,8 +52,8 @@ const speakerErrorHandler = (err, res) => async (dispatch, getState) => {
     dispatch(stopLoading());
 
     if (code == 404) {
-        //try to get member
-        return Promise.reject('not found');
+        // no speaker profile yet: getSpeakerInfo's catch falls back to the member on uicore's rejection
+        return;
     }
 
     return dispatch(authErrorHandler(err, res));
