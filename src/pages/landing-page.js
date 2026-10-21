@@ -17,7 +17,7 @@ import T from "i18n-react/dist/i18n-react";
 import SelectionProcessPage from "./selection-process-page";
 import TracksGuidePage from "./tracks-guide-page";
 import { Exclusive } from 'openstack-uicore-foundation/lib/components'
-import { getAllFromSummit, getSelectionPlanSettings } from '../actions/base-actions';
+import { getAllFromSummit } from '../actions/base-actions';
 import { connect } from 'react-redux'
 import {getCurrentSelectionPlanId} from "../utils/methods";
 
@@ -31,24 +31,10 @@ const LandingPage = ({summitSlug, match, summit, isLoggedUser, backUrl, selectio
 
     useEffect(() => {
         if (!isLoggedUser && summitSlug) {
-            props.getAllFromSummit(summitSlug);
+            // also loads the marketing settings of every selection plan
+            props.getAllFromSummit(summitSlug).then(() => setSettingsFetched(true));
         }
     }, [isLoggedUser, summitSlug]);
-
-    useEffect(() => {
-        if (summit) {
-            if (selectionPlanIdParam && summit?.selection_plans) {
-                const selPlan = summit.selection_plans.find(sp => sp.id === selectionPlanIdParam);
-                // retrieve marketing settings for selection plan
-                props.getSelectionPlanSettings(summit.id, selPlan.id)
-                  .then(() => {
-                      setSettingsFetched(true);
-                  });
-            } else {
-                setSettingsFetched(true);
-            }
-        }
-    }, [selectionPlanIdParam, summit]);
 
     const pageTitle = useMemo(() => {
         const selectionPlanSettings = selectionPlansSettings?.[selectionPlanIdParam] || {};
@@ -149,6 +135,6 @@ const mapStateToProps = ({ loggedUserState, baseState }) => ({
     selectionPlansSettings: baseState.selectionPlansSettings,
 });
 
-export default connect(mapStateToProps, {getAllFromSummit, getSelectionPlanSettings})(LandingPage);
+export default connect(mapStateToProps, {getAllFromSummit})(LandingPage);
 
 

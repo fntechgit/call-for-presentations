@@ -13,8 +13,9 @@
 
 import React, {useEffect, useState} from 'react'
 import {connect} from 'react-redux';
+import T from "i18n-react/dist/i18n-react";
 import {Switch, Route, Redirect} from 'react-router-dom';
-import {getAllFromSummit, getTagGroups, getAllowedSelectionPlans} from '../actions/base-actions';
+import {getAllFromSummit} from '../actions/base-actions';
 import AllPlansLayout from "./all-plans-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
 import ProfilePage from "../pages/profile-page";
@@ -25,15 +26,18 @@ const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ..
   const urlSummitSlug = match.params.summit_slug;
   const summitSlug = summit?.slug;
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   // get summit data on every refresh
   useEffect(() => {
-    props.getAllFromSummit(urlSummitSlug).then(async (summit) => {
-      await props.getTagGroups(summit.id);
-      await props.getAllowedSelectionPlans(summit.id);
-      setDataLoaded(true);
-    });
+    props.getAllFromSummit(urlSummitSlug, true)
+      .then(() => setDataLoaded(true))
+      .catch(() => setLoadError(true));
   }, []);
+
+  if (loadError) {
+    return <div className="small-page-wrap">{T.translate("errors.load_data_error")}</div>;
+  }
 
   if (summitSlug !== urlSummitSlug || !baseLoaded || !dataLoaded) return null;
 
@@ -77,7 +81,5 @@ const mapStateToProps = ({baseState}) => ({
 })
 
 export default connect(mapStateToProps, {
-  getAllFromSummit,
-  getTagGroups,
-  getAllowedSelectionPlans
+  getAllFromSummit
 })(SummitLayout);

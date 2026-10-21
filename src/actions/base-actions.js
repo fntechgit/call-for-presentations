@@ -22,6 +22,7 @@ import {
 } from "openstack-uicore-foundation/lib/utils/actions";
 import history from '../history';
 import {getAccessTokenSafely} from "../utils/methods";
+import {DUMMY_ACTION} from "./presentations-actions";
 
 export const RECEIVE_TAG_GROUPS = 'RECEIVE_TAG_GROUPS';
 export const RECEIVE_EVENT_CATEGORY = 'RECEIVE_EVENT_CATEGORY';
@@ -34,8 +35,6 @@ export const ERROR_RECEIVE_SUMMIT = 'ERROR_RECEIVE_SUMMIT';
 export const CLEAR_SUMMIT = 'CLEAR_SUMMIT';
 export const BASE_LOADED = 'BASE_LOADED';
 export const RECEIVE_ALLOWED_SELECTION_PLANS = 'RECEIVE_ALLOWED_SELECTION_PLANS';
-export const REQUEST_SELECTION_PLAN_SETTINGS = 'REQUEST_SELECTION_PLAN_SETTINGS';
-export const RECEIVE_SELECTION_PLAN_SETTINGS = 'RECEIVE_SELECTION_PLAN_SETTINGS';
 export const RECEIVE_ALLOWED_SELECTION_PLAN = 'RECEIVE_ALLOWED_SELECTION_PLAN';
 
 
@@ -43,13 +42,24 @@ export const clearCurrentSummit = () => (dispatch, getState) => {
   dispatch(createAction(CLEAR_SUMMIT)({}));
 };
 
-export const getAllFromSummit = (summitSlug) => (dispatch, getState) => {
+/**
+ * @param summitSlug
+ * @param withSpeakerData also loads the tag groups and the speaker's allowed selection plans, which need a logged user
+ */
+export const getAllFromSummit = (summitSlug, withSpeakerData = false) => (dispatch, getState) => {
   dispatch(startLoading());
   dispatch(createAction(BASE_LOADED)({loaded: false}));
 
   return getCurrentSummitPublic(summitSlug)(dispatch, getState)
     .then(({response}) => {
-      return dispatch(getMarketingSettings(response.id)).then(() => {
+      // independent of each other, they only need the summit id
+      // marketing settings are optional, authErrorHandler already alerted, so don't block the summit load
+      const loads = [dispatch(getMarketingSettings(response.id)).catch(() => {})];
+      if (withSpeakerData) {
+        // no own loading toggle: the flag isn't ref-counted and this thunk already covers the whole load
+        loads.push(dispatch(getTagGroups(response.id)), dispatch(getAllowedSelectionPlans(response.id, false)));
+      }
+      return Promise.all(loads).then(() => {
         dispatch(createAction(BASE_LOADED)({loaded: true}));
         dispatch(stopLoading());
         return response;
@@ -116,10 +126,10 @@ export const getTagGroups = (summitId) => async (dispatch) => {
   )(params)(dispatch);
 };
 
-export const getAllowedSelectionPlans = (summitId) => async (dispatch, getState) => {
+export const getAllowedSelectionPlans = (summitId, withLoading = true) => async (dispatch, getState) => {
   const accessToken = await getAccessTokenSafely();
 
-  dispatch(startLoading());
+  if (withLoading) dispatch(startLoading());
 
   const params = {
     access_token: accessToken,
@@ -132,7 +142,7 @@ export const getAllowedSelectionPlans = (summitId) => async (dispatch, getState)
     `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/me`,
     console.log
   )(params)(dispatch, getState).then(() => {
-    dispatch(stopLoading());
+    if (withLoading) dispatch(stopLoading());
   });
 }
 
@@ -182,36 +192,24 @@ export const loadEventCategory = () => async (dispatch, getState) => {
   );
 };
 
-export const getMarketingSettings = (summitId) => (dispatch) => {
+export const getMarketingSettings = (summitId) => async (dispatch) => {
+  dispatch(createAction(REQUEST_MARKETING_SETTINGS)({}));
 
-  let params = {
-    page: 1,
-    per_page: 100,
-    selection_plan_id: 0,
-  };
-
-  return getRequest(
-    createAction(REQUEST_MARKETING_SETTINGS),
-    createAction(RECEIVE_MARKETING_SETTINGS),
+  // without selection_plan_id the list holds the summit values (selection_plan_id 0) and every plan's
+  const getPage = (page) => getRequest(
+    null,
+    createAction(DUMMY_ACTION),
     `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
     authErrorHandler
-  )(params)(dispatch);
-};
+  )({page, per_page: 100})(dispatch).then(({response}) => response);
 
-export const getSelectionPlanSettings = (summitId, selectionPlanId) => (dispatch) => {
+  const firstPage = await getPage(1);
+  const otherPages = await Promise.all(
+    Array.from({length: firstPage.last_page - 1}, (_, i) => getPage(i + 2))
+  );
+  const data = [firstPage, ...otherPages].flatMap(page => page.data);
 
-  let params = {
-    per_page: 100,
-    page: 1,
-    selection_plan_id: selectionPlanId
-  };
-
-  return getRequest(
-    createAction(REQUEST_SELECTION_PLAN_SETTINGS),
-    createAction(RECEIVE_SELECTION_PLAN_SETTINGS),
-    `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
-    authErrorHandler
-  )(params)(dispatch);
+  dispatch(createAction(RECEIVE_MARKETING_SETTINGS)({response: {data}}));
 };
 
 const currentSummitErrorHandler = (err, res) => (dispatch, state) => {
@@ -234,6 +232,7 @@ const currentSummitErrorHandler = (err, res) => (dispatch, state) => {
       break;
     default:
       Swal.fire("ERROR", T.translate("errors.server_error"), "error");
+      history.push('/');
       break
   }
 };
