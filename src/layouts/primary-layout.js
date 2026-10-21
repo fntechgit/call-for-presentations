@@ -27,13 +27,25 @@ const PrimaryLayout = ({summit, speaker, member, selectionPlanId, match}) => {
       <Switch>
         <Route
           path={`${match.url}/new`}
-          render={(props) => <PresentationLayout selectionPlan={selectionPlan} {...props}/>}
+          render={
+            (props) =>
+              <PresentationLayout selectionPlan={selectionPlan} {...props}/>
+          }
         />
         <Route
           path={`${match.url}/:presentation_id(\\d+)`}
-          render={(props) => <PresentationLayout selectionPlan={selectionPlan} {...props}/>}
+          render={
+            (props) =>
+              <PresentationLayout selectionPlan={selectionPlan} {...props}/>
+          }
         />
-        <Route render={props => (<Redirect to={`/app/${summit.slug}/all-plans/${selectionPlanId}`}/>)}/>
+        <Route
+          render={
+            props => (
+              <Redirect to={`/app/${summit.slug}/all-plans/${selectionPlanId}`}/>
+            )
+          }
+        />
       </Switch>
     </>
   );

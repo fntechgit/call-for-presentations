@@ -11,116 +11,141 @@
  * limitations under the License.
  **/
 
-import React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { connect } from 'react-redux';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { getPresentation, resetPresentation } from '../actions/presentation-actions'
 import EditPresentationPage from '../pages/edit-presentation-page'
 import PreviewPresentationPage from '../pages/preview-presentation-page'
 import ThankYouPresentationPage from '../pages/thankyou-presentation-page'
 import EditSpeakerPage from '../pages/edit-speaker-page'
 import Presentation from '../model/presentation'
+import PresentationEditGate from '../components/presentation-edit-gate'
 
-class PresentationLayout extends React.Component {
+const PresentationLayout = ({
+  match,
+  entity,
+  summit,
+  track,
+  selectionPlan,
+  selectionPlansSettings,
+  loggedSpeaker,
+  speaker,
+  history,
+  loading,
+  tagGroups,
+  resetPresentation,
+  getPresentation
+}) => {
+  const { presentation_id } = match.params;
+  const isNew = !presentation_id;
 
-    constructor(props){
-        super(props);
-        this.presentation = new Presentation(
-          props.entity,
-          props.summit,
-          props.selectionPlan,
-          props.loggedSpeaker,
-          props.tagGroups
-        );
+  // rebuilt only when its inputs change: updatePresentation is not cheap or side-effect free
+  // (it recomputes allowed media uploads and grouped tags, rewrites step visibility, and writes
+  // progressNum onto the redux entity). Identity comparison is sound here: presentation-reducer
+  // builds a new entity object on RECEIVE_PRESENTATION and PRESENTATION_UPDATED.
+  const presentation = useMemo(() => {
+    const model = new Presentation(entity, summit, selectionPlan, loggedSpeaker, tagGroups);
+    model.updatePresentation(entity, track);
+    return model;
+  }, [entity, track, selectionPlan, summit, loggedSpeaker, tagGroups]);
+
+  useEffect(() => {
+    if (!presentation_id) {
+      resetPresentation();
+      return;
     }
+    // a failed load is already reported to the user by presentationErrorHandler
+    getPresentation(presentation_id).catch(() => {
+    });
+  }, [presentation_id]);
 
-    componentDidMount() {
-        let {presentation_id} = this.props.match.params;
-        if (!presentation_id) {
-            this.props.resetPresentation();
-            return;
-        }
-        // a failed load is already reported to the user by presentationErrorHandler
-        this.props.getPresentation(presentation_id).catch(() => {});
-    }
+  if (loading || (!isNew && !entity.id)) return null;
 
-    componentWillReceiveProps(newProps) {
-        let oldId = this.props.match.params.presentation_id;
-        let newId = newProps.match.params.presentation_id;
+  if (!speaker) {
+    history.push(`/app/${summit.slug}/all-plans/profile`);
+  }
 
-        if (newId && oldId !== newId) {
-            this.props.getPresentation(newId).catch(() => {});
-        }
+  const selectionPlanSettings = selectionPlansSettings && selectionPlansSettings.hasOwnProperty(selectionPlan?.id) ? (selectionPlansSettings[selectionPlan?.id] || {}) : {};
+  const defaultStep = selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB || "summary";
 
-        // Gated on the props each call actually reads. This component now subscribes to the
-        // clock, so props change every second; updatePresentation is not cheap or side-effect
-        // free (it recomputes allowed media uploads and grouped tags, rewrites step visibility,
-        // and writes progressNum onto the redux entity), and none of that depends on the tick.
-        // The per-tick re-render still happens, which is what locks the form on time.
-        // Identity comparison is sound here: presentation-reducer builds a new entity object on
-        // RECEIVE_PRESENTATION and PRESENTATION_UPDATED.
-        if (newProps.selectionPlan !== this.props.selectionPlan) {
-            this.presentation.updateSelectionPlan(newProps.selectionPlan);
-        }
-
-        if (newProps.entity !== this.props.entity || newProps.track !== this.props.track) {
-            this.presentation.updatePresentation(newProps.entity, newProps.track);
-        }
-    }
-
-    render(){
-        let { match, entity, speaker, history, loading, location, selectionPlan, selectionPlansSettings, nowUtc } = this.props;
-        let isNew = !match.params.presentation_id;
-
-        if (loading || (!isNew && !entity.id)) return null;
-
-        // nowUtc is null until the first Clock tick. Evaluating the gate against a seed would
-        // let a fast device clock read a live grant as expired, and this redirect is one-way:
-        // the guard below skips it once already on /preview, so a corrected tick never undoes it.
-        if (!isNew && nowUtc != null && match.params.presentation_id == entity.id && !this.presentation.canEdit(nowUtc) && !location.pathname.endsWith('preview') ) {
-            return(<Redirect to={`${match.url}/preview`} />);
-        }
-
-        if (!speaker) {
-            history.push(`/app/${summit.slug}/all-plans/profile`);
-        }
-
-        const selectionPlanSettings = selectionPlansSettings && selectionPlansSettings.hasOwnProperty(selectionPlan?.id) ? (selectionPlansSettings[selectionPlan?.id] || {}): {};
-        const defaultStep = selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB ? selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB : 'summary';
-
-        return(
-            <Switch>
-                <Route strict exact path={`${match.url}/speakers/new`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
-                <Route strict exact path={`${match.url}/speakers/:speaker_id(\\d+)`} render={(props) => <EditSpeakerPage {...props} selectionPlan={selectionPlan}/>}/>
-                <Route strict exact path={`${match.url}/preview`} render={(props) => <PreviewPresentationPage {...props} selectionPlan={selectionPlan}/>}/>
-                <Route strict exact path={`${match.url}/thank-you`} render={(props) => <ThankYouPresentationPage {...props} selectionPlan={selectionPlan}/>}/>
-                <Route strict exact path={`${match.url}/:step`} render={
-                    props => (<EditPresentationPage {...props} presentation={this.presentation} selectionPlan={selectionPlan} />)
-                }/>
-                <Route render={props => (<Redirect to={`${match.url}/${defaultStep}`} />)}/>
-            </Switch>
-        );
-    }
+  return (
+    <Switch>
+      <Route
+        strict
+        exact
+        path={`${match.url}/preview`}
+        render={(props) => <PreviewPresentationPage {...props} selectionPlan={selectionPlan} />}
+      />
+      <Route render={() => (
+        <PresentationEditGate
+          presentation={presentation}
+          isNew={isNew}
+          presentationId={presentation_id}
+          entityId={entity.id}
+          redirectUrl={isNew ? `/app/${summit.slug}/all-plans/${selectionPlan.id}` : `${match.url}/preview`}
+        >
+          <Switch>
+            <Route
+              strict
+              exact
+              path={`${match.url}/speakers/new`}
+              render={
+                (props) =>
+                  <EditSpeakerPage {...props} selectionPlan={selectionPlan} />
+              }
+            />
+            <Route
+              strict
+              exact
+              path={`${match.url}/speakers/:speaker_id(\\d+)`}
+              render={
+                (props) =>
+                  <EditSpeakerPage {...props} selectionPlan={selectionPlan} />
+              }
+            />
+            <Route
+              strict
+              exact
+              path={`${match.url}/thank-you`}
+              render={
+                (props) =>
+                  <ThankYouPresentationPage {...props} selectionPlan={selectionPlan} />
+              }
+            />
+            <Route
+              strict
+              exact
+              path={`${match.url}/:step`}
+              render={
+                props => (
+                  <EditPresentationPage {...props} presentation={presentation} selectionPlan={selectionPlan} />
+                )
+              }
+            />
+            <Route render={() => (<Redirect to={`${match.url}/${defaultStep}`} />)} />
+          </Switch>
+        </PresentationEditGate>
+      )} />
+    </Switch>
+  );
 
 }
 
-const mapStateToProps = ({ baseState, presentationState, clockState }) => ({
-    speaker: baseState.speaker,
-    summit: baseState.summit,
-    loading: baseState.loading,
-    tagGroups: baseState.tagGroups,
-    selectionPlansSettings: baseState.selectionPlansSettings,
-    loggedSpeaker: baseState.speaker,
-    nowUtc: clockState.nowUtc,
-    ...presentationState
+const mapStateToProps = ({ baseState, presentationState }) => ({
+  speaker: baseState.speaker,
+  summit: baseState.summit,
+  loading: baseState.loading,
+  tagGroups: baseState.tagGroups,
+  selectionPlansSettings: baseState.selectionPlansSettings,
+  loggedSpeaker: baseState.speaker,
+  ...presentationState
 })
 
 export default connect(
-    mapStateToProps,
-    {
-        getPresentation,
-        resetPresentation
-    }
+  mapStateToProps,
+  {
+    getPresentation,
+    resetPresentation
+  }
 )(PresentationLayout)
-
-

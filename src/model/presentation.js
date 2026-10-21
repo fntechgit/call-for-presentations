@@ -76,12 +76,6 @@ class Presentation {
         this._presentation.progressNum = currentStep.step;
     }
 
-    // the plan is captured at construction, but navigating refetches it by id and swaps the copy
-    // held in redux, so a long-lived instance has to be told or canEdit keeps gating on the old one
-    updateSelectionPlan(selectionPlan) {
-        this._selectionPlan = selectionPlan;
-    }
-
     /**
      * @param nowUtc
      * @returns {React.ReactNode}
@@ -199,9 +193,12 @@ class Presentation {
         if (this._selectionPlan.is_enabled === false) return false;
 
         // computed per call, not snapshotted in the constructor, so a window that ends while the
-        // page is open locks the form without a reload. Still on nowBetween's local clock, as it
-        // was before this feature; the reopen check below is the part that moved to the synced
-        // one, because a 24h grant makes skew a far larger fraction than a multi-week plan window.
+        // page is open locks the form without a reload.
+        // Two clocks on purpose (SDS per-activity-cfp-reopen): the plan window stays on nowBetween's
+        // local clock, like every other submission-window check in the app (canCreate, the landing
+        // add button), while the reopen grant (and the banner, via getReopenedUntil) uses the
+        // server-synced nowUtc, because skew is a far larger fraction of a 24h grant than of a
+        // multi-week window. The API enforces both windows on write regardless.
         const submissionIsClosed = !nowBetween(this._selectionPlan.submission_begin_date, this._selectionPlan.submission_end_date);
         const reopened = !!this.getReopenedUntil(nowUtc);
 
@@ -221,6 +218,15 @@ class Presentation {
         let belongsToSP = (this._presentation.selection_plan_id === this._selectionPlan.id);
 
         return (isCreator || isSpeaker || isModerator) && belongsToSP;
+    }
+
+    // gates /new; same plan checks as canEdit, on the local clock like canEdit's window check.
+    // The landing button's max-submissions limit is left to the API: its counts come from the plan
+    // page's presentation lists, which are missing or stale (persisted) on a direct /new load.
+    canCreate() {
+        if (!this._selectionPlan || this._selectionPlan.is_enabled === false) return false;
+        if (!this._selectionPlan.allow_new_presentations) return false;
+        return nowBetween(this._selectionPlan.submission_begin_date, this._selectionPlan.submission_end_date);
     }
 
     canDelete() {
