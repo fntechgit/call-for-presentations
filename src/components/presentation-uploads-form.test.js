@@ -17,7 +17,8 @@ import PresentationUploadsForm from './presentation-uploads-form';
 
 jest.mock('@sentry/react', () => ({ captureMessage: jest.fn() }));
 jest.mock('awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css', () => ({}));
-jest.mock('openstack-uicore-foundation/lib/components', () => ({ RawHTML: () => null, UploadInputV2: () => null }));
+jest.mock('openstack-uicore-foundation/lib/components/raw-html', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/inputs/upload-input-v2', () => () => null);
 jest.mock('openstack-uicore-foundation/lib/utils/methods', () => ({ findElementPos: () => 0 }));
 jest.mock('openstack-uicore-foundation/lib/security/methods', () => ({ initLogOut: jest.fn() }));
 jest.mock('sweetalert2', () => ({ fire: jest.fn() }));

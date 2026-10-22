@@ -13,7 +13,7 @@
 
 import React, {PureComponent, useEffect, useState} from "react";
 import {Switch, Route, Router} from 'react-router-dom'
-import T from "i18n-react";
+import { setAppTexts } from "openstack-uicore-foundation/lib/i18n";
 import history from "./history";
 import {connect} from "react-redux";
 import AuthorizedRoute from './routes/authorized-route'
@@ -23,7 +23,7 @@ import LogInCallbackRoute from './routes/login-callback-route'
 import DefaultRoute from "./routes/default-route";
 import SummitLayout from './layouts/summit-layout';
 import LandingLayout from './layouts/landing-layout';
-import {AjaxLoader} from "openstack-uicore-foundation/lib/components";
+import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 import {resetLoading} from "openstack-uicore-foundation/lib/utils/actions";
 import {doLogout, onUserAuth, getUserInfo} from 'openstack-uicore-foundation/lib/security/actions';
 import {initLogOut, doLoginBasicLogin, getIdToken} from 'openstack-uicore-foundation/lib/security/methods';
@@ -68,9 +68,9 @@ try {
   // specific tenant resources - here goes everything we want to overwrite
   const tenantResources = require(`./i18n/multitenant/${appClientName}/${language}.json`);
   const mergedResources = merge(i18nGlobalResources, tenantResources)
-  T.setTexts(mergedResources);
+  setAppTexts(mergedResources);
 } catch (e) {
-  T.setTexts(require(`./i18n/en.json`));
+  setAppTexts(require(`./i18n/en.json`));
 }
 
 // move all env var to global scope so ui core has access to this
