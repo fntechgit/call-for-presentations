@@ -254,6 +254,9 @@
     "auth_pending": "Permission Request Pending",
     "auth_pending_text": "You already requested permission to edit, but the speaker has not granted it yet.",
     "company": "Company",
+    "company_placeholder": "Select a company",
+    "company_type_to_search": "Type to search for a company",
+    "company_no_results": "No companies found",
     "phone_number": "Phone #"
   },
   "preview_presentation": {
