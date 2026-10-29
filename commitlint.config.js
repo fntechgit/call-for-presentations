@@ -7,6 +7,7 @@ module.exports = {
   extends: ["@commitlint/config-conventional"],
   rules: {
     "custom-subject-empty": [RULE_ERROR_LEVEL, "never"],
+    "type-enum": [0], // custom-type-enum is the source of truth (adds hotfix)
     "custom-type-enum": [RULE_ERROR_LEVEL, "always"],
     "custom-no-wip": [RULE_ERROR_LEVEL, "always"],
     "custom-no-wip-subject": [RULE_ERROR_LEVEL, "always"],
@@ -46,7 +47,7 @@ module.exports = {
           if (!allowedTypes.includes(type)) {
             return [
               false,
-              `Type "${type} is invalid". Allowed types: ${allowedTypes.join(
+              `Type "${type}" is invalid. Allowed types: ${allowedTypes.join(
                 ", "
               )}`
             ];

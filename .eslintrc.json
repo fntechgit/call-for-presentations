@@ -51,6 +51,7 @@
     "no-prototype-builtins": "warn",
     "no-use-before-define": "warn",
     "radix": "warn",
+    "no-unused-vars": "off",
     "unused-imports/no-unused-imports": "error",
     "unused-imports/no-unused-vars": [
       "warn",
