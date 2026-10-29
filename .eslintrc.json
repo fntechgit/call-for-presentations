@@ -1,0 +1,99 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "jest": true
+  },
+  "extends": ["plugin:react/recommended", "airbnb", "prettier"],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["react", "unused-imports"],
+  "rules": {
+    "quotes": ["error", "double"],
+    "react/jsx-filename-extension": ["warn", { "extensions": [".js", ".jsx"] }],
+    "import/no-extraneous-dependencies": "warn",
+    "import/extensions": "warn",
+    "react/no-unused-class-component-methods": "warn",
+    "class-methods-use-this": "warn",
+    "import/no-unresolved": "warn",
+    "no-underscore-dangle": "warn",
+    "camelcase": "warn",
+    "prefer-const": "warn",
+    "react/forbid-prop-types": "warn",
+    "no-magic-numbers": [
+      "error",
+      {
+        "ignoreArrayIndexes": true,
+        "ignore": [0, 1, -1]
+      }
+    ],
+    "import/no-dynamic-require": "warn",
+    "no-shadow": "warn",
+    "global-require": "warn",
+    "default-param-last": "warn",
+    "no-param-reassign": "warn",
+    "react/destructuring-assignment": "warn",
+    "react/require-default-props": "warn",
+    "react/prop-types": "warn",
+    "react/jsx-props-no-spreading": "warn",
+    "react/jsx-no-useless-fragment": "warn",
+    "react/sort-comp": "warn",
+    "react/no-string-refs": "warn",
+    "import/prefer-default-export": "warn",
+    "no-plusplus": "off",
+    "no-continue": "off",
+    "no-prototype-builtins": "warn",
+    "no-use-before-define": "warn",
+    "radix": "warn",
+    "no-unused-vars": "off",
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "no-restricted-globals": "warn",
+    "jsx-a11y/label-has-associated-control": "warn",
+    "jsx-a11y/control-has-associated-label": "off",
+    "react/jsx-no-bind": "warn",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "eqeqeq": "warn",
+    "react/button-has-type": "warn",
+    "jsx-a11y/click-events-have-key-events": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn",
+    "react/no-access-state-in-setstate": "warn",
+    "no-useless-concat": "warn",
+    "react/no-unstable-nested-components": "warn",
+    "array-callback-return": "warn",
+    "no-throw-literal": "warn",
+    "no-nested-ternary": "warn",
+    "default-case": "warn",
+    "consistent-return": "warn",
+    "no-undef": "warn",
+    "no-restricted-syntax": "warn",
+    "guard-for-in": "warn",
+    "prefer-destructuring": "warn",
+    "react/function-component-definition": "off",
+    "no-unsafe-optional-chaining": "warn",
+    "no-await-in-loop": "warn"
+  },
+  "ignorePatterns": ["src/__mocks__"],
+  "overrides": [
+    {
+      "files": ["**/*.test.js", "**/*.test.jsx"],
+      "rules": {
+        "no-magic-numbers": "off"
+      }
+    }
+  ]
+}
