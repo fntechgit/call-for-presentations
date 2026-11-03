@@ -12,20 +12,55 @@
  **/
 
 import * as Sentry from '@sentry/react';
+import Swal from 'sweetalert2';
 import { initLogOut } from 'openstack-uicore-foundation/lib/security/methods';
 import PresentationUploadsForm from './presentation-uploads-form';
 
 jest.mock('@sentry/react', () => ({ captureMessage: jest.fn() }));
 jest.mock('awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css', () => ({}));
 jest.mock('openstack-uicore-foundation/lib/components/raw-html', () => () => null);
-jest.mock('openstack-uicore-foundation/lib/components/inputs/upload-input-v2', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/inputs/upload-input-v2', () => function UploadInputV2() { return null; });
+jest.mock('openstack-uicore-foundation/lib/components/inputs/upload-input-v4', () => function UploadInputV4() { return null; });
+jest.mock('openstack-uicore-foundation/lib/css/components/inputs/upload-input-v4.css', () => ({}));
 jest.mock('openstack-uicore-foundation/lib/utils/methods', () => ({ findElementPos: () => 0 }));
 jest.mock('openstack-uicore-foundation/lib/security/methods', () => ({ initLogOut: jest.fn() }));
 jest.mock('sweetalert2', () => ({ fire: jest.fn() }));
 jest.mock('./presentation-submit-buttons', () => () => null);
 jest.mock('../utils/methods', () => ({ scrollToError: jest.fn() }));
 
-const makeForm = () => new PresentationUploadsForm({ entity: { id: 10, media_uploads: [] }, errors: {} });
+const mediaType = {
+    id: 5,
+    name: 'Slides',
+    max_size: 10240, // KB, as summit-api serializes it
+    max_uploads_qty: 2,
+    is_editable: true,
+    is_mandatory: false,
+    type: { allowed_extensions: ['PDF'] },
+};
+
+const makeForm = (props = {}) => new PresentationUploadsForm({ entity: { id: 10, media_uploads: [] }, errors: {}, ...props });
+
+const findByType = (node, name) => {
+    if (!node || typeof node !== 'object') return null;
+    if (Array.isArray(node)) {
+        for (const child of node) {
+            const found = findByType(child, name);
+            if (found) return found;
+        }
+        return null;
+    }
+    if (node.type?.name === name) return node;
+    return findByType(node.props?.children, name);
+};
+
+const renderUploadInput = (name) => {
+    const form = makeForm({
+        summit: {},
+        presentation: { getAllowedMediaUploads: () => [mediaType] },
+        step: 'UPLOADS',
+    });
+    return findByType(form.render(), name);
+};
 
 describe('PresentationUploadsForm.onUploadError', () => {
     beforeEach(() => jest.clearAllMocks());
@@ -60,10 +95,72 @@ describe('PresentationUploadsForm.onUploadError', () => {
         expect(Sentry.captureMessage).toHaveBeenCalledTimes(1);
     });
 
+    it('shows the server message from a V4 403 error and logs out', () => {
+        const error = Object.assign(new Error('forbidden'), { status: 403 });
+        makeForm().onUploadError(error, error.status, 'media_upload_5');
+
+        expect(Swal.fire).toHaveBeenCalledWith('ERROR', 'forbidden', 'error');
+        expect(initLogOut).toHaveBeenCalledTimes(1);
+        expect(Sentry.captureMessage).not.toHaveBeenCalled();
+    });
+
     it('keeps logging out on 403 without reporting to Sentry', () => {
         makeForm().onUploadError({ detail: 'forbidden' }, 403, 'media_upload_5');
 
         expect(initLogOut).toHaveBeenCalledTimes(1);
         expect(Sentry.captureMessage).not.toHaveBeenCalled();
+    });
+});
+
+describe('PresentationUploadsForm upload input selection', () => {
+    // jest runs in the node environment, so the env globals app.js sets live on a stub window
+    beforeEach(() => { global.window = { FILE_UPLOAD_API_BASE_URL: 'https://files.test' }; });
+    afterAll(() => { delete global.window; });
+
+    it('renders UploadInputV4 against the file API base when the flag is "true"', () => {
+        window.FILE_UPLOAD_USE_V4 = 'true';
+
+        const input = renderUploadInput('UploadInputV4');
+
+        expect(input).not.toBeNull();
+        expect(renderUploadInput('UploadInputV2')).toBeNull();
+        expect(input.props.postUrl).toBe('https://files.test/api/v1/files');
+        expect(input.props).not.toHaveProperty('djsConfig');
+        expect(input.props).not.toHaveProperty('parallelChunkUploads');
+    });
+
+    it('passes V4 the max size in MB, converted from the KB summit-api sends', () => {
+        window.FILE_UPLOAD_USE_V4 = 'true';
+
+        const input = renderUploadInput('UploadInputV4');
+
+        expect(input.props.getMaxSize()).toBe(10);
+        expect(input.props.mediaType.id).toBe(5);
+    });
+
+    it.each([undefined, 'false', '1'])('keeps UploadInputV2 on the chunked endpoint when the flag is %p', (flag) => {
+        window.FILE_UPLOAD_USE_V4 = flag;
+
+        const input = renderUploadInput('UploadInputV2');
+
+        expect(input).not.toBeNull();
+        expect(renderUploadInput('UploadInputV4')).toBeNull();
+        expect(input.props.postUrl).toBe('https://files.test/api/v1/files/upload');
+        expect(input.props.djsConfig).toEqual({ withCredentials: true });
+        expect(input.props.parallelChunkUploads).toBe(true);
+    });
+});
+
+describe('PresentationUploadsForm.onUploadComplete', () => {
+    it('saves the media upload with filepath built from path + name', () => {
+        const onSaveMU = jest.fn();
+        const form = makeForm({ onSaveMU });
+
+        form.onUploadComplete({ path: 'upload/abc/', name: 'slides.pdf' }, 'media_upload_5', { media_type: mediaType, media_upload: [] });
+
+        expect(onSaveMU).toHaveBeenCalledWith(
+            expect.objectContaining({ id: 10 }),
+            { id: 0, media_upload_type_id: 5, filepath: 'upload/abc/slides.pdf', filename: 'slides.pdf', should_upload: true }
+        );
     });
 });

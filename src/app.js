@@ -79,6 +79,7 @@ window.IDP_BASE_URL = process.env["IDP_BASE_URL"];
 window.API_BASE_URL = process.env["API_BASE_URL"];
 window.MARKETING_API_BASE_URL = process.env["MARKETING_API_BASE_URL"];
 window.FILE_UPLOAD_API_BASE_URL = process.env["FILE_UPLOAD_API_BASE_URL"];
+window.FILE_UPLOAD_USE_V4 = process.env["FILE_UPLOAD_USE_V4"];
 window.OAUTH2_CLIENT_ID = process.env["OAUTH2_CLIENT_ID"];
 window.OAUTH2_FLOW = process.env['OAUTH2_FLOW'] || "token id_token";
 window.SCOPES = process.env["SCOPES"];
