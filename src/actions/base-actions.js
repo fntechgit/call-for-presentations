@@ -130,7 +130,7 @@ export const getAllowedSelectionPlans = (summitId) => async (dispatch, getState)
     null,
     createAction(RECEIVE_ALLOWED_SELECTION_PLANS),
     `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/me`,
-    console.log
+    authErrorHandler
   )(params)(dispatch, getState).then(() => {
     dispatch(stopLoading());
   });
@@ -152,7 +152,7 @@ export const getAllowedSelectionPlan = (selectionPlanId) => async (dispatch, get
     null,
     createAction(RECEIVE_ALLOWED_SELECTION_PLAN),
     `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/${selectionPlanId}`,
-    console.log
+    authErrorHandler
   )(params)(dispatch, getState).then(() => {
     dispatch(stopLoading());
   });

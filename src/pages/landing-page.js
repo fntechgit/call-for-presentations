@@ -31,7 +31,8 @@ const LandingPage = ({summitSlug, match, summit, isLoggedUser, backUrl, selectio
 
     useEffect(() => {
         if (!isLoggedUser && summitSlug) {
-            props.getAllFromSummit(summitSlug);
+            // failures were already reported to the user by currentSummitErrorHandler
+            props.getAllFromSummit(summitSlug).catch(() => {});
         }
     }, [isLoggedUser, summitSlug]);
 
