@@ -15,6 +15,8 @@ import React from 'react'
 import 'awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'
 import RawHTML from 'openstack-uicore-foundation/lib/components/raw-html'
 import UploadInputV2 from 'openstack-uicore-foundation/lib/components/inputs/upload-input-v2'
+import UploadInputV4 from 'openstack-uicore-foundation/lib/components/inputs/upload-input-v4'
+import 'openstack-uicore-foundation/lib/css/components/inputs/upload-input-v4.css'
 import {findElementPos} from 'openstack-uicore-foundation/lib/utils/methods'
 import SubmitButtons from './presentation-submit-buttons'
 import {scrollToError} from '../utils/methods'
@@ -30,6 +32,8 @@ const getUploadErrorMessage = (error) => {
     if (typeof error === 'string') return error;
     return error?.message || error?.detail || 'unknown error';
 };
+
+const isUploadV4Enabled = () => window.FILE_UPLOAD_USE_V4 === 'true';
 
 class PresentationUploadsForm extends React.Component {
     constructor(props) {
@@ -96,7 +100,8 @@ class PresentationUploadsForm extends React.Component {
 
     onUploadError(error, status, inputId){
         if(status == 403){
-            Swal.fire("ERROR", error.detail, "error");
+            // V2 passes the response body ({detail}), V4 an Error carrying the server message
+            Swal.fire("ERROR", error?.detail || error?.message, "error");
             console.log(error);
             initLogOut();
             return;
@@ -178,6 +183,18 @@ class PresentationUploadsForm extends React.Component {
                     const allowedExt = media_type.type.allowed_extensions.map((ext) => `.${ext.toLowerCase()}`).join(",");
                     const mediaUploads = this.getMediaUploadsByType(entity, media_type);
                     const maxFiles = media_type.max_uploads_qty > 0 ? media_type.max_uploads_qty : null;
+                    const uploadInputProps = {
+                        id: `media_upload_${media_type.id}`,
+                        onUploadComplete: this.onUploadComplete,
+                        onError: this.onUploadError,
+                        onRemove: this.handleRemoveFile,
+                        value: mediaUploads,
+                        mediaType: media_type,
+                        error: this.hasErrors(media_type.name),
+                        maxFiles,
+                        canAdd: media_type.is_editable || mediaUploads.length < maxFiles,
+                        canDelete: media_type.is_editable,
+                    };
 
                     return (
                         <div key={media_type.id} className={`row form-group ${notLastItem ? 'border' : ''}`}>
@@ -192,21 +209,21 @@ class PresentationUploadsForm extends React.Component {
                                     <RawHTML>{media_type.description}</RawHTML>
                                   </div>
                                 }
-                                <UploadInputV2
-                                    id={`media_upload_${media_type.id}`}
-                                    onUploadComplete={this.onUploadComplete}
-                                    onError={this.onUploadError}
-                                    onRemove={this.handleRemoveFile}
-                                    value={mediaUploads}
-                                    mediaType={media_type}
-                                    postUrl={`${window.FILE_UPLOAD_API_BASE_URL}/api/v1/files/upload`}
-                                    error={this.hasErrors(media_type.name)}
-                                    djsConfig={{withCredentials:true}}
-                                    maxFiles={maxFiles}
-                                    canAdd={media_type.is_editable || mediaUploads.length < maxFiles}
-                                    canDelete={media_type.is_editable}
-                                    parallelChunkUploads={true}
-                                />
+                                {isUploadV4Enabled() ?
+                                    <UploadInputV4
+                                        {...uploadInputProps}
+                                        postUrl={`${window.FILE_UPLOAD_API_BASE_URL}/api/v1/files`}
+                                        // max_size is in KB; V4 expects MB here (V2 converts KB itself)
+                                        getMaxSize={() => media_type.max_size / 1024}
+                                    />
+                                    :
+                                    <UploadInputV2
+                                        {...uploadInputProps}
+                                        postUrl={`${window.FILE_UPLOAD_API_BASE_URL}/api/v1/files/upload`}
+                                        djsConfig={{withCredentials:true}}
+                                        parallelChunkUploads={true}
+                                    />
+                                }
                             </div>
                         </div>
                     )
