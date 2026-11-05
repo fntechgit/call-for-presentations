@@ -12,7 +12,7 @@
  **/
 
 import Swal from 'sweetalert2';
-import { UploadInput } from 'openstack-uicore-foundation/lib/components';
+import UploadInput from 'openstack-uicore-foundation/lib/components/inputs/upload-input';
 import SpeakerForm from './speaker-form';
 import { SPEAKER_PHOTO_MAX_SIZE } from '../utils/constants';
 
@@ -20,13 +20,16 @@ jest.mock('awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css', () => ({}
 jest.mock('i18n-react/dist/i18n-react', () => ({ translate: (key) => key }));
 jest.mock('sweetalert2', () => ({ fire: jest.fn() }));
 jest.mock('openstack-uicore-foundation/lib/utils/methods', () => ({ findElementPos: () => 0 }));
-jest.mock('openstack-uicore-foundation/lib/components', () => {
-    const stub = () => null;
-    return {
-        Input: stub, TextEditor: stub, UploadInput: () => null, Exclusive: stub, CountryInput: stub,
-        LanguageInput: stub, CheckboxList: stub, FreeMultiTextInput: stub, RegistrationCompanyInput: stub,
-    };
-});
+// speaker-form uses deep imports, so each component is mocked at its own path
+jest.mock('openstack-uicore-foundation/lib/components/inputs/text-input', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/inputs/editor-input', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/inputs/upload-input', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/exclusive-wrapper', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/inputs/country-input', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/inputs/language-input', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/inputs/checkbox-list', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/inputs/free-multi-text-input', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/inputs/registration-company-input', () => () => null);
 jest.mock('./affiliationstable', () => () => null);
 jest.mock('./inputs/presentation-links', () => () => null);
 jest.mock('../utils/methods', () => ({ validate: jest.fn(), scrollToError: jest.fn() }));
