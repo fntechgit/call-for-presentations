@@ -37,7 +37,9 @@
     "consent_required"            : "Consent Required",
     "consent_required_text"       : "You must accept the consent to log in.",
     "invalid_scope"               : "Scopes Invalid",
-    "invalid_scope_text"          : "Scopes are invalid, please contact admin."
+    "invalid_scope_text"          : "Scopes are invalid, please contact admin.",
+    "chunk_load_error"            : "A new version of the app is available or the page failed to load.",
+    "reload_page"                 : "Reload page"
   },
   "general": {
     "summit"              : "峰会",
