@@ -129,7 +129,10 @@
     "lodash": "4.17.21"
   },
   "lint-staged": {
-    "*.{js,jsx}": "eslint --fix",
-    "**/*": "prettier --write --ignore-unknown"
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "!(*.{js,jsx})": "prettier --write --ignore-unknown"
   }
 }
