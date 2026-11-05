@@ -208,13 +208,10 @@ export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
             .then((payload) => {
                 if (type === 'moderator') {
                     success_message.html = T.translate("edit_speaker.moderator_saved");
-                    dispatch(assignModeratorToPresentation(payload.response));
-                } else {
-                    success_message.html = T.translate("edit_speaker.speaker_saved");
-                    dispatch(assignSpeakerToPresentation(payload.response));
+                    return dispatch(assignModeratorToPresentation(payload.response)).then(() => payload);
                 }
-
-                return payload;
+                success_message.html = T.translate("edit_speaker.speaker_saved");
+                return dispatch(assignSpeakerToPresentation(payload.response)).then(() => payload);
             })
             .then((payload) => dispatch(uploadSpeakerPhotos(payload.response, pic_file, big_pic_file)))
             .then((payload) => {
@@ -241,12 +238,10 @@ export const saveSpeaker = (entity, type) => async (dispatch, getState) => {
         .then((payload) => {
             if (type === 'moderator') {
                 success_message.html = T.translate("edit_speaker.moderator_created");
-                dispatch(assignModeratorToPresentation(payload.response));
-            } else {
-                success_message.html = T.translate("edit_speaker.speaker_created");
-                dispatch(assignSpeakerToPresentation(payload.response));
+                return dispatch(assignModeratorToPresentation(payload.response)).then(() => payload);
             }
-            return payload;
+            success_message.html = T.translate("edit_speaker.speaker_created");
+            return dispatch(assignSpeakerToPresentation(payload.response)).then(() => payload);
         })
         .then((payload) => dispatch(uploadSpeakerPhotos(payload.response, pic_file, big_pic_file)))
         .then(() => {
