@@ -271,4 +271,19 @@ describe('saveSpeaker', () => {
         expect(successMessages()).toHaveLength(0);
         expect(state.entity.id).toBe(7);
     });
+
+    it.each([
+        ['speaker', 7, 'PUT /api/v1/speakers/me/presentations/10/speakers/7'],
+        ['moderator', 7, 'PUT /api/v1/speakers/me/presentations/10/moderators/7'],
+        ['speaker', 0, 'PUT /api/v1/speakers/me/presentations/10/speakers/7'],
+    ])('stops without uploading or reporting success when assigning the %s fails (id %i)', async (type, id, assignKey) => {
+        mockOutcomes[assignKey] = { status: 412 };
+
+        await expect(saveSpeaker(makeSpeaker({ id, pic_file: pic }), type)(makeDispatch(), getState)).resolves.toBeUndefined();
+
+        expect(mockCalls).toContain(assignKey);
+        expect(mockCalls).not.toContain('POST /api/v1/speakers/7/photo');
+        expect(authErrorHandler).toHaveBeenCalled();
+        expect(successMessages()).toHaveLength(0);
+    });
 });

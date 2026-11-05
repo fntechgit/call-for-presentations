@@ -113,11 +113,9 @@ class PresentationSpeakersForm extends React.Component {
 
         if (!isNaN(speaker.id)) {
             // existing speaker
-            if (currentSpeakerType == 'moderator') {
-                onAddModerator(speaker);
-            } else {
-                onAddSpeaker(speaker);
-            }
+            const assign = currentSpeakerType == 'moderator' ? onAddModerator : onAddSpeaker;
+            // failures were already reported to the user by authErrorHandler
+            assign(speaker).catch(() => {});
             this.setState({ ...this.state, currentSpeakerType: null, speakerInput: null, error: null });
             return false;
         }
