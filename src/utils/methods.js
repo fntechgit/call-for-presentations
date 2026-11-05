@@ -297,7 +297,8 @@ export const getCurrentSelectionPlanId = (match) => {
     if(match?.params?.selection_plan_id)
         return parseInt(match.params.selection_plan_id)
     // and use raw url as a fallback
-    const regex = /^\/app\/(\w*)\/all-plans\/(\d*)/;
+    // summit slugs are hyphenated ("my-summit"), so match any non-slash segment
+    const regex = /^\/app\/([^/]+)\/all-plans\/(\d+)/;
     let currentUrl = URI(window.location.href);
     let path = currentUrl.path();
     const matches = path.match(regex);

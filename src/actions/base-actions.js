@@ -61,10 +61,11 @@ export const getAllFromSummit = (summitSlug, withSpeakerData = false) => (dispat
       }
       return Promise.all(loads).then(() => {
         dispatch(createAction(BASE_LOADED)({loaded: true}));
-        dispatch(stopLoading());
         return response;
       });
-    });
+    })
+    // a failed load must not leave the loader over SummitLayout's error message
+    .finally(() => dispatch(stopLoading()));
 };
 
 export const getCurrentSummitPublic = (id) => (dispatch) => {

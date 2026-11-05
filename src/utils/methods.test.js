@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 
-import { getAllowedLandingSelectionPlanId, getSubmissionsPath } from './methods';
+import { getAllowedLandingSelectionPlanId, getCurrentSelectionPlanId, getSubmissionsPath } from './methods';
 import { SP_LANDING } from './constants';
 
 const originalLocalStorage = global.localStorage;
@@ -88,5 +88,36 @@ describe('getSubmissionsPath', () => {
         setLanding(null);
 
         expect(getSubmissionsPath(summitWithPlans(45, 123))).toBe('all-plans');
+    });
+});
+
+describe('getCurrentSelectionPlanId', () => {
+    const originalWindow = global.window;
+    const visit = (path) => { global.window = { location: { href: `https://cfp.example${path}` } }; };
+
+    afterEach(() => {
+        global.window = originalWindow;
+    });
+
+    it('prefers the route param', () => {
+        visit('/app/summit/all-plans/5');
+
+        expect(getCurrentSelectionPlanId({ params: { selection_plan_id: '9' } })).toBe(9);
+    });
+
+    it.each([
+        ['/app/summit/all-plans/5', 5],
+        ['/app/my-summit/all-plans/5', 5],
+        ['/app/my-summit-2026/all-plans/5/presentations/10/summary', 5],
+    ])('reads the plan from %s', (path, expected) => {
+        visit(path);
+
+        expect(getCurrentSelectionPlanId()).toBe(expected);
+    });
+
+    it.each(['/app/my-summit/all-plans', '/app/my-summit/all-plans/profile', '/app/my-summit'])('returns 0 outside a plan (%s)', (path) => {
+        visit(path);
+
+        expect(getCurrentSelectionPlanId()).toBe(0);
     });
 });

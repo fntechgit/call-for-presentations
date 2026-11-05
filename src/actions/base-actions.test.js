@@ -187,4 +187,17 @@ describe('getAllFromSummit', () => {
         pending['https://marketing/api/public/v1/config-values/all/shows/10']({response: {last_page: 1, data: []}});
         await expect(result).resolves.toEqual({id: 10});
     });
+
+    it('stops loading without marking the base loaded when a speaker data request fails', async () => {
+        getRequest.mockImplementation((requestAction, receiveAction, endpoint) => () => () => {
+            if (endpoint.endsWith('/summits/all/my-summit')) return Promise.resolve({response: {id: 10}});
+            if (endpoint.endsWith('/selection-plans/me')) return Promise.reject({err: {status: 500}});
+            return Promise.resolve({response: {last_page: 1, data: []}});
+        });
+        const {dispatch, result} = run(true);
+
+        await expect(result).rejects.toBeDefined();
+        expect(dispatch).toHaveBeenCalledWith({type: 'STOP_LOADING'});
+        expect(dispatch).not.toHaveBeenCalledWith({type: BASE_LOADED, payload: {loaded: true}});
+    });
 });
