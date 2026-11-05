@@ -11,7 +11,7 @@
  * limitations under the License.
  **/
 
-import React, {PureComponent, useEffect, useState} from "react";
+import React, {PureComponent, Suspense, useEffect, useState} from "react";
 import {Switch, Route, Router} from 'react-router-dom'
 import { setAppTexts } from "openstack-uicore-foundation/lib/i18n";
 import history from "./history";
@@ -28,10 +28,7 @@ import {resetLoading} from "openstack-uicore-foundation/lib/utils/actions";
 import {doLogout, onUserAuth, getUserInfo} from 'openstack-uicore-foundation/lib/security/actions';
 import {initLogOut, doLoginBasicLogin, getIdToken} from 'openstack-uicore-foundation/lib/security/methods';
 import IdTokenVerifier from 'idtoken-verifier';
-import CustomErrorPage from "./pages/custom-error-page";
 import exclusiveSections from "js-yaml-loader!./exclusive-sections.yml";
-import SummitSelectionPage from "./pages/summit-selection-page";
-import ProfilePage from "./pages/profile-page";
 import DirectAuthorizedRoute from "./routes/direct-authorized-route";
 import Header from "./components/header";
 import {SelectionPlanContext} from "./components/SelectionPlanContext";
@@ -41,7 +38,13 @@ import URI from "urijs";
 import { putOnLocalStorage }
   from "openstack-uicore-foundation/lib/utils/methods";
 import {BACK_URL} from "./utils/constants";
-import SentryErrorBoundary from "./components/SentryErrorBoundary";
+import * as Sentry from "@sentry/react";
+import {SentryFallbackFunction} from './components/SentryErrorComponent';
+
+const CustomErrorPage = React.lazy(() => import("./pages/custom-error-page"));
+const SummitSelectionPage = React.lazy(() => import("./pages/summit-selection-page"));
+const ProfilePage = React.lazy(() => import("./pages/profile-page"));
+
 // here is set by default user lang as en
 let language = localStorage.getItem("PREFERRED_LANGUAGE");
 
@@ -169,7 +172,7 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
   }
 
   return (
-    <SentryErrorBoundary componentName="Call For Presentation App">
+    <Sentry.ErrorBoundary fallback={SentryFallbackFunction({ componentName: "Call For Presentation App" })}>
       <Router history={history}>
         <SelectionPlanContext.Provider value={{ selectionPlanCtx, setSelectionPlanCtx }}>
 
@@ -182,37 +185,39 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
               )}
             />
 
-            <Switch>
-              <LogInCallbackRoute path="/auth/login" doLogin={doLoginBasicLogin} />
-              <LogOutCallbackRoute path="/auth/logout" doLogout={doLogout} />
-              <AuthorizationCallbackRoute
-                onUserAuth={onUserAuth}
-                path="/auth/callback"
-                getUserInfo={getUserInfo}
-              />
-              <Route path="/error" component={CustomErrorPage} />
-              <Route path="/404" render={(props) => <p>404 - Not Found</p>} />
-              <Route path="/app/start" component={SummitSelectionPage} />
-              <DirectAuthorizedRoute
-                path="/app/profile"
-                strict
-                exact
-                isLoggedUser={isLoggedUser}
-                component={ProfilePage}
-              />
-              <AuthorizedRoute
-                path="/app/:summit_slug"
-                isLoggedUser={isLoggedUser}
-                component={SummitLayout}
-                doLogin={onClickLogin}
-                Fallback={LandingLayout}
-              />
-              <DefaultRoute isLoggedUser={isLoggedUser} />
-            </Switch>
+            <Suspense fallback={<AjaxLoader show size={120} />}>
+              <Switch>
+                <LogInCallbackRoute path="/auth/login" doLogin={doLoginBasicLogin} />
+                <LogOutCallbackRoute path="/auth/logout" doLogout={doLogout} />
+                <AuthorizationCallbackRoute
+                  onUserAuth={onUserAuth}
+                  path="/auth/callback"
+                  getUserInfo={getUserInfo}
+                />
+                <Route path="/error" component={CustomErrorPage} />
+                <Route path="/404" render={(props) => <p>404 - Not Found</p>} />
+                <Route path="/app/start" component={SummitSelectionPage} />
+                <DirectAuthorizedRoute
+                  path="/app/profile"
+                  strict
+                  exact
+                  isLoggedUser={isLoggedUser}
+                  component={ProfilePage}
+                />
+                <AuthorizedRoute
+                  path="/app/:summit_slug"
+                  isLoggedUser={isLoggedUser}
+                  component={SummitLayout}
+                  doLogin={onClickLogin}
+                  Fallback={LandingLayout}
+                />
+                <DefaultRoute isLoggedUser={isLoggedUser} />
+              </Switch>
+            </Suspense>
           </div>
         </SelectionPlanContext.Provider>
       </Router>
-    </SentryErrorBoundary>
+    </Sentry.ErrorBoundary>
   );
 }
 

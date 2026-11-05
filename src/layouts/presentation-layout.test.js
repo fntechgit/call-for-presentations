@@ -97,7 +97,7 @@ const Host = connect(({ hostState }) => ({ selectionPlan: hostState.selectionPla
     ({ selectionPlan, ...props }) => <PresentationLayout {...props} selectionPlan={selectionPlan} />
 );
 
-const setup = ({ path, plan = openPlan, presentation = entity, nowUtc = NOW, loading = false }) => {
+const setup = async ({ path, plan = openPlan, presentation = entity, nowUtc = NOW, loading = false }) => {
     const store = createStore(reducer, {
         hostState: { selectionPlan: plan },
         baseState: {
@@ -125,6 +125,8 @@ const setup = ({ path, plan = openPlan, presentation = entity, nowUtc = NOW, loa
             </Router>
         </Provider>
     );
+    // the pages are React.lazy: let their imports resolve so the Suspense fallback is replaced before asserting
+    await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
 
     const tick = (count = 1) => {
         for (let i = 1; i <= count; i++) {
@@ -141,8 +143,8 @@ describe('PresentationLayout edit gate', () => {
     });
 
     describe('locked presentation', () => {
-        it('goes straight to the preview from the bare URL without mounting the edit page', () => {
-            const { history, setSelectionPlanCtx, tick } = setup({ path: BASE_URL, plan: lockedPlan });
+        it('goes straight to the preview from the bare URL without mounting the edit page', async () => {
+            const { history, setSelectionPlanCtx, tick } = await setup({ path: BASE_URL, plan: lockedPlan });
             tick(5);
 
             expect(history.location.pathname).toBe(`${BASE_URL}/preview`);
@@ -151,16 +153,16 @@ describe('PresentationLayout edit gate', () => {
             expect(setSelectionPlanCtx).not.toHaveBeenCalled();
         });
 
-        it('goes straight to the preview from a step URL without mounting the edit page', () => {
-            const { history, setSelectionPlanCtx } = setup({ path: `${BASE_URL}/summary`, plan: lockedPlan });
+        it('goes straight to the preview from a step URL without mounting the edit page', async () => {
+            const { history, setSelectionPlanCtx } = await setup({ path: `${BASE_URL}/summary`, plan: lockedPlan });
 
             expect(history.location.pathname).toBe(`${BASE_URL}/preview`);
             expect(mockRenders.summaryForm).toBeUndefined();
             expect(setSelectionPlanCtx).not.toHaveBeenCalled();
         });
 
-        it('goes to the preview when the entity arrives after the clock has started', () => {
-            const { store, history, setSelectionPlanCtx, tick } = setup({ path: BASE_URL, plan: lockedPlan, presentation: emptyEntity });
+        it('goes to the preview when the entity arrives after the clock has started', async () => {
+            const { store, history, setSelectionPlanCtx, tick } = await setup({ path: BASE_URL, plan: lockedPlan, presentation: emptyEntity });
 
             act(() => { store.dispatch(patch('presentationState', { entity })); });
             tick(5);
@@ -170,8 +172,8 @@ describe('PresentationLayout edit gate', () => {
             expect(setSelectionPlanCtx).not.toHaveBeenCalled();
         });
 
-        it('keeps the thank-you page gated', () => {
-            const { history } = setup({ path: `${BASE_URL}/thank-you`, plan: lockedPlan });
+        it('keeps the thank-you page gated', async () => {
+            const { history } = await setup({ path: `${BASE_URL}/thank-you`, plan: lockedPlan });
 
             expect(history.location.pathname).toBe(`${BASE_URL}/preview`);
             expect(mockRenders.thankYou).toBeUndefined();
@@ -179,16 +181,16 @@ describe('PresentationLayout edit gate', () => {
     });
 
     describe('new presentation', () => {
-        it('stays on the form while the submission window is open', () => {
-            const { history, setSelectionPlanCtx } = setup({ path: `${NEW_URL}/summary`, presentation: emptyEntity });
+        it('stays on the form while the submission window is open', async () => {
+            const { history, setSelectionPlanCtx } = await setup({ path: `${NEW_URL}/summary`, presentation: emptyEntity });
 
             expect(history.location.pathname).toBe(`${NEW_URL}/summary`);
             expect(mockRenders.summaryForm).toBeGreaterThan(0);
             expect(setSelectionPlanCtx).toHaveBeenCalled();
         });
 
-        it('goes to the plan page without mounting the form once the window has ended', () => {
-            const { history, setSelectionPlanCtx } = setup({ path: `${NEW_URL}/summary`, plan: closedPlan, presentation: emptyEntity, nowUtc: null });
+        it('goes to the plan page without mounting the form once the window has ended', async () => {
+            const { history, setSelectionPlanCtx } = await setup({ path: `${NEW_URL}/summary`, plan: closedPlan, presentation: emptyEntity, nowUtc: null });
 
             expect(history.location.pathname).toBe(PLAN_URL);
             expect(mockRenders.summaryForm).toBeUndefined();
@@ -197,8 +199,8 @@ describe('PresentationLayout edit gate', () => {
     });
 
     describe('clock ticks', () => {
-        it('do not re-render the step forms of an editable presentation', () => {
-            const { history, tick } = setup({ path: `${BASE_URL}/summary` });
+        it('do not re-render the step forms of an editable presentation', async () => {
+            const { history, tick } = await setup({ path: `${BASE_URL}/summary` });
             const rendersBeforeTicks = mockRenders.summaryForm;
 
             tick(5);
@@ -208,8 +210,8 @@ describe('PresentationLayout edit gate', () => {
             expect(mockRenders.summaryForm).toBe(rendersBeforeTicks);
         });
 
-        it('do not re-render the speaker page', () => {
-            const { tick } = setup({ path: `${BASE_URL}/speakers/new` });
+        it('do not re-render the speaker page', async () => {
+            const { tick } = await setup({ path: `${BASE_URL}/speakers/new` });
             const rendersBeforeTicks = mockRenders.speakerPage;
 
             tick(5);
@@ -220,24 +222,24 @@ describe('PresentationLayout edit gate', () => {
     });
 
     describe('changes that skip a loading cycle', () => {
-        it('redirects as soon as the selection plan stops allowing edits', () => {
-            const { store, history } = setup({ path: `${BASE_URL}/summary` });
+        it('redirects as soon as the selection plan stops allowing edits', async () => {
+            const { store, history } = await setup({ path: `${BASE_URL}/summary` });
 
             act(() => { store.dispatch(patch('hostState', { selectionPlan: lockedPlan })); });
 
             expect(history.location.pathname).toBe(`${BASE_URL}/preview`);
         });
 
-        it('redirects as soon as the entity stops allowing edits', () => {
-            const { store, history } = setup({ path: `${BASE_URL}/summary` });
+        it('redirects as soon as the entity stops allowing edits', async () => {
+            const { store, history } = await setup({ path: `${BASE_URL}/summary` });
 
             act(() => { store.dispatch(patch('presentationState', { entity: { ...entity, creator_id: 99 } })); });
 
             expect(history.location.pathname).toBe(`${BASE_URL}/preview`);
         });
 
-        it('hides the reopen banner as soon as the grant stops being what allows edits', () => {
-            const { store, history } = setup({
+        it('hides the reopen banner as soon as the grant stops being what allows edits', async () => {
+            const { store, history } = await setup({
                 path: `${BASE_URL}/summary`,
                 plan: closedPlan,
                 presentation: { ...entity, submission_reopened_until: NOW + DAY },

@@ -17,8 +17,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 import { getAllFromSummit } from '../actions/base-actions';
 import NavMenu from "../components/nav-menu";
-
-const SelectionPlanLayout = React.lazy(() => import("./selection-plan-layout"));
+import SelectionPlanLayout from "./selection-plan-layout";
 
 const AllSelectionPlansPage = React.lazy(() =>
   import("../pages/all-selection-plans-page")

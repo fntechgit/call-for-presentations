@@ -39,7 +39,6 @@
     "file-saver": "^2.0.2",
     "final-form": "^4.20.7",
     "font-awesome": "^4.7.0",
-    "formik": "^2.4.9",
     "history": "^4.7.2",
     "html-webpack-plugin": "^5.5.0",
     "i18n-react": "^0.6.4",

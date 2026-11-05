@@ -17,8 +17,8 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 import { getAllowedSelectionPlan, getSelectionPlanSettings } from '../actions/base-actions';
 import history from '../history'
+import PrimaryLayout from "./primary-layout";
 
-const PrimaryLayout = React.lazy(() => import("./primary-layout"));
 const AllSelectionPlansPage = React.lazy(() => import("../pages/all-selection-plans-page"));
 const ProfilePage = React.lazy(() => import("../pages/profile-page"));
 const SelectionProcessPage = React.lazy(() => import("../pages/selection-process-page"));

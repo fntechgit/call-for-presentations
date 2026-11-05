@@ -18,10 +18,9 @@ import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 import { getAllFromSummit, getTagGroups, getAllowedSelectionPlans } from '../actions/base-actions';
 import ClockComponent from '../components/clock';
 import { getAllowedLandingSelectionPlanId } from "../utils/methods";
+import AllPlansLayout from "./all-plans-layout";
 
-const AllPlansLayout = React.lazy(() => import("./all-plans-layout"));
 const PlanSelectionPage = React.lazy(() => import("../pages/plan-selection-page"));
-const ProfilePage = React.lazy(() => import("../pages/profile-page"));
 
 const SummitLayout = ({ summit, loading, match, speaker, location, baseLoaded, ...props }) => {
   const urlSummitSlug = match.params.summit_slug;

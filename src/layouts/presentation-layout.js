@@ -11,12 +11,18 @@
  * limitations under the License.
  **/
 
-import React, { useEffect, useMemo } from 'react'
+import React, { Suspense, useEffect, useMemo } from 'react'
 import { connect } from 'react-redux';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
 import { getPresentation, resetPresentation } from '../actions/presentation-actions'
 import Presentation from '../model/presentation'
 import PresentationEditGate from '../components/presentation-edit-gate'
+
+const EditPresentationPage = React.lazy(() => import('../pages/edit-presentation-page'));
+const PreviewPresentationPage = React.lazy(() => import('../pages/preview-presentation-page'));
+const ThankYouPresentationPage = React.lazy(() => import('../pages/thankyou-presentation-page'));
+const EditSpeakerPage = React.lazy(() => import('../pages/edit-speaker-page'));
 
 const PresentationLayout = ({
   match,
@@ -66,83 +72,84 @@ const PresentationLayout = ({
   const defaultStep = selectionPlanSettings?.CFP_PRESENTATION_EDITION_DEFAULT_TAB || "summary";
 
   return (
-    <Switch>
-      <Route
-        strict
-        exact
-        path={`${match.url}/preview`}
-        render={(props) => <PreviewPresentationPage {...props} selectionPlan={selectionPlan} />}
-      />
-      <Route render={() => (
-        <PresentationEditGate
-          presentation={presentation}
-          isNew={isNew}
-          presentationId={presentation_id}
-          entityId={entity.id}
-          redirectUrl={isNew ? `/app/${summit.slug}/all-plans/${selectionPlan.id}` : `${match.url}/preview`}
-        >
-          <Switch>
-            <Route
-              strict
-              exact
-              path={`${match.url}/speakers/new`}
-              render={
-                (props) =>
-                  <EditSpeakerPage {...props} selectionPlan={selectionPlan} />
-              }
-            />
-            <Route
-              strict
-              exact
-              path={`${match.url}/speakers/:speaker_id(\\d+)`}
-              render={
-                (props) =>
-                  <EditSpeakerPage {...props} selectionPlan={selectionPlan} />
-              }
-            />
-            <Route
-              strict
-              exact
-              path={`${match.url}/thank-you`}
-              render={
-                (props) =>
-                  <ThankYouPresentationPage {...props} selectionPlan={selectionPlan} />
-              }
-            />
-            <Route
-              strict
-              exact
-              path={`${match.url}/:step`}
-              render={
-                props => (
-                  <EditPresentationPage {...props} presentation={presentation} selectionPlan={selectionPlan} />
-                )
-              }
-            />
-            <Route render={() => (<Redirect to={`${match.url}/${defaultStep}`} />)} />
-          </Switch>
-        </PresentationEditGate>
-      )} />
-    </Switch>
+    <Suspense fallback={<AjaxLoader show relative size={120} />}>
+      <Switch>
+        <Route
+          strict
+          exact
+          path={`${match.url}/preview`}
+          render={(props) => <PreviewPresentationPage {...props} selectionPlan={selectionPlan} />}
+        />
+        <Route render={() => (
+          <PresentationEditGate
+            presentation={presentation}
+            isNew={isNew}
+            presentationId={presentation_id}
+            entityId={entity.id}
+            redirectUrl={isNew ? `/app/${summit.slug}/all-plans/${selectionPlan.id}` : `${match.url}/preview`}
+          >
+            <Switch>
+              <Route
+                strict
+                exact
+                path={`${match.url}/speakers/new`}
+                render={
+                  (props) =>
+                    <EditSpeakerPage {...props} selectionPlan={selectionPlan} />
+                }
+              />
+              <Route
+                strict
+                exact
+                path={`${match.url}/speakers/:speaker_id(\\d+)`}
+                render={
+                  (props) =>
+                    <EditSpeakerPage {...props} selectionPlan={selectionPlan} />
+                }
+              />
+              <Route
+                strict
+                exact
+                path={`${match.url}/thank-you`}
+                render={
+                  (props) =>
+                    <ThankYouPresentationPage {...props} selectionPlan={selectionPlan} />
+                }
+              />
+              <Route
+                strict
+                exact
+                path={`${match.url}/:step`}
+                render={
+                  props => (
+                    <EditPresentationPage {...props} presentation={presentation} selectionPlan={selectionPlan} />
+                  )
+                }
+              />
+              <Route render={() => (<Redirect to={`${match.url}/${defaultStep}`} />)} />
+            </Switch>
+          </PresentationEditGate>
+        )} />
+      </Switch>
+    </Suspense>
   );
 
 }
 
-const mapStateToProps = ({ baseState, presentationState, clockState }) => ({
-    speaker: baseState.speaker,
-    summit: baseState.summit,
-    loading: baseState.loading,
-    tagGroups: baseState.tagGroups,
-    selectionPlansSettings: baseState.selectionPlansSettings,
-    loggedSpeaker: baseState.speaker,
-    nowUtc: clockState.nowUtc,
-    ...presentationState
+const mapStateToProps = ({ baseState, presentationState }) => ({
+  speaker: baseState.speaker,
+  summit: baseState.summit,
+  loading: baseState.loading,
+  tagGroups: baseState.tagGroups,
+  selectionPlansSettings: baseState.selectionPlansSettings,
+  loggedSpeaker: baseState.speaker,
+  ...presentationState
 })
 
 export default connect(
-    mapStateToProps,
-    {
-        getPresentation,
-        resetPresentation
-    }
+  mapStateToProps,
+  {
+    getPresentation,
+    resetPresentation
+  }
 )(PresentationLayout)
