@@ -12,7 +12,7 @@
  **/
 
 import Swal from 'sweetalert2';
-import { UploadInput } from 'openstack-uicore-foundation/lib/components';
+import UploadInput from 'openstack-uicore-foundation/lib/components/inputs/upload-input';
 import SpeakerForm from './speaker-form';
 import { SPEAKER_PHOTO_MAX_SIZE } from '../utils/constants';
 
