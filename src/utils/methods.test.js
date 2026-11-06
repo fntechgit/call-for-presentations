@@ -114,6 +114,12 @@ describe("getSubmissionsPath", () => {
 
     expect(getSubmissionsPath(summitWithPlans(79, 81), 79)).toBe('all-plans/79');
   });
+
+  it('ignores an explicit plan that is not among the allowed plans and falls back to the landing plan', () => {
+    setLanding(81);
+
+    expect(getSubmissionsPath(summitWithPlans(79, 81), 999)).toBe('all-plans/81');
+  });
 });
 
 describe("getCurrentSelectionPlanId", () => {
