@@ -260,7 +260,8 @@ export const setDefaultColors = () => {
 };
 
 export const getSubmissionsPath = (summit, currentSelectionPlanId) => {
-    const selectionPlanId = currentSelectionPlanId || getAllowedLandingSelectionPlanId(summit);
+    const isAllowed = currentSelectionPlanId && summit?.selection_plans?.some(sp => sp.id === currentSelectionPlanId);
+    const selectionPlanId = isAllowed ? currentSelectionPlanId : getAllowedLandingSelectionPlanId(summit);
     return selectionPlanId ? `all-plans/${selectionPlanId}` : 'all-plans';
 };
 
