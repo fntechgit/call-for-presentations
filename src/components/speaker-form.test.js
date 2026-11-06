@@ -13,6 +13,7 @@
 
 import Swal from 'sweetalert2';
 import UploadInput from 'openstack-uicore-foundation/lib/components/inputs/upload-input';
+import CompanyInput from 'openstack-uicore-foundation/lib/components/inputs/company-input';
 import SpeakerForm from './speaker-form';
 import { SPEAKER_PHOTO_MAX_SIZE } from '../utils/constants';
 
@@ -29,7 +30,7 @@ jest.mock('openstack-uicore-foundation/lib/components/inputs/country-input', () 
 jest.mock('openstack-uicore-foundation/lib/components/inputs/language-input', () => () => null);
 jest.mock('openstack-uicore-foundation/lib/components/inputs/checkbox-list', () => () => null);
 jest.mock('openstack-uicore-foundation/lib/components/inputs/free-multi-text-input', () => () => null);
-jest.mock('openstack-uicore-foundation/lib/components/inputs/registration-company-input', () => () => null);
+jest.mock('openstack-uicore-foundation/lib/components/inputs/company-input', () => () => null);
 jest.mock('./affiliationstable', () => () => null);
 jest.mock('./inputs/presentation-links', () => () => null);
 jest.mock('../utils/methods', () => ({ validate: jest.fn(), scrollToError: jest.fn() }));
@@ -44,12 +45,24 @@ const findAllByType = (node, type, found = []) => {
     return findAllByType(node.props?.children, type, found);
 };
 
+const findById = (node, id) => {
+    if (!node || typeof node !== 'object') return null;
+    if (Array.isArray(node)) {
+        for (const child of node) {
+            const found = findById(child, id);
+            if (found) return found;
+        }
+        return null;
+    }
+    if (node.props?.id === id) return node;
+    return findById(node.props?.children, id);
+};
+
 const makeForm = () => new SpeakerForm({
     entity: { company: 'Acme', other_presentation_links: [] },
     errors: {},
     member: { id: 1 },
     orgRoles: [],
-    summit: { id: 1 },
 });
 
 describe('SpeakerForm photo size limit', () => {
@@ -76,5 +89,17 @@ describe('SpeakerForm photo size limit', () => {
         makeForm().handleUploadError([{ name: 'notes.pdf', size: 1024 }]);
 
         expect(Swal.fire).not.toHaveBeenCalled();
+    });
+});
+
+describe('SpeakerForm without a summit', () => {
+    it('renders the company field as a global CompanyInput (CFP-PROD-N, /app/profile)', () => {
+        // no summit prop: /app/profile renders the form before any summit is selected
+        const company = findById(makeForm().render(), 'company');
+
+        expect(company.type).toBe(CompanyInput);
+        expect(company.props).not.toHaveProperty('summitId');
+        expect(company.props).not.toHaveProperty('queryFunction');
+        expect(company.props.value).toEqual({ id: 0, name: 'Acme' });
     });
 });

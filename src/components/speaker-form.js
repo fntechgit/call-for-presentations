@@ -25,7 +25,7 @@ import CountryInput from 'openstack-uicore-foundation/lib/components/inputs/coun
 import LanguageInput from 'openstack-uicore-foundation/lib/components/inputs/language-input'
 import CheckboxList from 'openstack-uicore-foundation/lib/components/inputs/checkbox-list'
 import FreeMultiTextInput from 'openstack-uicore-foundation/lib/components/inputs/free-multi-text-input'
-import RegistrationCompanyInput from 'openstack-uicore-foundation/lib/components/inputs/registration-company-input'
+import CompanyInput from 'openstack-uicore-foundation/lib/components/inputs/company-input'
 import {validate, scrollToError} from "../utils/methods";
 import {SPEAKER_PHOTO_MAX_SIZE} from "../utils/constants";
 import Swal from "sweetalert2";
@@ -155,11 +155,17 @@ class SpeakerForm extends React.Component {
 
     render() {
         let {entity} = this.state;
-        let {member, orgRoles, summit} = this.props;
+        let {member, orgRoles} = this.props;
         let showAffiliation = this.props.hasOwnProperty('showAffiliation');
 
         let roleOptions = orgRoles.map(r => ({value: r.id, label: r.role}));
-        const companyValue = entity.company instanceof Object ? entity.company : {name: entity.company};
+        // CompanyInput renders value.id.toString(), so plain-string companies from the API get a placeholder id
+        let companyValue = null;
+        if (entity.company instanceof Object) {
+            companyValue = {...entity.company, id: entity.company.id ?? 0};
+        } else if (entity.company) {
+            companyValue = {id: 0, name: entity.company};
+        }
 
         return (
             <form className="summit-speaker-form">
@@ -195,11 +201,13 @@ class SpeakerForm extends React.Component {
                 <div className="row form-group">
                     <div className="col-md-6">
                         <label> {T.translate("edit_speaker.company")} * </label>
-                        <RegistrationCompanyInput
+                        <CompanyInput
                           id="company"
-                          summitId={summit.id}
+                          allowCreate
+                          onCreate={(name, callback) => callback({id: 0, name})}
                           onChange={this.handleChange}
-                          onError={console.log}
+                          placeholder={T.translate("edit_speaker.company_placeholder")}
+                          noOptionsMessage={({inputValue}) => T.translate(inputValue ? "edit_speaker.company_no_results" : "edit_speaker.company_type_to_search")}
                           value={companyValue}
                           error={this.hasErrors('company')}
                           styles={{

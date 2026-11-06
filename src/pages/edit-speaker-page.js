@@ -20,7 +20,7 @@ import { getSpeaker, resetSpeakerForm, saveSpeaker, getOrganizationalRoles } fro
 import history from "../history";
 
 
-class EditSpeakerPage extends React.Component {
+export class EditSpeakerPage extends React.Component {
 
     constructor(props){
         super(props);
@@ -41,6 +41,7 @@ class EditSpeakerPage extends React.Component {
 
         if (!location.state) {
             this.goBackToSpeakers();
+            return;
         }
 
         if (!speakerId || isNaN(speakerId)) {
@@ -58,6 +59,7 @@ class EditSpeakerPage extends React.Component {
 
         if (!location.state) {
             this.goBackToSpeakers();
+            return;
         }
 
         if (!speakerId || isNaN(speakerId)) {
@@ -77,7 +79,7 @@ class EditSpeakerPage extends React.Component {
 
     goBackToSpeakers() {
         const {history, summit, selectionPlan, currentPresentation} = this.props;
-        history.push(`/app/${summit.slug}/${selectionPlan.id}/presentations/${currentPresentation.id}/speakers`);
+        history.push(`/app/${summit.slug}/all-plans/${selectionPlan.id}/presentations/${currentPresentation.id}/speakers`);
     }
 
     handleSubmit(speaker) {
@@ -85,7 +87,7 @@ class EditSpeakerPage extends React.Component {
     }
 
     render() {
-        const {entity, orgRoles, selectionPlan, selectionPlansSettings, loggedMember, errors, speakerPermission, match, loggedInSpeaker, summit} = this.props;
+        const {entity, orgRoles, selectionPlan, selectionPlansSettings, loggedMember, errors, speakerPermission, match, loggedInSpeaker} = this.props;
         const speakerId = match.params.speaker_id;
 
         const selectionPlanSettings = selectionPlansSettings[selectionPlan?.id] || {};
@@ -96,7 +98,7 @@ class EditSpeakerPage extends React.Component {
                 title: T.translate("errors.access_denied"),
                 text: T.translate("edit_speaker.auth_required_text"),
                 type: "warning",
-            }).then(function(result){
+            }).then(() => {
                 this.goBackToSpeakers();
             });
 
@@ -110,7 +112,6 @@ class EditSpeakerPage extends React.Component {
                 <hr/>
                 <SpeakerForm
                     entity={entity}
-                    summit={summit}
                     errors={errors}
                     member={loggedMember}
                     orgRoles={orgRoles}
