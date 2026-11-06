@@ -39,7 +39,7 @@ const ProfilePage = ({ entity, speaker, orgRoles, loggedMember, errors, loading,
     }, [orgRoles]);
 
     const handleSaveSpeakerProfile = (entity) => {
-        props.saveSpeakerProfile(entity);
+        props.saveSpeakerProfile(entity, selectionPlanId);
     }
 
     useEffect(() => {
