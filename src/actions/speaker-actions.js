@@ -440,7 +440,7 @@ const normalizeEntity = (entity) => {
 
 
 
-export const saveSpeakerProfile = (entity) => async (dispatch, getState) => {
+export const saveSpeakerProfile = (entity, selectionPlanId) => async (dispatch, getState) => {
     const {baseState} = getState();
     const {summit} = baseState;
     const accessToken = await getAccessTokenSafely();
@@ -492,7 +492,7 @@ export const saveSpeakerProfile = (entity) => async (dispatch, getState) => {
             // we need the expanded member in the speaker payload, and the speaker exists even if an upload failed
             .finally(() => { dispatch(getSpeakerInfo(null)); }))
         .then((payload) => {
-            const redirectUrl = summit ? `/app/${summit.slug}/${getSubmissionsPath(summit)}` : '/app/start';
+            const redirectUrl = summit ? `/app/${summit.slug}/${getSubmissionsPath(summit, selectionPlanId)}` : '/app/start';
             success_message.html = T.translate("edit_profile.profile_saved");
             dispatch(showMessage(success_message, () => history.push(redirectUrl)));
         })
