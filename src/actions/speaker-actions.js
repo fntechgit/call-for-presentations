@@ -130,7 +130,7 @@ export const speakerPermissionErrorHandler = (err, res) => (dispatch) => {
   const code = err.status;
   dispatch(stopLoading());
 
-  if (code == ERROR_404) {
+  if (code === ERROR_404) {
     Swal.fire({
       title: T.translate("edit_speaker.auth_required"),
       text: T.translate("edit_speaker.auth_required_text"),
@@ -334,7 +334,7 @@ const uploadSpeakerPhotos = (entity, pic_file, big_pic_file) => (dispatch) => {
     uploads.push(dispatch(uploadBigFile(entity, big_pic_file)));
   }
 
-  // wait for every upload to finish, so a late response can"t land after the save has settled
+  // wait for every upload to finish, so a late response can't land after the save has settled
   return Promise.allSettled(uploads).then((results) => {
     const failed = results.find((result) => result.status === "rejected");
     if (failed) return Promise.reject(failed.reason);
@@ -555,7 +555,7 @@ const uploadProfilePhotos = (entity, pic_file, big_pic_file) => (dispatch) => {
     uploads.push(dispatch(uploadFileBigPhoto(entity, big_pic_file)));
   }
 
-  // wait for every upload to finish, so a late response can"t land after the save has settled
+  // wait for every upload to finish, so a late response can't land after the save has settled
   return Promise.allSettled(uploads).then((results) => {
     const failed = results.find((result) => result.status === "rejected");
     if (failed) return Promise.reject(failed.reason);
