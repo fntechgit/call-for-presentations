@@ -9,71 +9,68 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
-import React from 'react';
-import { connect } from 'react-redux';
-import T from 'i18n-react/dist/i18n-react';
-import Exclusive from 'openstack-uicore-foundation/lib/components/exclusive-wrapper'
-import {getSubmissionsPath} from "../utils/methods";
+import React from "react";
+import { connect } from "react-redux";
+import T from "i18n-react/dist/i18n-react";
+import Exclusive from "openstack-uicore-foundation/lib/components/exclusive-wrapper";
+import { getSubmissionsPath } from "../utils/methods";
 
-import '../styles/thankyou-presentation-page.less';
+import "../styles/thankyou-presentation-page.less";
 
 class ThankYouPresentationPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onDone = this.onDone.bind(this);
+  }
 
-    constructor(props){
-        super(props);
-        this.onDone = this.onDone.bind(this);
-    }
+  onDone(ev) {
+    ev.preventDefault();
 
-    onDone(ev) {
-        ev.preventDefault();
-    
-        const {history, summit, selectionPlan} = this.props;
-        const submissionsPath = getSubmissionsPath(summit, selectionPlan?.id);
-    
-        history.push(`/app/${summit.slug}/${submissionsPath}`);
-    }
+    const { history, summit, selectionPlan } = this.props;
+    const submissionsPath = getSubmissionsPath(summit, selectionPlan?.id);
 
-    render() {
-        return (
-            <div className="page-wrap" id="thankyou-presentation-page">
-                <div className="presentation-header-wrapper">
-                    <h2>{T.translate("thankyou_presentation.thank_you")}</h2>
-                </div>
+    history.push(`/app/${summit.slug}/${submissionsPath}`);
+  }
 
-                <div className="thankyou-body-wrapper">
-                    <p>
-                        <b>{T.translate("thankyou_presentation.saved")}</b>{'  '}
-                        {T.translate("thankyou_presentation.saved_cont")}
-                    </p>
-                    <Exclusive name="thank-you-body">
-                    <p>
-                        {T.translate("thankyou_presentation.body")}
-                    </p>
-                    </Exclusive>
+  render() {
+    return (
+      <div className="page-wrap" id="thankyou-presentation-page">
+        <div className="presentation-header-wrapper">
+          <h2>{T.translate("thankyou_presentation.thank_you")}</h2>
+        </div>
 
-                    <hr/>
-                    <div className="row submit-buttons">
-                        <div className="col-md-6 col-md-offset-6">
-                            <button onClick={this.onDone} className="btn btn-primary pull-right btn-save" >
-                                {T.translate("general.got_it")}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+        <div className="thankyou-body-wrapper">
+          <p>
+            <b>{T.translate("thankyou_presentation.saved")}</b>
+            {"  "}
+            {T.translate("thankyou_presentation.saved_cont")}
+          </p>
+          <Exclusive name="thank-you-body">
+            <p>{T.translate("thankyou_presentation.body")}</p>
+          </Exclusive>
+
+          <hr />
+          <div className="row submit-buttons">
+            <div className="col-md-6 col-md-offset-6">
+              <button
+                onClick={this.onDone}
+                className="btn btn-primary pull-right btn-save"
+              >
+                {T.translate("general.got_it")}
+              </button>
             </div>
-        );
-    }
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
 
 const mapStateToProps = ({ baseState, presentationState }) => ({
-    summit:baseState.summit,
-    ...presentationState
-})
+  summit: baseState.summit,
+  ...presentationState
+});
 
-export default connect (
-    mapStateToProps,
-    {
-    }
-)(ThankYouPresentationPage);
+export default connect(mapStateToProps, {})(ThankYouPresentationPage);
