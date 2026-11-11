@@ -9,77 +9,112 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
-import React, {useEffect, useState} from 'react'
-import {connect} from 'react-redux';
-import {Switch, Route, Redirect} from 'react-router-dom';
-import {getAllFromSummit, getTagGroups, getAllowedSelectionPlans} from '../actions/base-actions';
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import T from "i18n-react/dist/i18n-react";
+import { Switch, Route, Redirect } from "react-router-dom";
+import { getAllFromSummit } from "../actions/base-actions";
 import AllPlansLayout from "./all-plans-layout";
 import PlanSelectionPage from "../pages/plan-selection-page";
-import ProfilePage from "../pages/profile-page";
-import ClockComponent from '../components/clock';
-import {getAllowedLandingSelectionPlanId} from "../utils/methods";
+import ClockComponent from "../components/clock";
+import { getAllowedLandingSelectionPlanId } from "../utils/methods";
 
-const SummitLayout = ({summit, loading, match, speaker, location, baseLoaded, ...props}) => {
+const SummitLayout = ({
+  summit,
+  loading,
+  match,
+  speaker,
+  location,
+  baseLoaded,
+  ...props
+}) => {
   const urlSummitSlug = match.params.summit_slug;
   const summitSlug = summit?.slug;
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   // get summit data on every refresh
   useEffect(() => {
-    props.getAllFromSummit(urlSummitSlug).then(async (summit) => {
-      await props.getTagGroups(summit.id);
-      await props.getAllowedSelectionPlans(summit.id);
-      setDataLoaded(true);
-    })
-    // failures were already reported to the user by the actions' error handlers
-    .catch(() => {});
+    props
+      .getAllFromSummit(urlSummitSlug, true)
+      .then(() => setDataLoaded(true))
+      .catch(() => setLoadError(true));
   }, []);
+
+  if (loadError) {
+    return (
+      <div className="small-page-wrap">
+        {T.translate("errors.load_data_error")}
+      </div>
+    );
+  }
 
   if (summitSlug !== urlSummitSlug || !baseLoaded || !dataLoaded) return null;
 
   // check if speaker profile exists, if not redirect
-  if ((!speaker || !speaker.id) && !location.pathname.includes('/profile') && !loading) {
+  if (
+    (!speaker || !speaker.id) &&
+    !location.pathname.includes("/profile") &&
+    !loading
+  ) {
     // only keep the landing plan in the URL if the user can actually submit to it, otherwise
     // SelectionPlanLayout's guard bounces us back here and we redirect again, forever
     const spLanding = getAllowedLandingSelectionPlanId(summit);
 
     return (
-      <Redirect exact to={{pathname: `/app/${summit.slug}/${spLanding ? `all-plans/${spLanding}/profile` : 'all-plans/profile'}`}}/>
+      <Redirect
+        exact
+        to={{
+          pathname: `/app/${summit.slug}/${
+            spLanding ? `all-plans/${spLanding}/profile` : "all-plans/profile"
+          }`
+        }}
+      />
     );
   }
 
   return (
     <>
-      <ClockComponent active={true} summit={summit}/>
+      <ClockComponent active summit={summit} />
       <Switch>
-        <Route strict exact path={`${match.url}/select-plan`} component={PlanSelectionPage}/>
-        <Route path={`${match.url}/all-plans`} component={AllPlansLayout}/>
         <Route
-            path={`${match.url}/:selection_plan_id(\\d+)/presentations`}
-            render={props => (<Redirect to={`/app/${summitSlug}/all-plans/${props.match.params.selection_plan_id}`}/>)}
+          strict
+          exact
+          path={`${match.url}/select-plan`}
+          component={PlanSelectionPage}
+        />
+        <Route path={`${match.url}/all-plans`} component={AllPlansLayout} />
+        <Route
+          path={`${match.url}/:selection_plan_id(\\d+)/presentations`}
+          render={(props) => (
+            <Redirect
+              to={`/app/${summitSlug}/all-plans/${props.match.params.selection_plan_id}`}
+            />
+          )}
         />
         <Route
           path={`${match.url}/profile`}
-          render={() => (<Redirect to={`/app/${summitSlug}/all-plans/profile`}/>)}
+          render={() => (
+            <Redirect to={`/app/${summitSlug}/all-plans/profile`} />
+          )}
         />
-        <Route render={() => (<Redirect to={`/app/${summitSlug}/all-plans`}/>)}/>
+        <Route
+          render={() => <Redirect to={`/app/${summitSlug}/all-plans`} />}
+        />
       </Switch>
     </>
   );
+};
 
-}
-
-const mapStateToProps = ({baseState}) => ({
+const mapStateToProps = ({ baseState }) => ({
   speaker: baseState.speaker,
   summit: baseState.summit,
   loading: baseState.loading,
-  baseLoaded: baseState.baseLoaded,
-})
+  baseLoaded: baseState.baseLoaded
+});
 
 export default connect(mapStateToProps, {
-  getAllFromSummit,
-  getTagGroups,
-  getAllowedSelectionPlans
+  getAllFromSummit
 })(SummitLayout);

@@ -9,259 +9,288 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
 import URI from "urijs";
-import validator from 'validator';
-import {getAccessToken, initLogOut} from 'openstack-uicore-foundation/lib/security/methods'
-import defaultColors from './default-colors.json';
-import {BACK_URL, SP_LANDING} from "./constants";
+import validator from "validator";
+import {
+  getAccessToken,
+  initLogOut
+} from "openstack-uicore-foundation/lib/security/methods";
+import defaultColors from "./default-colors.json";
+import { BACK_URL, SP_LANDING } from "./constants";
+
+const MILLISECONDS_IN_SECOND = 1000;
+const SELECTION_PLAN_ID_MATCH_INDEX = 2;
 
 export const stripHtmlText = (html) => {
-    let tmp = document.createElement("DIV");
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || "";
-}
+  const tmp = document.createElement("DIV");
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || "";
+};
 
 export const findElementPos = (obj) => {
-    var curtop = -70;
-    if (obj.offsetParent) {
-        do {
-            curtop += obj.offsetTop;
-        } while (obj = obj.offsetParent);
-        return [curtop];
+  let curtop = -70;
+  if (obj.offsetParent) {
+    let current = obj;
+    while (current) {
+      curtop += current.offsetTop;
+      current = current.offsetParent;
     }
-}
+    return [curtop];
+  }
+};
 
 export const epochToMoment = (atime) => {
-    if(!atime) return atime;
-    atime = atime * 1000;
-    return moment(atime);
-}
+  if (!atime) return atime;
+  atime *= MILLISECONDS_IN_SECOND;
+  return moment(atime);
+};
 
 export const epochToMomentTimeZone = (atime, time_zone) => {
-    if(!atime) return atime;
-    atime = atime * 1000;
-    return moment(atime).tz(time_zone);
-}
+  if (!atime) return atime;
+  atime *= MILLISECONDS_IN_SECOND;
+  return moment(atime).tz(time_zone);
+};
 
-export const formatEpoch = (atime, format = 'M/D/YYYY h:mm a') => {
-    if(!atime) return atime;
-    return epochToMoment(atime).format(format);
-}
+export const formatEpoch = (atime, format = "M/D/YYYY h:mm a") => {
+  if (!atime) return atime;
+  return epochToMoment(atime).format(format);
+};
 
 export const nowBetween = (start, end) => {
-    const now = moment().valueOf();
-    return now > (start * 1000) && now < (end * 1000);
-}
+  const now = moment().valueOf();
+  return (
+    now > start * MILLISECONDS_IN_SECOND && now < end * MILLISECONDS_IN_SECOND
+  );
+};
 
 export const nowAfter = (date) => {
-    const now = moment().valueOf();
-    return now > (date * 1000);
-}
+  const now = moment().valueOf();
+  return now > date * MILLISECONDS_IN_SECOND;
+};
 
 export const objectToQueryString = (obj) => {
-    var str = "";
-    for (var key in obj) {
-        if (str != "") {
-            str += "&";
-        }
-        str += key + "=" + encodeURIComponent(obj[key]);
+  let str = "";
+  for (const key in obj) {
+    if (str != "") {
+      str += "&";
     }
+    str += `${key}=${encodeURIComponent(obj[key])}`;
+  }
 
-    return str;
-}
+  return str;
+};
 
 export const getBackURL = () => {
-    let url      = URI(window.location.href);
-    let query    = url.search(true);
-    let fragment = url.fragment();
-    let backUrl  = query.hasOwnProperty(BACK_URL) ? query[BACK_URL] : null;
-    if(fragment != null && fragment != ''){
-        backUrl += `#${fragment}`;
-    }
-    return backUrl;
-}
+  const url = URI(window.location.href);
+  const query = url.search(true);
+  const fragment = url.fragment();
+  let backUrl = query.hasOwnProperty(BACK_URL) ? query[BACK_URL] : null;
+  if (fragment != null && fragment != "") {
+    backUrl += `#${fragment}`;
+  }
+  return backUrl;
+};
 
 export const scrollToError = () => {
-    let firstError = document.getElementsByClassName("error-label")[0];
-    if (firstError) {
-        firstError.scrollIntoView({behavior: "smooth", block: "center"});
-    }
-}
+  const firstError = document.getElementsByClassName("error-label")[0];
+  if (firstError) {
+    firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+};
 
 export const validate = (entity, rules, errors) => {
-    let result = true;
+  let result = true;
 
-    for (var field in rules) {
-
-        if (rules[field].hasOwnProperty('required')) {
-            if (typeof entity[field] == 'string') {
-                var stripedHtml = entity[field].replace(/<[^>]+>/g, '');
-                if (!stripedHtml) {
-                    errors[field] = rules[field].required;
-                    result = false;
-                }
-            } else if (!entity[field] || entity[field].length == 0) {
-                errors[field] = rules[field].required;
-                result = false;
-            }
+  for (const field in rules) {
+    if (rules[field].hasOwnProperty("required")) {
+      if (typeof entity[field] === "string") {
+        const stripedHtml = entity[field].replace(/<[^>]+>/g, "");
+        if (!stripedHtml) {
+          errors[field] = rules[field].required;
+          result = false;
         }
-
-        if (rules[field].hasOwnProperty('email')) {
-            if (entity[field] && !validator.isEmail(entity[field])) {
-                errors[field] = rules[field].email;
-                result = false;
-            }
-        }
-
-        if (rules[field].hasOwnProperty('maxLength')) {
-            // this allows to validate values on nested objects
-            // field atributte specify the object attribute
-            let field2Validate = rules[field].maxLength?.field || null;
-            const id2Group = rules[field].maxLength?.id || null;
-            let toValidate = [];
-            // we could have an array of values to check ( repetitive group)
-            // if we only have one, we simulate the array
-            if (!Array.isArray(entity[field])) {
-                toValidate.push({id: field, val: entity[field]})
-            } else {
-                toValidate = entity[field].map(e => {
-                    const id = id2Group ? `${field}-${e[id2Group]}` : field;
-                    return {id, val: e[field2Validate]}
-                })
-            }
-
-            toValidate.forEach(e => {
-                let val = stripHtmlText(e.val);
-                if (val.length > 0 && val.length > rules[field].maxLength.value) {
-                    errors[e.id] = rules[field].maxLength.msg;
-                    result = false;
-                }
-            })
-        }
-
-        if (rules[field].hasOwnProperty('link')) {
-            if (entity[field] && !validator.isURL(entity[field])) {
-                errors[field] = rules[field].link;
-                result = false;
-            }
-        }
-
-        if (rules[field].hasOwnProperty('links')) {
-            for (let [idx, link] of entity[field].entries()) {
-                if (link && !validator.isURL(link,{require_protocol: true})) {
-                    errors['link_'+idx] = rules[field].links;
-                    result = false;
-                    break;
-                }
-            }
-        }
-
-        if (rules[field].hasOwnProperty('title_link')) {
-            for (let link of entity[field]) {
-                if (link.link) {
-                    if (!validator.isURL(link.link.trim(), {protocols: ['http', 'https'], require_protocol: true})) {
-                        errors[field] = rules[field].title_link+': '+link.link;
-                        result = false;
-                        break;
-                    }
-                    if (!link.title) {
-                        errors[field] = rules[field].title;
-                        result = false;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if(rules[field].hasOwnProperty('required_questions')){
-            let answers = entity[field];
-            let questions = rules[field].required_questions.value;
-            // check questions
-            if(questions.length > 0) {
-                for (var eq of questions) {
-                    if(eq.mandatory){ // only check for mandatory questions ( skip optionals)
-                        // check if the user answered
-                        let findEq = answers.find(a => a.question_id == eq.id);
-                        if (!findEq) {
-                            // answer not found
-                            errors[`${field}-${eq.id}`] = rules[field].required_questions.msg;
-                            result = false;
-                            break;
-                        }
-                        let answeredQuestions = false;
-                        // answer found
-                        switch(eq.type) {
-                            case 'TextArea':
-                            case 'Text':
-                            case 'ComboBox':
-                            case 'CountryComboBox':
-                            case 'RadioButtonList':
-                            case 'CheckBoxList':
-                            case 'RadioButton':
-                                answeredQuestions = findEq && findEq.answer != "" ? true : false;
-                                break;
-                            case 'CheckBox':
-                                answeredQuestions = findEq && findEq.answer == "true" ? true : false;
-                                break;
-                        }
-                        if(!answeredQuestions){
-                            errors[`${field}-${eq.id}`] = rules[field].required_questions.msg;
-                            result = false;
-                        }
-                    }
-                }
-            }
-        }
+      } else if (!entity[field] || entity[field].length == 0) {
+        errors[field] = rules[field].required;
+        result = false;
+      }
     }
 
-    return result;
-}
+    if (rules[field].hasOwnProperty("email")) {
+      if (entity[field] && !validator.isEmail(entity[field])) {
+        errors[field] = rules[field].email;
+        result = false;
+      }
+    }
+
+    if (rules[field].hasOwnProperty("maxLength")) {
+      // this allows to validate values on nested objects
+      // field atributte specify the object attribute
+      const field2Validate = rules[field].maxLength?.field || null;
+      const id2Group = rules[field].maxLength?.id || null;
+      let toValidate = [];
+      // we could have an array of values to check ( repetitive group)
+      // if we only have one, we simulate the array
+      if (!Array.isArray(entity[field])) {
+        toValidate.push({ id: field, val: entity[field] });
+      } else {
+        toValidate = entity[field].map((e) => {
+          const id = id2Group ? `${field}-${e[id2Group]}` : field;
+          return { id, val: e[field2Validate] };
+        });
+      }
+
+      for (const e of toValidate) {
+        const val = stripHtmlText(e.val);
+        if (val.length > 0 && val.length > rules[field].maxLength.value) {
+          errors[e.id] = rules[field].maxLength.msg;
+          result = false;
+        }
+      }
+    }
+
+    if (rules[field].hasOwnProperty("link")) {
+      if (entity[field] && !validator.isURL(entity[field])) {
+        errors[field] = rules[field].link;
+        result = false;
+      }
+    }
+
+    if (rules[field].hasOwnProperty("links")) {
+      for (const [idx, link] of entity[field].entries()) {
+        if (link && !validator.isURL(link, { require_protocol: true })) {
+          errors[`link_${idx}`] = rules[field].links;
+          result = false;
+          break;
+        }
+      }
+    }
+
+    if (rules[field].hasOwnProperty("title_link")) {
+      for (const link of entity[field]) {
+        if (link.link) {
+          if (
+            !validator.isURL(link.link.trim(), {
+              protocols: ["http", "https"],
+              require_protocol: true
+            })
+          ) {
+            errors[field] = `${rules[field].title_link}: ${link.link}`;
+            result = false;
+            break;
+          }
+          if (!link.title) {
+            errors[field] = rules[field].title;
+            result = false;
+            break;
+          }
+        }
+      }
+    }
+
+    if (rules[field].hasOwnProperty("required_questions")) {
+      const answers = entity[field];
+      const questions = rules[field].required_questions.value;
+      // check questions
+      if (questions.length > 0) {
+        for (const eq of questions) {
+          if (eq.mandatory) {
+            // only check for mandatory questions ( skip optionals)
+            // check if the user answered
+            const findEq = answers.find((a) => a.question_id == eq.id);
+            if (!findEq) {
+              // answer not found
+              errors[`${field}-${eq.id}`] = rules[field].required_questions.msg;
+              result = false;
+              break;
+            }
+            let answeredQuestions = false;
+            // answer found
+            switch (eq.type) {
+              case "TextArea":
+              case "Text":
+              case "ComboBox":
+              case "CountryComboBox":
+              case "RadioButtonList":
+              case "CheckBoxList":
+              case "RadioButton":
+                answeredQuestions = !!(findEq && findEq.answer != "");
+                break;
+              case "CheckBox":
+                answeredQuestions = !!(findEq && findEq.answer == "true");
+                break;
+            }
+            if (!answeredQuestions) {
+              errors[`${field}-${eq.id}`] = rules[field].required_questions.msg;
+              result = false;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return result;
+};
 
 export const getAccessTokenSafely = async () => {
-    try {
-        return await getAccessToken();
-    }
-    catch (e) {
-        console.log('log out: ', e);
-        initLogOut();
-    }
+  try {
+    return await getAccessToken();
+  } catch (e) {
+    console.log("log out: ", e);
+    initLogOut();
+  }
 };
 
 export const setDocumentColors = (data) => {
-    if (typeof document !== 'undefined') {
-        data.forEach(setting => {
-            if (getComputedStyle(document.documentElement).getPropertyValue(`--${setting.key}`)) {
-                document.documentElement.style.setProperty(`--${setting.key}`, setting.value);
-                document.documentElement.style.setProperty(`--${setting.key}50`, `${setting.value}50`);
-            }
-        });
-    }
+  if (typeof document !== "undefined") {
+    data.forEach((setting) => {
+      if (
+        getComputedStyle(document.documentElement).getPropertyValue(
+          `--${setting.key}`
+        )
+      ) {
+        document.documentElement.style.setProperty(
+          `--${setting.key}`,
+          setting.value
+        );
+        document.documentElement.style.setProperty(
+          `--${setting.key}50`,
+          `${setting.value}50`
+        );
+      }
+    });
+  }
 };
 
 export const formatSelectionPlanSettings = (data) => {
-    let selectionPlanSettings = {};
-    // format selection plan settings
-    data.forEach(setting => {
-        if(setting.selection_plan_id) {
-            if(!selectionPlanSettings.hasOwnProperty(setting.selection_plan_id)){
-                selectionPlanSettings[setting.selection_plan_id] = {}
-            }
-            selectionPlanSettings[setting.selection_plan_id] = {...selectionPlanSettings[setting.selection_plan_id], [setting.key]: setting.value}
-        }
-    });
-    return selectionPlanSettings;
-}
+  const selectionPlanSettings = {};
+  // format selection plan settings
+  data.forEach((setting) => {
+    if (setting.selection_plan_id) {
+      if (!selectionPlanSettings.hasOwnProperty(setting.selection_plan_id)) {
+        selectionPlanSettings[setting.selection_plan_id] = {};
+      }
+      selectionPlanSettings[setting.selection_plan_id] = {
+        ...selectionPlanSettings[setting.selection_plan_id],
+        [setting.key]: setting.value
+      };
+    }
+  });
+  return selectionPlanSettings;
+};
 
 export const setDefaultColors = () => {
-    setDocumentColors(defaultColors);
+  setDocumentColors(defaultColors);
 };
 
 export const getSubmissionsPath = (summit) => {
-    const selectionPlanLandingId = getAllowedLandingSelectionPlanId(summit);
-    return selectionPlanLandingId ? `all-plans/${selectionPlanLandingId}` : 'all-plans';
+  const selectionPlanLandingId = getAllowedLandingSelectionPlanId(summit);
+  return selectionPlanLandingId
+    ? `all-plans/${selectionPlanLandingId}`
+    : "all-plans";
 };
 
 /**
@@ -277,15 +306,18 @@ export const getSubmissionsPath = (summit) => {
  *   member's allowed plans for this summit
  */
 export const getAllowedLandingSelectionPlanId = (summit) => {
-    const storedId = localStorage.getItem(SP_LANDING);
-    if (!storedId) return null;
+  const storedId = localStorage.getItem(SP_LANDING);
+  if (!storedId) return null;
 
-    const selectionPlanLandingId = parseInt(storedId);
-    if (Number.isNaN(selectionPlanLandingId) || selectionPlanLandingId <= 0) return null;
+  const selectionPlanLandingId = parseInt(storedId);
+  if (Number.isNaN(selectionPlanLandingId) || selectionPlanLandingId <= 0)
+    return null;
 
-    const isAllowed = summit?.selection_plans?.some(sp => sp.id === selectionPlanLandingId);
-    return isAllowed ? selectionPlanLandingId : null;
-}
+  const isAllowed = summit?.selection_plans?.some(
+    (sp) => sp.id === selectionPlanLandingId
+  );
+  return isAllowed ? selectionPlanLandingId : null;
+};
 
 /**
  *
@@ -293,32 +325,33 @@ export const getAllowedLandingSelectionPlanId = (summit) => {
  * @returns {number}
  */
 export const getCurrentSelectionPlanId = (match) => {
-    // first try to use the match obj
-    if(match?.params?.selection_plan_id)
-        return parseInt(match.params.selection_plan_id)
-    // and use raw url as a fallback
-    const regex = /^\/app\/(\w*)\/all-plans\/(\d*)/;
-    let currentUrl = URI(window.location.href);
-    let path = currentUrl.path();
-    const matches = path.match(regex);
-    if(matches && matches.length > 2 ){
-        return parseInt(matches[2]);
-    }
-    return 0;
-}
+  // first try to use the match obj
+  if (match?.params?.selection_plan_id)
+    return parseInt(match.params.selection_plan_id);
+  // and use raw url as a fallback
+  // summit slugs are hyphenated ("my-summit"), so match any non-slash segment
+  const regex = /^\/app\/([^/]+)\/all-plans\/(\d+)/;
+  const currentUrl = URI(window.location.href);
+  const path = currentUrl.path();
+  const matches = path.match(regex);
+  if (matches && matches.length > SELECTION_PLAN_ID_MATCH_INDEX) {
+    return parseInt(matches[SELECTION_PLAN_ID_MATCH_INDEX]);
+  }
+  return 0;
+};
 
 // checks if path is: all-plans/{selection_plan_id}, all-plans/{selection_plan_id}/profile, all-plans/{selection_plan_id}/presentations
-export const getLandingSelectionPlan = path => {
-    const regex = /all-plans\/(\d+)(?:$|\/profile|\/presentations)(?:\/|$)$/;
-    const regexMatch = path.match(regex);
+export const getLandingSelectionPlan = (path) => {
+  const regex = /all-plans\/(\d+)(?:$|\/profile|\/presentations)(?:\/|$)$/;
+  const regexMatch = path.match(regex);
 
-    return regexMatch?.[1] || null;
-}
+  return regexMatch?.[1] || null;
+};
 
 // checks if path is: all-plans, all-plans/presentations
-export const isGlobalLanding = path => {
-    const regex = /all-plans(?:\/|$|\/presentations)(?:\/|$)$/;
-    const regexMatch = path.match(regex);
+export const isGlobalLanding = (path) => {
+  const regex = /all-plans(?:\/|$|\/presentations)(?:\/|$)$/;
+  const regexMatch = path.match(regex);
 
-    return !!regexMatch;
-}
+  return !!regexMatch;
+};

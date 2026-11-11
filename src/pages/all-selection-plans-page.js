@@ -9,30 +9,46 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
-import React, {useLayoutEffect, useState, useEffect} from 'react';
-import {connect} from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 import history from "../history";
 import SelectionPlanSection from "../components/selection-plan-section";
-import {getSelectionPlanSettings} from "../actions/base-actions";
+import { getAllPresentations } from "../actions/presentations-actions";
+import { resetPresentation } from "../actions/presentation-actions";
 
-const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, selectionPlansSettings, getSelectionPlanSettings}) => {
+const AllSelectionPlansPage = ({
+  summit,
+  loggedSpeaker,
+  match,
+  selectionPlanId,
+  selectionPlansSettings,
+  getAllPresentations,
+  resetPresentation
+}) => {
+  const [dataPulled, setDataPulled] = useState(false);
+
   const plansToShow = summit.selection_plans
-    .filter(sp => selectionPlanId ? sp.id === selectionPlanId : !sp.is_hidden)
-    .sort((a,b) => {
+    .filter((sp) =>
+      selectionPlanId ? sp.id === selectionPlanId : !sp.is_hidden
+    )
+    .sort((a, b) => {
       const endDateDiff = b.submission_end_date - a.submission_end_date;
       // if the selections plans shares the same end date, sort by id
       return endDateDiff !== 0 ? endDateDiff : a.id - b.id;
     });
 
-  const selectionPlansIds = plansToShow.map(sp => sp.id);
+  useEffect(() => {
+    if (plansToShow.length === 0) return;
+    getAllPresentations(summit.id).then(() => {
+      // clear presentation form
+      resetPresentation();
+      setDataPulled(true);
+    });
+  }, [summit?.id]);
 
-  useEffect(()=>{
-    selectionPlansIds.forEach((id) => getSelectionPlanSettings(summit.id, id));
-  }, []);
-
-  if ( !summit || !loggedSpeaker ) return null;
+  if (!summit || !loggedSpeaker) return null;
 
   if (!loggedSpeaker) {
     history.push(`/app/${summit.slug}/all-plans/profile`);
@@ -41,22 +57,37 @@ const AllSelectionPlansPage = ({summit, loggedSpeaker, match, selectionPlanId, s
 
   if (plansToShow.length === 0) {
     return (
-      <div className="small-page-wrap">You cannot submit a presentation for this event at this time</div>
+      <div className="small-page-wrap">
+        You cannot submit a presentation for this event at this time
+      </div>
     );
   }
 
+  if (!dataPulled) return null;
+
   return (
     <div>
-      {plansToShow.map(sp => <SelectionPlanSection key={`selection-plan-section-${sp.id}`} selectionPlan={sp} selectionPlanSettings={selectionPlansSettings[sp.id] || {}} history={history} match={match} />)}
+      {plansToShow.map((sp) => (
+        <SelectionPlanSection
+          key={`selection-plan-section-${sp.id}`}
+          selectionPlan={sp}
+          selectionPlanSettings={selectionPlansSettings[sp.id] || {}}
+          history={history}
+          match={match}
+        />
+      ))}
     </div>
   );
 };
 
-const mapStateToProps = ({baseState}) => ({
+const mapStateToProps = ({ baseState }) => ({
   summit: baseState.summit,
   loggedSpeaker: baseState.speaker,
   loading: baseState.loading,
   selectionPlansSettings: baseState.selectionPlansSettings
 });
 
-export default connect(mapStateToProps, {getSelectionPlanSettings})(AllSelectionPlansPage);
+export default connect(mapStateToProps, {
+  getAllPresentations,
+  resetPresentation
+})(AllSelectionPlansPage);

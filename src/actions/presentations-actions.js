@@ -9,7 +9,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
 import {
   getRequest,
@@ -19,81 +19,53 @@ import {
   authErrorHandler
 } from "openstack-uicore-foundation/lib/utils/actions";
 
-import {getTagGroups} from './base-actions';
-import {getAccessTokenSafely} from "../utils/methods";
+import { getAccessTokenSafely } from "../utils/methods";
 
-export const DUMMY_ACTION = 'DUMMY_ACTION';
-export const CREATED_RECEIVED = 'CREATED_RECEIVED';
-export const SPEAKER_RECEIVED = 'SPEAKER_RECEIVED';
-export const MODERATOR_RECEIVED = 'MODERATOR_RECEIVED';
-export const REGROUP_PRESENTATIONS = 'REGROUP_PRESENTATIONS';
+export const DUMMY_ACTION = "DUMMY_ACTION";
+export const PRESENTATIONS_RECEIVED = "PRESENTATIONS_RECEIVED";
 
-export const getAllPresentations = (summitId, selectionPlanId) => async (dispatch) => {
+// one request per role for the whole summit; the reducer splits the results by selection plan
+export const getAllPresentations = (summitId) => async (dispatch) => {
   const accessToken = await getAccessTokenSafely();
 
   dispatch(startLoading());
 
-  const created = dispatch(getCreatorPresentations(selectionPlanId, accessToken));
-
-  const speaker = dispatch(getSpeakerPresentations(selectionPlanId, accessToken));
-
-  const moderator = dispatch(getModeratorPresentations(selectionPlanId, accessToken));
-
-  return Promise.all([created, speaker, moderator]).then(() => {
-      dispatch(createAction(REGROUP_PRESENTATIONS)({selectionPlanId}));
-      dispatch(stopLoading());
-    }
+  const created = dispatch(
+    getPresentationsByRole("creator", summitId, accessToken)
   );
+
+  const speaker = dispatch(
+    getPresentationsByRole("speaker", summitId, accessToken)
+  );
+
+  const moderator = dispatch(
+    getPresentationsByRole("moderator", summitId, accessToken)
+  );
+
+  // a failed role (already alerted by authErrorHandler) counts as empty, so the other roles still render
+  return Promise.allSettled([created, speaker, moderator])
+    .then((results) => {
+      const [created, speaker, moderator] = results.map((result) =>
+        result.status === "fulfilled" ? result.value : []
+      );
+      dispatch(
+        createAction(PRESENTATIONS_RECEIVED)({ created, speaker, moderator })
+      );
+    })
+    .finally(() => dispatch(stopLoading()));
 };
 
-export const getCreatorPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
+export const getPresentationsByRole =
+  (role, summitId, accessToken) => (dispatch) => {
+    const params = {
+      access_token: accessToken,
+      expand: "type"
+    };
 
-  const params = {
-    access_token: accessToken,
-    expand: 'type'
+    return getRequest(
+      null,
+      createAction(DUMMY_ACTION),
+      `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${role}/summits/${summitId}`,
+      authErrorHandler
+    )(params)(dispatch).then(({ response }) => response.data);
   };
-
-  return getRequest(
-    null,
-    createAction(DUMMY_ACTION),
-    `${window.API_BASE_URL}/api/v1/speakers/me/presentations/creator/selection-plans/${selectionPlanId}`,
-    authErrorHandler
-  )(params)(dispatch).then(({response}) => {
-    dispatch(createAction(CREATED_RECEIVED)({response, selectionPlanId}));
-  });
-}
-
-export const getSpeakerPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
-
-  let params = {
-    access_token: accessToken,
-    expand: 'type'
-  };
-
-  return getRequest(
-    null,
-    createAction(DUMMY_ACTION),
-    `${window.API_BASE_URL}/api/v1/speakers/me/presentations/speaker/selection-plans/${selectionPlanId}`,
-    authErrorHandler
-  )(params)(dispatch).then(({response}) => {
-    dispatch(createAction(SPEAKER_RECEIVED)({response, selectionPlanId}));
-  });
-}
-
-export const getModeratorPresentations = (selectionPlanId, accessToken) => (dispatch, getState) => {
-
-  let params = {
-    access_token: accessToken,
-    expand: 'type'
-  };
-
-  return getRequest(
-    null,
-    createAction(DUMMY_ACTION),
-    `${window.API_BASE_URL}/api/v1/speakers/me/presentations/moderator/selection-plans/${selectionPlanId}`,
-    authErrorHandler
-  )(params)(dispatch).then(({response}) => {
-    dispatch(createAction(MODERATOR_RECEIVED)({response, selectionPlanId}));
-  });
-};
-
