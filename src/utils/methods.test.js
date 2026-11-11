@@ -9,115 +9,142 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
-import { getAllowedLandingSelectionPlanId, getCurrentSelectionPlanId, getSubmissionsPath } from './methods';
-import { SP_LANDING } from './constants';
+import {
+  getAllowedLandingSelectionPlanId,
+  getCurrentSelectionPlanId,
+  getSubmissionsPath
+} from "./methods";
+import { SP_LANDING } from "./constants";
 
 const originalLocalStorage = global.localStorage;
 
 afterEach(() => {
-    global.localStorage = originalLocalStorage;
+  global.localStorage = originalLocalStorage;
 });
 
 const setLanding = (value) => {
-    global.localStorage = {
-        getItem: (key) => (key === SP_LANDING && value !== null ? String(value) : null)
-    };
+  global.localStorage = {
+    getItem: (key) =>
+      key === SP_LANDING && value !== null ? String(value) : null
+  };
 };
 
-const summitWithPlans = (...ids) => ({selection_plans: ids.map(id => ({id}))});
-
-describe('getAllowedLandingSelectionPlanId', () => {
-    it('returns the landing plan id when the user is allowed to submit to it', () => {
-        setLanding(123);
-
-        expect(getAllowedLandingSelectionPlanId(summitWithPlans(45, 123))).toBe(123);
-    });
-
-    it('returns null when the landing plan is not among the allowed plans', () => {
-        // stale SP_LANDING: id kept from another summit or a closed plan.
-        // this is the precondition of the /all-plans/{id}/profile redirect loop
-        setLanding(999);
-
-        expect(getAllowedLandingSelectionPlanId(summitWithPlans(45, 123))).toBeNull();
-    });
-
-    it('returns null when no landing plan was ever stored', () => {
-        setLanding(null);
-
-        expect(getAllowedLandingSelectionPlanId(summitWithPlans(45, 123))).toBeNull();
-    });
-
-    it('returns null when the stored value is not a usable plan id', () => {
-        setLanding('');
-        expect(getAllowedLandingSelectionPlanId(summitWithPlans(45, 123))).toBeNull();
-
-        setLanding('not-a-plan');
-        expect(getAllowedLandingSelectionPlanId(summitWithPlans(45, 123))).toBeNull();
-    });
-
-    it('returns null for a non-positive id even if a plan matches it', () => {
-        setLanding(0);
-
-        expect(getAllowedLandingSelectionPlanId(summitWithPlans(0, 123))).toBeNull();
-    });
-
-    it('returns null when the allowed plans are not loaded yet', () => {
-        setLanding(123);
-
-        expect(getAllowedLandingSelectionPlanId(undefined)).toBeNull();
-        expect(getAllowedLandingSelectionPlanId({})).toBeNull();
-    });
+const summitWithPlans = (...ids) => ({
+  selection_plans: ids.map((id) => ({ id }))
 });
 
-describe('getSubmissionsPath', () => {
-    it('keeps the landing plan in the path when the user can submit to it', () => {
-        setLanding(123);
+describe("getAllowedLandingSelectionPlanId", () => {
+  it("returns the landing plan id when the user is allowed to submit to it", () => {
+    setLanding(123);
 
-        expect(getSubmissionsPath(summitWithPlans(45, 123))).toBe('all-plans/123');
-    });
+    expect(getAllowedLandingSelectionPlanId(summitWithPlans(45, 123))).toBe(
+      123
+    );
+  });
 
-    it('falls back to the global submissions path when the landing plan is stale', () => {
-        setLanding(999);
+  it("returns null when the landing plan is not among the allowed plans", () => {
+    // stale SP_LANDING: id kept from another summit or a closed plan.
+    // this is the precondition of the /all-plans/{id}/profile redirect loop
+    setLanding(999);
 
-        expect(getSubmissionsPath(summitWithPlans(45, 123))).toBe('all-plans');
-    });
+    expect(
+      getAllowedLandingSelectionPlanId(summitWithPlans(45, 123))
+    ).toBeNull();
+  });
 
-    it('falls back to the global submissions path when no landing plan was stored', () => {
-        setLanding(null);
+  it("returns null when no landing plan was ever stored", () => {
+    setLanding(null);
 
-        expect(getSubmissionsPath(summitWithPlans(45, 123))).toBe('all-plans');
-    });
+    expect(
+      getAllowedLandingSelectionPlanId(summitWithPlans(45, 123))
+    ).toBeNull();
+  });
+
+  it("returns null when the stored value is not a usable plan id", () => {
+    setLanding("");
+    expect(
+      getAllowedLandingSelectionPlanId(summitWithPlans(45, 123))
+    ).toBeNull();
+
+    setLanding("not-a-plan");
+    expect(
+      getAllowedLandingSelectionPlanId(summitWithPlans(45, 123))
+    ).toBeNull();
+  });
+
+  it("returns null for a non-positive id even if a plan matches it", () => {
+    setLanding(0);
+
+    expect(
+      getAllowedLandingSelectionPlanId(summitWithPlans(0, 123))
+    ).toBeNull();
+  });
+
+  it("returns null when the allowed plans are not loaded yet", () => {
+    setLanding(123);
+
+    expect(getAllowedLandingSelectionPlanId(undefined)).toBeNull();
+    expect(getAllowedLandingSelectionPlanId({})).toBeNull();
+  });
 });
 
-describe('getCurrentSelectionPlanId', () => {
-    const originalWindow = global.window;
-    const visit = (path) => { global.window = { location: { href: `https://cfp.example${path}` } }; };
+describe("getSubmissionsPath", () => {
+  it("keeps the landing plan in the path when the user can submit to it", () => {
+    setLanding(123);
 
-    afterEach(() => {
-        global.window = originalWindow;
-    });
+    expect(getSubmissionsPath(summitWithPlans(45, 123))).toBe("all-plans/123");
+  });
 
-    it('prefers the route param', () => {
-        visit('/app/summit/all-plans/5');
+  it("falls back to the global submissions path when the landing plan is stale", () => {
+    setLanding(999);
 
-        expect(getCurrentSelectionPlanId({ params: { selection_plan_id: '9' } })).toBe(9);
-    });
+    expect(getSubmissionsPath(summitWithPlans(45, 123))).toBe("all-plans");
+  });
 
-    it.each([
-        ['/app/summit/all-plans/5', 5],
-        ['/app/my-summit/all-plans/5', 5],
-        ['/app/my-summit-2026/all-plans/5/presentations/10/summary', 5],
-    ])('reads the plan from %s', (path, expected) => {
-        visit(path);
+  it("falls back to the global submissions path when no landing plan was stored", () => {
+    setLanding(null);
 
-        expect(getCurrentSelectionPlanId()).toBe(expected);
-    });
+    expect(getSubmissionsPath(summitWithPlans(45, 123))).toBe("all-plans");
+  });
+});
 
-    it.each(['/app/my-summit/all-plans', '/app/my-summit/all-plans/profile', '/app/my-summit'])('returns 0 outside a plan (%s)', (path) => {
-        visit(path);
+describe("getCurrentSelectionPlanId", () => {
+  const originalWindow = global.window;
+  const visit = (path) => {
+    global.window = { location: { href: `https://cfp.example${path}` } };
+  };
 
-        expect(getCurrentSelectionPlanId()).toBe(0);
-    });
+  afterEach(() => {
+    global.window = originalWindow;
+  });
+
+  it("prefers the route param", () => {
+    visit("/app/summit/all-plans/5");
+
+    expect(
+      getCurrentSelectionPlanId({ params: { selection_plan_id: "9" } })
+    ).toBe(9);
+  });
+
+  it.each([
+    ["/app/summit/all-plans/5", 5],
+    ["/app/my-summit/all-plans/5", 5],
+    ["/app/my-summit-2026/all-plans/5/presentations/10/summary", 5]
+  ])("reads the plan from %s", (path, expected) => {
+    visit(path);
+
+    expect(getCurrentSelectionPlanId()).toBe(expected);
+  });
+
+  it.each([
+    "/app/my-summit/all-plans",
+    "/app/my-summit/all-plans/profile",
+    "/app/my-summit"
+  ])("returns 0 outside a plan (%s)", (path) => {
+    visit(path);
+
+    expect(getCurrentSelectionPlanId()).toBe(0);
+  });
 });

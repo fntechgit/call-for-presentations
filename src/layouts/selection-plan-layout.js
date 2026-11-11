@@ -9,26 +9,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
-import React, {useEffect} from 'react'
-import {connect} from 'react-redux';
-import {Switch, Route, Redirect} from 'react-router-dom';
-import {getAllowedSelectionPlan} from '../actions/base-actions';
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
+import { Switch, Route, Redirect } from "react-router-dom";
+import { getAllowedSelectionPlan } from "../actions/base-actions";
 import PrimaryLayout from "./primary-layout";
 import AllSelectionPlansPage from "../pages/all-selection-plans-page";
 import ProfilePage from "../pages/profile-page";
 import SelectionProcessPage from "../pages/selection-process-page";
 import TracksGuidePage from "../pages/tracks-guide-page";
-import history from '../history'
+import history from "../history";
 
-const SelectionPlanLayout = ({summit, match, ...props}) => {
+const SelectionPlanLayout = ({ summit, match, ...props }) => {
   const selectionPlanId = parseInt(match.params?.selection_plan_id);
 
   useEffect(() => {
     if (selectionPlanId) {
       const allowedSelectionPlans = summit.selection_plans;
-      if (!allowedSelectionPlans.some(sp => sp.id === selectionPlanId)) {
+      if (!allowedSelectionPlans.some((sp) => sp.id === selectionPlanId)) {
         history.push(`/app/${summit.slug}/all-plans`);
         return;
       }
@@ -40,18 +40,43 @@ const SelectionPlanLayout = ({summit, match, ...props}) => {
 
   return (
     <Switch>
-      <Route strict exact path={match.url} render={props => <AllSelectionPlansPage {...props} selectionPlanId={selectionPlanId} />} />
-      <Route path={`${match.url}/presentations`} render={props => <PrimaryLayout {...props} selectionPlanId={selectionPlanId} />} />
-      <Route path={`${match.url}/profile`} render={props => <ProfilePage {...props} selectionPlanId={selectionPlanId} />} />
-      <Route path={`${match.url}/selection_process`} render={props => <SelectionProcessPage {...props} />} />
-      <Route path={`${match.url}/tracks_guide`} render={props => <TracksGuidePage {...props} />} />
-      <Route render={() => (<Redirect to={`${match.url}/presentations`}/>)} />
+      <Route
+        strict
+        exact
+        path={match.url}
+        render={(props) => (
+          <AllSelectionPlansPage {...props} selectionPlanId={selectionPlanId} />
+        )}
+      />
+      <Route
+        path={`${match.url}/presentations`}
+        render={(props) => (
+          <PrimaryLayout {...props} selectionPlanId={selectionPlanId} />
+        )}
+      />
+      <Route
+        path={`${match.url}/profile`}
+        render={(props) => (
+          <ProfilePage {...props} selectionPlanId={selectionPlanId} />
+        )}
+      />
+      <Route
+        path={`${match.url}/selection_process`}
+        render={(props) => <SelectionProcessPage {...props} />}
+      />
+      <Route
+        path={`${match.url}/tracks_guide`}
+        render={(props) => <TracksGuidePage {...props} />}
+      />
+      <Route render={() => <Redirect to={`${match.url}/presentations`} />} />
     </Switch>
   );
-}
+};
 
-const mapStateToProps = ({baseState}) => ({
+const mapStateToProps = ({ baseState }) => ({
   summit: baseState.summit
-})
+});
 
-export default connect(mapStateToProps, {getAllowedSelectionPlan})(SelectionPlanLayout);
+export default connect(mapStateToProps, { getAllowedSelectionPlan })(
+  SelectionPlanLayout
+);

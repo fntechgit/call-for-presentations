@@ -9,68 +9,62 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
-import React from 'react'
-import {connect} from "react-redux";
-import store from '../store';
-import {getCurrentSelectionPlanId} from "../utils/methods";
-
+import React from "react";
+import { connect } from "react-redux";
+import store from "../store";
+import { getCurrentSelectionPlanId } from "../utils/methods";
 
 export const getMarketingValue = (key) => {
-    const {baseState} = store.getState();
-    const {marketingSettings} = baseState;
+  const { baseState } = store.getState();
+  const { marketingSettings } = baseState;
 
-    // baseState is persisted, so a session from before the grouping can still rehydrate the old array
-    if (!marketingSettings || Array.isArray(marketingSettings)) return null;
-    // the current selection plan's value, falling back to the summit one (0)
-    const planId = getCurrentSelectionPlanId();
-    const setting = marketingSettings[planId]?.find(s => s.key === key) || marketingSettings[0].find(s => s.key === key);
+  // baseState is persisted, so a session from before the grouping can still rehydrate the old array
+  if (!marketingSettings || Array.isArray(marketingSettings)) return null;
+  // the current selection plan's value, falling back to the summit one (0)
+  const planId = getCurrentSelectionPlanId();
+  const setting =
+    marketingSettings[planId]?.find((s) => s.key === key) ||
+    marketingSettings[0].find((s) => s.key === key);
 
-    if (!setting) return null;
+  if (!setting) return null;
 
-    switch (setting.type) {
-        case 'FILE':
-            return setting.file;
-        case 'TEXT':
-            return setting.value;
-        case 'TEXTAREA':
-            return setting.value;
-    }
+  switch (setting.type) {
+    case "FILE":
+      return setting.file;
+    case "TEXT":
+      return setting.value;
+    case "TEXTAREA":
+      return setting.value;
+  }
 };
 
+const MarketingTag = ({ type, key, className, settings }) => {
+  const getValue = () => {
+    const setting = settings.find((s) => s.key === key);
+    return setting.value || null;
+  };
 
-const MarketingTag = ({type, key, className, settings}) => {
+  const getHtml = () => {
+    const value = getValue();
+    if (!value) return null;
 
-    const getValue = () => {
-        const setting = settings.find(s => s.key === key);
-        return setting.value || null;
-    };
+    switch (type) {
+      case "FILE":
+        return <img src={value} className={className} alt="" />;
+      case "TEXT":
+        return <div className={className}> {value} </div>;
+      case "TEXTAREA":
+        return <div className={className}> {value} </div>;
+    }
+  };
 
-    const getHtml = () => {
-        const value = getValue();
-        if (!value) return null;
-
-        switch (type) {
-            case 'FILE':
-                return (<img src={value} className={className}/>);
-            case 'TEXT':
-                return (<div className={className}> {value} </div>);
-            case 'TEXTAREA':
-                return (<div className={className}> {value} </div>);
-        }
-    };
-
-    return (
-        <>
-            {getHtml()}
-        </>
-    );
-
+  return <>{getHtml()}</>;
 };
 
 const mapStateToProps = ({ baseState }) => ({
-    settings: baseState.marketingSettings
+  settings: baseState.marketingSettings
 });
 
-export default connect(mapStateToProps, {})(MarketingTag)
+export default connect(mapStateToProps, {})(MarketingTag);

@@ -9,7 +9,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
 import T from "i18n-react/dist/i18n-react";
 import Swal from "sweetalert2";
@@ -18,25 +18,29 @@ import {
   createAction,
   stopLoading,
   startLoading,
-  authErrorHandler,
+  authErrorHandler
 } from "openstack-uicore-foundation/lib/utils/actions";
-import history from '../history';
-import {getAccessTokenSafely} from "../utils/methods";
-import {DUMMY_ACTION} from "./presentations-actions";
+import history from "../history";
+import { getAccessTokenSafely } from "../utils/methods";
+import { DUMMY_ACTION } from "./presentations-actions";
 
-export const RECEIVE_TAG_GROUPS = 'RECEIVE_TAG_GROUPS';
-export const RECEIVE_EVENT_CATEGORY = 'RECEIVE_EVENT_CATEGORY';
-export const RECEIVE_SUMMIT = 'RECEIVE_SUMMIT';
-export const REQUEST_MARKETING_SETTINGS = 'REQUEST_MARKETING_SETTINGS';
-export const RECEIVE_MARKETING_SETTINGS = 'RECEIVE_MARKETING_SETTINGS';
-export const REQUEST_AVAILABLE_SUMMITS = 'REQUEST_AVAILABLE_SUMMITS';
-export const RECEIVE_AVAILABLE_SUMMITS = 'RECEIVE_AVAILABLE_SUMMITS';
-export const ERROR_RECEIVE_SUMMIT = 'ERROR_RECEIVE_SUMMIT';
-export const CLEAR_SUMMIT = 'CLEAR_SUMMIT';
-export const BASE_LOADED = 'BASE_LOADED';
-export const RECEIVE_ALLOWED_SELECTION_PLANS = 'RECEIVE_ALLOWED_SELECTION_PLANS';
-export const RECEIVE_ALLOWED_SELECTION_PLAN = 'RECEIVE_ALLOWED_SELECTION_PLAN';
+const MILLISECONDS_IN_SECOND = 1000;
+const HTTP_NOT_FOUND = 404;
+const FIRST_PAGE = 1;
 
+export const RECEIVE_TAG_GROUPS = "RECEIVE_TAG_GROUPS";
+export const RECEIVE_EVENT_CATEGORY = "RECEIVE_EVENT_CATEGORY";
+export const RECEIVE_SUMMIT = "RECEIVE_SUMMIT";
+export const REQUEST_MARKETING_SETTINGS = "REQUEST_MARKETING_SETTINGS";
+export const RECEIVE_MARKETING_SETTINGS = "RECEIVE_MARKETING_SETTINGS";
+export const REQUEST_AVAILABLE_SUMMITS = "REQUEST_AVAILABLE_SUMMITS";
+export const RECEIVE_AVAILABLE_SUMMITS = "RECEIVE_AVAILABLE_SUMMITS";
+export const ERROR_RECEIVE_SUMMIT = "ERROR_RECEIVE_SUMMIT";
+export const CLEAR_SUMMIT = "CLEAR_SUMMIT";
+export const BASE_LOADED = "BASE_LOADED";
+export const RECEIVE_ALLOWED_SELECTION_PLANS =
+  "RECEIVE_ALLOWED_SELECTION_PLANS";
+export const RECEIVE_ALLOWED_SELECTION_PLAN = "RECEIVE_ALLOWED_SELECTION_PLAN";
 
 export const clearCurrentSummit = () => (dispatch, getState) => {
   dispatch(createAction(CLEAR_SUMMIT)({}));
@@ -46,31 +50,41 @@ export const clearCurrentSummit = () => (dispatch, getState) => {
  * @param summitSlug
  * @param withSpeakerData also loads the tag groups and the speaker's allowed selection plans, which need a logged user
  */
-export const getAllFromSummit = (summitSlug, withSpeakerData = false) => (dispatch, getState) => {
-  dispatch(startLoading());
-  dispatch(createAction(BASE_LOADED)({loaded: false}));
+export const getAllFromSummit =
+  (summitSlug, withSpeakerData = false) =>
+  (dispatch, getState) => {
+    dispatch(startLoading());
+    dispatch(createAction(BASE_LOADED)({ loaded: false }));
 
-  return getCurrentSummitPublic(summitSlug)(dispatch, getState)
-    .then(({response}) => {
-      // independent of each other, they only need the summit id
-      // marketing settings are optional, authErrorHandler already alerted, so don't block the summit load
-      const loads = [dispatch(getMarketingSettings(response.id)).catch(() => {})];
-      if (withSpeakerData) {
-        // no own loading toggle: the flag isn't ref-counted and this thunk already covers the whole load
-        loads.push(dispatch(getTagGroups(response.id)), dispatch(getAllowedSelectionPlans(response.id, false)));
-      }
-      return Promise.all(loads).then(() => {
-        dispatch(createAction(BASE_LOADED)({loaded: true}));
-        return response;
-      });
-    })
-    // a failed load must not leave the loader over SummitLayout's error message
-    .finally(() => dispatch(stopLoading()));
-};
+    return (
+      getCurrentSummitPublic(summitSlug)(dispatch, getState)
+        .then(({ response }) => {
+          // independent of each other, they only need the summit id
+          // marketing settings are optional, authErrorHandler already alerted, so don't block the summit load
+          const loads = [
+            dispatch(getMarketingSettings(response.id)).catch(() => {})
+          ];
+          if (withSpeakerData) {
+            // no own loading toggle: the flag isn't ref-counted and this thunk already covers the whole load
+            loads.push(
+              dispatch(getTagGroups(response.id)),
+              dispatch(getAllowedSelectionPlans(response.id, false))
+            );
+          }
+          return Promise.all(loads).then(() => {
+            dispatch(createAction(BASE_LOADED)({ loaded: true }));
+            return response;
+          });
+        })
+        // a failed load must not leave the loader over SummitLayout's error message
+        .finally(() => dispatch(stopLoading()))
+    );
+  };
 
 export const getCurrentSummitPublic = (id) => (dispatch) => {
-  let params = {
-    expand: 'event_types,event_types.allowed_media_upload_types,event_types.allowed_media_upload_types.type,tracks,summit_documents,summit_documents.selection_plan'
+  const params = {
+    expand:
+      "event_types,event_types.allowed_media_upload_types,event_types.allowed_media_upload_types.type,tracks,summit_documents,summit_documents.selection_plan"
   };
 
   return getRequest(
@@ -79,24 +93,23 @@ export const getCurrentSummitPublic = (id) => (dispatch) => {
     `${window.API_BASE_URL}/api/public/v1/summits/all/${id}`,
     currentSummitErrorHandler
   )(params)(dispatch);
-}
+};
 
 export const getAvailableSummits = () => (dispatch, getState) => {
-
   dispatch(startLoading());
 
   // depends on user clocks
-  const secondsSinceEpoch = Math.round(Date.now() / 1000);
+  const secondsSinceEpoch = Math.round(Date.now() / MILLISECONDS_IN_SECOND);
 
-  let filters = [
+  const filters = [
     `submission_begin_date<=${secondsSinceEpoch}`,
     `submission_end_date>=${secondsSinceEpoch}`,
-    'selection_plan_enabled==1'
+    "selection_plan_enabled==1"
   ];
 
-  let params = {
-    'filter[]': filters,
-    order: `+start_date`
+  const params = {
+    "filter[]": filters,
+    order: "+start_date"
   };
 
   return getRequest(
@@ -107,7 +120,7 @@ export const getAvailableSummits = () => (dispatch, getState) => {
   )(params)(dispatch).then(() => {
     dispatch(stopLoading());
   });
-}
+};
 
 export const getTagGroups = (summitId) => async (dispatch) => {
   const accessToken = await getAccessTokenSafely();
@@ -127,50 +140,53 @@ export const getTagGroups = (summitId) => async (dispatch) => {
   )(params)(dispatch);
 };
 
-export const getAllowedSelectionPlans = (summitId, withLoading = true) => async (dispatch, getState) => {
-  const accessToken = await getAccessTokenSafely();
+export const getAllowedSelectionPlans =
+  (summitId, withLoading = true) =>
+  async (dispatch, getState) => {
+    const accessToken = await getAccessTokenSafely();
 
-  if (withLoading) dispatch(startLoading());
+    if (withLoading) dispatch(startLoading());
 
-  const params = {
-    access_token: accessToken,
-    expand: 'track_groups,extra_questions,extra_questions.values'
+    const params = {
+      access_token: accessToken,
+      expand: "track_groups,extra_questions,extra_questions.values"
+    };
+
+    return getRequest(
+      null,
+      createAction(RECEIVE_ALLOWED_SELECTION_PLANS),
+      `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/me`,
+      authErrorHandler
+    )(params)(dispatch, getState).then(() => {
+      if (withLoading) dispatch(stopLoading());
+    });
   };
 
-  return getRequest(
-    null,
-    createAction(RECEIVE_ALLOWED_SELECTION_PLANS),
-    `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/me`,
-    authErrorHandler
-  )(params)(dispatch, getState).then(() => {
-    if (withLoading) dispatch(stopLoading());
-  });
-}
+export const getAllowedSelectionPlan =
+  (selectionPlanId) => async (dispatch, getState) => {
+    const { baseState } = getState();
+    const summitId = baseState.summit.id;
+    const accessToken = await getAccessTokenSafely();
 
-export const getAllowedSelectionPlan = (selectionPlanId) => async (dispatch, getState) => {
-  const {baseState} = getState();  
-  const summitId = baseState.summit.id;
-  const accessToken = await getAccessTokenSafely();
+    dispatch(startLoading());
 
-  dispatch(startLoading());
+    const params = {
+      access_token: accessToken,
+      expand: "track_groups,extra_questions,extra_questions.values"
+    };
 
-  const params = {
-    access_token: accessToken,
-    expand: 'track_groups,extra_questions,extra_questions.values'
+    return getRequest(
+      null,
+      createAction(RECEIVE_ALLOWED_SELECTION_PLAN),
+      `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/${selectionPlanId}`,
+      authErrorHandler
+    )(params)(dispatch, getState).then(() => {
+      dispatch(stopLoading());
+    });
   };
-
-  return getRequest(
-    null,
-    createAction(RECEIVE_ALLOWED_SELECTION_PLAN),
-    `${window.API_BASE_URL}/api/v1/summits/${summitId}/selection-plans/${selectionPlanId}`,
-    authErrorHandler
-  )(params)(dispatch, getState).then(() => {
-    dispatch(stopLoading());
-  });
-}
 
 export const loadEventCategory = () => async (dispatch, getState) => {
-  const {baseState, presentationState} = getState();
+  const { baseState, presentationState } = getState();
   const accessToken = await getAccessTokenSafely();
   const summitId = baseState.summit.id;
   const categoryId = presentationState.entity.track_id;
@@ -179,7 +195,7 @@ export const loadEventCategory = () => async (dispatch, getState) => {
 
   const params = {
     expand: "allowed_tags",
-    access_token: accessToken,
+    access_token: accessToken
   };
 
   return getRequest(
@@ -188,53 +204,56 @@ export const loadEventCategory = () => async (dispatch, getState) => {
     `${window.API_BASE_URL}/api/v1/summits/${summitId}/tracks/${categoryId}`,
     authErrorHandler
   )(params)(dispatch).then(() => {
-      dispatch(stopLoading());
-    }
-  );
+    dispatch(stopLoading());
+  });
 };
 
 export const getMarketingSettings = (summitId) => async (dispatch) => {
   dispatch(createAction(REQUEST_MARKETING_SETTINGS)({}));
 
   // without selection_plan_id the list holds the summit values (selection_plan_id 0) and every plan's
-  const getPage = (page) => getRequest(
-    null,
-    createAction(DUMMY_ACTION),
-    `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
-    authErrorHandler
-  )({page, per_page: 100})(dispatch).then(({response}) => response);
+  const getPage = (page) =>
+    getRequest(
+      null,
+      createAction(DUMMY_ACTION),
+      `${window.MARKETING_API_BASE_URL}/api/public/v1/config-values/all/shows/${summitId}`,
+      authErrorHandler
+    )({ page, per_page: 100 })(dispatch).then(({ response }) => response);
 
-  const firstPage = await getPage(1);
+  const firstPage = await getPage(FIRST_PAGE);
   const otherPages = await Promise.all(
-    Array.from({length: firstPage.last_page - 1}, (_, i) => getPage(i + 2))
+    Array.from({ length: firstPage.last_page - 1 }, (_, i) =>
+      getPage(i + FIRST_PAGE + 1)
+    )
   );
-  const data = [firstPage, ...otherPages].flatMap(page => page.data);
+  const data = [firstPage, ...otherPages].flatMap((page) => page.data);
 
-  dispatch(createAction(RECEIVE_MARKETING_SETTINGS)({response: {data}}));
+  dispatch(createAction(RECEIVE_MARKETING_SETTINGS)({ response: { data } }));
 };
 
 const currentSummitErrorHandler = (err, res) => (dispatch, state) => {
-  let code = err.status;
-  let msg = '';
+  const code = err.status;
+  let msg = "";
 
   dispatch(stopLoading());
 
   switch (code) {
-    case 404:
+    case HTTP_NOT_FOUND:
       msg = "";
-      if (err.response.body && err.response.body.message) msg = err.response.body.message;
-      else if (err.response.error && err.response.error.message) msg = err.response.error.message;
+      if (err.response.body && err.response.body.message)
+        msg = err.response.body.message;
+      else if (err.response.error && err.response.error.message)
+        msg = err.response.error.message;
       else msg = err.message;
       // clear state
       dispatch(createAction(ERROR_RECEIVE_SUMMIT)({}));
       Swal.fire("Not Found", msg, "warning");
       // back selection page
-      history.push('/');
+      history.push("/");
       break;
     default:
       Swal.fire("ERROR", T.translate("errors.server_error"), "error");
-      history.push('/');
-      break
+      history.push("/");
+      break;
   }
 };
-

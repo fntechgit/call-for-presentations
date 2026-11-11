@@ -9,7 +9,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
 import {
   getRequest,
@@ -19,11 +19,10 @@ import {
   authErrorHandler
 } from "openstack-uicore-foundation/lib/utils/actions";
 
-import {getTagGroups} from './base-actions';
-import {getAccessTokenSafely} from "../utils/methods";
+import { getAccessTokenSafely } from "../utils/methods";
 
-export const DUMMY_ACTION = 'DUMMY_ACTION';
-export const PRESENTATIONS_RECEIVED = 'PRESENTATIONS_RECEIVED';
+export const DUMMY_ACTION = "DUMMY_ACTION";
+export const PRESENTATIONS_RECEIVED = "PRESENTATIONS_RECEIVED";
 
 // one request per role for the whole summit; the reducer splits the results by selection plan
 export const getAllPresentations = (summitId) => async (dispatch) => {
@@ -31,31 +30,42 @@ export const getAllPresentations = (summitId) => async (dispatch) => {
 
   dispatch(startLoading());
 
-  const created = dispatch(getPresentationsByRole('creator', summitId, accessToken));
+  const created = dispatch(
+    getPresentationsByRole("creator", summitId, accessToken)
+  );
 
-  const speaker = dispatch(getPresentationsByRole('speaker', summitId, accessToken));
+  const speaker = dispatch(
+    getPresentationsByRole("speaker", summitId, accessToken)
+  );
 
-  const moderator = dispatch(getPresentationsByRole('moderator', summitId, accessToken));
+  const moderator = dispatch(
+    getPresentationsByRole("moderator", summitId, accessToken)
+  );
 
   // a failed role (already alerted by authErrorHandler) counts as empty, so the other roles still render
-  return Promise.allSettled([created, speaker, moderator]).then((results) => {
-      const [created, speaker, moderator] = results.map(result => result.status === 'fulfilled' ? result.value : []);
-      dispatch(createAction(PRESENTATIONS_RECEIVED)({created, speaker, moderator}));
-    }
-  ).finally(() => dispatch(stopLoading()));
+  return Promise.allSettled([created, speaker, moderator])
+    .then((results) => {
+      const [created, speaker, moderator] = results.map((result) =>
+        result.status === "fulfilled" ? result.value : []
+      );
+      dispatch(
+        createAction(PRESENTATIONS_RECEIVED)({ created, speaker, moderator })
+      );
+    })
+    .finally(() => dispatch(stopLoading()));
 };
 
-export const getPresentationsByRole = (role, summitId, accessToken) => (dispatch) => {
+export const getPresentationsByRole =
+  (role, summitId, accessToken) => (dispatch) => {
+    const params = {
+      access_token: accessToken,
+      expand: "type"
+    };
 
-  const params = {
-    access_token: accessToken,
-    expand: 'type'
+    return getRequest(
+      null,
+      createAction(DUMMY_ACTION),
+      `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${role}/summits/${summitId}`,
+      authErrorHandler
+    )(params)(dispatch).then(({ response }) => response.data);
   };
-
-  return getRequest(
-    null,
-    createAction(DUMMY_ACTION),
-    `${window.API_BASE_URL}/api/v1/speakers/me/presentations/${role}/summits/${summitId}`,
-    authErrorHandler
-  )(params)(dispatch).then(({response}) => response.data);
-};
