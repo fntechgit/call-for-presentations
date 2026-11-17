@@ -9,114 +9,124 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
-import React from 'react';
-import AsyncCreatableSelect from 'react-select/lib/AsyncCreatable';
-import {querySpeakers} from 'openstack-uicore-foundation/lib/utils/query-actions';
-
+import React from "react";
+import AsyncCreatableSelect from "react-select/lib/AsyncCreatable";
+import { querySpeakers } from "openstack-uicore-foundation/lib/utils/query-actions";
 
 const optionStyle = {
-    height: '40px',
-    margin: '2px'
-}
+  height: "40px",
+  margin: "2px"
+};
 
 const imageStyle = {
-    width: '40px',
-    margin: '2px',
-    marginRight: '8px',
-    border: '1px solid whitesmoke'
-}
-
+  width: "40px",
+  margin: "2px",
+  marginRight: "8px",
+  border: "1px solid whitesmoke"
+};
 
 const CustomOption = (option) => {
-    if (option.__isNew__) {
-        return option.label;
-    }
-    let {first_name, last_name, email, pic} = option;
-    email = decodeURIComponent(email);
-    return (
-        <div style={optionStyle}>
-            {pic && <img src={pic} style={imageStyle}/>}
-            {first_name}&nbsp;{last_name}&nbsp;
-            {email && <span>({email})</span>}
-        </div>
-    );
+  if (option.__isNew__) {
+    return option.label;
+  }
+  let { first_name, last_name, company, email, pic } = option;
+  email = decodeURIComponent(email);
+  return (
+    <div style={optionStyle}>
+      {pic && <img src={pic} alt="" style={imageStyle} />}
+      {first_name}&nbsp;{last_name}&nbsp;{company ? `- ${company} ` : ""}
+      {email && <span>({email})</span>}
+    </div>
+  );
 };
 
 export default class CPFSpeakerInput extends React.Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.getSpeakers = this.getSpeakers.bind(this);
+    this.filterOptions = this.filterOptions.bind(this);
+  }
 
-        this.handleChange = this.handleChange.bind(this);
-        this.getSpeakers = this.getSpeakers.bind(this);
-        this.filterOptions = this.filterOptions.bind(this);
+  handleChange(value) {
+    const ev = {
+      target: {
+        id: this.props.id,
+        value,
+        type: "speakerinput"
+      }
+    };
+
+    this.props.onChange(ev);
+  }
+
+  filterOptions(option, filterString) {
+    const { speakers } = this.props;
+
+    if (speakers.length) {
+      return speakers.map((val) => val.id).indexOf(option.value) < 0;
     }
 
-    handleChange(value) {
-        let ev = {
-            target: {
-                id: this.props.id,
-                value: value,
-                type: 'speakerinput'
-            }
-        };
+    return true;
+  }
 
-        this.props.onChange(ev);
-
+  getSpeakers(input, callback) {
+    if (!input) {
+      return Promise.resolve({ options: [] });
     }
 
-    filterOptions(option, filterString) {
-        let {speakers} = this.props;
+    querySpeakers(null, input, callback);
+  }
 
-        if (speakers.length) {
-            return speakers.map(val => val.id).indexOf(option.value) < 0
+  isValidNewOption(inputValue, selectValue, selectOptions) {
+    const re =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(inputValue).toLowerCase());
+  }
+
+  getNoOptionsMessage = ({ inputValue }) => {
+    const speakerLabel =
+      this.props.selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL ||
+      "speaker";
+    if (inputValue)
+      return `"${inputValue}" not found. Replace with ${speakerLabel}'s email address to add as new ${speakerLabel}`;
+    return `Please input ${speakerLabel}'s email address.`;
+  };
+
+  render() {
+    const {
+      onChange,
+      placeholder,
+      selectionPlanSettings,
+      id,
+      speakers,
+      value,
+      ...rest
+    } = this.props;
+
+    return (
+      <AsyncCreatableSelect
+        value={value}
+        onChange={this.handleChange}
+        loadOptions={this.getSpeakers}
+        getOptionValue={(op) => op.id}
+        getOptionLabel={CustomOption}
+        filterOptions={this.filterOptions}
+        isMulti={false}
+        placeholder={placeholder}
+        formatCreateLabel={(input) =>
+          `Add new ${
+            selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || "speaker"
+          } with email: "${input}" `
         }
-
-        return true;
-    }
-
-    getSpeakers(input, callback) {
-        if (!input) {
-            return Promise.resolve({options: []});
-        }
-
-        querySpeakers(null, input, callback);
-    }
-
-    isValidNewOption(inputValue, selectValue, selectOptions) {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(inputValue).toLowerCase());
-    }
-
-    getNoOptionsMessage = ({inputValue}) => {
-        const speakerLabel = this.props.selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'speaker';
-        if (inputValue) return `"${inputValue}" not found. Replace with ${speakerLabel}'s email address to add as new ${speakerLabel}`;
-        return `Please input ${speakerLabel}'s email address.`
-    }
-
-    render() {
-        let {onChange, placeholder, selectionPlanSettings, id, speakers, value, ...rest} = this.props;
-
-        return (
-            <AsyncCreatableSelect
-                value={value}
-                onChange={this.handleChange}
-                loadOptions={this.getSpeakers}
-                getOptionValue={op => op.id}
-                getOptionLabel={CustomOption}
-                filterOptions={this.filterOptions}
-                isMulti={false}
-                placeholder={placeholder}
-                formatCreateLabel={(input) => `Add new ${selectionPlanSettings?.CFP_SPEAKERS_SINGULAR_LABEL || 'speaker'} with email: "${input}" `}
-                isValidNewOption={this.isValidNewOption}
-                isClearable
-                noOptionsMessage={this.getNoOptionsMessage}
-                {...rest}
-            />
-        );
-
-    }
+        isValidNewOption={this.isValidNewOption}
+        isClearable
+        noOptionsMessage={this.getNoOptionsMessage}
+        {...rest}
+      />
+    );
+  }
 }
-
