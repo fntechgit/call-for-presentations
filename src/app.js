@@ -9,40 +9,51 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
-import React, {PureComponent, useEffect, useState} from "react";
-import {Switch, Route, Router} from 'react-router-dom'
+import React, { useEffect, useMemo, useState } from "react";
+import { Switch, Route, Router } from "react-router-dom";
+import { connect } from "react-redux";
 import { setAppTexts } from "openstack-uicore-foundation/lib/i18n";
-import history from "./history";
-import {connect} from "react-redux";
-import AuthorizedRoute from './routes/authorized-route'
-import AuthorizationCallbackRoute from "./routes/authorization-callback-route"
-import LogOutCallbackRoute from './routes/logout-callback-route'
-import LogInCallbackRoute from './routes/login-callback-route'
-import DefaultRoute from "./routes/default-route";
-import SummitLayout from './layouts/summit-layout';
-import LandingLayout from './layouts/landing-layout';
 import AjaxLoader from "openstack-uicore-foundation/lib/components/ajaxloader";
-import {resetLoading} from "openstack-uicore-foundation/lib/utils/actions";
-import {doLogout, onUserAuth, getUserInfo} from 'openstack-uicore-foundation/lib/security/actions';
-import {initLogOut, doLoginBasicLogin, getIdToken} from 'openstack-uicore-foundation/lib/security/methods';
-import IdTokenVerifier from 'idtoken-verifier';
+import { resetLoading } from "openstack-uicore-foundation/lib/utils/actions";
+import {
+  doLogout,
+  onUserAuth,
+  getUserInfo
+} from "openstack-uicore-foundation/lib/security/actions";
+import {
+  initLogOut,
+  doLoginBasicLogin,
+  getIdToken
+} from "openstack-uicore-foundation/lib/security/methods";
+import IdTokenVerifier from "idtoken-verifier";
+import URI from "urijs";
+import { putOnLocalStorage } from "openstack-uicore-foundation/lib/utils/methods";
+import * as Sentry from "@sentry/react";
+import history from "./history";
+import AuthorizedRoute from "./routes/authorized-route";
+import AuthorizationCallbackRoute from "./routes/authorization-callback-route";
+import LogOutCallbackRoute from "./routes/logout-callback-route";
+import LogInCallbackRoute from "./routes/login-callback-route";
+import DefaultRoute from "./routes/default-route";
+import SummitLayout from "./layouts/summit-layout";
+import LandingLayout from "./layouts/landing-layout";
 import CustomErrorPage from "./pages/custom-error-page";
-import exclusiveSections from "js-yaml-loader!./exclusive-sections.yml";
+import exclusiveSections from "./exclusive-sections.yml";
 import SummitSelectionPage from "./pages/summit-selection-page";
 import ProfilePage from "./pages/profile-page";
 import DirectAuthorizedRoute from "./routes/direct-authorized-route";
 import Header from "./components/header";
-import {SelectionPlanContext} from "./components/SelectionPlanContext";
-import {SP_LANDING} from "./utils/constants";
-import {getLandingSelectionPlan, isGlobalLanding} from "./utils/methods";
-import URI from "urijs";
-import { putOnLocalStorage }
-  from "openstack-uicore-foundation/lib/utils/methods";
-import {BACK_URL} from "./utils/constants";
-import * as Sentry from "@sentry/react";
-import {SentryFallbackFunction} from './components/SentryErrorComponent';
+import { SelectionPlanContext } from "./components/SelectionPlanContext";
+import {
+  SP_LANDING,
+  BACK_URL,
+  CEFSHARP_REJECTION_PATTERN,
+  TWO
+} from "./utils/constants";
+import { getLandingSelectionPlan, isGlobalLanding } from "./utils/methods";
+import { SentryFallbackFunction } from "./components/SentryErrorComponent";
 // here is set by default user lang as en
 let language = localStorage.getItem("PREFERRED_LANGUAGE");
 
@@ -55,43 +66,44 @@ if (!language) {
   // language would be something like es-ES or es_ES
   // However we store our files with format es.json or en.json therefore retrieve only the first 2 digits
 
-  if (language.length > 2) {
+  if (language.length > TWO) {
     language = language.split("-")[0];
     language = language.split("_")[0];
   }
 }
 
-const appClientName = process.env["APP_CLIENT_NAME"];
+const appClientName = process.env.APP_CLIENT_NAME;
 
 try {
   const i18nGlobalResources = require(`./i18n/${language}.json`);
   // specific tenant resources - here goes everything we want to overwrite
   const tenantResources = require(`./i18n/multitenant/${appClientName}/${language}.json`);
-  const mergedResources = merge(i18nGlobalResources, tenantResources)
+  const mergedResources = merge(i18nGlobalResources, tenantResources);
   setAppTexts(mergedResources);
 } catch (e) {
-  setAppTexts(require(`./i18n/en.json`));
+  setAppTexts(require("./i18n/en.json"));
 }
 
 // move all env var to global scope so ui core has access to this
 
-window.IDP_BASE_URL = process.env["IDP_BASE_URL"];
-window.API_BASE_URL = process.env["API_BASE_URL"];
-window.MARKETING_API_BASE_URL = process.env["MARKETING_API_BASE_URL"];
-window.FILE_UPLOAD_API_BASE_URL = process.env["FILE_UPLOAD_API_BASE_URL"];
-window.FILE_UPLOAD_USE_V4 = process.env["FILE_UPLOAD_USE_V4"];
-window.OAUTH2_CLIENT_ID = process.env["OAUTH2_CLIENT_ID"];
-window.OAUTH2_FLOW = process.env['OAUTH2_FLOW'] || "token id_token";
-window.SCOPES = process.env["SCOPES"];
+window.IDP_BASE_URL = process.env.IDP_BASE_URL;
+window.API_BASE_URL = process.env.API_BASE_URL;
+window.MARKETING_API_BASE_URL = process.env.MARKETING_API_BASE_URL;
+window.FILE_UPLOAD_API_BASE_URL = process.env.FILE_UPLOAD_API_BASE_URL;
+window.FILE_UPLOAD_USE_V4 = process.env.FILE_UPLOAD_USE_V4;
+window.OAUTH2_CLIENT_ID = process.env.OAUTH2_CLIENT_ID;
+window.OAUTH2_FLOW = process.env.OAUTH2_FLOW || "token id_token";
+window.SCOPES = process.env.SCOPES;
 window.APP_CLIENT_NAME = appClientName;
 window.ALLOWED_USER_GROUPS = "";
 window.EXCLUSIVE_SECTIONS = [];
-window.LOGO_URL = process.env["LOGO_URL"];
-window.SHOW_LANGUAGE_SELECTION = !!Number(process.env["SHOW_LANGUAGE_SELECTION"]);
-window.SUPPORT_EMAIL = process.env["SUPPORT_EMAIL"];
-window.SENTRY_DSN = process.env["SENTRY_DSN"];
-window.SENTRY_TRACE_SAMPLE_RATE = process.env['SENTRY_TRACE_SAMPLE_RATE'];
-window.SENTRY_SESSION_SAMPLE_RATE = process.env.SENTRY_SESSION_SAMPLE_RATE || 1.0;
+window.LOGO_URL = process.env.LOGO_URL;
+window.SHOW_LANGUAGE_SELECTION = !!Number(process.env.SHOW_LANGUAGE_SELECTION);
+window.SUPPORT_EMAIL = process.env.SUPPORT_EMAIL;
+window.SENTRY_DSN = process.env.SENTRY_DSN;
+window.SENTRY_TRACE_SAMPLE_RATE = process.env.SENTRY_TRACE_SAMPLE_RATE;
+window.SENTRY_SESSION_SAMPLE_RATE =
+  process.env.SENTRY_SESSION_SAMPLE_RATE || 1.0;
 window.SENTRY_ERROR_SAMPLE_RATE = process.env.SENTRY_ERROR_SAMPLE_RATE || 1.0;
 window.SENTRY_ENVIRONMENT = process.env.SENTRY_ENVIRONMENT || "production";
 
@@ -99,9 +111,20 @@ if (exclusiveSections.hasOwnProperty(window.APP_CLIENT_NAME)) {
   window.EXCLUSIVE_SECTIONS = exclusiveSections[window.APP_CLIENT_NAME];
 }
 
-const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props}) => {
+const App = ({
+  isLoggedUser,
+  onUserAuth,
+  doLogout,
+  getUserInfo,
+  loading,
+  ...props
+}) => {
   const [selectionPlanCtx, setSelectionPlanCtx] = useState(null);
   const [sentryInitialized, setSentryInitialized] = useState(false);
+  const selectionPlanCtxValue = useMemo(
+    () => ({ selectionPlanCtx, setSelectionPlanCtx }),
+    [selectionPlanCtx]
+  );
   const idToken = getIdToken();
 
   /*
@@ -122,70 +145,95 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
   }, []);
 
   const onClickLogin = (backUrl) => {
-    let url = URI('/auth/login');
+    let url = URI("/auth/login");
 
-    if (backUrl)
-      url = url.query({[BACK_URL]:backUrl});
+    if (backUrl) url = url.query({ [BACK_URL]: backUrl });
 
     history.push(url.toString());
-  }
+  };
 
   const onClickLogOut = () => {
     const currentUrl = URI(window.location.href);
     putOnLocalStorage(BACK_URL, currentUrl.path());
     initLogOut();
-  }
+  };
 
   // get user pic from idtoken claims (IDP)
-  let profile_pic = '';
+  let profile_pic = "";
 
   if (idToken) {
-    let verifier = new IdTokenVerifier({
+    const verifier = new IdTokenVerifier({
       issuer: window.IDP_BASE_URL,
       audience: window.OAUTH2_CLIENT_ID
     });
-    let jwt = verifier.decode(idToken);
+    const jwt = verifier.decode(idToken);
     profile_pic = jwt.payload.picture;
   }
 
-  if (window.SENTRY_DSN && window.SENTRY_DSN !== "" && sentryInitialized === false) {
-    console.log("app init sentry ...")
+  if (
+    window.SENTRY_DSN &&
+    window.SENTRY_DSN !== "" &&
+    sentryInitialized === false
+  ) {
+    console.log("app init sentry ...");
     // Initialize Sentry
     Sentry.init({
       dsn: window.SENTRY_DSN,
       environment: window.SENTRY_ENVIRONMENT,
+      // extends (does not replace) the SDK default ignoreErrors
+      ignoreErrors: [CEFSHARP_REJECTION_PATTERN],
       integrations: [
         Sentry.browserTracingIntegration(),
-        Sentry.replayIntegration(),
+        Sentry.replayIntegration()
       ],
       // Set tracesSampleRate to 1.0 to capture 100%
       // of transactions for performance monitoring.
       tracesSampleRate: window.SENTRY_TRACE_SAMPLE_RATE,
-      // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+      // Set "tracePropagationTargets" to control for which URLs distributed tracing should be enabled
       tracePropagationTargets: ["localhost"],
       // Session Replay
       replaysSessionSampleRate: window.SENTRY_SESSION_SAMPLE_RATE, // This sets the sample rate at 70%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-      replaysOnErrorSampleRate: window.SENTRY_ERROR_SAMPLE_RATE, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+      replaysOnErrorSampleRate: window.SENTRY_ERROR_SAMPLE_RATE // If you"re not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
     });
     setSentryInitialized(true);
   }
 
   return (
-    <Sentry.ErrorBoundary fallback={SentryFallbackFunction({ componentName: "Call For Presentation App" })}>
+    <Sentry.ErrorBoundary
+      fallback={SentryFallbackFunction({
+        componentName: "Call For Presentation App"
+      })}
+    >
       <Router history={history}>
-        <SelectionPlanContext.Provider value={{ selectionPlanCtx, setSelectionPlanCtx }}>
-
+        <SelectionPlanContext.Provider value={selectionPlanCtxValue}>
           <div>
             <AjaxLoader show={loading} size={120} />
             <Route
-              path={['/auth/logout', '/auth/callback', '/error', '/404', '/app/start', '/app/profile']}
-              children={({ match }) => (
-                <Header language={language} profilePic={profile_pic} initLogOut={onClickLogOut} waitForApi={!match} selectionPlan={selectionPlanCtx} />
+              path={[
+                "/auth/logout",
+                "/auth/callback",
+                "/error",
+                "/404",
+                "/app/start",
+                "/app/profile"
+              ]}
+            >
+              {({ match }) => (
+                <Header
+                  language={language}
+                  profilePic={profile_pic}
+                  initLogOut={onClickLogOut}
+                  waitForApi={!match}
+                  selectionPlan={selectionPlanCtx}
+                />
               )}
-            />
+            </Route>
 
             <Switch>
-              <LogInCallbackRoute path="/auth/login" doLogin={doLoginBasicLogin} />
+              <LogInCallbackRoute
+                path="/auth/login"
+                doLogin={doLoginBasicLogin}
+              />
               <LogOutCallbackRoute path="/auth/logout" doLogout={doLogout} />
               <AuthorizationCallbackRoute
                 onUserAuth={onUserAuth}
@@ -216,25 +264,24 @@ const App = ({isLoggedUser, onUserAuth, doLogout, getUserInfo, loading, ...props
       </Router>
     </Sentry.ErrorBoundary>
   );
-}
+};
 
 const mapStateToProps = ({
   loggedUserState,
   baseState,
-  summitSelectionState,
+  summitSelectionState
 }) => ({
   isLoggedUser: loggedUserState.isLoggedUser,
   member: loggedUserState.member,
   speaker: baseState.speaker,
   loading: baseState.loading,
   summit: baseState.summit,
-  availableSummits: summitSelectionState.availableSummits,
+  availableSummits: summitSelectionState.availableSummits
 });
 
 export default connect(mapStateToProps, {
   onUserAuth,
   doLogout,
   getUserInfo,
-  resetLoading,
-
+  resetLoading
 })(App);
