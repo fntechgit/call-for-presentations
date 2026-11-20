@@ -288,6 +288,26 @@ describe("PresentationUploadsForm leaving the step with uploads running", () => 
     expect(prompt()).toBeUndefined();
   });
 
+  it("keeps asking for a retried file after another file of the same input finishes", () => {
+    const form = mountForm();
+    form.onUploadStart("media_upload_5", talk);
+    form.onUploadStart("media_upload_5", slides);
+
+    // slides fails while talk is still uploading, then the user retries it
+    form.onUploadError(
+      "Server responded with 0 code.",
+      undefined,
+      "media_upload_5"
+    );
+    form.onUploadStart("media_upload_5", slides);
+
+    form.onUploadComplete(completed(talk), "media_upload_5", data);
+    expect(prompt()).toBe("edit_presentation.errors.uploads_in_progress");
+
+    form.onUploadComplete(completed(slides), "media_upload_5", data);
+    expect(prompt()).toBeUndefined();
+  });
+
   it("stops asking when the upload fails", () => {
     const form = mountForm();
     form.onUploadStart("media_upload_5", talk);

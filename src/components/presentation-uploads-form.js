@@ -55,7 +55,8 @@ class PresentationUploadsForm extends React.Component {
       inputKeys: {}
     };
 
-    // V4 uploads still transferring, as {inputId, file}
+    // V4 uploads still transferring, as {inputId, file}. errors don't say which file failed,
+    // so only the number of entries per input is reliable, not which file each one is
     this.runningUploads = [];
     // saved files whose DELETE has not returned yet
     this.deletingIds = new Set();
@@ -107,15 +108,15 @@ class PresentationUploadsForm extends React.Component {
       return;
     }
 
-    // V4 passes the File of an upload the user cancelled
-    this.runningUploads = this.runningUploads.filter((u) => u.file !== file);
+    // V4 passes the File of an upload the user cancelled. remove one entry only,
+    // a retried file can also hold the entry of another upload
+    const index = this.runningUploads.findIndex((u) => u.file === file);
+    if (index >= 0) this.runningUploads.splice(index, 1);
   }
 
   onUploadStart(inputId, file) {
-    // a retried file is reported again
-    if (!this.runningUploads.some((u) => u.file === file)) {
-      this.runningUploads.push({ inputId, file });
-    }
+    // a retry counts again, its failure already removed an entry
+    this.runningUploads.push({ inputId, file });
   }
 
   takeRunningUpload(inputId, body) {
