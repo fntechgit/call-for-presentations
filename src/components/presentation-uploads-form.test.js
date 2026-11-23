@@ -263,7 +263,16 @@ describe("PresentationUploadsForm leaving the step with uploads running", () => 
     return form;
   };
 
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    global.window = {
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn()
+    };
+  });
+  afterAll(() => {
+    delete global.window;
+  });
 
   it("asks only while an upload is running", () => {
     const form = mountForm();
@@ -306,6 +315,17 @@ describe("PresentationUploadsForm leaving the step with uploads running", () => 
 
     form.onUploadComplete(completed(slides), "media_upload_5", data);
     expect(prompt()).toBeUndefined();
+  });
+
+  it("asks the browser to confirm a tab close or reload only while an upload is running", () => {
+    const form = mountForm();
+    const unload = { preventDefault: jest.fn() };
+    form.onBeforeUnload(unload);
+    expect(unload.preventDefault).not.toHaveBeenCalled();
+
+    form.onUploadStart("media_upload_5", talk);
+    form.onBeforeUnload(unload);
+    expect(unload.preventDefault).toHaveBeenCalled();
   });
 
   it("stops asking when the upload fails", () => {
@@ -400,5 +420,38 @@ describe("PresentationUploadsForm removing a saved file", () => {
     await flush();
     form.handleRemoveFile(saved);
     expect(onDeleteMU).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("PresentationUploadsForm submitting the step", () => {
+  const mandatory = { ...mediaType, is_mandatory: true, min_uploads_qty: 1 };
+
+  it("counts a delivered file whose save has not returned toward the minimum", async () => {
+    let resolveSave;
+    const onSubmit = jest.fn();
+    const form = makeForm({
+      entity: { id: 10, type_id: 3, media_uploads: [] },
+      summit: {
+        event_types: [{ id: 3, allowed_media_upload_types: [mandatory] }]
+      },
+      onSaveMU: jest.fn(
+        () =>
+          new Promise((resolve) => {
+            resolveSave = resolve;
+          })
+      ),
+      onSubmit
+    });
+
+    form.onUploadComplete(completed(slides), "media_upload_5", {
+      media_type: mandatory,
+      media_upload: []
+    });
+    form.handleSubmit({ preventDefault: () => {} });
+
+    expect(onSubmit).toHaveBeenCalled();
+    expect(form.state.errors).toEqual({});
+    resolveSave();
+    await flush();
   });
 });

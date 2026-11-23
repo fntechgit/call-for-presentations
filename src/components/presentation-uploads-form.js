@@ -60,12 +60,15 @@ class PresentationUploadsForm extends React.Component {
     this.runningUploads = [];
     // saved files whose DELETE has not returned yet
     this.deletingIds = new Set();
+    // per media type id, delivered files whose POST has not returned yet
+    this.savingUploads = {};
 
     this.handleRemoveFile = this.handleRemoveFile.bind(this);
     this.onUploadStart = this.onUploadStart.bind(this);
     this.onUploadComplete = this.onUploadComplete.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onUploadError = this.onUploadError.bind(this);
+    this.onBeforeUnload = this.onBeforeUnload.bind(this);
   }
 
   componentDidMount() {
@@ -75,10 +78,20 @@ class PresentationUploadsForm extends React.Component {
         ? T.translate("edit_presentation.errors.uploads_in_progress")
         : undefined
     );
+    // history.block does not cover closing the tab or reloading
+    window.addEventListener("beforeunload", this.onBeforeUnload);
   }
 
   componentWillUnmount() {
     if (this.unblockHistory) this.unblockHistory();
+    window.removeEventListener("beforeunload", this.onBeforeUnload);
+  }
+
+  onBeforeUnload(ev) {
+    if (this.runningUploads.length === 0) return;
+    // browsers show their own message
+    ev.preventDefault();
+    ev.returnValue = "";
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -163,9 +176,14 @@ class PresentationUploadsForm extends React.Component {
       };
 
       // the action resolves after a failure too
-      this.props
-        .onSaveMU(entity, media_upload)
-        .then(() => this.remountIfIdle(id));
+      // counted toward the minimum on submit until the save lands in entity
+      this.savingUploads[media_type.id] =
+        (this.savingUploads[media_type.id] || 0) + 1;
+
+      this.props.onSaveMU(entity, media_upload).then(() => {
+        this.savingUploads[media_type.id] -= 1;
+        this.remountIfIdle(id);
+      });
     }
   }
 
@@ -226,7 +244,8 @@ class PresentationUploadsForm extends React.Component {
             entity,
             mediaUploadType
           );
-          if (mediaUploads.length < mediaUploadType.min_uploads_qty) {
+          const saving = this.savingUploads[mediaUploadType.id] || 0;
+          if (mediaUploads.length + saving < mediaUploadType.min_uploads_qty) {
             errors[
               mediaUploadType.name
             ] = `This field is required. You must upload a minimum of ${mediaUploadType.min_uploads_qty} files`;
