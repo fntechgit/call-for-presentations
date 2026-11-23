@@ -12,7 +12,16 @@
  * */
 
 import Swal from "sweetalert2";
-import { getPresentation } from "./presentation-actions";
+import {
+  postRequest,
+  putRequest,
+  deleteRequest
+} from "openstack-uicore-foundation/lib/utils/actions";
+import {
+  getPresentation,
+  saveMediaUpload,
+  deleteMediaUpload
+} from "./presentation-actions";
 
 const mockHandlerErrors = [];
 // error the mocked request fails with; null falls back to a response timeout
@@ -132,4 +141,39 @@ describe("getPresentation", () => {
       payload: { errors }
     });
   });
+});
+
+// the global loader unmounts the upload inputs, which cancels the uploads still running
+describe("media upload actions", () => {
+  const getState = () => ({ baseState: { summit: { id: 1 } } });
+  const succeed = () => Promise.resolve();
+  const fail = () => Promise.reject(new Error("server error"));
+
+  beforeAll(() => {
+    global.window = { API_BASE_URL: "https://api.example" };
+  });
+
+  const save = () => saveMediaUpload({ id: 10 }, { id: 0 });
+  const update = () => saveMediaUpload({ id: 10 }, { id: 7 });
+  const remove = () => deleteMediaUpload(10, 7);
+
+  it.each([
+    ["saveMediaUpload (new)", "succeeds", postRequest, save, succeed],
+    ["saveMediaUpload (new)", "fails", postRequest, save, fail],
+    ["saveMediaUpload (existing)", "succeeds", putRequest, update, succeed],
+    ["saveMediaUpload (existing)", "fails", putRequest, update, fail],
+    ["deleteMediaUpload", "succeeds", deleteRequest, remove, succeed],
+    ["deleteMediaUpload", "fails", deleteRequest, remove, fail]
+  ])(
+    "%s does not dispatch START_LOADING when the request %s",
+    async (name, outcome, request, action, respond) => {
+      const dispatch = jest.fn();
+      request.mockReturnValue(() => () => respond());
+
+      await action()(dispatch, getState);
+
+      expect(request).toHaveBeenCalled();
+      expect(dispatch).not.toHaveBeenCalledWith({ type: "START_LOADING" });
+    }
+  );
 });
