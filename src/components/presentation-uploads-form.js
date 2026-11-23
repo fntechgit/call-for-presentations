@@ -324,6 +324,9 @@ class PresentationUploadsForm extends React.Component {
                   />
                 ) : (
                   <UploadInputV2
+                    key={`${uploadInputProps.id}-${
+                      inputKeys[uploadInputProps.id] || 0
+                    }`}
                     {...uploadInputProps}
                     postUrl={`${window.FILE_UPLOAD_API_BASE_URL}/api/v1/files/upload`}
                     djsConfig={{ withCredentials: true }}

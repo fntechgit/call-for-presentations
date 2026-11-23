@@ -354,6 +354,30 @@ describe("PresentationUploadsForm after a file is saved", () => {
     await flush();
     expect(inputKey(form)).not.toBe(initialKey);
   });
+
+  // V2's Dropzone counts its own uploaded files plus value, so without a remount
+  // the second file of a max-2 type is rejected with "Max files reached."
+  it("remounts UploadInputV2 after each save when the flag is off", async () => {
+    window.FILE_UPLOAD_USE_V4 = undefined;
+    const form = withState(
+      makeForm({
+        summit: {},
+        presentation: { getAllowedMediaUploads: () => [mediaType] },
+        onSaveMU: jest.fn(() => Promise.resolve())
+      })
+    );
+    const v2Key = () => findByType(form.render(), "UploadInputV2").key;
+    const firstKey = v2Key();
+
+    form.onUploadComplete(completed(talk), "media_upload_5", data);
+    await flush();
+    const secondKey = v2Key();
+    expect(secondKey).not.toBe(firstKey);
+
+    form.onUploadComplete(completed(slides), "media_upload_5", data);
+    await flush();
+    expect(v2Key()).not.toBe(secondKey);
+  });
 });
 
 describe("PresentationUploadsForm removing a saved file", () => {
