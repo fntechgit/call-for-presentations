@@ -222,7 +222,9 @@ describe("PresentationUploadsForm upload input selection", () => {
       expect(input.props.postUrl).toBe(
         "https://files.test/api/v1/files/upload"
       );
-      expect(input.props.djsConfig).toEqual({ withCredentials: true });
+      expect(input.props.djsConfig).toEqual(
+        expect.objectContaining({ withCredentials: true })
+      );
       expect(input.props.parallelChunkUploads).toBe(true);
     }
   );
@@ -328,6 +330,25 @@ describe("PresentationUploadsForm leaving the step with uploads running", () => 
     expect(unload.preventDefault).toHaveBeenCalled();
   });
 
+  it("keeps asking for the running file after another one fails and its row is dismissed", () => {
+    const form = mountForm();
+    form.onUploadStart("media_upload_5", talk);
+    form.onUploadStart("media_upload_5", slides);
+
+    // V4 reports the failed File, then dismissing its error row reports it through onRemove
+    form.onUploadError(
+      "Server responded with 0 code.",
+      undefined,
+      "media_upload_5",
+      slides
+    );
+    form.handleRemoveFile(slides);
+    expect(prompt()).toBe("edit_presentation.errors.uploads_in_progress");
+
+    form.onUploadComplete(completed(talk), "media_upload_5", data);
+    expect(prompt()).toBeUndefined();
+  });
+
   it("stops asking when the upload fails", () => {
     const form = mountForm();
     form.onUploadStart("media_upload_5", talk);
@@ -397,6 +418,72 @@ describe("PresentationUploadsForm after a file is saved", () => {
     form.onUploadComplete(completed(slides), "media_upload_5", data);
     await flush();
     expect(v2Key()).not.toBe(secondKey);
+  });
+
+  describe("with V2 files still uploading", () => {
+    const setup = () => {
+      window.FILE_UPLOAD_USE_V4 = undefined;
+      const form = withState(
+        makeForm({
+          summit: {},
+          presentation: { getAllowedMediaUploads: () => [mediaType] },
+          onSaveMU: jest.fn(() => Promise.resolve())
+        })
+      );
+      const v2Key = () => findByType(form.render(), "UploadInputV2").key;
+      // what Dropzone does on construction: runs init with itself as this
+      const dropzone = { files: [] };
+      findByType(form.render(), "UploadInputV2").props.djsConfig.init.call(
+        dropzone
+      );
+      return { form, v2Key, dropzone };
+    };
+
+    it("waits for the last file before remounting, so the remount cancels nothing", async () => {
+      const { form, v2Key, dropzone } = setup();
+      const first = { name: talk.name, status: "success" };
+      const second = { name: slides.name, status: "uploading" };
+      dropzone.files = [first, second];
+      const initialKey = v2Key();
+
+      form.onUploadComplete(completed(talk), "media_upload_5", data);
+      await flush();
+      expect(v2Key()).toBe(initialKey);
+
+      second.status = "success";
+      form.onUploadComplete(completed(slides), "media_upload_5", data);
+      await flush();
+      expect(v2Key()).not.toBe(initialKey);
+    });
+
+    it("counts a file still in Dropzone's async accept as uploading", async () => {
+      const { form, v2Key, dropzone } = setup();
+      dropzone.files = [
+        { name: talk.name, status: "success" },
+        { name: slides.name, status: "added" }
+      ];
+      const initialKey = v2Key();
+
+      form.onUploadComplete(completed(talk), "media_upload_5", data);
+      await flush();
+      expect(v2Key()).toBe(initialKey);
+    });
+
+    it("remounts once the user cancels the file the remount was waiting for", async () => {
+      const { form, v2Key, dropzone } = setup();
+      const second = { name: slides.name, status: "uploading" };
+      dropzone.files = [{ name: talk.name, status: "success" }, second];
+      const initialKey = v2Key();
+
+      form.onUploadComplete(completed(talk), "media_upload_5", data);
+      await flush();
+      expect(v2Key()).toBe(initialKey);
+
+      // Dropzone drops the file from its list, then reports removedfile
+      dropzone.files = dropzone.files.filter((f) => f !== second);
+      form.handleRemoveFile(second);
+      expect(v2Key()).not.toBe(initialKey);
+    });
   });
 });
 

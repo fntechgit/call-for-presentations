@@ -36,6 +36,10 @@ const getUploadErrorMessage = (error) => {
   return error?.message || error?.detail || "unknown error";
 };
 
+// Dropzone statuses of a file not yet uploaded: "added" covers V2's async accept
+// (token + md5), before the file is queued
+const V2_ACTIVE_STATUSES = ["added", "queued", "uploading"];
+
 const isUploadV4Enabled = () => window.FILE_UPLOAD_USE_V4 === "true";
 
 // the complete response echoes the client file name as original_name
@@ -62,6 +66,10 @@ class PresentationUploadsForm extends React.Component {
     this.deletingIds = new Set();
     // per media type id, delivered files whose POST has not returned yet
     this.savingUploads = {};
+    // per V2 input id, its Dropzone instance
+    this.v2Dropzones = {};
+    // inputs whose remount waits for their running uploads
+    this.pendingRemounts = new Set();
 
     this.handleRemoveFile = this.handleRemoveFile.bind(this);
     this.onUploadStart = this.onUploadStart.bind(this);
@@ -83,6 +91,8 @@ class PresentationUploadsForm extends React.Component {
   }
 
   componentWillUnmount() {
+    // saves still in flight resolve after this, and Dropzone reports its files as removed
+    this.unmounted = true;
     if (this.unblockHistory) this.unblockHistory();
     window.removeEventListener("beforeunload", this.onBeforeUnload);
   }
@@ -121,10 +131,12 @@ class PresentationUploadsForm extends React.Component {
       return;
     }
 
-    // V4 passes the File of an upload the user cancelled. remove one entry only,
-    // a retried file can also hold the entry of another upload
+    // V4 passes the File of an upload the user cancelled or dismissed, V2 the Dropzone file
+    // it removed. remove one entry only, a retried file can also hold another entry
     const index = this.runningUploads.findIndex((u) => u.file === file);
     if (index >= 0) this.runningUploads.splice(index, 1);
+    // the cancelled file may be the last one a pending remount was waiting for
+    this.pendingRemounts.forEach((inputId) => this.remountIfIdle(inputId));
   }
 
   onUploadStart(inputId, file) {
@@ -132,18 +144,48 @@ class PresentationUploadsForm extends React.Component {
     this.runningUploads.push({ inputId, file });
   }
 
-  takeRunningUpload(inputId, body) {
+  // file is the File that failed (V4 onError), body the complete response that echoes it
+  takeRunningUpload(inputId, { file, body } = {}) {
     const ofInput = this.runningUploads.filter((u) => u.inputId === inputId);
-    // errors don't say which file failed
-    const upload = ofInput.find((u) => isSameFile(body, u.file)) || ofInput[0];
+    const upload = file
+      ? ofInput.find((u) => u.file === file)
+      : ofInput.find((u) => isSameFile(body, u.file)) || ofInput[0];
     if (upload)
       this.runningUploads = this.runningUploads.filter((u) => u !== upload);
   }
 
+  // V2 keeps no File list of its own outside Dropzone, so its instance is kept to see
+  // which files are still uploading. init runs once per Dropzone, so a remount replaces it
+  getV2DjsConfig(inputId) {
+    const form = this;
+    return {
+      withCredentials: true,
+      init() {
+        form.v2Dropzones[inputId] = this;
+      }
+    };
+  }
+
+  isInputBusy(inputId) {
+    if (this.runningUploads.some((u) => u.inputId === inputId)) return true;
+    const dropzone = this.v2Dropzones[inputId];
+    return (
+      !!dropzone &&
+      dropzone.files.some((f) => V2_ACTIVE_STATUSES.includes(f.status))
+    );
+  }
+
   // V4 keeps a finished row until a saved file has its exact name, and summit-api renames it.
-  // remounting the input drops that row, and cancels nothing once none of its uploads are running
+  // V2's Dropzone counts its uploaded files plus value, so a later file hits "Max files reached".
+  // remounting the input fixes both, and cancels nothing once none of its uploads are running.
+  // A busy input is remounted when its last file is saved, or when the user cancels it
   remountIfIdle(inputId) {
-    if (this.runningUploads.some((u) => u.inputId === inputId)) return;
+    if (this.unmounted) return;
+    if (this.isInputBusy(inputId)) {
+      this.pendingRemounts.add(inputId);
+      return;
+    }
+    this.pendingRemounts.delete(inputId);
     this.setState(({ inputKeys }) => ({
       inputKeys: { ...inputKeys, [inputId]: (inputKeys[inputId] || 0) + 1 }
     }));
@@ -164,7 +206,7 @@ class PresentationUploadsForm extends React.Component {
     let { media_type, media_upload } = data;
 
     if (response) {
-      this.takeRunningUpload(id, response);
+      this.takeRunningUpload(id, { body: response });
 
       // new media upload
       media_upload = {
@@ -187,9 +229,10 @@ class PresentationUploadsForm extends React.Component {
     }
   }
 
-  onUploadError(error, status, inputId) {
-    // a retry reports the file again through onUploadStart
-    this.takeRunningUpload(inputId);
+  onUploadError(error, status, inputId, file) {
+    // V4 passes the File that failed. a retry reports it again through onUploadStart,
+    // and dismissing its row reports it through onRemove, which then finds no entry
+    this.takeRunningUpload(inputId, { file });
 
     if (status == ERROR_403) {
       // V2 passes the response body ({detail}), V4 an Error carrying the server message
@@ -348,7 +391,7 @@ class PresentationUploadsForm extends React.Component {
                     }`}
                     {...uploadInputProps}
                     postUrl={`${window.FILE_UPLOAD_API_BASE_URL}/api/v1/files/upload`}
-                    djsConfig={{ withCredentials: true }}
+                    djsConfig={this.getV2DjsConfig(uploadInputProps.id)}
                     parallelChunkUploads
                   />
                 )}
