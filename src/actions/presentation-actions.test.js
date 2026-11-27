@@ -9,10 +9,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- **/
+ * */
 
-import Swal from 'sweetalert2';
-import { getPresentation } from './presentation-actions';
+import Swal from "sweetalert2";
+import {
+  postRequest,
+  putRequest,
+  deleteRequest
+} from "openstack-uicore-foundation/lib/utils/actions";
+import {
+  getPresentation,
+  saveMediaUpload,
+  deleteMediaUpload
+} from "./presentation-actions";
 
 const mockHandlerErrors = [];
 // error the mocked request fails with; null falls back to a response timeout
@@ -21,78 +30,150 @@ const mockRequestError = { current: null };
 // Same contract as uicore's responseHandler: from superagent's async callback it calls
 // errorHandler(err, res)(dispatch, state) and only then rejects. If that call throws, the
 // exception escapes the callback and the promise never settles.
-jest.mock('openstack-uicore-foundation/lib/utils/actions', () => ({
-    getRequest: (requestActionCreator, receiveActionCreator, endpoint, errorHandler) =>
-        () => (dispatch, state) => new Promise((resolve, reject) => {
-            setTimeout(() => {
-                const err = mockRequestError.current || { status: undefined, message: 'Timeout of 60000ms exceeded' };
-                try {
-                    errorHandler(err, undefined)(dispatch, state);
-                } catch (e) {
-                    mockHandlerErrors.push(e);
-                    return;
-                }
-                reject({ err, dispatch, state });
-            }, 0);
-        }),
-    putRequest: jest.fn(),
-    postRequest: jest.fn(),
-    deleteRequest: jest.fn(),
-    createAction: (type) => (payload) => ({ type, payload }),
-    stopLoading: () => ({ type: 'STOP_LOADING' }),
-    startLoading: () => ({ type: 'START_LOADING' }),
-    showMessage: jest.fn(),
-    authErrorHandler: jest.fn(),
-    VALIDATE: 'VALIDATE',
+jest.mock("openstack-uicore-foundation/lib/utils/actions", () => ({
+  getRequest:
+    (requestActionCreator, receiveActionCreator, endpoint, errorHandler) =>
+    () =>
+    (dispatch, state) =>
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          const err = mockRequestError.current || {
+            status: undefined,
+            message: "Timeout of 60000ms exceeded"
+          };
+          try {
+            errorHandler(err, undefined)(dispatch, state);
+          } catch (e) {
+            mockHandlerErrors.push(e);
+            return;
+          }
+          // uicore rejects with this object, not an Error
+          // eslint-disable-next-line prefer-promise-reject-errors
+          reject({ err, dispatch, state });
+        }, 0);
+      }),
+  putRequest: jest.fn(),
+  postRequest: jest.fn(),
+  deleteRequest: jest.fn(),
+  createAction: (type) => (payload) => ({ type, payload }),
+  stopLoading: () => ({ type: "STOP_LOADING" }),
+  startLoading: () => ({ type: "START_LOADING" }),
+  showMessage: jest.fn(),
+  authErrorHandler: jest.fn(),
+  VALIDATE: "VALIDATE"
 }));
-jest.mock('openstack-uicore-foundation/lib/security/methods', () => ({ doLoginBasicLogin: jest.fn() }));
-jest.mock('i18n-react/dist/i18n-react', () => ({ translate: (key) => key }));
-jest.mock('sweetalert2', () => ({ fire: jest.fn() }));
-jest.mock('../history', () => ({ push: jest.fn() }));
-jest.mock('./base-actions', () => ({ getAllowedSelectionPlans: jest.fn() }));
-jest.mock('../utils/methods', () => ({ getAccessTokenSafely: async () => 'token' }));
+jest.mock("openstack-uicore-foundation/lib/security/methods", () => ({
+  doLoginBasicLogin: jest.fn()
+}));
+jest.mock("i18n-react/dist/i18n-react", () => ({ translate: (key) => key }));
+jest.mock("sweetalert2", () => ({ fire: jest.fn() }));
+jest.mock("../history", () => ({ push: jest.fn() }));
+jest.mock("./base-actions", () => ({ getAllowedSelectionPlans: jest.fn() }));
+jest.mock("../utils/methods", () => ({
+  getAccessTokenSafely: async () => "token"
+}));
 
-describe('getPresentation', () => {
-    beforeAll(() => {
-        global.window = { API_BASE_URL: 'https://api.example' };
+describe("getPresentation", () => {
+  beforeAll(() => {
+    global.window = { API_BASE_URL: "https://api.example" };
+  });
+
+  afterEach(() => {
+    mockRequestError.current = null;
+  });
+
+  it("reports a failed load through presentationErrorHandler and rejects instead of crashing", async () => {
+    const dispatch = jest.fn((action) => action);
+    const getState = () => ({
+      baseState: { summit: { id: 1, slug: "summit" }, tagGroups: [] }
     });
 
-    afterEach(() => {
-        mockRequestError.current = null;
+    // before the fix the error handler returned undefined, uicore called it as a thunk
+    // ("a(...) is not a function", CFP-PROD-3 / CFP-PROD-C) and the promise never settled
+    const outcome = await Promise.race([
+      getPresentation(10)(dispatch, getState).then(
+        () => "resolved",
+        () => "rejected"
+      ),
+      new Promise((resolve) => {
+        setTimeout(() => resolve("pending"), 200);
+      })
+    ]);
+
+    expect(mockHandlerErrors).toEqual([]);
+    expect(outcome).toBe("rejected");
+    expect(Swal.fire).toHaveBeenCalledWith(
+      "ERROR",
+      "errors.server_error",
+      "error"
+    );
+    expect(dispatch).toHaveBeenCalledWith({ type: "STOP_LOADING" });
+  });
+
+  it("dispatches VALIDATE with the field errors on a 412 (CFP-PROD-7)", async () => {
+    const errors = { title: "The title field is required." };
+    mockRequestError.current = { status: 412, response: { body: { errors } } };
+    const dispatch = jest.fn((action) => action);
+    const getState = () => ({
+      baseState: { summit: { id: 1, slug: "summit" }, tagGroups: [] }
     });
 
-    it('reports a failed load through presentationErrorHandler and rejects instead of crashing', async () => {
-        const dispatch = jest.fn((action) => action);
-        const getState = () => ({ baseState: { summit: { id: 1, slug: 'summit' }, tagGroups: [] } });
+    // before the fix VALIDATE was never imported, the handler threw a ReferenceError and the promise never settled
+    const outcome = await Promise.race([
+      getPresentation(10)(dispatch, getState).then(
+        () => "resolved",
+        () => "rejected"
+      ),
+      new Promise((resolve) => {
+        setTimeout(() => resolve("pending"), 200);
+      })
+    ]);
 
-        // before the fix the error handler returned undefined, uicore called it as a thunk
-        // ("a(...) is not a function", CFP-PROD-3 / CFP-PROD-C) and the promise never settled
-        const outcome = await Promise.race([
-            getPresentation(10)(dispatch, getState).then(() => 'resolved', () => 'rejected'),
-            new Promise((resolve) => setTimeout(() => resolve('pending'), 200)),
-        ]);
-
-        expect(mockHandlerErrors).toEqual([]);
-        expect(outcome).toBe('rejected');
-        expect(Swal.fire).toHaveBeenCalledWith('ERROR', 'errors.server_error', 'error');
-        expect(dispatch).toHaveBeenCalledWith({ type: 'STOP_LOADING' });
+    expect(mockHandlerErrors).toEqual([]);
+    expect(outcome).toBe("rejected");
+    expect(Swal.fire).toHaveBeenCalledWith(
+      "Validation error",
+      "title: The title field is required.<br>",
+      "warning"
+    );
+    expect(dispatch).toHaveBeenCalledWith({
+      type: "VALIDATE",
+      payload: { errors }
     });
+  });
+});
 
-    it('dispatches VALIDATE with the field errors on a 412 (CFP-PROD-7)', async () => {
-        const errors = { title: 'The title field is required.' };
-        mockRequestError.current = { status: 412, response: { body: { errors } } };
-        const dispatch = jest.fn((action) => action);
-        const getState = () => ({ baseState: { summit: { id: 1, slug: 'summit' }, tagGroups: [] } });
+// the global loader unmounts the upload inputs, which cancels the uploads still running
+describe("media upload actions", () => {
+  const getState = () => ({ baseState: { summit: { id: 1 } } });
+  const succeed = () => Promise.resolve();
+  const fail = () => Promise.reject(new Error("server error"));
 
-        // before the fix VALIDATE was never imported, the handler threw a ReferenceError and the promise never settled
-        const outcome = await Promise.race([
-            getPresentation(10)(dispatch, getState).then(() => 'resolved', () => 'rejected'),
-            new Promise((resolve) => setTimeout(() => resolve('pending'), 200)),
-        ]);
+  beforeAll(() => {
+    global.window = { API_BASE_URL: "https://api.example" };
+  });
 
-        expect(mockHandlerErrors).toEqual([]);
-        expect(outcome).toBe('rejected');
-        expect(Swal.fire).toHaveBeenCalledWith('Validation error', 'title: The title field is required.<br>', 'warning');
-        expect(dispatch).toHaveBeenCalledWith({ type: 'VALIDATE', payload: { errors } });
-    });
+  const save = () => saveMediaUpload({ id: 10 }, { id: 0 });
+  const update = () => saveMediaUpload({ id: 10 }, { id: 7 });
+  const remove = () => deleteMediaUpload(10, 7);
+
+  it.each([
+    ["saveMediaUpload (new)", "succeeds", postRequest, save, succeed],
+    ["saveMediaUpload (new)", "fails", postRequest, save, fail],
+    ["saveMediaUpload (existing)", "succeeds", putRequest, update, succeed],
+    ["saveMediaUpload (existing)", "fails", putRequest, update, fail],
+    ["deleteMediaUpload", "succeeds", deleteRequest, remove, succeed],
+    ["deleteMediaUpload", "fails", deleteRequest, remove, fail]
+  ])(
+    "%s does not dispatch START_LOADING when the request %s",
+    async (name, outcome, request, action, respond) => {
+      const dispatch = jest.fn();
+      request.mockReturnValue(() => () => respond());
+
+      await action()(dispatch, getState);
+
+      expect(request).toHaveBeenCalled();
+      expect(dispatch).not.toHaveBeenCalledWith({ type: "START_LOADING" });
+    }
+  );
 });

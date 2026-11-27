@@ -8363,10 +8363,10 @@ open@^8.0.9:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
-openstack-uicore-foundation@5.0.71:
-  version "5.0.71"
-  resolved "https://registry.yarnpkg.com/openstack-uicore-foundation/-/openstack-uicore-foundation-5.0.71.tgz#cc0d379c546abf25bf90d54f4f8fa2dc84024309"
-  integrity sha512-xHmB76qEd2MoO4sIW8Bj0e1UjUCRcz2xHsg1Cfa7elhbz+cA3BlzJC8uqIg4rpBs3zjw7CGzanTXkNHQGSn1VA==
+openstack-uicore-foundation@5.0.76-beta.0:
+  version "5.0.76-beta.0"
+  resolved "https://registry.yarnpkg.com/openstack-uicore-foundation/-/openstack-uicore-foundation-5.0.76-beta.0.tgz#8a7bb88358819c85f61396de6eb7d6de97ec10c6"
+  integrity sha512-2FNL4QIx4ye4v7M9e/KKdJ+H6qbdsa0fi1I361WGBAjKvbtFaf3QyXadXRWCfdykJ9l7kIF969MT2un9vHKXPg==
   dependencies:
     use-sync-external-store "^1.6.0"
 
