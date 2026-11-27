@@ -222,9 +222,7 @@ describe("PresentationUploadsForm upload input selection", () => {
       expect(input.props.postUrl).toBe(
         "https://files.test/api/v1/files/upload"
       );
-      expect(input.props.djsConfig).toEqual(
-        expect.objectContaining({ withCredentials: true })
-      );
+      expect(input.props.djsConfig).toEqual({ withCredentials: true });
       expect(input.props.parallelChunkUploads).toBe(true);
     }
   );
@@ -308,7 +306,8 @@ describe("PresentationUploadsForm leaving the step with uploads running", () => 
     form.onUploadError(
       "Server responded with 0 code.",
       undefined,
-      "media_upload_5"
+      "media_upload_5",
+      slides
     );
     form.onUploadStart("media_upload_5", slides);
 
@@ -356,7 +355,8 @@ describe("PresentationUploadsForm leaving the step with uploads running", () => 
     form.onUploadError(
       "Server responded with 0 code.",
       undefined,
-      "media_upload_5"
+      "media_upload_5",
+      talk
     );
     expect(prompt()).toBeUndefined();
   });
@@ -420,69 +420,67 @@ describe("PresentationUploadsForm after a file is saved", () => {
     expect(v2Key()).not.toBe(secondKey);
   });
 
-  describe("with V2 files still uploading", () => {
-    const setup = () => {
-      window.FILE_UPLOAD_USE_V4 = undefined;
-      const form = withState(
+  describe("with a failed file in the same input", () => {
+    const video = { name: "demo.mov", size: 300 };
+    const setup = () =>
+      withState(
         makeForm({
           summit: {},
           presentation: { getAllowedMediaUploads: () => [mediaType] },
           onSaveMU: jest.fn(() => Promise.resolve())
         })
       );
-      const v2Key = () => findByType(form.render(), "UploadInputV2").key;
-      // what Dropzone does on construction: runs init with itself as this
-      const dropzone = { files: [] };
-      findByType(form.render(), "UploadInputV2").props.djsConfig.init.call(
-        dropzone
+    const fail = (form, file) =>
+      form.onUploadError(
+        "Server responded with 0 code.",
+        undefined,
+        "media_upload_5",
+        file
       );
-      return { form, v2Key, dropzone };
-    };
 
-    it("waits for the last file before remounting, so the remount cancels nothing", async () => {
-      const { form, v2Key, dropzone } = setup();
-      const first = { name: talk.name, status: "success" };
-      const second = { name: slides.name, status: "uploading" };
-      dropzone.files = [first, second];
-      const initialKey = v2Key();
+    it("keeps the failed row until it is dismissed when a retried sibling is saved", async () => {
+      const form = setup();
+      const initialKey = inputKey(form);
+      form.onUploadStart("media_upload_5", talk);
+      form.onUploadStart("media_upload_5", slides);
 
-      form.onUploadComplete(completed(talk), "media_upload_5", data);
-      await flush();
-      expect(v2Key()).toBe(initialKey);
-
-      second.status = "success";
+      // both fail on a dropped connection, the user retries only slides
+      fail(form, talk);
+      fail(form, slides);
+      form.onUploadStart("media_upload_5", slides);
       form.onUploadComplete(completed(slides), "media_upload_5", data);
       await flush();
-      expect(v2Key()).not.toBe(initialKey);
+      expect(inputKey(form)).toBe(initialKey);
+
+      form.handleRemoveFile(talk);
+      expect(inputKey(form)).not.toBe(initialKey);
     });
 
-    it("counts a file still in Dropzone's async accept as uploading", async () => {
-      const { form, v2Key, dropzone } = setup();
-      dropzone.files = [
-        { name: talk.name, status: "success" },
-        { name: slides.name, status: "added" }
-      ];
-      const initialKey = v2Key();
+    it("keeps the failed row when a sibling upload is cancelled", async () => {
+      const form = setup();
+      const initialKey = inputKey(form);
+      form.onUploadStart("media_upload_5", talk);
+      form.onUploadStart("media_upload_5", slides);
+      form.onUploadStart("media_upload_5", video);
 
+      fail(form, video);
       form.onUploadComplete(completed(talk), "media_upload_5", data);
       await flush();
-      expect(v2Key()).toBe(initialKey);
+      form.handleRemoveFile(slides);
+      expect(inputKey(form)).toBe(initialKey);
+
+      form.handleRemoveFile(video);
+      expect(inputKey(form)).not.toBe(initialKey);
     });
 
-    it("remounts once the user cancels the file the remount was waiting for", async () => {
-      const { form, v2Key, dropzone } = setup();
-      const second = { name: slides.name, status: "uploading" };
-      dropzone.files = [{ name: talk.name, status: "success" }, second];
-      const initialKey = v2Key();
+    it("does not ask before leaving for a file that only failed", () => {
+      const form = setup();
+      form.onUploadStart("media_upload_5", talk);
+      fail(form, talk);
 
-      form.onUploadComplete(completed(talk), "media_upload_5", data);
-      await flush();
-      expect(v2Key()).toBe(initialKey);
-
-      // Dropzone drops the file from its list, then reports removedfile
-      dropzone.files = dropzone.files.filter((f) => f !== second);
-      form.handleRemoveFile(second);
-      expect(v2Key()).not.toBe(initialKey);
+      const unload = { preventDefault: jest.fn() };
+      form.onBeforeUnload(unload);
+      expect(unload.preventDefault).not.toHaveBeenCalled();
     });
   });
 });

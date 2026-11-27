@@ -36,10 +36,6 @@ const getUploadErrorMessage = (error) => {
   return error?.message || error?.detail || "unknown error";
 };
 
-// Dropzone statuses of a file not yet uploaded: "added" covers V2's async accept
-// (token + md5), before the file is queued
-const V2_ACTIVE_STATUSES = ["added", "queued", "uploading"];
-
 const isUploadV4Enabled = () => window.FILE_UPLOAD_USE_V4 === "true";
 
 // the complete response echoes the client file name as original_name
@@ -59,16 +55,14 @@ class PresentationUploadsForm extends React.Component {
       inputKeys: {}
     };
 
-    // V4 uploads still transferring, as {inputId, file}. errors don't say which file failed,
-    // so only the number of entries per input is reliable, not which file each one is
-    this.runningUploads = [];
+    // V4 uploads not delivered yet, as {inputId, file, failed}. a failed one stays until
+    // the user retries it (onUploadStart) or dismisses its error row (onRemove)
+    this.uploads = [];
     // saved files whose DELETE has not returned yet
     this.deletingIds = new Set();
     // per media type id, delivered files whose POST has not returned yet
     this.savingUploads = {};
-    // per V2 input id, its Dropzone instance
-    this.v2Dropzones = {};
-    // inputs whose remount waits for their running uploads
+    // inputs whose remount waits for their running or failed uploads
     this.pendingRemounts = new Set();
 
     this.handleRemoveFile = this.handleRemoveFile.bind(this);
@@ -82,7 +76,7 @@ class PresentationUploadsForm extends React.Component {
   componentDidMount() {
     // leaving the step unmounts the inputs, which cancels their uploads
     this.unblockHistory = history.block(() =>
-      this.runningUploads.length > 0
+      this.hasRunningUploads()
         ? T.translate("edit_presentation.errors.uploads_in_progress")
         : undefined
     );
@@ -91,14 +85,14 @@ class PresentationUploadsForm extends React.Component {
   }
 
   componentWillUnmount() {
-    // saves still in flight resolve after this, and Dropzone reports its files as removed
+    // saves still in flight resolve after this
     this.unmounted = true;
     if (this.unblockHistory) this.unblockHistory();
     window.removeEventListener("beforeunload", this.onBeforeUnload);
   }
 
   onBeforeUnload(ev) {
-    if (this.runningUploads.length === 0) return;
+    if (!this.hasRunningUploads()) return;
     // browsers show their own message
     ev.preventDefault();
     ev.returnValue = "";
@@ -131,57 +125,57 @@ class PresentationUploadsForm extends React.Component {
       return;
     }
 
-    // V4 passes the File of an upload the user cancelled or dismissed, V2 the Dropzone file
-    // it removed. remove one entry only, a retried file can also hold another entry
-    const index = this.runningUploads.findIndex((u) => u.file === file);
-    if (index >= 0) this.runningUploads.splice(index, 1);
-    // the cancelled file may be the last one a pending remount was waiting for
+    // V4 passes the File of an upload the user cancelled, or whose error row was dismissed
+    const upload = this.uploads.find((u) => u.file === file);
+    if (upload) this.uploads = this.uploads.filter((u) => u !== upload);
+    // it may be the last upload a pending remount was waiting for
     this.pendingRemounts.forEach((inputId) => this.remountIfIdle(inputId));
   }
 
+  hasRunningUploads() {
+    return this.uploads.some((u) => !u.failed);
+  }
+
   onUploadStart(inputId, file) {
-    // a retry counts again, its failure already removed an entry
-    this.runningUploads.push({ inputId, file });
-  }
-
-  // file is the File that failed (V4 onError), body the complete response that echoes it
-  takeRunningUpload(inputId, { file, body } = {}) {
-    const ofInput = this.runningUploads.filter((u) => u.inputId === inputId);
-    const upload = file
-      ? ofInput.find((u) => u.file === file)
-      : ofInput.find((u) => isSameFile(body, u.file)) || ofInput[0];
-    if (upload)
-      this.runningUploads = this.runningUploads.filter((u) => u !== upload);
-  }
-
-  // V2 keeps no File list of its own outside Dropzone, so its instance is kept to see
-  // which files are still uploading. init runs once per Dropzone, so a remount replaces it
-  getV2DjsConfig(inputId) {
-    const form = this;
-    return {
-      withCredentials: true,
-      init() {
-        form.v2Dropzones[inputId] = this;
-      }
-    };
-  }
-
-  isInputBusy(inputId) {
-    if (this.runningUploads.some((u) => u.inputId === inputId)) return true;
-    const dropzone = this.v2Dropzones[inputId];
-    return (
-      !!dropzone &&
-      dropzone.files.some((f) => V2_ACTIVE_STATUSES.includes(f.status))
+    // a retry reports the failed File again
+    const failed = this.uploads.find(
+      (u) => u.inputId === inputId && u.file === file && u.failed
     );
+    if (failed) failed.failed = false;
+    else this.uploads.push({ inputId, file, failed: false });
+  }
+
+  // body is the complete response, which echoes the File
+  takeDeliveredUpload(inputId, body) {
+    const running = this.uploads.filter(
+      (u) => u.inputId === inputId && !u.failed
+    );
+    const upload = running.find((u) => isSameFile(body, u.file)) || running[0];
+    if (upload) this.uploads = this.uploads.filter((u) => u !== upload);
+  }
+
+  markFailedUpload(inputId, file) {
+    const running = this.uploads.filter(
+      (u) => u.inputId === inputId && !u.failed
+    );
+    if (file) {
+      const upload = running.find((u) => u.file === file);
+      if (upload) upload.failed = true;
+      return;
+    }
+    // without the File, the error row can't be matched later on dismiss,
+    // so drop one entry of the input instead of keeping it as failed
+    if (running[0]) this.uploads = this.uploads.filter((u) => u !== running[0]);
   }
 
   // V4 keeps a finished row until a saved file has its exact name, and summit-api renames it.
   // V2's Dropzone counts its uploaded files plus value, so a later file hits "Max files reached".
-  // remounting the input fixes both, and cancels nothing once none of its uploads are running.
-  // A busy input is remounted when its last file is saved, or when the user cancels it
+  // remounting the input fixes both. it waits while the input has an upload running, which it
+  // would cancel, or failed, whose error row and Retry it would drop. the last save, cancel or
+  // dismissed error row of the input runs it
   remountIfIdle(inputId) {
     if (this.unmounted) return;
-    if (this.isInputBusy(inputId)) {
+    if (this.uploads.some((u) => u.inputId === inputId)) {
       this.pendingRemounts.add(inputId);
       return;
     }
@@ -206,7 +200,7 @@ class PresentationUploadsForm extends React.Component {
     let { media_type, media_upload } = data;
 
     if (response) {
-      this.takeRunningUpload(id, { body: response });
+      this.takeDeliveredUpload(id, response);
 
       // new media upload
       media_upload = {
@@ -230,9 +224,8 @@ class PresentationUploadsForm extends React.Component {
   }
 
   onUploadError(error, status, inputId, file) {
-    // V4 passes the File that failed. a retry reports it again through onUploadStart,
-    // and dismissing its row reports it through onRemove, which then finds no entry
-    this.takeRunningUpload(inputId, { file });
+    // V4 passes the File that failed, V2 nothing (V2 uploads are not tracked)
+    this.markFailedUpload(inputId, file);
 
     if (status == ERROR_403) {
       // V2 passes the response body ({detail}), V4 an Error carrying the server message
@@ -391,7 +384,7 @@ class PresentationUploadsForm extends React.Component {
                     }`}
                     {...uploadInputProps}
                     postUrl={`${window.FILE_UPLOAD_API_BASE_URL}/api/v1/files/upload`}
-                    djsConfig={this.getV2DjsConfig(uploadInputProps.id)}
+                    djsConfig={{ withCredentials: true }}
                     parallelChunkUploads
                   />
                 )}
